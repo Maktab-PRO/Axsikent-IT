@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
 
 from app.db import get_db
 from app.models.student import Student
@@ -7,6 +8,11 @@ from app.schemas.student import StudentCreate, StudentLogin, StudentResponse
 
 
 router = APIRouter(prefix="/students", tags=["Students"])
+
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
+)
 
 
 @router.post("/register", response_model=StudentResponse)
@@ -24,10 +30,12 @@ def register_student(
             detail="Bu telefon raqam allaqachon ro'yxatdan o'tgan"
         )
 
+    hashed_password = pwd_context.hash(student.password)
+
     new_student = Student(
         full_name=student.full_name,
         phone=student.phone,
-        password_hash=student.password
+        password_hash=hashed_password
     )
 
     db.add(new_student)
@@ -46,7 +54,16 @@ def login_student(
         Student.phone == student.phone
     ).first()
 
-    if not user or user.password_hash != student.password:
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Telefon raqam yoki parol noto'g'ri"
+        )
+
+    if not pwd_context.verify(
+        student.password,
+        user.password_hash
+    ):
         raise HTTPException(
             status_code=401,
             detail="Telefon raqam yoki parol noto'g'ri"
