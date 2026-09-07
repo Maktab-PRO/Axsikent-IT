@@ -9,3 +9,4 @@ from app.models.schedule import Schedule
 from app.models.attendance import Attendance
 from app.models.grade import Grade
 from app.models.homework import Homework, HomeworkSubmission
+from app.models.gamification import StudentGamification
