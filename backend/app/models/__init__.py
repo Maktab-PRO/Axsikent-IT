@@ -15,3 +15,4 @@ from app.models.achievement import Achievement, StudentAchievement
 from app.models.shop import ShopProduct, ShopOrder
 from app.models.content import Content, ContentProgress
 from app.models.event import Event, EventRegistration
+from app.models.reward_rule import RewardRule
