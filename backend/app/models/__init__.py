@@ -4,3 +4,4 @@ from app.models.admin import Admin
 from app.models.course import Course
 from app.models.category import Category
 from app.models.level import Level
+from app.models.group import Group
