@@ -11,3 +11,4 @@ from app.models.grade import Grade
 from app.models.homework import Homework, HomeworkSubmission
 from app.models.gamification import StudentGamification
 from app.models.reward_transaction import RewardTransaction
+from app.models.achievement import Achievement, StudentAchievement
