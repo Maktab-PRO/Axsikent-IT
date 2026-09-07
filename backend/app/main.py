@@ -1,9 +1,9 @@
 from fastapi import FastAPI
+
 from app.db import Base, engine
 
-from app.models.student import Student
-from app.models.teacher import Teacher
-from app.models.admin import Admin
+# Barcha modellarni yuklaymiz
+from app import models
 
 from app.api.student import router as student_router
 from app.api.teacher import router as teacher_router
@@ -17,8 +17,11 @@ app = FastAPI(
 )
 
 
+# Database jadvallarini yaratish
 Base.metadata.create_all(bind=engine)
 
+
+# API routerlar
 app.include_router(student_router)
 app.include_router(teacher_router)
 app.include_router(admin_router)
