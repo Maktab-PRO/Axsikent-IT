@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.db import Base, engine
 from app.models.student import Student
+from app.api.student import router as student_router
 
 app = FastAPI(
     title="Axsikent IT API",
@@ -8,8 +9,9 @@ app = FastAPI(
     version="1.0.0"
 )
 
-
 Base.metadata.create_all(bind=engine)
+
+app.include_router(student_router)
 
 
 @app.get("/")
