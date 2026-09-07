@@ -9,6 +9,7 @@ from app.api.student import router as student_router
 from app.api.teacher import router as teacher_router
 from app.api.admin import router as admin_router
 from app.api.course import router as course_router
+from app.api.admin_course import router as admin_course_router
 
 
 app = FastAPI(
@@ -27,7 +28,7 @@ app.include_router(student_router)
 app.include_router(teacher_router)
 app.include_router(admin_router)
 app.include_router(course_router)
-
+app.include_router(admin_course_router)
 
 @app.get("/")
 def home():
