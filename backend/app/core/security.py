@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
-
+from fastapi import APIRouter, Depends, HTTPException, Header
+from app.core.security import create_access_token, verify_token
 from jose import JWTError, jwt
 
 
@@ -41,3 +42,40 @@ def verify_token(token: str):
 
     except (JWTError, ValueError, TypeError):
         return None
+@router.get("/me", response_model=StudentResponse)
+def get_my_profile(
+    authorization: str | None = Header(default=None),
+    db: Session = Depends(get_db)
+):
+    if not authorization:
+        raise HTTPException(
+            status_code=401,
+            detail="Authorization token kerak"
+        )
+
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail="Bearer token noto'g'ri"
+        )
+
+    token = authorization.replace("Bearer ", "", 1)
+    student_id = verify_token(token)
+
+    if not student_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    student = db.query(Student).filter(
+        Student.id == student_id
+    ).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="O'quvchi topilmadi"
+        )
+
+    return student
