@@ -5,6 +5,7 @@ from passlib.context import CryptContext
 from app.db import get_db
 from app.models.student import Student
 from app.schemas.student import StudentCreate, StudentLogin, StudentResponse
+from app.core.security import create_access_token
 
 
 router = APIRouter(prefix="/students", tags=["Students"])
@@ -69,8 +70,14 @@ def login_student(
             detail="Telefon raqam yoki parol noto'g'ri"
         )
 
+    access_token = create_access_token(
+        {"sub": str(user.id)}
+    )
+
     return {
         "message": "Login muvaffaqiyatli",
+        "access_token": access_token,
+        "token_type": "bearer",
         "student_id": user.id,
         "full_name": user.full_name
     }
