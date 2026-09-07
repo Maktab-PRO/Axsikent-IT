@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from jose import jwt
+from jose import JWTError, jwt
 
 
 SECRET_KEY = "CHANGE_THIS_LATER"
@@ -22,3 +22,22 @@ def create_access_token(data: dict):
         SECRET_KEY,
         algorithm=ALGORITHM
     )
+
+
+def verify_token(token: str):
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
+
+        student_id = payload.get("sub")
+
+        if student_id is None:
+            return None
+
+        return int(student_id)
+
+    except (JWTError, ValueError, TypeError):
+        return None
