@@ -10,16 +10,16 @@ def seed_data():
     db = SessionLocal()
 
     try:
-            pwd_context = CryptContext(
-        schemes=["bcrypt"],
-        deprecated="auto"
-    )
+        pwd_context = CryptContext(
+            schemes=["bcrypt"],
+            deprecated="auto"
+        )
 
-    admin = db.query(Admin).filter(
-        Admin.phone == "998901234569"
-    ).first()
+        admin = db.query(Admin).filter(
+            Admin.phone == "998901234569"
+        ).first()
 
-           if not admin:
+        if not admin:
             admin = Admin(
                 full_name="Axsikent Admin",
                 phone="998901234569",
@@ -32,7 +32,6 @@ def seed_data():
 
         if db.query(Category).count() > 0:
             return
-
         it = Category(
             name="IT",
             icon="💻",
