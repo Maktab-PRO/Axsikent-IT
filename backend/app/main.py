@@ -11,7 +11,7 @@ from app.api.admin import router as admin_router
 from app.api.course import router as course_router
 from app.api.admin_course import router as admin_course_router
 from app.api.group import router as group_router
-
+from app.seed import seed_data
 
 app = FastAPI(
     title="Axsikent IT API",
@@ -22,7 +22,7 @@ app = FastAPI(
 
 # Database jadvallarini yaratish
 Base.metadata.create_all(bind=engine)
-
+seed_data()
 
 # API routerlar
 app.include_router(student_router)
