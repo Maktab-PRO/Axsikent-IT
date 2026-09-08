@@ -19,16 +19,17 @@ def seed_data():
         Admin.phone == "998901234569"
     ).first()
 
-    if not admin:
-        admin = Admin(
-            full_name="Axsikent Admin",
-            phone="998901234569",
-            password_hash=pwd_context.hash("Admin12345"),
-            role="admin",
-            is_active=True
-        )
-        db.add(admin)
-        db.commit()
+           if not admin:
+            admin = Admin(
+                full_name="Axsikent Admin",
+                phone="998901234569",
+                password_hash=pwd_context.hash("Admin12345"),
+                role="admin",
+                is_active=True
+            )
+            db.add(admin)
+            db.commit()
+
         if db.query(Category).count() > 0:
             return
 
