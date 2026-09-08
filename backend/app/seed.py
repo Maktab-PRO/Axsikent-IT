@@ -2,12 +2,33 @@ from app.db import SessionLocal
 from app.models.category import Category
 from app.models.course import Course
 from app.models.course_module import CourseModule
+from app.models.admin import Admin
+from passlib.context import CryptContext
 
 
 def seed_data():
     db = SessionLocal()
 
     try:
+            pwd_context = CryptContext(
+        schemes=["bcrypt"],
+        deprecated="auto"
+    )
+
+    admin = db.query(Admin).filter(
+        Admin.phone == "998901234569"
+    ).first()
+
+    if not admin:
+        admin = Admin(
+            full_name="Axsikent Admin",
+            phone="998901234569",
+            password_hash=pwd_context.hash("Admin12345"),
+            role="admin",
+            is_active=True
+        )
+        db.add(admin)
+        db.commit()
         if db.query(Category).count() > 0:
             return
 
