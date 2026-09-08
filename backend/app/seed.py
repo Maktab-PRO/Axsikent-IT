@@ -164,7 +164,7 @@ def seed_data():
         ]
 
         db.add_all(courses)
-                db.flush()
+        db.flush()
 
         modules = [
             # Scratch
