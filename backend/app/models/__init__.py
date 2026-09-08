@@ -18,3 +18,4 @@ from app.models.event import Event, EventRegistration
 from app.models.reward_rule import RewardRule
 from app.models.notification import Notification
 from app.models.course_module import CourseModule
+from app.models.lead import Lead
