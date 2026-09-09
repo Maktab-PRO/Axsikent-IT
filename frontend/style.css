@@ -1523,3 +1523,60 @@ textarea {
         font-size: 13px;
     }
 }
+/* =========================================
+   COURSE INFO CARDS
+   ========================================= */
+
+.course-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 10px 0 25px;
+}
+
+.course-info-card {
+    padding: 16px 12px;
+    text-align: center;
+
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+
+    transition: 0.25s ease;
+}
+
+.course-info-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(99, 102, 241, 0.25);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+}
+
+.course-info-card span {
+    display: block;
+    font-size: 22px;
+    margin-bottom: 6px;
+}
+
+.course-info-card strong {
+    display: block;
+    color: var(--dark);
+    font-size: 14px;
+}
+
+.course-info-card small {
+    display: block;
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 10px;
+}
+
+/* TELEFON */
+@media (max-width: 600px) {
+    .course-info-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .course-info-card {
+        padding: 14px 8px;
+    }
+}
