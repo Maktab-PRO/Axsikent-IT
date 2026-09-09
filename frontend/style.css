@@ -1162,3 +1162,15 @@ textarea {
     height: 56px !important;
     object-fit: contain;
 }
+/* KURSLAR IKONKALARI — TELEFON VA KOMPYUTERDA BIR XIL */
+.course-icon {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.course-icon img {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
