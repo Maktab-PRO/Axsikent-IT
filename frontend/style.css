@@ -1139,3 +1139,13 @@ textarea {
     -webkit-text-fill-color: #6c63ff !important;
     background-clip: initial !important;
 }
+/* HERO CARD SARLAVHASI */
+.hero-card h3 {
+    color: #6c63ff !important;
+    background: transparent !important;
+    background-image: none !important;
+    -webkit-text-fill-color: #6c63ff !important;
+    -webkit-background-clip: border-box !important;
+    background-clip: border-box !important;
+    opacity: 1 !important;
+}
