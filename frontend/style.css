@@ -160,11 +160,6 @@ textarea {
 
     box-shadow: 0 8px 20px rgba(99, 102, 241, 0.22);
 }
-/* Navbar'dagi Boshlash tugmasini pastroqqa tushirish */
-.navbar .nav-cta {
-    position: relative;
-    top: 8px;
-}
 /* =========================================
    HERO
    ========================================= */
@@ -1021,4 +1016,9 @@ textarea {
 
         gap: 30px;
     }
+}
+/* Boshlash tugmasini biroz pastga tushirish */
+.nav-button {
+    position: relative;
+    top: 12px;
 }
