@@ -1150,10 +1150,10 @@ textarea {
     opacity: 1 !important;
 }
 .course-icon img {
-    width: 38px !important;
-    height: 38px !important;
-    max-width: 38px !important;
-    max-height: 38px !important;
+    width: 40px !important;
+    height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
     object-fit: contain !important;
     display: block !important;
 }
