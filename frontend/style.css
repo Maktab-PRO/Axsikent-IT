@@ -160,7 +160,11 @@ textarea {
 
     box-shadow: 0 8px 20px rgba(99, 102, 241, 0.22);
 }
-
+/* Boshlash tugmasini navbar'dan biroz pastga tushirish */
+.navbar .btn,
+.navbar .btn-primary {
+    margin-top: 8px;
+}
 /* =========================================
    HERO
    ========================================= */
@@ -1017,9 +1021,4 @@ textarea {
 
         gap: 30px;
     }
-}
-/* Boshlash tugmasini navbar'dan biroz pastga tushirish */
-.navbar .btn,
-.navbar .btn-primary {
-    margin-top: 8px;
 }
