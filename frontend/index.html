@@ -1107,12 +1107,21 @@ document.querySelectorAll(".course-detail-btn").forEach(button => {
 
         if (!course) return;
 
-        courseModalBody.innerHTML = `
-            <h2>${course.title}</h2>
-            <div class="modal-price">💰 ${course.price}</div>
-            ${course.content}
-        `;
+      courseModalBody.innerHTML = `
+    <h2>${course.title}</h2>
+    <div class="modal-price">💰 ${course.price}</div>
 
+    ${course.content}
+
+    <button
+        type="button"
+        class="btn btn-primary"
+        id="modalApplyButton"
+        style="margin-top: 20px;"
+    >
+        📝 Kursga yozilish
+    </button>
+`;
         courseModal.classList.add("active");
         document.body.style.overflow = "hidden";
     });
