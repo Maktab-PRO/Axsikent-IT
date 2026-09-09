@@ -1091,3 +1091,23 @@ textarea {
     -webkit-text-fill-color: transparent !important;
     font-weight: 800 !important;
 }
+/* HERO OQ BLOK JOYLASHUVI */
+.hero-card {
+    position: relative !important;
+    z-index: 2 !important;
+    margin-top: 30px !important;
+}
+
+/* Telefonlarda oq blok pastroqda turadi */
+@media (max-width: 900px) {
+    .hero-card {
+        margin-top: 35px !important;
+        transform: none !important;
+        animation: none !important;
+    }
+
+    .hero-stats {
+        position: relative !important;
+        z-index: 5 !important;
+    }
+}
