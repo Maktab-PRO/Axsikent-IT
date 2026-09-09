@@ -1150,19 +1150,24 @@ textarea {
     opacity: 1 !important;
 }
 .course-icon {
-    width: 70px;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 20px;
-    background: #f5f7ff;
-    overflow: hidden;
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    border-radius: 18px !important;
+    background: #f5f7ff !important;
+    overflow: hidden !important;
 }
 
 .course-icon img {
-    width: 52px;
-    height: 52px;
-    object-fit: contain;
-    display: block;
+    width: 42px !important;
+    height: 42px !important;
+    max-width: 42px !important;
+    max-height: 42px !important;
+    object-fit: contain !important;
+    display: block !important;
 }
