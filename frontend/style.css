@@ -1062,34 +1062,26 @@ textarea {
         top: 0 !important;
     }
 }
-/* BOSH LOGOTIP */
-.logo img {
-    width: 55px;
-    height: 55px;
-    object-fit: contain;
-    display: block;
-}
-
 .logo {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-/* ASOSIY LOGO */
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--dark) !important;
-    font-size: 22px;
-    font-weight: 800;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    text-decoration: none !important;
+    color: #111827 !important;
+    font-size: 20px !important;
+    font-weight: 800 !important;
 }
 
 .logo img {
-    width: 52px;
-    height: 52px;
-    object-fit: contain;
-    display: block;
-    background: transparent;
-    border-radius: 0;
+    width: 52px !important;
+    height: 52px !important;
+    object-fit: contain !important;
+    display: block !important;
+    background: transparent !important;
+}
+
+.logo span {
+    display: inline-block !important;
+    color: #111827 !important;
+    white-space: nowrap !important;
 }
