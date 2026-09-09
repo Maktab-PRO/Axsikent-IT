@@ -1085,3 +1085,9 @@ textarea {
     color: #111827 !important;
     white-space: nowrap !important;
 }
+.logo span {
+    background: linear-gradient(135deg, #6c63ff, #8b5cf6) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    font-weight: 800 !important;
+}
