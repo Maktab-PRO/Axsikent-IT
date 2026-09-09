@@ -160,10 +160,10 @@ textarea {
 
     box-shadow: 0 8px 20px rgba(99, 102, 241, 0.22);
 }
-/* Boshlash tugmasini navbar'dan biroz pastga tushirish */
-.navbar .btn,
-.navbar .btn-primary {
-    margin-top: 8px;
+/* Navbar'dagi Boshlash tugmasini pastroqqa tushirish */
+.navbar .nav-cta {
+    position: relative;
+    top: 8px;
 }
 /* =========================================
    HERO
