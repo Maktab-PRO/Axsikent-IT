@@ -163,10 +163,9 @@
                             Windows, Word, Excel va internet.
                         </p>
 
-                        <a href="#apply">
+                        <button class="course-detail-btn" data-course="computer" type="button">
                             Batafsil →
-                        </a>
-
+                        </button>                    
                     </div>
 
                 </div>
@@ -194,9 +193,9 @@
             Python orqali loyihalar yaratish.
         </p>
 
-        <a href="#apply">
+        <button class="course-detail-btn" data-course="python" type="button">
             Batafsil →
-        </a>
+        </button>
 
     </div>
 
@@ -223,9 +222,11 @@
                             zamonaviy saytlar yarating.
                         </p>
 
-                        <a href="#apply">
+                        <button class="course-detail-btn" data-course="web" type="button">
                             Batafsil →
-                        </a>
+                        </button>
+                      
+                    </a>
 
                     </div>
 
@@ -283,9 +284,10 @@
             elektronika bilan ishlash.
         </p>
 
-        <a href="#apply">
+        <button class="course-detail-btn" data-course="robot" type="button">
             Batafsil →
-        </a>
+        </button>
+        
     </div>
 
 </div>
@@ -311,10 +313,10 @@
             va slicing bilan ishlash.
         </p>
 
-        <a href="#apply">
+        <button class="course-detail-btn" data-course="model3d" type="button">
             Batafsil →
-        </a>
-
+        </button>
+        
     </div>
 
 </div>
@@ -342,9 +344,9 @@
             real buyumlarni chop etish.
         </p>
 
-        <a href="#apply">
+        <button class="course-detail-btn" data-course="printer3d" type="button">
             Batafsil →
-        </a>
+        </button>
 
     </div>
 
@@ -372,9 +374,9 @@
                             mantiqiy fikrlashni rivojlantiring.
                         </p>
 
-                        <a href="#apply">
+                        <button class="course-detail-btn" data-course="mental" type="button">
                             Batafsil →
-                        </a>
+                        </button>
 
                     </div>
 
@@ -403,9 +405,9 @@
                             zamonaviy ingliz tili darslari.
                         </p>
 
-                        <a href="#apply">
+                        <button class="course-detail-btn" data-course="english" type="button">
                             Batafsil →
-                        </a>
+                        </button>
 
                     </div>
 
@@ -434,9 +436,9 @@
                             va yuqori natijaga erishish.
                         </p>
 
-                        <a href="#apply">
-                            Batafsil →
-                        </a>
+                       <button class="course-detail-btn" data-course="ielts" type="button">
+                           Batafsil →
+                       </button>
 
                     </div>
 
@@ -877,6 +879,23 @@
 
 </script>
 ```
+<!-- KURS BATAFSIL OYNASI -->
+<div id="courseModal" class="course-modal">
 
+    <div class="course-modal-content">
+
+        <button
+            type="button"
+            class="course-modal-close"
+            id="courseModalClose"
+        >
+            ×
+        </button>
+
+        <div id="courseModalBody"></div>
+
+    </div>
+
+</div>
 </body>
 </html>
