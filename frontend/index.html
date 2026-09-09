@@ -1133,6 +1133,19 @@ function closeCourseModal() {
 }
 
 courseModalClose.addEventListener("click", closeCourseModal);
+        document.addEventListener("click", function(event) {
+    if (event.target.id === "modalApplyButton") {
+        const selectedCourse = courseDetails[
+            document.querySelector(".course-detail-btn.active")?.dataset.course
+        ];
+
+        closeCourseModal();
+
+        document.getElementById("apply").scrollIntoView({
+            behavior: "smooth"
+        });
+    }
+});
 
 courseModal.addEventListener("click", function(event) {
     if (event.target === courseModal) {
