@@ -921,7 +921,8 @@ const courseDetails = {
     },
 
     python: {
-        title: "🐍 Python dasturlash",
+        title: "Python dasturlash",
+        image: "assets/logo1.png",
         price: "350 ming / oy",
         content: `
             <h3>11–18 yosh</h3>
@@ -1106,6 +1107,8 @@ document.querySelectorAll(".course-detail-btn").forEach(button => {
         const course = courseDetails[this.dataset.course];
         if (!course) return;
        courseModalBody.innerHTML = `
+    ${course.image ? `<img src="${course.image}" class="course-modal-logo" alt="${course.title}">` : ""}
+
     <h2>${course.title}</h2>
     <div class="modal-price">💰 ${course.price}</div>
 
