@@ -1137,9 +1137,25 @@ function closeCourseModal() {
 courseModalClose.addEventListener("click", closeCourseModal);
         document.addEventListener("click", function(event) {
     if (event.target.id === "modalApplyButton") {
-        const selectedCourse = courseDetails[
-            document.querySelector(".course-detail-btn.active")?.dataset.course
-        ];
+
+        const modalTitle = courseModalBody.querySelector("h2").textContent;
+        const courseSelect = document.getElementById("interested_course");
+
+        const courseMap = {
+            "Python dasturlash": "Python",
+            "Robototexnika + Arduino": "Robototexnika",
+            "💻 IT savodxonlik": "Kompyuter savodxonligi",
+            "🌐 Web dasturlash": "Web — HTML/CSS/JS",
+            "🧊 3D Modellashtirish": "3D Print",
+            "🖨️ 3D Printer bilan ishlash": "3D Print",
+            "🧮 Mental arifmetika": "Mental arifmetika",
+            "🇬🇧 Ingliz tili": "Ingliz tili",
+            "🎯 IELTS kursi": "IELTS"
+        };
+
+        if (courseMap[modalTitle]) {
+            courseSelect.value = courseMap[modalTitle];
+        }
 
         closeCourseModal();
 
