@@ -1162,15 +1162,32 @@ textarea {
     height: 56px !important;
     object-fit: contain;
 }
-/* KURSLAR IKONKALARI — TELEFON VA KOMPYUTERDA BIR XIL */
-.course-icon {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
+/* COURSE ICONLARNI KOMPYUTERDA HAM KO‘RSATISH */
+.course-card .course-icon {
+    width: 65px !important;
+    height: 65px !important;
+    min-width: 65px !important;
+    min-height: 65px !important;
 
-.course-icon img {
-    display: block !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin-bottom: 22px !important;
+
+    border-radius: 18px !important;
+
+    background: linear-gradient(
+        135deg,
+        #eef2ff,
+        #f5f3ff
+    ) !important;
+
+    position: relative !important;
+    z-index: 5 !important;
+
     visibility: visible !important;
     opacity: 1 !important;
+
+    font-size: 32px !important;
 }
