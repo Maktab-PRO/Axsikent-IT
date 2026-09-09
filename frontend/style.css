@@ -1132,3 +1132,10 @@ textarea {
     background-clip: text;
     font-weight: 800;
 }
+.hero-card h3 {
+    color: #6c63ff !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    -webkit-text-fill-color: #6c63ff !important;
+    background-clip: initial !important;
+}
