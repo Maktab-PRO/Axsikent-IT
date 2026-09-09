@@ -1062,3 +1062,16 @@ textarea {
         top: 0 !important;
     }
 }
+/* BOSH LOGOTIP */
+.logo img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+    display: block;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
