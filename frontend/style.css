@@ -1018,3 +1018,8 @@ textarea {
         gap: 30px;
     }
 }
+/* Boshlash tugmasini navbar'dan biroz pastga tushirish */
+.navbar .btn,
+.navbar .btn-primary {
+    margin-top: 8px;
+}
