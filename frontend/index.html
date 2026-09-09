@@ -1104,10 +1104,12 @@ const courseModalClose = document.getElementById("courseModalClose");
 document.querySelectorAll(".course-detail-btn").forEach(button => {
     button.addEventListener("click", function() {
         const course = courseDetails[this.dataset.course];
-
+        const courseIcon = this.closest(".course-card").querySelector(".course-icon");
         if (!course) return;
+        courseModalBody.innerHTML = `${courseIcon.outerHTML}
 
-      courseModalBody.innerHTML = `
+    <h2>${course.title}</h2>
+
     <h2>${course.title}</h2>
     <div class="modal-price">💰 ${course.price}</div>
 
