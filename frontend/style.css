@@ -1022,27 +1022,3 @@ textarea {
     position: relative;
     top: 8px;
 }
-@media (max-width: 600px) {
-    .nav-links {
-        display: flex !important;
-        gap: 8px;
-        font-size: 12px;
-        flex-wrap: wrap;
-    }
-
-    .nav-container {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    .logo {
-        font-size: 15px;
-    }
-
-    .nav-button {
-        font-size: 12px;
-        padding: 8px 12px;
-        top: 0;
-    }
-}
