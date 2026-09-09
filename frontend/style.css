@@ -1157,3 +1157,8 @@ textarea {
     object-fit: contain !important;
     display: block !important;
 }
+.logo img {
+    width: 48px !important;
+    height: 48px !important;
+    object-fit: contain;
+}
