@@ -1111,3 +1111,17 @@ textarea {
         z-index: 5 !important;
     }
 }
+.hero-card-image {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.hero-card-image img {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    display: block;
+}
