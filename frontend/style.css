@@ -1022,3 +1022,43 @@ textarea {
     position: relative;
     top: 8px;
 }
+/* 📱 TELEFON UCHUN NAVBAR */
+@media screen and (max-width: 768px) {
+
+    .nav-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 12px !important;
+        padding: 15px 10px !important;
+    }
+
+    .nav-links {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
+        gap: 8px 12px !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .nav-links a {
+        display: inline-block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        font-size: 13px !important;
+        white-space: nowrap !important;
+    }
+
+    .nav-button {
+        display: inline-block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+        top: 0 !important;
+    }
+}
