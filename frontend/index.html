@@ -897,5 +897,245 @@
     </div>
 
 </div>
+    <script>
+const courseDetails = {
+    computer: {
+        title: "💻 IT savodxonlik",
+        price: "250 ming / oy",
+        content: `
+            <h3>Dars</h3>
+            <ul>
+                <li>90 daqiqa</li>
+                <li>Haftasiga 3 marta</li>
+            </ul>
+
+            <h3>Dastur</h3>
+            <ul>
+                <li>Klaviatura, papkalar, fayllar</li>
+                <li>Word — matn tayyorlash</li>
+                <li>Excel — formulalar bilan ishlash</li>
+                <li>PowerPoint — taqdimotlar</li>
+                <li>Internet</li>
+            </ul>
+        `
+    },
+
+    python: {
+        title: "🐍 Python dasturlash",
+        price: "350 ming / oy",
+        content: `
+            <h3>11–18 yosh</h3>
+            <ul>
+                <li>O‘zgaruvchilar va tsikllar</li>
+                <li>Toshbaqa grafikasi</li>
+                <li>Mini o‘yinlar</li>
+                <li>Oddiy AI loyihalari</li>
+            </ul>
+        `
+    },
+
+    web: {
+        title: "🌐 Web dasturlash",
+        price: "350 ming / oy",
+        content: `
+            <h3>Kurs dasturi</h3>
+            <ul>
+                <li>Web dizayn</li>
+                <li>Ochilish sahifasi</li>
+                <li>JavaScript asoslari</li>
+                <li>HTML va CSS</li>
+            </ul>
+        `
+    },
+
+    robot: {
+        title: "🤖 Robototexnika + Arduino",
+        price: "300–350 ming / oy",
+        content: `
+            <h3>Bolalar IT — 6–10 yosh</h3>
+            <ul>
+                <li>60–90 daqiqa</li>
+                <li>Haftasiga 3 marta</li>
+                <li>Lego robotlar</li>
+                <li>Sensorlar asoslari</li>
+                <li>Mini mashinalar</li>
+                <li>Arduino asoslari</li>
+            </ul>
+
+            <h3>Kattalar IT — 11–18 yosh</h3>
+            <ul>
+                <li>90 daqiqa</li>
+                <li>Haftasiga 3 marta</li>
+                <li>Arduino platalari</li>
+                <li>LED, signal, sensor, servo</li>
+                <li>Aqlli uy loyihasi</li>
+                <li>Aqlli mashina yasash</li>
+                <li>Robot musobaqalari</li>
+            </ul>
+        `
+    },
+
+    model3d: {
+        title: "🧊 3D Modellashtirish",
+        price: "350 ming / oy",
+        content: `
+            <p>3D Print kursining A qismi.</p>
+
+            <h3>Dars</h3>
+            <ul>
+                <li>Haftasiga 3 marta</li>
+                <li>1,5–2 soatdan</li>
+            </ul>
+
+            <h3>3D Modellashtirish</h3>
+            <ul>
+                <li>Tinkercad — boshlovchilar</li>
+                <li>Fusion 360 — professional</li>
+                <li>STL tayyorlash</li>
+                <li>Modelni kesish (slicing)</li>
+            </ul>
+        `
+    },
+
+    printer3d: {
+        title: "🖨️ 3D Printer bilan ishlash",
+        price: "350 ming / oy",
+        content: `
+            <p>3D Print kursining B qismi.</p>
+
+            <h3>Dars</h3>
+            <ul>
+                <li>Haftasiga 3 marta</li>
+                <li>1,5–2 soatdan</li>
+            </ul>
+
+            <h3>3D Printer bilan ishlash</h3>
+            <ul>
+                <li>Ender 5 Pro qurilishi</li>
+                <li>Ekstruder, Hotend, Bed leveling</li>
+                <li>PLA va PETG</li>
+                <li>Cura bilan ishlash</li>
+                <li>Bosma sifatini yaxshilash</li>
+                <li>Printer muammolarini tuzatish</li>
+                <li>Real buyumlar chop etish</li>
+            </ul>
+        `
+    },
+
+    mental: {
+        title: "🧮 Mental arifmetika",
+        price: "200 ming / oy",
+        content: `
+            <p><b>6–12 yosh</b></p>
+
+            <h3>Dars</h3>
+            <ul>
+                <li>60 daqiqa</li>
+                <li>Haftasiga 3 marta</li>
+            </ul>
+
+            <h3>Dastur</h3>
+            <ul>
+                <li>Abakus bilan amallar</li>
+                <li>Miya bilan tez hisob</li>
+                <li>Diqqat va tez fikrlash</li>
+                <li>Har oy musobaqa</li>
+            </ul>
+        `
+    },
+
+    english: {
+        title: "🇬🇧 Ingliz tili",
+        price: "200–250 ming / oy",
+        content: `
+            <h3>6–10 yosh</h3>
+            <ul>
+                <li>60 daqiqa</li>
+                <li>Haftasiga 3 marta</li>
+                <li>Alifbo va fonika</li>
+                <li>Asosiy lug‘at: hayvonlar, ranglar, raqamlar</li>
+                <li>Oddiy jumlalar</li>
+                <li>Tinglash o‘yinlari</li>
+                <li>Kartochkalar</li>
+                <li>Har oy progress test</li>
+            </ul>
+
+            <h3>11–18 yosh</h3>
+            <ul>
+                <li>90 daqiqa</li>
+                <li>Haftasiga 3 marta</li>
+                <li>Boshlang‘ich → Pre-O‘rta → O‘rta</li>
+                <li>Grammatika: zamonlar, modal fe’llar, passiv, shart</li>
+                <li>Nutq klubi</li>
+                <li>Har oy test</li>
+                <li>Har 3 oy sertifikat</li>
+            </ul>
+        `
+    },
+
+    ielts: {
+        title: "🎯 IELTS kursi",
+        price: "300–400 ming / oy",
+        content: `
+            <p><b>16+ yosh</b></p>
+
+            <h3>Dars</h3>
+            <ul>
+                <li>90–120 daqiqa</li>
+                <li>Haftasiga 4 marta</li>
+            </ul>
+
+            <h3>Dastur</h3>
+            <ul>
+                <li>Listening — 4 bo‘lim</li>
+                <li>Reading — 3 qism</li>
+                <li>Writing — Task 1–2</li>
+                <li>Speaking — 1–2–3-qism</li>
+                <li>Har haftada sinov testi</li>
+            </ul>
+        `
+    }
+};
+
+const courseModal = document.getElementById("courseModal");
+const courseModalBody = document.getElementById("courseModalBody");
+const courseModalClose = document.getElementById("courseModalClose");
+
+document.querySelectorAll(".course-detail-btn").forEach(button => {
+    button.addEventListener("click", function() {
+        const course = courseDetails[this.dataset.course];
+
+        if (!course) return;
+
+        courseModalBody.innerHTML = `
+            <h2>${course.title}</h2>
+            <div class="modal-price">💰 ${course.price}</div>
+            ${course.content}
+        `;
+
+        courseModal.classList.add("active");
+        document.body.style.overflow = "hidden";
+    });
+});
+
+function closeCourseModal() {
+    courseModal.classList.remove("active");
+    document.body.style.overflow = "";
+}
+
+courseModalClose.addEventListener("click", closeCourseModal);
+
+courseModal.addEventListener("click", function(event) {
+    if (event.target === courseModal) {
+        closeCourseModal();
+    }
+});
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        closeCourseModal();
+    }
+});
+</script>
 </body>
 </html>
