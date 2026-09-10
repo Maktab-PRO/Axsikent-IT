@@ -1257,6 +1257,85 @@ document.addEventListener("keydown", function(event) {
         closeCourseModal();
     }
 });
+        <script>
+/* =========================================
+   LANGUAGE SYSTEM
+   ========================================= */
+
+const translations = {
+    uz: {
+        nav_courses: "📚 Kurslar",
+        nav_about: "✨ Biz haqimizda",
+        nav_apply: "📝 Ariza",
+        nav_contact: "📞 Aloqa",
+        nav_start: "Boshlash 🚀"
+    },
+
+    ru: {
+        nav_courses: "📚 Курсы",
+        nav_about: "✨ О нас",
+        nav_apply: "📝 Заявка",
+        nav_contact: "📞 Контакты",
+        nav_start: "Начать 🚀"
+    },
+
+    en: {
+        nav_courses: "📚 Courses",
+        nav_about: "✨ About us",
+        nav_apply: "📝 Apply",
+        nav_contact: "📞 Contact",
+        nav_start: "Get started 🚀"
+    }
+};
+
+const languageBtn = document.getElementById("languageBtn");
+const languageMenu = document.getElementById("languageMenu");
+const currentLanguage = document.getElementById("currentLanguage");
+
+languageBtn.addEventListener("click", function(event) {
+    event.stopPropagation();
+    languageMenu.classList.toggle("active");
+});
+
+document.querySelectorAll("#languageMenu button").forEach(button => {
+    button.addEventListener("click", function() {
+        const lang = this.dataset.lang;
+
+        document.querySelectorAll("[data-i18n]").forEach(element => {
+            const key = element.dataset.i18n;
+
+            if (translations[lang][key]) {
+                element.textContent = translations[lang][key];
+            }
+        });
+
+        currentLanguage.textContent = lang.toUpperCase();
+
+        localStorage.setItem("akhsikent_language", lang);
+
+        languageMenu.classList.remove("active");
+    });
+});
+
+document.addEventListener("click", function() {
+    languageMenu.classList.remove("active");
+});
+
+/* Saqlangan tilni tiklash */
+const savedLanguage = localStorage.getItem("akhsikent_language");
+
+if (savedLanguage && translations[savedLanguage]) {
+    document.querySelectorAll("[data-i18n]").forEach(element => {
+        const key = element.dataset.i18n;
+
+        if (translations[savedLanguage][key]) {
+            element.textContent = translations[savedLanguage][key];
+        }
+    });
+
+    currentLanguage.textContent = savedLanguage.toUpperCase();
+}
+</script>
 </script>
 </body>
 </html>
