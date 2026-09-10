@@ -24,14 +24,26 @@
     <img src="assets/logo.png" alt="AKHSIKENT IT SCHOOL">
     <span>AKHSIKENT IT SCHOOL</span>
 </a>
-        <nav class="nav-links">
-            <a href="#courses">📚 Kurslar</a>
-            <a href="#about">✨ Biz haqimizda</a>
-            <a href="#apply">📝 Ariza</a>
-            <a href="#contact">📞 Aloqa</a>
+                <nav class="nav-links">
+            <a href="#courses" data-i18n="nav_courses">📚 Kurslar</a>
+            <a href="#about" data-i18n="nav_about">✨ Biz haqimizda</a>
+            <a href="#apply" data-i18n="nav_apply">📝 Ariza</a>
+            <a href="#contact" data-i18n="nav_contact">📞 Aloqa</a>
         </nav>
 
-        <a href="#apply" class="nav-button">
+        <div class="language-switcher">
+            <button type="button" class="language-btn" id="languageBtn">
+                🌐 <span id="currentLanguage">UZ</span> ▾
+            </button>
+
+            <div class="language-menu" id="languageMenu">
+                <button type="button" data-lang="uz">🇺🇿 O‘zbek</button>
+                <button type="button" data-lang="ru">🇷🇺 Русский</button>
+                <button type="button" data-lang="en">🇬🇧 English</button>
+            </div>
+        </div>
+
+        <a href="#apply" class="nav-button" data-i18n="nav_start">
             Boshlash 🚀
         </a>
 
