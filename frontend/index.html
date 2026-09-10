@@ -1,1364 +1,3430 @@
 <!DOCTYPE html>
-
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AKHSIKENT IT SCHOOL</title>
+    <title>AKHSIKENT IT — Zamonaviy ta'lim markazi</title>
 
-<meta name="description" content="AKHSIKENT IT SCHOOL — zamonaviy IT, ingliz tili va mental arifmetika kurslari.">
-<meta name="theme-color" content="#6c63ff">
+    <meta
+        name="description"
+        content="AKHSIKENT IT — IT, sun’iy intellekt, ingliz tili va mental arifmetika bo‘yicha zamonaviy ta’lim markazi."
+    >
 
-<link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f7f8fc;
+            color: #151515;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+
+        .container {
+            width: min(1180px, 92%);
+            margin: auto;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .navbar {
+            min-height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: #111;
+        }
+
+        .logo span {
+            color: #16a34a;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav-links a {
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #16a34a;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .language {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 9px 10px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            border-radius: 12px;
+            padding: 13px 20px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #12813c;
+            transform: translateY(-1px);
+        }
+
+        .btn-dark {
+            background: #111;
+            color: white;
+        }
+
+        .btn-dark:hover {
+            background: #222;
+        }
+
+        .mobile-menu {
+            display: none;
+            border: none;
+            background: none;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            padding: 80px 0 70px;
+            background:
+                radial-gradient(circle at 85% 20%, rgba(22,163,74,.15), transparent 30%),
+                linear-gradient(135deg, #ffffff, #f4f8f5);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.15fr .85fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: #e9f8ef;
+            color: #12813c;
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(42px, 6vw, 72px);
+            line-height: 1.05;
+            letter-spacing: -3px;
+            margin-bottom: 25px;
+        }
+
+        .hero h1 span {
+            color: #16a34a;
+        }
+
+        .hero p {
+            max-width: 650px;
+            color: #666;
+            font-size: 19px;
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero-card {
+            background: #111;
+            color: white;
+            border-radius: 28px;
+            padding: 35px;
+            box-shadow: 0 25px 60px rgba(0,0,0,.15);
+        }
+
+        .hero-card-top {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .hero-card h3 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .hero-card p {
+            color: #ccc;
+            font-size: 15px;
+            margin-bottom: 25px;
+        }
+
+        .hero-mini-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .hero-mini {
+            padding: 14px;
+            border: 1px solid #333;
+            border-radius: 14px;
+            font-size: 14px;
+        }
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+            padding: 25px 0;
+            background: #111;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 15px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 32px;
+            color: #4ade80;
+        }
+
+        .stat span {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        /* =========================
+           SECTION
+        ========================= */
+
+        section {
+            padding: 90px 0;
+        }
+
+        .section-head {
+            max-width: 720px;
+            margin-bottom: 45px;
+        }
+
+        .section-label {
+            color: #16a34a;
+            font-weight: 800;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: clamp(32px, 5vw, 48px);
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            margin-bottom: 15px;
+        }
+
+        .section-text {
+            color: #666;
+            font-size: 17px;
+        }
+
+        /* =========================
+           ABOUT
+        ========================= */
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .about-box {
+            background: white;
+            border-radius: 24px;
+            padding: 35px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .about-box h3 {
+            font-size: 26px;
+            margin-bottom: 15px;
+        }
+
+        .about-box p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .check-list {
+            list-style: none;
+        }
+
+        .check-list li {
+            margin: 12px 0;
+            font-weight: 600;
+        }
+
+        .check-list li::before {
+            content: "✓";
+            color: #16a34a;
+            font-weight: 900;
+            margin-right: 10px;
+        }
+
+        .about-visual {
+            background: #16a34a;
+            color: white;
+            min-height: 400px;
+            border-radius: 30px;
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .about-visual .big-number {
+            font-size: 100px;
+            font-weight: 900;
+            line-height: .9;
+        }
+
+        /* =========================
+           COURSES
+        ========================= */
+
+        .course-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .course-tab {
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 12px;
+            padding: 11px 17px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .course-tab.active {
+            background: #111;
+            color: white;
+            border-color: #111;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .course-card {
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 22px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            min-height: 300px;
+            transition: .25s;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,.08);
+        }
+
+        .course-icon {
+            font-size: 42px;
+            margin-bottom: 18px;
+        }
+
+        .course-card h3 {
+            font-size: 23px;
+            margin-bottom: 10px;
+        }
+
+        .course-card p {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 18px;
+        }
+
+        .course-price {
+            color: #16a34a;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .course-card .btn {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        /* =========================
+           TEACHERS
+        ========================= */
+
+        .teachers-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .teacher-card {
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 22px;
+            padding: 25px;
+        }
+
+        .teacher-avatar {
+            height: 180px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #111, #16a34a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .teacher-card h3 {
+            margin-bottom: 5px;
+        }
+
+        .teacher-card p {
+            color: #777;
+        }
+
+        /* =========================
+           OPPORTUNITIES
+        ========================= */
+
+        .opportunities {
+            background: #111;
+            color: white;
+        }
+
+        .opportunities .section-text {
+            color: #bbb;
+        }
+
+        .opportunity-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .opportunity-card {
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 28px;
+        }
+
+        .opportunity-card .icon {
+            font-size: 35px;
+            margin-bottom: 15px;
+        }
+
+        .opportunity-card p {
+            color: #aaa;
+            margin-top: 8px;
+        }
+
+        /* =========================
+           RESULTS
+        ========================= */
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 22px;
+            border: 1px solid #e8e8e8;
+            padding: 30px;
+        }
+
+        .result-card strong {
+            font-size: 45px;
+            color: #16a34a;
+        }
+
+        .result-card h3 {
+            margin: 8px 0;
+        }
+
+        .result-card p {
+            color: #666;
+        }
+
+        /* =========================
+           HISTORY
+        ========================= */
+
+        .timeline {
+            border-left: 3px solid #16a34a;
+            padding-left: 30px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 35px;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #16a34a;
+            border-radius: 50%;
+            left: -39px;
+            top: 6px;
+        }
+
+        .timeline-item strong {
+            font-size: 18px;
+            color: #16a34a;
+        }
+
+        .timeline-item h3 {
+            margin: 5px 0;
+        }
+
+        .timeline-item p {
+            color: #666;
+        }
+
+        /* =========================
+           FAQ
+        ========================= */
+
+        .faq {
+            max-width: 850px;
+        }
+
+        .faq-item {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            width: 100%;
+            border: none;
+            background: white;
+            padding: 20px;
+            text-align: left;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .faq-answer {
+            display: none;
+            padding: 0 20px 20px;
+            color: #666;
+        }
+
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+
+        /* =========================
+           APPLICATION
+        ========================= */
+
+        .application {
+            background: #eaf8ef;
+        }
+
+        .application-grid {
+            display: grid;
+            grid-template-columns: .8fr 1.2fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .application-info h2 {
+            font-size: 45px;
+            line-height: 1.1;
+            margin-bottom: 15px;
+        }
+
+        .application-info p {
+            color: #666;
+        }
+
+        .application-form {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #ddd;
+            border-radius: 11px;
+            outline: none;
+            background: white;
+        }
+
+        .form-group textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #16a34a;
+        }
+
+        .form-message {
+            margin-top: 15px;
+            font-weight: 700;
+        }
+
+        /* =========================
+           CONTACT
+        ========================= */
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .contact-card {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 22px;
+            padding: 30px;
+        }
+
+        .contact-card h3 {
+            margin-bottom: 12px;
+        }
+
+        .contact-card p {
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .map-placeholder {
+            min-height: 250px;
+            background: #e9ecef;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            background: #111;
+            color: white;
+            padding: 55px 0 25px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr 1fr;
+            gap: 35px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand p {
+            color: #aaa;
+            max-width: 330px;
+            margin-top: 12px;
+        }
+
+        .footer-column h4 {
+            margin-bottom: 15px;
+        }
+
+        .footer-column a {
+            display: block;
+            color: #aaa;
+            margin: 8px 0;
+            font-size: 14px;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            color: #777;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.65);
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            width: min(800px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 25px;
+            padding: 35px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            border: none;
+            background: #f1f1f1;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .modal-content h2 {
+            font-size: 34px;
+            padding-right: 45px;
+            margin-bottom: 10px;
+        }
+
+        .modal-price {
+            color: #16a34a;
+            font-size: 21px;
+            font-weight: 900;
+            margin-bottom: 25px;
+        }
+
+        .course-info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .course-info-card {
+            background: #f5f7f6;
+            border-radius: 16px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .course-info-card span {
+            display: block;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .course-info-card strong {
+            display: block;
+            font-size: 18px;
+        }
+
+        .course-info-card small {
+            color: #777;
+        }
+
+        .modal-content h3 {
+            margin-top: 25px;
+            margin-bottom: 7px;
+            font-size: 22px;
+        }
+
+        .modal-content p {
+            color: #666;
+        }
+
+        .modal-content ul {
+            padding-left: 22px;
+            margin-top: 10px;
+            color: #555;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1000px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .hero-grid,
+            .about-grid,
+            .application-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .courses-grid,
+            .teachers-grid,
+            .opportunity-grid,
+            .results-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+            section {
+                padding: 65px 0;
+            }
+
+            .hero {
+                padding: 55px 0;
+            }
+
+            .hero h1 {
+                letter-spacing: -2px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .courses-grid,
+            .teachers-grid,
+            .opportunity-grid,
+            .results-grid,
+            .contact-grid,
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .course-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                min-height: 65px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .nav-actions .btn {
+                display: none;
+            }
+
+            .modal-content {
+                padding: 25px 20px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
-<header class="navbar">
-    <div class="container nav-container">
+<!-- =========================
+     NAVBAR
+========================= -->
 
-      <a href="#" class="logo">
-    <img src="assets/logo.png" alt="AKHSIKENT IT SCHOOL">
-    <span>AKHSIKENT IT SCHOOL</span>
-</a>
-                <nav class="nav-links">
-            <a href="#courses" data-i18n="nav_courses">📚 Kurslar</a>
-            <a href="#about" data-i18n="nav_about">✨ Biz haqimizda</a>
-            <a href="#apply" data-i18n="nav_apply">📝 Ariza</a>
-            <a href="#contact" data-i18n="nav_contact">📞 Aloqa</a>
+<header>
+    <div class="container navbar">
+
+        <a href="#home" class="logo">
+            AKHSIKENT <span>IT</span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="#courses" data-i18n="nav_courses">Kurslar</a>
+            <a href="#about" data-i18n="nav_about">Biz haqimizda</a>
+            <a href="#teachers" data-i18n="nav_teachers">Ustozlar</a>
+            <a href="#opportunities" data-i18n="nav_opportunities">Imkoniyatlar</a>
+            <a href="#results" data-i18n="nav_results">Natijalar</a>
+            <a href="#contact" data-i18n="nav_contact">Aloqa</a>
         </nav>
 
-        <div class="language-switcher">
-            <button type="button" class="language-btn" id="languageBtn">
-                🌐 <span id="currentLanguage">UZ</span> ▾
+        <div class="nav-actions">
+
+            <select id="languageSelect" class="language">
+                <option value="uz">UZ</option>
+                <option value="ru">RU</option>
+                <option value="en">EN</option>
+            </select>
+
+            <a href="#application" class="btn btn-primary" data-i18n="apply">
+                Ariza qoldirish
+            </a>
+
+            <button class="mobile-menu" onclick="scrollToCourses()">
+                ☰
             </button>
 
-            <div class="language-menu" id="languageMenu">
-                <button type="button" data-lang="uz">🇺🇿 O‘zbek</button>
-                <button type="button" data-lang="ru">🇷🇺 Русский</button>
-                <button type="button" data-lang="en">🇬🇧 English</button>
-            </div>
         </div>
-
-        <a href="#apply" class="nav-button" data-i18n="nav_start">
-            Boshlash 🚀
-        </a>
 
     </div>
 </header>
 
 
-<!-- ================= HERO ================= -->
+<!-- =========================
+     HERO
+========================= -->
+
 <main>
 
-    <section class="hero">
+<section class="hero" id="home">
 
-        <div class="container hero-container">
+    <div class="container hero-grid">
 
-            <div class="hero-content">
+        <div>
 
-                <div class="hero-badge" data-i18n="hero_badge">
-                    🌟 Kelajagingiz bugundan boshlanadi!
-                
+            <div class="hero-badge" data-i18n="hero_badge">
+                🚀 Kelajak kasblari shu yerdan boshlanadi
+            </div>
+
+            <h1 data-i18n="hero_title">
+                Kelajagingizni
+                <span>AKHSIKENT IT</span>
+                bilan quring
+            </h1>
+
+            <p data-i18n="hero_text">
+                Zamonaviy IT, sun’iy intellekt, ingliz tili va mental arifmetika
+                bo‘yicha amaliy bilim beruvchi zamonaviy ta’lim markazi.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="#courses" class="btn btn-primary" data-i18n="view_courses">
+                    Kurslarni ko‘rish
+                </a>
+
+                <a href="#application" class="btn btn-dark" data-i18n="free_consult">
+                    Bepul konsultatsiya
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="hero-card">
+
+            <div class="hero-card-top">💻</div>
+
+            <h3>AKHSIKENT IT</h3>
+
+            <p data-i18n="hero_card_text">
+                Bilim → Amaliyot → Natija
+            </p>
+
+            <div class="hero-mini-grid">
+
+                <div class="hero-mini">
+                    🤖 AI
                 </div>
 
-                <h1>
-                    AKHSIKENT
-                    <span>IT SCHOOL</span>
-                </h1>
-
-                <p class="hero-subtitle" data-i18n="hero_subtitle">
-                    Zamonaviy bilimlar, kuchli ko‘nikmalar va
-                    katta imkoniyatlar sari birga boramiz 🚀
-                </p>
-                <div class="hero-buttons">
-                    <a href="#courses" class="btn btn-primary" data-i18n="hero_courses">
-                        📚 Kurslarni ko‘rish
-                    </a>
-
-                    <a href="#apply" class="btn btn-secondary" data-i18n="hero_apply">
-                        📝 Ariza qoldirish
-                    </a>
-                    
+                <div class="hero-mini">
+                    💻 IT
                 </div>
 
-                <div class="hero-stats">
+                <div class="hero-mini">
+                    🇬🇧 English
+                </div>
 
-                    <div class="stat">
-                        <strong>13+</strong>
-                        <span data-i18n="hero_stat_courses">Kurslar</span>
-                    </div>
-                    <div class="stat">
-                        <strong>3</strong>
-                        <span data-i18n="hero_stat_directions">Yo‘nalish</span>
-                    </div>
-                    <div class="stat">
-                        <strong>∞</strong>
-                        <span data-i18n="hero_stat_opportunities">Imkoniyat</span>
-                    </div>
+                <div class="hero-mini">
+                    🧮 Mental
                 </div>
 
             </div>
 
+        </div>
 
-            <div class="hero-card">
-                <div class="hero-card-image">
-                    <img src="assets/hero.png" alt="AKHSIKENT IT SCHOOL">
-                </div>
-                
-                <h3 data-i18n="hero_card_title">
-                    Kelajak kasbingizni
-                    bugundan boshlang!
+    </div>
+
+</section>
+
+
+<!-- =========================
+     STATS
+========================= -->
+
+<section class="stats">
+
+    <div class="container stats-grid">
+
+        <div class="stat">
+            <strong>10+</strong>
+            <span data-i18n="stat_courses">Yo‘nalish</span>
+        </div>
+
+        <div class="stat">
+            <strong>3</strong>
+            <span data-i18n="stat_languages">Til</span>
+        </div>
+
+        <div class="stat">
+            <strong>100%</strong>
+            <span data-i18n="stat_practice">Amaliy yondashuv</span>
+        </div>
+
+        <div class="stat">
+            <strong>∞</strong>
+            <span data-i18n="stat_future">Imkoniyat</span>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ABOUT
+========================= -->
+
+<section id="about">
+
+    <div class="container about-grid">
+
+        <div>
+
+            <div class="section-label" data-i18n="about_label">
+                Biz haqimizda
+            </div>
+
+            <h2 class="section-title" data-i18n="about_title">
+                Oddiy kurs emas.
+                Kelajak uchun muhit.
+            </h2>
+
+            <p class="section-text" data-i18n="about_text">
+                AKHSIKENT IT o‘quvchilarga zamonaviy texnologiyalarni
+                o‘rganish, amalda qo‘llash va o‘z loyihalarini yaratish
+                imkoniyatini beruvchi ta’lim platformasidir.
+            </p>
+
+            <br>
+
+            <ul class="check-list">
+
+                <li data-i18n="about_check1">
+                    Amaliy mashg‘ulotlar
+                </li>
+
+                <li data-i18n="about_check2">
+                    Zamonaviy texnologiyalar
+                </li>
+
+                <li data-i18n="about_check3">
+                    Individual yondashuv
+                </li>
+
+                <li data-i18n="about_check4">
+                    O‘quvchi natijasiga e’tibor
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <div class="about-visual">
+
+            <div>
+                <div class="big-number">01</div>
+                <h3 data-i18n="about_visual_title">
+                    O‘rganing.
                 </h3>
-                <p data-i18n="hero_card_text">
-                    IT va zamonaviy texnologiyalarni o‘rganing.
-                </p>
-            
+            </div>
+
+            <div>
+                <div class="big-number">02</div>
+                <h3 data-i18n="about_visual_title2">
+                    Yarat­ing.
+                </h3>
+            </div>
+
+            <div>
+                <div class="big-number">03</div>
+                <h3 data-i18n="about_visual_title3">
+                    Natijaga erishing.
+                </h3>
             </div>
 
         </div>
 
-    </section>
+    </div>
+
+</section>
 
 
-    <!-- ================= COURSES ================= -->
-    <section id="courses" class="section">
+<!-- =========================
+     COURSES
+========================= -->
 
-        <div class="container">
+<section id="courses">
 
-            <div class="section-heading">
+    <div class="container">
 
-                <div class="section-badge">
-                    📚 BIZNING KURSLAR
-                </div>
+        <div class="section-head">
 
-                <h2>
-                    O‘zingizga mos
-                    <span>yo‘nalishni tanlang</span>
-                </h2>
-
-                <p>
-                    Boshlang‘ich darajadan professional
-                    darajagacha bilim oling.
-                </p>
-
+            <div class="section-label">
+                AKHSIKENT IT
             </div>
 
-
-            <div class="course-grid">
-
-                <!-- IT -->
-                <div class="course-card course-it">
-
-                    <div class="course-icon">
-                        💻
-                    </div>
-
-                    <div class="course-content">
-
-                        <span class="course-category">
-                            IT 💻
-                        </span>
-
-                        <h3>
-                            Kompyuter savodxonligi
-                        </h3>
-
-                        <p>
-                            Kompyuterdan foydalanish,
-                            Windows, Word, Excel va internet.
-                        </p>
-
-                        <button class="course-detail-btn" data-course="computer" type="button">
-                            Batafsil →
-                        </button>                    
-                    </div>
-
-                </div>
-
-
-                <!-- PYTHON -->
-<div class="course-card course-it">
-
-    <div class="course-icon">
-        <img src="assets/logo1.png" alt="Python">
-    </div>
-
-    <div class="course-content">
-
-        <span class="course-category">
-            IT 💻
-        </span>
-
-        <h3>
-            Python dasturlash
-        </h3>
-
-        <p>
-            Dasturlash asoslari va
-            Python orqali loyihalar yaratish.
-        </p>
-
-        <button class="course-detail-btn" data-course="python" type="button">
-            Batafsil →
-        </button>
-
-    </div>
-
-</div>
-                <!-- WEB -->
-                <div class="course-card course-web">
-
-                    <div class="course-icon">
-                        🌐
-                    </div>
-
-                    <div class="course-content">
-
-                        <span class="course-category">
-                            IT 💻
-                        </span>
-
-                        <h3>
-                            Web dasturlash
-                        </h3>
-
-                        <p>
-                            HTML, CSS va JavaScript yordamida
-                            zamonaviy saytlar yarating.
-                        </p>
-
-                        <button class="course-detail-btn" data-course="web" type="button">
-                            Batafsil →
-                        </button>
-                      
-                    </a>
-
-                    </div>
-
-                </div>
-
-
-                <!-- AI -->
-                <!-- AI -->
-<div class="course-card course-it">
-
-    <div class="course-icon">
-        <img src="assets/logo2.png" alt="Sun’iy intellekt">
-    </div>
-
-    <div class="course-content">
-        <span class="course-category">
-            IT 💻
-        </span>
-
-        <h3>
-            Sun’iy intellekt
-        </h3>
-
-        <p>
-            AI texnologiyalari va zamonaviy
-            sun’iy intellekt vositalari.
-        </p>
-
-        <a href="#apply">
-            Batafsil →
-        </a>
-    </div>
-
-</div>
-
-
-<!-- ROBOT -->
-<div class="course-card course-it">
-
-    <div class="course-icon">
-        <img src="assets/logo3.png" alt="Robototexnika">
-    </div>
-
-    <div class="course-content">
-        <span class="course-category">
-            IT 💻
-        </span>
-
-        <h3>
-            Robototexnika
-        </h3>
-
-        <p>
-            Arduino, robotlar va zamonaviy
-            elektronika bilan ishlash.
-        </p>
-
-        <button class="course-detail-btn" data-course="robot" type="button">
-            Batafsil →
-        </button>
-        
-    </div>
-
-</div>
-                <!-- 3D MODELING -->
-<div class="course-card course-3d">
-
-    <div class="course-icon">
-        🧊
-    </div>
-
-    <div class="course-content">
-
-        <span class="course-category">
-            3D TEXNOLOGIYA 🧊
-        </span>
-
-        <h3>
-            3D Modellashtirish
-        </h3>
-
-        <p>
-            3D modellar yaratish, STL tayyorlash
-            va slicing bilan ishlash.
-        </p>
-
-        <button class="course-detail-btn" data-course="model3d" type="button">
-            Batafsil →
-        </button>
-        
-    </div>
-
-</div>
-
-
-<!-- 3D PRINTER -->
-<div class="course-card course-3d-printer">
-
-    <div class="course-icon">
-        🖨️
-    </div>
-
-    <div class="course-content">
-
-        <span class="course-category">
-            3D TEXNOLOGIYA 🖨️
-        </span>
-
-        <h3>
-            3D Printer bilan ishlash
-        </h3>
-
-        <p>
-            Ender 5 Pro, Cura, PLA, PETG va
-            real buyumlarni chop etish.
-        </p>
-
-        <button class="course-detail-btn" data-course="printer3d" type="button">
-            Batafsil →
-        </button>
-
-    </div>
-
-</div>
-                
-                <!-- MENTAL -->
-                <div class="course-card course-math">
-
-                    <div class="course-icon">
-                        🧮
-                    </div>
-
-                    <div class="course-content">
-
-                        <span class="course-category">
-                            Mental arifmetika
-                        </span>
-
-                        <h3>
-                            Mental arifmetika
-                        </h3>
-
-                        <p>
-                            Tez hisoblash, xotira va
-                            mantiqiy fikrlashni rivojlantiring.
-                        </p>
-
-                        <button class="course-detail-btn" data-course="mental" type="button">
-                            Batafsil →
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <!-- ENGLISH -->
-                <div class="course-card course-english">
-
-                    <div class="course-icon">
-                        🇬🇧
-                    </div>
-
-                    <div class="course-content">
-
-                        <span class="course-category">
-                            Ingliz tili
-                        </span>
-
-                        <h3>
-                            Ingliz tili
-                        </h3>
-
-                        <p>
-                            Bolalar va yoshlar uchun
-                            zamonaviy ingliz tili darslari.
-                        </p>
-
-                        <button class="course-detail-btn" data-course="english" type="button">
-                            Batafsil →
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <!-- IELTS -->
-                <div class="course-card course-ielts">
-
-                    <div class="course-icon">
-                        🎯
-                    </div>
-
-                    <div class="course-content">
-
-                        <span class="course-category">
-                            Ingliz tili
-                        </span>
-
-                        <h3>
-                            IELTS
-                        </h3>
-
-                        <p>
-                            IELTS imtihoniga tayyorgarlik
-                            va yuqori natijaga erishish.
-                        </p>
-
-                       <button class="course-detail-btn" data-course="ielts" type="button">
-                           Batafsil →
-                       </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ================= ABOUT ================= -->
-    <section id="about" class="section about-section">
-
-        <div class="container">
-
-            <div class="section-heading">
-
-                <div class="section-badge">
-                    ✨ NIMA UCHUN BIZ?
-                </div>
-
-                <h2>
-                    Nega aynan
-                    <span>AKHSIKENT IT SCHOOL?</span>
-                </h2>
-
-            </div>
-
-
-            <div class="features-grid">
-
-                <div class="feature-card">
-                    <div class="feature-icon">👨‍💻</div>
-                    <h3>Amaliy ta’lim</h3>
-                    <p>
-                        Nazariya bilan birga real loyihalar
-                        ustida ishlaysiz.
-                    </p>
-                </div>
-
-
-                <div class="feature-card">
-                    <div class="feature-icon">🚀</div>
-                    <h3>Zamonaviy bilim</h3>
-                    <p>
-                        Bugungi mehnat bozoriga kerakli
-                        texnologiyalarni o‘rganasiz.
-                    </p>
-                </div>
-
-
-                <div class="feature-card">
-                    <div class="feature-icon">🏆</div>
-                    <h3>Natijaga yo‘naltirilgan</h3>
-                    <p>
-                        Maqsadingizga erishishingiz uchun
-                        bosqichma-bosqich yordam beramiz.
-                    </p>
-                </div>
-
-
-                <div class="feature-card">
-                    <div class="feature-icon">❤️</div>
-                    <h3>Qulay muhit</h3>
-                    <p>
-                        Do‘stona va zamonaviy ta’lim
-                        muhitida rivojlaning.
-                    </p>
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ================= APPLICATION ================= -->
-    <section id="apply" class="section application-section">
-
-        <div class="container">
-
-            <div class="application-wrapper">
-
-                <div class="application-info">
-
-                    <div class="section-badge">
-                        📝 ARIZA QOLDIRING
-                    </div>
-
-                    <h2>
-                        O‘qishni
-                        <span>bugundan boshlang!</span>
-                    </h2>
-
-                    <p>
-                        Ma’lumotlaringizni qoldiring.
-                        Administratorimiz siz bilan bog‘lanadi
-                        va kurs haqida batafsil ma’lumot beradi.
-                    </p>
-
-                    <div class="application-points">
-                        <div>✅ Bepul konsultatsiya</div>
-                        <div>✅ Kurs haqida to‘liq ma’lumot</div>
-                        <div>✅ Qulay vaqtni tanlash</div>
-                    </div>
-
-                </div>
-
-
-                <form id="leadForm" class="lead-form">
-
-                    <div class="form-group">
-                        <label for="full_name">
-                            👤 Ism-familiya
-                        </label>
-
-                        <input
-                            type="text"
-                            id="full_name"
-                            name="full_name"
-                            placeholder="Ism-familiyangiz"
-                            required
-                        >
-                    </div>
-
-
-                    <div class="form-group">
-                        <label for="phone">
-                            📞 Telefon raqam
-                        </label>
-
-                        <input
-                            type="tel"
-                            id="phone"
-                            name="phone"
-                            placeholder="998901234567"
-                            required
-                        >
-                    </div>
-
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-                            <label for="age">
-                                🎂 Yosh
-                            </label>
-
-                            <input
-                                type="number"
-                                id="age"
-                                name="age"
-                                min="5"
-                                max="100"
-                                placeholder="18"
-                            >
-                        </div>
-
-
-                        <div class="form-group">
-                            <label for="preferred_time">
-                                🕐 Qulay vaqt
-                            </label>
-
-                            <input
-                                type="text"
-                                id="preferred_time"
-                                name="preferred_time"
-                                placeholder="18:00"
-                            >
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="interested_course">
-                            📚 Qiziqayotgan kurs
-                        </label>
-
-                        <select
-                            id="interested_course"
-                            name="interested_course"
-                            required
-                        >
-
-                            <option value="">
-                                Kursni tanlang
-                            </option>
-
-                            <option value="Kompyuter savodxonligi">
-                                Kompyuter savodxonligi
-                            </option>
-
-                            <option value="Scratch">
-                                Scratch
-                            </option>
-
-                           <option value="Python">
-                               Python
-                           </option>
-
-                           <option value="Web — HTML/CSS/JS">
-                               Web — HTML/CSS/JS
-                           </option>
-
-                            <option value="Grafik dizayn">
-                                Grafik dizayn
-                            </option>
-
-                            <option value="Sun’iy intellekt">
-                                Sun’iy intellekt
-                            </option>
-
-                            <option value="Robototexnika">
-                                Robototexnika
-                            </option>
-
-                            <option value="3D Print">
-                                3D Print
-                            </option>
-
-                            <option value="Mental arifmetika">
-                                Mental arifmetika
-                            </option>
-
-                            <option value="Ingliz tili">
-                                Ingliz tili
-                            </option>
-
-                            <option value="IELTS">
-                                IELTS
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="previous_it_course">
-                            💻 Avval IT kursida o‘qiganmisiz?
-                        </label>
-
-                        <select
-                            id="previous_it_course"
-                            name="previous_it_course"
-                        >
-
-                            <option value="Yo'q">
-                                Yo‘q
-                            </option>
-
-                            <option value="Ha">
-                                Ha
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="comment">
-                            💬 Qo‘shimcha izoh
-                        </label>
-
-                        <textarea
-                            id="comment"
-                            name="comment"
-                            rows="4"
-                            placeholder="Savolingiz yoki qo‘shimcha ma’lumot..."
-                        ></textarea>
-
-                    </div>
-
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary submit-button"
-                    >
-                        🚀 Ariza yuborish
-                    </button>
-
-
-                    <div id="formMessage" class="form-message"></div>
-
-                </form>
-
-            </div>
-
-        </div>
-
-    </section>
-
-</main>
-
-
-<!-- ================= FOOTER ================= -->
-<footer id="contact" class="footer">
-
-    <div class="container footer-container">
-
-        <div class="footer-brand">
-
-            <div class="logo">
-                🚀 AKHSIKENT IT SCHOOL
-            </div>
-
-            <p>
-                Kelajagingizni zamonaviy bilimlar
-                bilan quring.
+            <h2 class="section-title" data-i18n="courses_title">
+                O‘zingizga mos yo‘nalishni tanlang
+            </h2>
+
+            <p class="section-text" data-i18n="courses_text">
+                IT, mental arifmetika va ingliz tili bo‘yicha
+                bosqichma-bosqich rivojlaning.
             </p>
 
         </div>
 
 
-        <div class="footer-links">
+        <div class="course-tabs">
 
-            <h4>Tezkor havolalar</h4>
+            <button class="course-tab active" data-filter="all">
+                Barchasi
+            </button>
 
-            <a href="#courses">📚 Kurslar</a>
-            <a href="#about">✨ Biz haqimizda</a>
-            <a href="#apply">📝 Ariza</a>
+            <button class="course-tab" data-filter="it">
+                💻 IT
+            </button>
+
+            <button class="course-tab" data-filter="mental">
+                🧮 Mental
+            </button>
+
+            <button class="course-tab" data-filter="english">
+                🇬🇧 Ingliz tili
+            </button>
 
         </div>
 
 
-        <div class="footer-contact">
+        <div class="courses-grid">
 
-            <h4>Bog‘lanish</h4>
 
-            <p>📞 Telefon: +998 XX XXX XX XX</p>
-            <p>📍 Turakurgan Shahand</p>
-            <p>💻 AKHSIKENT IT SCHOOL</p>
+            <!-- COMPUTER -->
+
+            <article class="course-card" data-category="it">
+
+                <div class="course-icon">💻</div>
+
+                <h3>Kompyuter savodxonligi</h3>
+
+                <p>
+                    Kompyuter bilan ishlashni noldan o‘rganing.
+                </p>
+
+                <div class="course-price">
+                    Ma’lumot uchun murojaat qiling
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openCourse('computer')"
+                >
+                    Batafsil
+                </button>
+
+            </article>
+
+
+            <!-- FRONTEND -->
+
+            <article class="course-card" data-category="it">
+
+                <div class="course-icon">🌐</div>
+
+                <h3>Frontend / Web</h3>
+
+                <p>
+                    HTML, CSS, JavaScript va zamonaviy web texnologiyalar.
+                </p>
+
+                <div class="course-price">
+                    Ma’lumot uchun murojaat qiling
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openCourse('frontend')"
+                >
+                    Batafsil
+                </button>
+
+            </article>
+
+
+            <!-- BACKEND -->
+
+            <article class="course-card" data-category="it">
+
+                <div class="course-icon">⚙️</div>
+
+                <h3>Backend</h3>
+
+                <p>
+                    Server, API va backend dasturlash asoslari.
+                </p>
+
+                <div class="course-price">
+                    Ma’lumot uchun murojaat qiling
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openCourse('backend')"
+                >
+                    Batafsil
+                </button>
+
+            </article>
+
+
+            <!-- PYTHON -->
+
+            <article class="course-card" data-category="it">
+
+                <div class="course-icon">🐍</div>
+
+                <h3>Python</h3>
+
+                <p>
+                    Python dasturlash tilini amaliy loyihalar orqali o‘rganing.
+                </p>
+
+                <div class="course-price">
+                    Ma’lumot uchun murojaat qiling
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openCourse('python')"
+                >
+                    Batafsil
+                </button>
+
+            </article>
+
+
+            <!-- GRAPHIC DESIGN -->
+
+            <article class="course-card" data-category="it">
+
+                <div class="course-icon">🎨</div>
+
+                <h3>Grafik dizayn</h3>
+
+                <p>
+                    Dizayn, rang, kompozitsiya va grafik dasturlar bilan ishlash.
+                </p>
+
+                <div class="course-price">
+                    Ma’lumot uchun murojaat qiling
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openCourse('design')"
+                >
+                    Batafsil
+                </button>
+
+            </article>
+
+
+            <!-- AI -->
+
+            <article class="course-card" data-category="it">
+
+                <div class="course-icon">🤖</div>
+
+                <h3>Sun’iy intellekt</h3>
+
+                <p>
+                    AI bilan ishlash, kreativ AI va AI + Programming.
+                </p>
+
+                <div class="course-price">
+                    350 ming / oy
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openCourse('ai')"
+                >
+                    Batafsil
+                </button>
+
+            </article>
+
+
+            <!-- ROBOT -->
+
+            <article class="course-card" data-category="it">
+
+                <div class="course-icon">🤖</div>
+
+                <h3>Robototexnika</h3>
+
+                <p>
+                    Robotlar, elektronika va dasturlash asoslari.
+                </p>
+
+                <div class="course-price">
+                    Ma’lumot uchun murojaat qiling
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openCourse('robot')"
+                >
+                    Batafsil
+                </button>
+
+            </article>
+
+
+            <!-- 3D -->
+
+            <article class="course-card" data-category="it">
+
+                <div class="course-icon">🧊</div>
+
+                <h3>3D Modellashtirish</h3>
+
+                <p>
+                    3D modellar yaratish va zamonaviy dizayn.
+                </p>
+
+                <div class="course-price">
+                    Ma’lumot uchun murojaat qiling
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openCourse('3d')"
+                >
+                    Batafsil
+                </button>
+
+            </article>
+
+
+            <!-- 3D PRINTER -->
+
+            <article class="course-card" data-category="it">
+
+                <div class="course-icon">🖨️</div>
+
+                <h3>3D Printer</h3>
+
+                <p>
+                    3D modellarni real obyektga aylantirish.
+                </p>
+
+                <div class="course-price">
+                    Ma’lumot uchun murojaat qiling
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openCourse('printer')"
+                >
+                    Batafsil
+                </button>
+
+            </article>
+
+
+            <!-- MENTAL -->
+
+            <article class="course-card" data-category="mental">
+
+                <div class="course-icon">🧮</div>
+
+                <h3>Mental arifmetika</h3>
+
+                <p>
+                    Boshlang‘ich, o‘rta va yuqori bosqichlar.
+                </p>
+
+                <div class="course-price">
+                    Ma’lumot uchun murojaat qiling
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openCourse('mental')"
+                >
+                    Batafsil
+                </button>
+
+            </article>
+
+
+            <!-- ENGLISH -->
+
+            <article class="course-card" data-category="english">
+
+                <div class="course-icon">🇬🇧</div>
+
+                <h3>Ingliz tili</h3>
+
+                <p>
+                    Beginner’dan Upper-Intermediate darajasigacha.
+                </p>
+
+                <div class="course-price">
+                    Ma’lumot uchun murojaat qiling
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openCourse('english')"
+                >
+                    Batafsil
+                </button>
+
+            </article>
+
+
+            <!-- IELTS -->
+
+            <article class="course-card" data-category="english">
+
+                <div class="course-icon">🎓</div>
+
+                <h3>IELTS</h3>
+
+                <p>
+                    IELTS imtihoniga maqsadli tayyorgarlik.
+                </p>
+
+                <div class="course-price">
+                    Ma’lumot uchun murojaat qiling
+                </div>
+
+                <button
+                    class="btn btn-primary"
+                    onclick="openCourse('ielts')"
+                >
+                    Batafsil
+                </button>
+
+            </article>
+
 
         </div>
 
     </div>
 
+</section>
 
-    <div class="footer-bottom">
 
-        <p>
-            © 2026 AKHSIKENT IT SCHOOL. Barcha huquqlar himoyalangan. ❤️
-        </p>
+<!-- =========================
+     TEACHERS
+========================= -->
+
+<section id="teachers">
+
+    <div class="container">
+
+        <div class="section-head">
+
+            <div class="section-label">
+                Ustozlar
+            </div>
+
+            <h2 class="section-title">
+                Bilimni amaliyot bilan bog‘laydigan ustozlar
+            </h2>
+
+            <p class="section-text">
+                Har bir yo‘nalishda o‘quvchining natijasiga yo‘naltirilgan
+                ta’lim yondashuvi.
+            </p>
+
+        </div>
+
+
+        <div class="teachers-grid">
+
+            <div class="teacher-card">
+
+                <div class="teacher-avatar">
+                    👨‍💻
+                </div>
+
+                <h3>IT Mentor</h3>
+
+                <p>
+                    IT va dasturlash yo‘nalishi
+                </p>
+
+            </div>
+
+
+            <div class="teacher-card">
+
+                <div class="teacher-avatar">
+                    👩‍💻
+                </div>
+
+                <h3>AI Mentor</h3>
+
+                <p>
+                    Sun’iy intellekt va zamonaviy texnologiyalar
+                </p>
+
+            </div>
+
+
+            <div class="teacher-card">
+
+                <div class="teacher-avatar">
+                    👩‍🏫
+                </div>
+
+                <h3>Language Mentor</h3>
+
+                <p>
+                    Ingliz tili va IELTS
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     OPPORTUNITIES
+========================= -->
+
+<section id="opportunities" class="opportunities">
+
+    <div class="container">
+
+        <div class="section-head">
+
+            <div class="section-label">
+                Imkoniyatlar
+            </div>
+
+            <h2 class="section-title">
+                O‘quvchi faqat dars bilan cheklanib qolmaydi
+            </h2>
+
+            <p class="section-text">
+                Bilimni mustahkamlash va motivatsiyani oshirish uchun
+                qo‘shimcha imkoniyatlar.
+            </p>
+
+        </div>
+
+
+        <div class="opportunity-grid">
+
+            <div class="opportunity-card">
+                <div class="icon">📚</div>
+                <h3>Qo‘shimcha kitoblar</h3>
+                <p>
+                    O‘qish va mustaqil rivojlanish uchun materiallar.
+                </p>
+            </div>
+
+            <div class="opportunity-card">
+                <div class="icon">🎧</div>
+                <h3>Podkastlar</h3>
+                <p>
+                    Yo‘lda yoki bo‘sh vaqtda bilim olish.
+                </p>
+            </div>
+
+            <div class="opportunity-card">
+                <div class="icon">🏆</div>
+                <h3>Reyting</h3>
+                <p>
+                    O‘quvchilar natijalari asosida motivatsion reyting.
+                </p>
+            </div>
+
+            <div class="opportunity-card">
+                <div class="icon">🎮</div>
+                <h3>Gamification</h3>
+                <p>
+                    Ball, topshiriq va yutuqlar orqali motivatsiya.
+                </p>
+            </div>
+
+            <div class="opportunity-card">
+                <div class="icon">📝</div>
+                <h3>Uy vazifalari</h3>
+                <p>
+                    Topshiriqlarni platforma orqali bajarish.
+                </p>
+            </div>
+
+            <div class="opportunity-card">
+                <div class="icon">📅</div>
+                <h3>Treninglar</h3>
+                <p>
+                    Haftalik trening va oraliq imtihonlarga ro‘yxatdan o‘tish.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     RESULTS
+========================= -->
+
+<section id="results">
+
+    <div class="container">
+
+        <div class="section-head">
+
+            <div class="section-label">
+                Natijalar
+            </div>
+
+            <h2 class="section-title">
+                Natija — biz uchun asosiy mezon
+            </h2>
+
+            <p class="section-text">
+                O‘quvchi nimani bilishi emas, nimalarni qila olishi muhim.
+            </p>
+
+        </div>
+
+
+        <div class="results-grid">
+
+            <div class="result-card">
+                <strong>01</strong>
+                <h3>Portfolio</h3>
+                <p>
+                    O‘quvchi o‘z loyihalarini yaratadi.
+                </p>
+            </div>
+
+            <div class="result-card">
+                <strong>02</strong>
+                <h3>Amaliyot</h3>
+                <p>
+                    Har bir mavzu amaliy topshiriqlar bilan mustahkamlanadi.
+                </p>
+            </div>
+
+            <div class="result-card">
+                <strong>03</strong>
+                <h3>Rivojlanish</h3>
+                <p>
+                    O‘quvchi bosqichma-bosqich yuqori darajaga chiqadi.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     HISTORY
+========================= -->
+
+<section>
+
+    <div class="container">
+
+        <div class="section-head">
+
+            <div class="section-label">
+                Bizning yo‘l
+            </div>
+
+            <h2 class="section-title">
+                AKHSIKENT IT qanday rivojlanadi?
+            </h2>
+
+        </div>
+
+
+        <div class="timeline">
+
+            <div class="timeline-item">
+
+                <strong>01</strong>
+
+                <h3>
+                    Zamonaviy ta’lim markazi
+                </h3>
+
+                <p>
+                    O‘quvchilar uchun qulay va zamonaviy ta’lim muhitini yaratish.
+                </p>
+
+            </div>
+
+
+            <div class="timeline-item">
+
+                <strong>02</strong>
+
+                <h3>
+                    Raqamli platforma
+                </h3>
+
+                <p>
+                    O‘quvchi, ustoz va ota-onalar uchun yagona platforma.
+                </p>
+
+            </div>
+
+
+            <div class="timeline-item">
+
+                <strong>03</strong>
+
+                <h3>
+                    AI va yangi texnologiyalar
+                </h3>
+
+                <p>
+                    Sun’iy intellekt va zamonaviy texnologiyalarni ta’limga olib kirish.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FAQ
+========================= -->
+
+<section>
+
+    <div class="container">
+
+        <div class="section-head">
+
+            <div class="section-label">
+                FAQ
+            </div>
+
+            <h2 class="section-title">
+                Ko‘p beriladigan savollar
+            </h2>
+
+        </div>
+
+
+        <div class="faq">
+
+            <div class="faq-item">
+
+                <button class="faq-question">
+                    Kurslarga qanday yozilish mumkin?
+                    <span>+</span>
+                </button>
+
+                <div class="faq-answer">
+                    Ariza formasini to‘ldiring. Administrator siz bilan bog‘lanadi.
+                </div>
+
+            </div>
+
+
+            <div class="faq-item">
+
+                <button class="faq-question">
+                    Kurslar boshlang‘ich darajadagilar uchunmi?
+                    <span>+</span>
+                </button>
+
+                <div class="faq-answer">
+                    Ha. Ko‘plab yo‘nalishlar boshlang‘ich darajadan boshlanadi.
+                </div>
+
+            </div>
+
+
+            <div class="faq-item">
+
+                <button class="faq-question">
+                    AI kursi qancha davom etadi?
+                    <span>+</span>
+                </button>
+
+                <div class="faq-answer">
+                    AI kursi 3 oy davom etadi. Haftasiga 3 ta dars,
+                    har bir dars 90 daqiqadan.
+                </div>
+
+            </div>
+
+
+            <div class="faq-item">
+
+                <button class="faq-question">
+                    AI kursining narxi qancha?
+                    <span>+</span>
+                </button>
+
+                <div class="faq-answer">
+                    AI kursining narxi 350 ming so‘m / oy.
+                </div>
+
+            </div>
+
+
+            <div class="faq-item">
+
+                <button class="faq-question">
+                    Darslarda amaliy loyihalar qilinadimi?
+                    <span>+</span>
+                </button>
+
+                <div class="faq-answer">
+                    Ha. Ta’lim jarayonida amaliy topshiriqlar va loyihalarga
+                    alohida e’tibor beriladi.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     APPLICATION
+========================= -->
+
+<section id="application" class="application">
+
+    <div class="container application-grid">
+
+        <div class="application-info">
+
+            <div class="section-label">
+                AKHSIKENT IT
+            </div>
+
+            <h2>
+                Kelajagingizni bugundan boshlang.
+            </h2>
+
+            <p>
+                Ariza qoldiring. Sizga mos yo‘nalish bo‘yicha
+                bepul konsultatsiya oling.
+            </p>
+
+            <br>
+
+            <p>
+                📍 Turakurgan, Shahand
+            </p>
+
+        </div>
+
+
+        <form class="application-form" id="applicationForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>
+                        Ism-familiya *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="full_name"
+                        placeholder="Ism-familiyangiz"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Telefon *
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        placeholder="+998 90 123 45 67"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Yosh
+                    </label>
+
+                    <input
+                        type="number"
+                        id="age"
+                        placeholder="Yoshingiz"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Qulay vaqt
+                    </label>
+
+                    <select id="preferred_time">
+
+                        <option value="">
+                            Tanlang
+                        </option>
+
+                        <option value="09:00-12:00">
+                            09:00 — 12:00
+                        </option>
+
+                        <option value="12:00-15:00">
+                            12:00 — 15:00
+                        </option>
+
+                        <option value="15:00-18:00">
+                            15:00 — 18:00
+                        </option>
+
+                        <option value="18:00-21:00">
+                            18:00 — 21:00
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label>
+                        Qaysi kursga qiziqasiz?
+                    </label>
+
+                    <select id="interested_course">
+
+                        <option value="">
+                            Kursni tanlang
+                        </option>
+
+                        <option value="Kompyuter savodxonligi">
+                            Kompyuter savodxonligi
+                        </option>
+
+                        <option value="Frontend">
+                            Frontend / Web
+                        </option>
+
+                        <option value="Backend">
+                            Backend
+                        </option>
+
+                        <option value="Python">
+                            Python
+                        </option>
+
+                        <option value="Grafik dizayn">
+                            Grafik dizayn
+                        </option>
+
+                        <option value="Sun’iy intellekt">
+                            Sun’iy intellekt
+                        </option>
+
+                        <option value="Robototexnika">
+                            Robototexnika
+                        </option>
+
+                        <option value="3D Modellashtirish">
+                            3D Modellashtirish
+                        </option>
+
+                        <option value="3D Printer">
+                            3D Printer
+                        </option>
+
+                        <option value="Mental arifmetika">
+                            Mental arifmetika
+                        </option>
+
+                        <option value="Ingliz tili">
+                            Ingliz tili
+                        </option>
+
+                        <option value="IELTS">
+                            IELTS
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label>
+                        Avval IT kursida o‘qiganmisiz?
+                    </label>
+
+                    <select id="previous_it_course">
+
+                        <option value="Yo‘q">
+                            Yo‘q
+                        </option>
+
+                        <option value="Ha">
+                            Ha
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label>
+                        Qo‘shimcha izoh
+                    </label>
+
+                    <textarea
+                        id="comment"
+                        placeholder="Savolingiz yoki qo‘shimcha ma’lumot"
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                style="width:100%;"
+            >
+                Ariza yuborish
+            </button>
+
+
+            <div
+                class="form-message"
+                id="formMessage"
+            ></div>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     CONTACT
+========================= -->
+
+<section id="contact">
+
+    <div class="container">
+
+        <div class="section-head">
+
+            <div class="section-label">
+                Aloqa
+            </div>
+
+            <h2 class="section-title">
+                Biz bilan bog‘laning
+            </h2>
+
+        </div>
+
+
+        <div class="contact-grid">
+
+            <div class="contact-card">
+
+                <h3>📍 Manzil</h3>
+
+                <p>
+                    Turakurgan, Shahand
+                </p>
+
+                <br>
+
+                <h3>📞 Telefon</h3>
+
+                <p>
+                    +998 XX XXX XX XX
+                </p>
+
+                <br>
+
+                <h3>💬 Murojaat</h3>
+
+                <p>
+                    Ariza qoldiring va administrator siz bilan bog‘lanadi.
+                </p>
+
+            </div>
+
+
+            <div class="map-placeholder">
+
+                <div>
+
+                    <div style="font-size:45px;">
+                        📍
+                    </div>
+
+                    <strong>
+                        AKHSIKENT IT
+                    </strong>
+
+                    <p>
+                        Turakurgan, Shahand
+                    </p>
+
+                    <small>
+                        Aniq Google Maps manzili keyinchalik qo‘shiladi.
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <div class="container">
+
+        <div class="footer-grid">
+
+            <div class="footer-brand">
+
+                <div class="logo" style="color:white;">
+                    AKHSIKENT <span>IT</span>
+                </div>
+
+                <p>
+                    Zamonaviy bilim, amaliyot va kelajak kasblari.
+                </p>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4>Kurslar</h4>
+
+                <a href="#courses">
+                    IT
+                </a>
+
+                <a href="#courses">
+                    Sun’iy intellekt
+                </a>
+
+                <a href="#courses">
+                    Mental arifmetika
+                </a>
+
+                <a href="#courses">
+                    Ingliz tili
+                </a>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4>Platforma</h4>
+
+                <a href="#about">
+                    Biz haqimizda
+                </a>
+
+                <a href="#teachers">
+                    Ustozlar
+                </a>
+
+                <a href="#opportunities">
+                    Imkoniyatlar
+                </a>
+
+                <a href="#results">
+                    Natijalar
+                </a>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4>Aloqa</h4>
+
+                <a href="#application">
+                    Ariza qoldirish
+                </a>
+
+                <a href="#contact">
+                    Manzil
+                </a>
+
+                <a href="#contact">
+                    Telefon
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            © 2026 AKHSIKENT IT. Barcha huquqlar himoyalangan.
+
+        </div>
 
     </div>
 
 </footer>
 
 
-<!-- ================= JAVASCRIPT ================= -->
-<script>
+<!-- =========================
+     COURSE MODAL
+========================= -->
 
-    const API_URL = "https://axsikent-it-4.onrender.com";
+<div class="modal" id="courseModal">
 
-    const form = document.getElementById("leadForm");
-    const formMessage = document.getElementById("formMessage");
-
-    form.addEventListener("submit", async function(event) {
-
-        event.preventDefault();
-
-        const button = form.querySelector("button");
-
-        button.disabled = true;
-        button.innerHTML = "⏳ Yuborilmoqda...";
-
-        formMessage.innerHTML = "";
-
-        const formData = new FormData(form);
-
-        const params = new URLSearchParams();
-
-        for (const [key, value] of formData.entries()) {
-
-            if (value !== "") {
-                params.append(key, value);
-            }
-
-        }
-
-        try {
-
-            const response = await fetch(
-                `${API_URL}/leads/?${params.toString()}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "accept": "application/json"
-                    }
-                }
-            );
-
-            const data = await response.json();
-
-            if (response.ok) {
-
-                formMessage.innerHTML =
-                    "🎉 Arizangiz muvaffaqiyatli yuborildi! Tez orada siz bilan bog‘lanamiz.";
-
-                formMessage.className =
-                    "form-message success";
-
-                form.reset();
-
-            } else {
-
-                throw new Error(
-                    data.detail || "Xatolik yuz berdi"
-                );
-
-            }
-
-        } catch (error) {
-
-            formMessage.innerHTML =
-                "❌ Ariza yuborilmadi. Iltimos, qaytadan urinib ko‘ring.";
-
-            formMessage.className =
-                "form-message error";
-
-            console.error(error);
-
-        }
-
-        button.disabled = false;
-        button.innerHTML = "🚀 Ariza yuborish";
-
-    });
-
-</script>
-```
-<!-- KURS BATAFSIL OYNASI -->
-<div id="courseModal" class="course-modal">
-
-    <div class="course-modal-content">
+    <div class="modal-content">
 
         <button
-            type="button"
-            class="course-modal-close"
-            id="courseModalClose"
+            class="modal-close"
+            onclick="closeCourse()"
         >
             ×
         </button>
 
-        <div id="courseModalBody"></div>
+        <h2 id="modalTitle">
+            Kurs
+        </h2>
+
+        <div
+            class="modal-price"
+            id="modalPrice"
+        >
+        </div>
+
+        <div id="modalBody">
+        </div>
+
+        <br>
+
+        <button
+            class="btn btn-primary"
+            style="width:100%;"
+            onclick="enrollFromModal()"
+        >
+            Kursga yozilish
+        </button>
 
     </div>
 
 </div>
-    <script>
-const courseDetails = {
-    computer: {
-        title: "💻 IT savodxonlik",
-        price: "250 ming / oy",
-        content: `
-            <div class="course-info-grid">
-                <div class="course-info-card">
-                    <span>⏱️</span>
-                    <strong>90 daqiqa</strong>
-                    <small>Dars davomiyligi</small>
+
+
+<script>
+
+    /* =========================
+       API
+    ========================= */
+
+    const API_URL = "https://axsikent-it-4.onrender.com";
+
+
+    /* =========================
+       COURSE DATA
+    ========================= */
+
+    const courseDetails = {
+
+        computer: {
+
+            title: "💻 Kompyuter savodxonligi",
+
+            price: "Ma’lumot uchun murojaat qiling",
+
+            content: `
+                <p>
+                    Kompyuterdan foydalanishni noldan o‘rganish uchun
+                    mo‘ljallangan yo‘nalish.
+                </p>
+
+                <ul>
+                    <li>Kompyuter asoslari</li>
+                    <li>Windows bilan ishlash</li>
+                    <li>Internetdan foydalanish</li>
+                    <li>Microsoft Office</li>
+                    <li>Amaliy topshiriqlar</li>
+                </ul>
+            `
+
+        },
+
+
+        frontend: {
+
+            title: "🌐 Frontend / Web",
+
+            price: "Ma’lumot uchun murojaat qiling",
+
+            content: `
+                <p>
+                    Zamonaviy web-saytlar yaratish uchun frontend dasturlash.
+                </p>
+
+                <ul>
+                    <li>HTML</li>
+                    <li>CSS</li>
+                    <li>JavaScript</li>
+                    <li>Responsive design</li>
+                    <li>Amaliy web loyihalar</li>
+                </ul>
+            `
+
+        },
+
+
+        backend: {
+
+            title: "⚙️ Backend",
+
+            price: "Ma’lumot uchun murojaat qiling",
+
+            content: `
+                <p>
+                    Web-ilovalarning server qismi va API yaratish asoslari.
+                </p>
+
+                <ul>
+                    <li>Backend asoslari</li>
+                    <li>API</li>
+                    <li>Database</li>
+                    <li>Server bilan ishlash</li>
+                    <li>Amaliy loyihalar</li>
+                </ul>
+            `
+
+        },
+
+
+        python: {
+
+            title: "🐍 Python",
+
+            price: "Ma’lumot uchun murojaat qiling",
+
+            content: `
+                <p>
+                    Python dasturlash tilini noldan o‘rganish.
+                </p>
+
+                <ul>
+                    <li>Python sintaksisi</li>
+                    <li>O‘zgaruvchilar</li>
+                    <li>Shartlar</li>
+                    <li>Sikllar</li>
+                    <li>Funksiyalar</li>
+                    <li>Amaliy loyihalar</li>
+                </ul>
+            `
+
+        },
+
+
+        design: {
+
+            title: "🎨 Grafik dizayn",
+
+            price: "Ma’lumot uchun murojaat qiling",
+
+            content: `
+                <p>
+                    Grafik dizayn va kreativ kontent yaratish asoslari.
+                </p>
+
+                <ul>
+                    <li>Dizayn asoslari</li>
+                    <li>Rang va kompozitsiya</li>
+                    <li>Grafik dasturlar</li>
+                    <li>Logo va bannerlar</li>
+                    <li>Amaliy dizayn loyihalari</li>
+                </ul>
+            `
+
+        },
+
+
+        /* ===================================
+           AI — TO‘LIQ YANGILANGAN MA’LUMOT
+        =================================== */
+
+        ai: {
+
+            title: "🤖 Sun’iy intellekt",
+
+            price: "350 ming / oy",
+
+            content: `
+
+                <div class="course-info-grid">
+
+                    <div class="course-info-card">
+
+                        <span>📅</span>
+
+                        <strong>3 oy</strong>
+
+                        <small>
+                            Davomiyligi
+                        </small>
+
+                    </div>
+
+
+                    <div class="course-info-card">
+
+                        <span>📚</span>
+
+                        <strong>3 ta dars</strong>
+
+                        <small>
+                            Haftasiga
+                        </small>
+
+                    </div>
+
+
+                    <div class="course-info-card">
+
+                        <span>⏱️</span>
+
+                        <strong>90 daqiqa</strong>
+
+                        <small>
+                            Bir dars
+                        </small>
+
+                    </div>
+
                 </div>
 
-                <div class="course-info-card">
-                    <span>📅</span>
-                    <strong>3 marta</strong>
-                    <small>Haftasiga</small>
-                </div>
-            </div>
 
-            <h3>📚 Kurs dasturi</h3>
-            <ul>
-                <li>Klaviatura, papkalar, fayllar</li>
-                <li>Word — matn tayyorlash</li>
-                <li>Excel — formulalar bilan ishlash</li>
-                <li>PowerPoint — taqdimotlar</li>
-                <li>Internet</li>
-            </ul>
-        `
-    },
+                <h3>
+                    🚀 AI STARTER
+                </h3>
 
-    python: {
-        title: "Python dasturlash",
-        image: "assets/logo1.png",
-        price: "350 ming / oy",
-        content: `
-            <div class="course-info-grid">
-                <div class="course-info-card">
-                    <span>👦</span>
-                    <strong>11–18 yosh</strong>
-                    <small>Yosh guruhi</small>
-                </div>
-            </div>
+                <p>
+                    <b>1-oy: AI Fundamentals</b>
+                </p>
 
-            <h3>📚 Kurs dasturi</h3>
-            <ul>
-                <li>O‘zgaruvchilar va tsikllar</li>
-                <li>Toshbaqa grafikasi</li>
-                <li>Mini o‘yinlar</li>
-                <li>Oddiy AI loyihalari</li>
-            </ul>
-        `
-    },
 
-    web: {
-        title: "🌐 Web dasturlash",
-        price: "350 ming / oy",
-        content: `
-            <h3>📚 Kurs dasturi</h3>
-            <ul>
-                <li>Web dizayn</li>
-                <li>Ochilish sahifasi</li>
-                <li>JavaScript asoslari</li>
-                <li>HTML va CSS</li>
-            </ul>
-        `
-    },
+                <h3>
+                    🎨 AI CREATOR
+                </h3>
 
-    robot: {
-        title: "Robototexnika + Arduino",
-        image: "assets/logo3.png",
-        price: "300–350 ming / oy",
-        content: `
-            <div class="course-info-grid">
-                <div class="course-info-card">
-                    <span>👦</span>
-                    <strong>6–10 yosh</strong>
-                    <small>Bolalar IT</small>
-                </div>
+                <p>
+                    <b>2-oy: Creative AI</b>
+                </p>
 
-                <div class="course-info-card">
-                    <span>🧑</span>
-                    <strong>11–18 yosh</strong>
-                    <small>Kattalar IT</small>
-                </div>
-            </div>
 
-            <h3>🤖 Bolalar IT — 6–10 yosh</h3>
-            <ul>
-                <li>60–90 daqiqa</li>
-                <li>Haftasiga 3 marta</li>
-                <li>Lego robotlar</li>
-                <li>Sensorlar asoslari</li>
-                <li>Mini mashinalar</li>
-                <li>Arduino asoslari</li>
-            </ul>
+                <h3>
+                    💻 AI DEVELOPER
+                </h3>
 
-            <h3>⚙️ Kattalar IT — 11–18 yosh</h3>
-            <ul>
-                <li>90 daqiqa</li>
-                <li>Haftasiga 3 marta</li>
-                <li>Arduino platalari</li>
-                <li>LED, signal, sensor, servo</li>
-                <li>Aqlli uy loyihasi</li>
-                <li>Aqlli mashina yasash</li>
-                <li>Robot musobaqalari</li>
-            </ul>
-        `
-    },
+                <p>
+                    <b>3-oy: AI + Programming</b>
+                </p>
 
-    model3d: {
-        title: "🧊 3D Modellashtirish",
-        price: "350 ming / oy",
-        content: `
-            <p>3D Print kursining <b>A qismi</b>.</p>
+            `
 
-            <div class="course-info-grid">
-                <div class="course-info-card">
-                    <span>📅</span>
-                    <strong>3 marta</strong>
-                    <small>Haftasiga</small>
-                </div>
+        },
 
-                <div class="course-info-card">
-                    <span>⏱️</span>
-                    <strong>1,5–2 soat</strong>
-                    <small>Har bir dars</small>
-                </div>
-            </div>
 
-            <h3>🧊 3D Modellashtirish</h3>
-            <ul>
-                <li>Tinkercad — boshlovchilar</li>
-                <li>Fusion 360 — professional</li>
-                <li>STL tayyorlash</li>
-                <li>Modelni kesish (slicing)</li>
-            </ul>
-        `
-    },
+        robot: {
 
-    printer3d: {
-        title: "🖨️ 3D Printer bilan ishlash",
-        price: "350 ming / oy",
-        content: `
-            <p>3D Print kursining <b>B qismi</b>.</p>
+            title: "🤖 Robototexnika",
 
-            <div class="course-info-grid">
-                <div class="course-info-card">
-                    <span>📅</span>
-                    <strong>3 marta</strong>
-                    <small>Haftasiga</small>
-                </div>
+            price: "Ma’lumot uchun murojaat qiling",
 
-                <div class="course-info-card">
-                    <span>⏱️</span>
-                    <strong>1,5–2 soat</strong>
-                    <small>Har bir dars</small>
-                </div>
-            </div>
+            content: `
+                <p>
+                    Robotlar va elektronika bilan ishlash.
+                </p>
 
-            <h3>🖨️ Dastur</h3>
-            <ul>
-                <li>Ender 5 Pro qurilishi</li>
-                <li>Ekstruder, Hotend, Bed leveling</li>
-                <li>PLA va PETG</li>
-                <li>Cura bilan ishlash</li>
-                <li>Bosma sifatini yaxshilash</li>
-                <li>Printer muammolarini tuzatish</li>
-                <li>Real buyumlar chop etish</li>
-            </ul>
-        `
-    },
+                <ul>
+                    <li>Robototexnika asoslari</li>
+                    <li>Elektronika</li>
+                    <li>Sensorlar</li>
+                    <li>Dasturlash</li>
+                    <li>Amaliy robot loyihalari</li>
+                </ul>
+            `
 
-    mental: {
-        title: "🧮 Mental arifmetika",
-        price: "200 ming / oy",
-        content: `
-            <div class="course-info-grid">
-                <div class="course-info-card">
-                    <span>👦</span>
-                    <strong>6–12 yosh</strong>
-                    <small>Yosh guruhi</small>
-                </div>
+        },
 
-                <div class="course-info-card">
-                    <span>⏱️</span>
-                    <strong>60 daqiqa</strong>
-                    <small>Dars davomiyligi</small>
-                </div>
 
-                <div class="course-info-card">
-                    <span>📅</span>
-                    <strong>3 marta</strong>
-                    <small>Haftasiga</small>
-                </div>
-            </div>
+        "3d": {
 
-            <h3>📚 Kurs dasturi</h3>
-            <ul>
-                <li>Abakus bilan amallar</li>
-                <li>Miya bilan tez hisob</li>
-                <li>Diqqat va tez fikrlash</li>
-                <li>Har oy musobaqa</li>
-            </ul>
-        `
-    },
+            title: "🧊 3D Modellashtirish",
 
-    english: {
-        title: "🇬🇧 Ingliz tili",
-        price: "200–250 ming / oy",
-        content: `
-            <h3>👦 6–10 yosh</h3>
-            <ul>
-                <li>60 daqiqa</li>
-                <li>Haftasiga 3 marta</li>
-                <li>Alifbo va fonika</li>
-                <li>Asosiy lug‘at: hayvonlar, ranglar, raqamlar</li>
-                <li>Oddiy jumlalar</li>
-                <li>Tinglash o‘yinlari</li>
-                <li>Kartochkalar</li>
-                <li>Har oy progress test</li>
-            </ul>
+            price: "Ma’lumot uchun murojaat qiling",
 
-            <h3>🧑 11–18 yosh</h3>
-            <ul>
-                <li>90 daqiqa</li>
-                <li>Haftasiga 3 marta</li>
-                <li>Boshlang‘ich → Pre-O‘rta → O‘rta</li>
-                <li>Grammatika: zamonlar, modal fe’llar, passiv, shart</li>
-                <li>Nutq klubi</li>
-                <li>Har oy test</li>
-                <li>Har 3 oy sertifikat</li>
-            </ul>
-        `
-    },
+            content: `
+                <p>
+                    Uch o‘lchamli modellar yaratish va dizayn qilish.
+                </p>
 
-    ielts: {
-        title: "🎯 IELTS kursi",
-        price: "300–400 ming / oy",
-        content: `
-            <div class="course-info-grid">
-                <div class="course-info-card">
-                    <span>🎓</span>
-                    <strong>16+ yosh</strong>
-                    <small>Yosh chegarasi</small>
-                </div>
+                <ul>
+                    <li>3D asoslari</li>
+                    <li>Modellashtirish</li>
+                    <li>Materiallar</li>
+                    <li>Render</li>
+                    <li>Amaliy loyihalar</li>
+                </ul>
+            `
 
-                <div class="course-info-card">
-                    <span>⏱️</span>
-                    <strong>90–120 daqiqa</strong>
-                    <small>Dars davomiyligi</small>
-                </div>
+        },
 
-                <div class="course-info-card">
-                    <span>📅</span>
-                    <strong>4 marta</strong>
-                    <small>Haftasiga</small>
-                </div>
-            </div>
 
-            <h3>📚 Kurs dasturi</h3>
-            <ul>
-                <li>Listening — 4 bo‘lim</li>
-                <li>Reading — 3 qism</li>
-                <li>Writing — Task 1–2</li>
-                <li>Speaking — 1–2–3-qism</li>
-                <li>Har haftada sinov testi</li>
-            </ul>
-        `
-    }
-};
-const courseModal = document.getElementById("courseModal");
-const courseModalBody = document.getElementById("courseModalBody");
-const courseModalClose = document.getElementById("courseModalClose");
+        printer: {
 
-document.querySelectorAll(".course-detail-btn").forEach(button => {
-    button.addEventListener("click", function() {
-        const course = courseDetails[this.dataset.course];
-        if (!course) return;
-       courseModalBody.innerHTML = `
-    ${course.image ? `<img src="${course.image}" class="course-modal-logo" alt="${course.title}">` : ""}
+            title: "🖨️ 3D Printer",
 
-    <h2>${course.title}</h2>
-    <div class="modal-price">💰 ${course.price}</div>
+            price: "Ma’lumot uchun murojaat qiling",
 
-    ${course.content}
+            content: `
+                <p>
+                    3D printer texnologiyasini amaliy o‘rganish.
+                </p>
 
-    <button
-        type="button"
-        class="btn btn-primary"
-        id="modalApplyButton"
-        style="margin-top: 20px;"
-    >
-        📝 Kursga yozilish
-    </button>
-`;
-        courseModal.classList.add("active");
+                <ul>
+                    <li>3D printer asoslari</li>
+                    <li>Modelni tayyorlash</li>
+                    <li>Print sozlamalari</li>
+                    <li>Materiallar</li>
+                    <li>Amaliy chop etish</li>
+                </ul>
+            `
+
+        },
+
+
+        mental: {
+
+            title: "🧮 Mental arifmetika",
+
+            price: "Ma’lumot uchun murojaat qiling",
+
+            content: `
+                <p>
+                    Bolalarning hisoblash tezligi va mantiqiy fikrlashini rivojlantirish.
+                </p>
+
+                <ul>
+                    <li>Boshlang‘ich bosqich</li>
+                    <li>O‘rta bosqich</li>
+                    <li>Yuqori bosqich</li>
+                    <li>Tezkor hisoblash</li>
+                    <li>Mantiqiy mashqlar</li>
+                </ul>
+            `
+
+        },
+
+
+        english: {
+
+            title: "🇬🇧 Ingliz tili",
+
+            price: "Ma’lumot uchun murojaat qiling",
+
+            content: `
+                <p>
+                    Bosqichma-bosqich ingliz tili o‘rganish.
+                </p>
+
+                <ul>
+                    <li>Beginner</li>
+                    <li>Elementary</li>
+                    <li>Pre-Intermediate</li>
+                    <li>Intermediate</li>
+                    <li>Upper-Intermediate</li>
+                </ul>
+            `
+
+        },
+
+
+        ielts: {
+
+            title: "🎓 IELTS",
+
+            price: "Ma’lumot uchun murojaat qiling",
+
+            content: `
+                <p>
+                    IELTS imtihoniga maqsadli tayyorgarlik.
+                </p>
+
+                <ul>
+                    <li>Listening</li>
+                    <li>Reading</li>
+                    <li>Writing</li>
+                    <li>Speaking</li>
+                    <li>Mock testlar</li>
+                </ul>
+            `
+
+        }
+
+    };
+
+
+    /* =========================
+       MODAL
+    ========================= */
+
+    let selectedCourseKey = null;
+
+
+    function openCourse(courseKey) {
+
+        const course = courseDetails[courseKey];
+
+        if (!course) {
+            return;
+        }
+
+        selectedCourseKey = courseKey;
+
+        document.getElementById("modalTitle").textContent =
+            course.title;
+
+        document.getElementById("modalPrice").textContent =
+            course.price;
+
+        document.getElementById("modalBody").innerHTML =
+            course.content;
+
+        document
+            .getElementById("courseModal")
+            .classList.add("active");
+
         document.body.style.overflow = "hidden";
-    });
-});
-
-function closeCourseModal() {
-    courseModal.classList.remove("active");
-    document.body.style.overflow = "";
-}
-
-courseModalClose.addEventListener("click", closeCourseModal);
-        document.addEventListener("click", function(event) {
-    if (event.target.id === "modalApplyButton") {
-
-        const modalTitle = courseModalBody.querySelector("h2").textContent;
-        const courseSelect = document.getElementById("interested_course");
-
-        const courseMap = {
-            "Python dasturlash": "Python",
-            "Robototexnika + Arduino": "Robototexnika",
-            "💻 IT savodxonlik": "Kompyuter savodxonligi",
-            "🌐 Web dasturlash": "Web — HTML/CSS/JS",
-            "🧊 3D Modellashtirish": "3D Print",
-            "🖨️ 3D Printer bilan ishlash": "3D Print",
-            "🧮 Mental arifmetika": "Mental arifmetika",
-            "🇬🇧 Ingliz tili": "Ingliz tili",
-            "🎯 IELTS kursi": "IELTS"
-        };
-
-        if (courseMap[modalTitle]) {
-            courseSelect.value = courseMap[modalTitle];
-        }
-
-        closeCourseModal();
-
-        document.getElementById("apply").scrollIntoView({
-            behavior: "smooth"
-        });
     }
-});
 
-courseModal.addEventListener("click", function(event) {
-    if (event.target === courseModal) {
-        closeCourseModal();
+
+    function closeCourse() {
+
+        document
+            .getElementById("courseModal")
+            .classList.remove("active");
+
+        document.body.style.overflow = "";
+
     }
-});
 
-document.addEventListener("keydown", function(event) {
-    if (event.key === "Escape") {
-        closeCourseModal();
-    }
-})
-        
-/* =========================================
-   LANGUAGE SYSTEM
-   ========================================= */
 
-const translations = {
-    uz: {
-        nav_courses: "📚 Kurslar",
-        nav_about: "✨ Biz haqimizda",
-        nav_apply: "📝 Ariza",
-        nav_contact: "📞 Aloqa",
-        nav_start: "Boshlash 🚀",
-        hero_badge: "🌟 Kelajagingiz bugundan boshlanadi!",
-hero_subtitle: "Zamonaviy bilimlar, kuchli ko‘nikmalar va katta imkoniyatlar sari birga boramiz 🚀",
-hero_courses: "📚 Kurslarni ko‘rish",
-hero_apply: "📝 Ariza qoldirish",
-hero_stat_courses: "Kurslar",
-hero_stat_directions: "Yo‘nalish",
-hero_stat_opportunities: "Imkoniyat",
-hero_card_title: "Kelajak kasbingizni bugundan boshlang!",
-hero_card_text: "IT va zamonaviy texnologiyalarni o‘rganing."
-    },
+    function enrollFromModal() {
 
-    ru: {
-        nav_courses: "📚 Курсы",
-        nav_about: "✨ О нас",
-        nav_apply: "📝 Заявка",
-        nav_contact: "📞 Контакты",
-        nav_start: "Начать 🚀",
-        hero_badge: "🌟 Ваше будущее начинается сегодня!",
-hero_subtitle: "Вместе к современным знаниям, сильным навыкам и большим возможностям 🚀",
-hero_courses: "📚 Смотреть курсы",
-hero_apply: "📝 Оставить заявку",
-hero_stat_courses: "Курсы",
-hero_stat_directions: "Направления",
-hero_stat_opportunities: "Возможности",
-hero_card_title: "Начните профессию будущего уже сегодня!",
-hero_card_text: "Изучайте IT и современные технологии."
-    },
+        closeCourse();
 
-    en: {
-        nav_courses: "📚 Courses",
-        nav_about: "✨ About us",
-        nav_apply: "📝 Apply",
-        nav_contact: "📞 Contact",
-        nav_start: "Get started 🚀",
-        hero_badge: "🌟 Your future starts today!",
-hero_subtitle: "Together towards modern knowledge, strong skills and great opportunities 🚀",
-hero_courses: "📚 View courses",
-hero_apply: "📝 Apply now",
-hero_stat_courses: "Courses",
-hero_stat_directions: "Directions",
-hero_stat_opportunities: "Opportunities",
-hero_card_title: "Start your future career today!",
-hero_card_text: "Learn IT and modern technologies."
-    }
-};
+        document
+            .getElementById("application")
+            .scrollIntoView({
+                behavior: "smooth"
+            });
 
-const languageBtn = document.getElementById("languageBtn");
-const languageMenu = document.getElementById("languageMenu");
-const currentLanguage = document.getElementById("currentLanguage");
 
-languageBtn.addEventListener("click", function(event) {
-    event.stopPropagation();
-    languageMenu.classList.toggle("active");
-});
+        setTimeout(() => {
 
-document.querySelectorAll("#languageMenu button").forEach(button => {
-    button.addEventListener("click", function() {
-        const lang = this.dataset.lang;
+            const select =
+                document.getElementById("interested_course");
 
-        document.querySelectorAll("[data-i18n]").forEach(element => {
-            const key = element.dataset.i18n;
+            if (selectedCourseKey === "ai") {
 
-            if (translations[lang][key]) {
-                element.textContent = translations[lang][key];
+                select.value = "Sun’iy intellekt";
+
+            } else if (selectedCourseKey === "python") {
+
+                select.value = "Python";
+
+            } else if (selectedCourseKey === "frontend") {
+
+                select.value = "Frontend";
+
+            } else if (selectedCourseKey === "backend") {
+
+                select.value = "Backend";
+
+            } else if (selectedCourseKey === "computer") {
+
+                select.value = "Kompyuter savodxonligi";
+
+            } else if (selectedCourseKey === "design") {
+
+                select.value = "Grafik dizayn";
+
+            } else if (selectedCourseKey === "robot") {
+
+                select.value = "Robototexnika";
+
+            } else if (selectedCourseKey === "3d") {
+
+                select.value = "3D Modellashtirish";
+
+            } else if (selectedCourseKey === "printer") {
+
+                select.value = "3D Printer";
+
+            } else if (selectedCourseKey === "mental") {
+
+                select.value = "Mental arifmetika";
+
+            } else if (selectedCourseKey === "english") {
+
+                select.value = "Ingliz tili";
+
+            } else if (selectedCourseKey === "ielts") {
+
+                select.value = "IELTS";
+
             }
+
+        }, 500);
+
+    }
+
+
+    /* =========================
+       CLOSE MODAL
+    ========================= */
+
+    document
+        .getElementById("courseModal")
+        .addEventListener("click", function(event) {
+
+            if (event.target === this) {
+                closeCourse();
+            }
+
         });
 
-        currentLanguage.textContent = lang.toUpperCase();
 
-        localStorage.setItem("akhsikent_language", lang);
+    /* =========================
+       COURSE FILTER
+    ========================= */
 
-        languageMenu.classList.remove("active");
+    const courseTabs =
+        document.querySelectorAll(".course-tab");
+
+    const courseCards =
+        document.querySelectorAll(".course-card");
+
+
+    courseTabs.forEach(tab => {
+
+        tab.addEventListener("click", function() {
+
+            courseTabs.forEach(item => {
+                item.classList.remove("active");
+            });
+
+            this.classList.add("active");
+
+            const filter =
+                this.dataset.filter;
+
+            courseCards.forEach(card => {
+
+                if (
+                    filter === "all" ||
+                    card.dataset.category === filter
+                ) {
+
+                    card.style.display = "flex";
+
+                } else {
+
+                    card.style.display = "none";
+
+                }
+
+            });
+
+        });
+
     });
-});
 
-document.addEventListener("click", function() {
-    languageMenu.classList.remove("active");
-});
 
-/* Saqlangan tilni tiklash */
-const savedLanguage = localStorage.getItem("akhsikent_language");
+    /* =========================
+       FAQ
+    ========================= */
 
-if (savedLanguage && translations[savedLanguage]) {
-    document.querySelectorAll("[data-i18n]").forEach(element => {
-        const key = element.dataset.i18n;
+    document
+        .querySelectorAll(".faq-question")
+        .forEach(button => {
 
-        if (translations[savedLanguage][key]) {
-            element.textContent = translations[savedLanguage][key];
+            button.addEventListener("click", function() {
+
+                const item =
+                    this.parentElement;
+
+                item.classList.toggle("open");
+
+                const symbol =
+                    this.querySelector("span");
+
+                symbol.textContent =
+                    item.classList.contains("open")
+                        ? "−"
+                        : "+";
+
+            });
+
+        });
+
+
+    /* =========================
+       MOBILE MENU
+    ========================= */
+
+    function scrollToCourses() {
+
+        document
+            .getElementById("courses")
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+
+    }
+
+
+    /* =========================
+       APPLICATION FORM
+    ========================= */
+
+    document
+        .getElementById("applicationForm")
+        .addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const message =
+                document.getElementById("formMessage");
+
+            message.textContent =
+                "⏳ Arizangiz yuborilmoqda...";
+
+            message.style.color =
+                "#555";
+
+
+            const params =
+                new URLSearchParams({
+
+                    full_name:
+                        document.getElementById("full_name").value,
+
+                    phone:
+                        document.getElementById("phone").value,
+
+                    age:
+                        document.getElementById("age").value,
+
+                    preferred_time:
+                        document.getElementById("preferred_time").value,
+
+                    interested_course:
+                        document.getElementById("interested_course").value,
+
+                    previous_it_course:
+                        document.getElementById("previous_it_course").value,
+
+                    comment:
+                        document.getElementById("comment").value
+
+                });
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_URL}/leads/?${params.toString()}`,
+                        {
+                            method: "POST"
+                        }
+                    );
+
+
+                if (!response.ok) {
+                    throw new Error("Server xatosi");
+                }
+
+
+                message.textContent =
+                    "✅ Arizangiz muvaffaqiyatli yuborildi! Tez orada siz bilan bog‘lanamiz.";
+
+                message.style.color =
+                    "#16a34a";
+
+
+                document
+                    .getElementById("applicationForm")
+                    .reset();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                message.textContent =
+                    "❌ Ariza yuborilmadi. Iltimos, telefon raqamingizni tekshiring yoki qayta urinib ko‘ring.";
+
+                message.style.color =
+                    "#dc2626";
+
+            }
+
+        });
+
+
+    /* =========================
+       TRANSLATIONS
+    ========================= */
+
+    const translations = {
+
+        uz: {
+
+            nav_courses: "Kurslar",
+            nav_about: "Biz haqimizda",
+            nav_teachers: "Ustozlar",
+            nav_opportunities: "Imkoniyatlar",
+            nav_results: "Natijalar",
+            nav_contact: "Aloqa",
+
+            apply: "Ariza qoldirish",
+
+            hero_badge:
+                "🚀 Kelajak kasblari shu yerdan boshlanadi",
+
+            hero_title:
+                "Kelajagingizni AKHSIKENT IT bilan quring",
+
+            hero_text:
+                "Zamonaviy IT, sun’iy intellekt, ingliz tili va mental arifmetika bo‘yicha amaliy bilim beruvchi zamonaviy ta’lim markazi.",
+
+            view_courses:
+                "Kurslarni ko‘rish",
+
+            free_consult:
+                "Bepul konsultatsiya",
+
+            hero_card_text:
+                "Bilim → Amaliyot → Natija",
+
+            stat_courses:
+                "Yo‘nalish",
+
+            stat_languages:
+                "Til",
+
+            stat_practice:
+                "Amaliy yondashuv",
+
+            stat_future:
+                "Imkoniyat",
+
+            about_label:
+                "Biz haqimizda",
+
+            about_title:
+                "Oddiy kurs emas. Kelajak uchun muhit.",
+
+            about_text:
+                "AKHSIKENT IT o‘quvchilarga zamonaviy texnologiyalarni o‘rganish, amalda qo‘llash va o‘z loyihalarini yaratish imkoniyatini beruvchi ta’lim platformasidir.",
+
+            about_check1:
+                "Amaliy mashg‘ulotlar",
+
+            about_check2:
+                "Zamonaviy texnologiyalar",
+
+            about_check3:
+                "Individual yondashuv",
+
+            about_check4:
+                "O‘quvchi natijasiga e’tibor",
+
+            about_visual_title:
+                "O‘rganing.",
+
+            about_visual_title2:
+                "Yarating.",
+
+            about_visual_title3:
+                "Natijaga erishing.",
+
+            courses_title:
+                "O‘zingizga mos yo‘nalishni tanlang",
+
+            courses_text:
+                "IT, mental arifmetika va ingliz tili bo‘yicha bosqichma-bosqich rivojlaning."
+
+        },
+
+
+        ru: {
+
+            nav_courses: "Курсы",
+            nav_about: "О нас",
+            nav_teachers: "Преподаватели",
+            nav_opportunities: "Возможности",
+            nav_results: "Результаты",
+            nav_contact: "Контакты",
+
+            apply: "Оставить заявку",
+
+            hero_badge:
+                "🚀 Профессии будущего начинаются здесь",
+
+            hero_title:
+                "Стройте своё будущее вместе с AKHSIKENT IT",
+
+            hero_text:
+                "Современный образовательный центр по IT, искусственному интеллекту, английскому языку и ментальной арифметике.",
+
+            view_courses:
+                "Смотреть курсы",
+
+            free_consult:
+                "Бесплатная консультация",
+
+            hero_card_text:
+                "Знания → Практика → Результат",
+
+            stat_courses:
+                "Направлений",
+
+            stat_languages:
+                "Языка",
+
+            stat_practice:
+                "Практический подход",
+
+            stat_future:
+                "Возможности",
+
+            about_label:
+                "О нас",
+
+            about_title:
+                "Не просто курс. Среда для будущего.",
+
+            about_text:
+                "AKHSIKENT IT помогает ученикам изучать современные технологии, применять знания на практике и создавать собственные проекты.",
+
+            about_check1:
+                "Практические занятия",
+
+            about_check2:
+                "Современные технологии",
+
+            about_check3:
+                "Индивидуальный подход",
+
+            about_check4:
+                "Фокус на результате",
+
+            about_visual_title:
+                "Учитесь.",
+
+            about_visual_title2:
+                "Создавайте.",
+
+            about_visual_title3:
+                "Достигайте результата.",
+
+            courses_title:
+                "Выберите подходящее направление",
+
+            courses_text:
+                "Развивайтесь постепенно в IT, ментальной арифметике и английском языке."
+
+        },
+
+
+        en: {
+
+            nav_courses: "Courses",
+            nav_about: "About us",
+            nav_teachers: "Teachers",
+            nav_opportunities: "Opportunities",
+            nav_results: "Results",
+            nav_contact: "Contact",
+
+            apply: "Apply now",
+
+            hero_badge:
+                "🚀 Future careers start here",
+
+            hero_title:
+                "Build your future with AKHSIKENT IT",
+
+            hero_text:
+                "A modern education center focused on IT, artificial intelligence, English and mental arithmetic.",
+
+            view_courses:
+                "View courses",
+
+            free_consult:
+                "Free consultation",
+
+            hero_card_text:
+                "Knowledge → Practice → Results",
+
+            stat_courses:
+                "Directions",
+
+            stat_languages:
+                "Languages",
+
+            stat_practice:
+                "Practical approach",
+
+            stat_future:
+                "Opportunities",
+
+            about_label:
+                "About us",
+
+            about_title:
+                "Not just a course. An environment for the future.",
+
+            about_text:
+                "AKHSIKENT IT helps students learn modern technologies, apply their knowledge and create their own projects.",
+
+            about_check1:
+                "Practical lessons",
+
+            about_check2:
+                "Modern technologies",
+
+            about_check3:
+                "Individual approach",
+
+            about_check4:
+                "Focus on results",
+
+            about_visual_title:
+                "Learn.",
+
+            about_visual_title2:
+                "Create.",
+
+            about_visual_title3:
+                "Achieve results.",
+
+            courses_title:
+                "Choose the right direction",
+
+            courses_text:
+                "Develop step by step in IT, mental arithmetic and English."
+
         }
-    });
 
-    currentLanguage.textContent = savedLanguage.toUpperCase();
-}
+    };
+
+
+    /* =========================
+       LANGUAGE SWITCH
+    ========================= */
+
+    const languageSelect =
+        document.getElementById("languageSelect");
+
+
+    function setLanguage(language) {
+
+        const data =
+            translations[language];
+
+        if (!data) {
+            return;
+        }
+
+
+        document
+            .querySelectorAll("[data-i18n]")
+            .forEach(element => {
+
+                const key =
+                    element.dataset.i18n;
+
+                if (data[key]) {
+                    element.textContent =
+                        data[key];
+                }
+
+            });
+
+
+        localStorage.setItem(
+            "akhsikent_language",
+            language
+        );
+
+    }
+
+
+    languageSelect.addEventListener(
+        "change",
+        function() {
+
+            setLanguage(this.value);
+
+        }
+    );
+
+
+    const savedLanguage =
+        localStorage.getItem(
+            "akhsikent_language"
+        );
+
+
+    if (savedLanguage) {
+
+        languageSelect.value =
+            savedLanguage;
+
+        setLanguage(savedLanguage);
+
+    }
+
+
 </script>
+
 </body>
 </html>
