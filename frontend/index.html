@@ -65,6 +65,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 20px;
+            position: relative;
         }
 
         .logo {
@@ -145,6 +146,66 @@
             background: none;
             font-size: 28px;
             cursor: pointer;
+            line-height: 1;
+            padding: 4px 6px;
+            border-radius: 8px;
+        }
+
+        .mobile-menu:hover {
+            background: #f1f1f1;
+        }
+
+        /* Mobile dropdown menu (opens under navbar, top-right, like najottalim.uz) */
+        .mobile-nav-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 16px;
+            box-shadow: 0 20px 45px rgba(0,0,0,.12);
+            padding: 10px;
+            min-width: 230px;
+            flex-direction: column;
+            gap: 2px;
+            z-index: 1001;
+        }
+
+        .mobile-nav-dropdown.active {
+            display: flex;
+        }
+
+        .mobile-nav-dropdown a {
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            color: #151515;
+        }
+
+        .mobile-nav-dropdown a:hover {
+            background: #eaf8ef;
+            color: #16a34a;
+        }
+
+        .mobile-nav-dropdown .mobile-nav-divider {
+            height: 1px;
+            background: #eee;
+            margin: 6px 4px;
+        }
+
+        .mobile-nav-dropdown .mobile-nav-apply {
+            margin: 4px;
+            text-align: center;
+            background: #16a34a;
+            color: white;
+            border-radius: 10px;
+        }
+
+        .mobile-nav-dropdown .mobile-nav-apply:hover {
+            background: #12813c;
+            color: white;
         }
 
         /* =========================
@@ -971,6 +1032,10 @@
             .modal-content {
                 padding: 25px 20px;
             }
+
+            .mobile-nav-dropdown {
+                min-width: 200px;
+            }
         }
     </style>
 </head>
@@ -1009,9 +1074,20 @@
                 Ariza qoldirish
             </a>
 
-            <button class="mobile-menu" onclick="scrollToCourses()">
+            <button class="mobile-menu" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Menyu">
                 ☰
             </button>
+
+            <nav class="mobile-nav-dropdown" id="mobileNavDropdown">
+                <a href="#courses" onclick="closeMobileMenu()">Kurslar</a>
+                <a href="#about" onclick="closeMobileMenu()">Biz haqimizda</a>
+                <a href="#teachers" onclick="closeMobileMenu()">Ustozlar</a>
+                <a href="#opportunities" onclick="closeMobileMenu()">Imkoniyatlar</a>
+                <a href="#results" onclick="closeMobileMenu()">Natijalar</a>
+                <a href="#contact" onclick="closeMobileMenu()">Aloqa</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="#application" class="mobile-nav-apply" onclick="closeMobileMenu()">Ariza qoldirish</a>
+            </nav>
 
         </div>
 
@@ -3008,15 +3084,40 @@
        MOBILE MENU
     ========================= */
 
-    function scrollToCourses() {
+    const mobileNavDropdown =
+        document.getElementById("mobileNavDropdown");
 
-        document
-            .getElementById("courses")
-            .scrollIntoView({
-                behavior: "smooth"
-            });
+    const mobileMenuBtn =
+        document.getElementById("mobileMenuBtn");
+
+
+    function toggleMobileMenu() {
+
+        mobileNavDropdown.classList.toggle("active");
 
     }
+
+
+    function closeMobileMenu() {
+
+        mobileNavDropdown.classList.remove("active");
+
+    }
+
+
+    document.addEventListener("click", function(event) {
+
+        const clickedInsideDropdown =
+            mobileNavDropdown.contains(event.target);
+
+        const clickedButton =
+            mobileMenuBtn.contains(event.target);
+
+        if (!clickedInsideDropdown && !clickedButton) {
+            closeMobileMenu();
+        }
+
+    });
 
 
     /* =========================
