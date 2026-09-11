@@ -684,7 +684,12 @@
         ========================= */
 
         .application {
-            background: #eaf8ef;
+            background: #111;
+            color: white;
+        }
+
+        .application .section-label {
+            color: #4ade80;
         }
 
         .application-grid {
@@ -698,10 +703,30 @@
             font-size: 45px;
             line-height: 1.1;
             margin-bottom: 15px;
+            color: white;
         }
 
         .application-info p {
-            color: #666;
+            color: #bbb;
+        }
+
+        .application-phone {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 25px;
+            padding: 14px 20px;
+            border: 1px solid #333;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 17px;
+            color: white;
+            transition: .2s;
+        }
+
+        .application-phone:hover {
+            border-color: #16a34a;
+            color: #4ade80;
         }
 
         .application-form {
@@ -709,6 +734,20 @@
             padding: 30px;
             border-radius: 25px;
             border: 1px solid #ddd;
+            box-shadow: 0 30px 70px rgba(0,0,0,.35);
+        }
+
+        .application-form-title {
+            font-size: 22px;
+            font-weight: 900;
+            margin-bottom: 4px;
+            color: #111;
+        }
+
+        .application-form-subtitle {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 22px;
         }
 
         .form-grid {
@@ -2066,12 +2105,11 @@
             </div>
 
             <h2>
-                Kelajagingizni bugundan boshlang.
+                Bepul konsultatsiyaga hoziroq yoziling
             </h2>
 
             <p>
-                Ariza qoldiring. Sizga mos yo‘nalish bo‘yicha
-                bepul konsultatsiya oling.
+                Kurslarimiz haqida batafsil ma’lumot oling
             </p>
 
             <br>
@@ -2080,10 +2118,22 @@
                 📍 Turakurgan, Shahand
             </p>
 
+            <a href="tel:+998000000000" class="application-phone">
+                📞 +998 XX XXX XX XX
+            </a>
+
         </div>
 
 
         <form class="application-form" id="applicationForm">
+
+            <div class="application-form-title">
+                Ro‘yxatdan o‘tish
+            </div>
+
+            <div class="application-form-subtitle">
+                Ma’lumotlaringizni qoldiring — biz siz bilan bog‘lanamiz.
+            </div>
 
             <div class="form-grid">
 
