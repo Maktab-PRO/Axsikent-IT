@@ -32,12 +32,16 @@ def verify_token(token: str):
             algorithms=[ALGORITHM]
         )
 
-        student_id = payload.get("sub")
+        user_id = payload.get("sub")
+        role = payload.get("role")
 
-        if student_id is None:
+        if user_id is None or role is None:
             return None
 
-        return int(student_id)
+        return {
+            "id": int(user_id),
+            "role": role
+        }
 
     except (JWTError, ValueError, TypeError):
         return None
