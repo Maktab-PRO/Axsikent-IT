@@ -71,8 +71,11 @@ def login_student(
         )
 
     access_token = create_access_token(
-        {"sub": str(user.id)}
-    )
+    {
+        "sub": str(user.id),
+        "role": "student"
+    }
+)
 
     return {
         "message": "Login muvaffaqiyatli",
