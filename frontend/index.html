@@ -1076,6 +1076,545 @@
                 min-width: 200px;
             }
         }
+        /* =========================
+           HERO — PARTICLES & 3D BADGES
+        ========================= */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+        }
+
+        #heroParticles {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .hero .container.hero-grid {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-3d-badges {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .hero-3d-badge {
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            background: white;
+            box-shadow: 0 20px 45px rgba(0,0,0,.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            animation: badgeFloat 6s ease-in-out infinite, badgeSpin 12s linear infinite;
+            transform-style: preserve-3d;
+        }
+
+        .hero-3d-badge.b1 { top: 6%;  left: 46%; animation-delay: 0s, 0s; }
+        .hero-3d-badge.b2 { top: 62%; left: 40%; animation-delay: 1.2s, .5s; }
+        .hero-3d-badge.b3 { top: 30%; left: 6%;  animation-delay: 2.4s, 1s; }
+        .hero-3d-badge.b4 { top: 78%; left: 12%; animation-delay: 3.6s, 1.5s; }
+
+        @keyframes badgeFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-18px); }
+        }
+
+        @keyframes badgeSpin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        @media (max-width: 1000px) {
+            .hero-3d-badges {
+                display: none;
+            }
+        }
+
+        /* =========================
+           COURSE CARD TILT
+        ========================= */
+
+        .courses-grid {
+            perspective: 1200px;
+        }
+
+        .course-card {
+            will-change: transform;
+        }
+
+        /* =========================
+           STAT COUNT ANIMATION
+        ========================= */
+
+        .stat strong {
+            display: inline-block;
+        }
+
+        /* =========================
+           QUIZ SECTION
+        ========================= */
+
+        .quiz-box {
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 28px;
+            padding: 40px;
+            box-shadow: 0 25px 60px rgba(0,0,0,.06);
+            max-width: 780px;
+            margin: 0 auto;
+        }
+
+        .quiz-progress {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 28px;
+        }
+
+        .quiz-progress-step {
+            height: 6px;
+            flex: 1;
+            border-radius: 6px;
+            background: #eee;
+            transition: .3s;
+        }
+
+        .quiz-progress-step.done {
+            background: #16a34a;
+        }
+
+        .quiz-question-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 22px;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            text-align: left;
+            padding: 16px 20px;
+            border: 2px solid #eee;
+            border-radius: 14px;
+            background: white;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .quiz-option:hover {
+            border-color: #16a34a;
+            background: #f3fbf5;
+        }
+
+        .quiz-result {
+            display: none;
+            text-align: center;
+        }
+
+        .quiz-result.active {
+            display: block;
+        }
+
+        .quiz-question.hidden {
+            display: none;
+        }
+
+        .quiz-result-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .quiz-result-course {
+            font-size: 28px;
+            font-weight: 900;
+            color: #16a34a;
+            margin: 10px 0;
+        }
+
+        .quiz-restart {
+            background: none;
+            border: none;
+            color: #888;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 14px;
+            text-decoration: underline;
+        }
+
+        /* =========================
+           PORTFOLIO / STUDENT PROJECTS
+        ========================= */
+
+        .portfolio-scroll {
+            display: flex;
+            gap: 18px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scroll-snap-type: x mandatory;
+        }
+
+        .portfolio-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .portfolio-scroll::-webkit-scrollbar-thumb {
+            background: #ddd;
+            border-radius: 10px;
+        }
+
+        .portfolio-card {
+            flex: 0 0 260px;
+            scroll-snap-align: start;
+            border-radius: 22px;
+            overflow: hidden;
+            border: 1px solid #e8e8e8;
+            background: white;
+        }
+
+        .portfolio-thumb {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+        }
+
+        .portfolio-info {
+            padding: 16px 18px;
+        }
+
+        .portfolio-info strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .portfolio-info span {
+            color: #777;
+            font-size: 13px;
+        }
+
+        /* =========================
+           TESTIMONIALS
+        ========================= */
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .testimonial-card {
+            background: white;
+            border: 1px solid #e8e8e8;
+            border-radius: 22px;
+            padding: 26px;
+        }
+
+        .testimonial-stars {
+            color: #f5a623;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        .testimonial-text {
+            color: #444;
+            font-size: 15px;
+            margin-bottom: 18px;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .testimonial-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #111, #16a34a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+        }
+
+        .testimonial-author strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .testimonial-author span {
+            color: #888;
+            font-size: 12px;
+        }
+
+        /* =========================
+           CERTIFICATE
+        ========================= */
+
+        .certificate-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .certificate-mockup {
+            background: white;
+            border: 10px solid #16a34a;
+            border-radius: 18px;
+            padding: 35px;
+            box-shadow: 0 30px 70px rgba(0,0,0,.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .certificate-mockup::before {
+            content: "🏅";
+            font-size: 40px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .certificate-mockup h4 {
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: #16a34a;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        .certificate-mockup .cert-name {
+            font-size: 26px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            border-bottom: 2px dashed #ddd;
+            padding-bottom: 10px;
+        }
+
+        .certificate-mockup .cert-sub {
+            color: #777;
+            font-size: 13px;
+        }
+
+        /* =========================
+           COUNTDOWN BANNER
+        ========================= */
+
+        .countdown-banner {
+            background: linear-gradient(135deg, #111, #1c2b1f);
+            color: white;
+            border-radius: 28px;
+            padding: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .countdown-text strong {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .countdown-text span {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .countdown-timer {
+            display: flex;
+            gap: 10px;
+        }
+
+        .countdown-box {
+            background: rgba(255,255,255,.08);
+            border-radius: 12px;
+            padding: 10px 14px;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .countdown-box strong {
+            display: block;
+            font-size: 24px;
+            color: #4ade80;
+        }
+
+        .countdown-box small {
+            color: #ccc;
+            font-size: 11px;
+        }
+
+        /* =========================
+           CTA FLOATING ORBS
+        ========================= */
+
+        .application {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .application-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(50px);
+            opacity: .35;
+            pointer-events: none;
+            animation: orbDrift 14s ease-in-out infinite;
+        }
+
+        .application-orb.o1 {
+            width: 260px;
+            height: 260px;
+            background: #16a34a;
+            top: -60px;
+            left: 10%;
+        }
+
+        .application-orb.o2 {
+            width: 200px;
+            height: 200px;
+            background: #4ade80;
+            bottom: -40px;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        .application-orb.o3 {
+            width: 140px;
+            height: 140px;
+            background: #22c55e;
+            top: 40%;
+            left: 45%;
+            animation-delay: 6s;
+        }
+
+        @keyframes orbDrift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -25px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        .application-grid,
+        .application .section-label,
+        .application-info {
+            position: relative;
+            z-index: 1;
+        }
+
+        .application-form {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* =========================
+           SOCIAL ICONS
+        ========================= */
+
+        .social-icons {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .social-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(255,255,255,.08);
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: .2s;
+        }
+
+        .social-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        .social-icon:hover {
+            background: #16a34a;
+            border-color: #16a34a;
+            transform: translateY(-3px);
+        }
+
+        /* =========================
+           FLOATING TELEGRAM BUTTON
+        ========================= */
+
+        .floating-tg-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #16a34a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 15px 35px rgba(22,163,74,.4);
+            z-index: 1500;
+            animation: tgPulse 2.5s ease-in-out infinite;
+        }
+
+        .floating-tg-btn svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        @keyframes tgPulse {
+            0%, 100% { box-shadow: 0 15px 35px rgba(22,163,74,.4), 0 0 0 0 rgba(22,163,74,.5); }
+            50% { box-shadow: 0 15px 35px rgba(22,163,74,.4), 0 0 0 12px rgba(22,163,74,0); }
+        }
+
+        @media (max-width: 650px) {
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .certificate-wrap {
+                grid-template-columns: 1fr;
+            }
+
+            .countdown-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .floating-tg-btn {
+                width: 52px;
+                height: 52px;
+                bottom: 16px;
+                right: 16px;
+            }
+        }
+
     </style>
 </head>
 
@@ -1141,6 +1680,15 @@
 <main>
 
 <section class="hero" id="home">
+
+    <canvas id="heroParticles"></canvas>
+
+    <div class="hero-3d-badges">
+        <div class="hero-3d-badge b1">🤖</div>
+        <div class="hero-3d-badge b2">💻</div>
+        <div class="hero-3d-badge b3">🧮</div>
+        <div class="hero-3d-badge b4">🇬🇧</div>
+    </div>
 
     <div class="container hero-grid">
 
@@ -1696,6 +2244,114 @@
 
 
 <!-- =========================
+     QUIZ — QAYSI KURS SENGA MOS?
+========================= -->
+
+<section id="quiz">
+
+    <div class="container">
+
+        <div class="section-head" style="margin: 0 auto 45px; text-align: center;">
+
+            <div class="section-label" data-i18n="quiz_label" style="justify-content:center;">
+                Test
+            </div>
+
+            <h2 class="section-title" data-i18n="quiz_title">
+                Qaysi kurs senga mos?
+            </h2>
+
+            <p class="section-text" data-i18n="quiz_subtitle">
+                2 ta savolga javob bering — sizga mos yo‘nalishni taklif qilamiz.
+            </p>
+
+        </div>
+
+
+        <div class="quiz-box">
+
+            <div class="quiz-progress">
+                <div class="quiz-progress-step done" id="quizStep1"></div>
+                <div class="quiz-progress-step" id="quizStep2"></div>
+            </div>
+
+
+            <div class="quiz-question" id="quizQuestion1">
+
+                <div class="quiz-question-title" data-i18n="quiz_q1">
+                    Nimalar sizni ko‘proq qiziqtiradi?
+                </div>
+
+                <div class="quiz-options">
+                    <button class="quiz-option" data-quiz="1" data-course="frontend" data-i18n="quiz_q1_opt1">
+                        🌐 Sayt va ilovalar yaratish
+                    </button>
+                    <button class="quiz-option" data-quiz="1" data-course="ai" data-i18n="quiz_q1_opt2">
+                        🤖 Sun’iy intellekt va robotlar
+                    </button>
+                    <button class="quiz-option" data-quiz="1" data-course="mental" data-i18n="quiz_q1_opt3">
+                        🧮 Tez va aniq hisoblash
+                    </button>
+                    <button class="quiz-option" data-quiz="1" data-course="english" data-i18n="quiz_q1_opt4">
+                        🇬🇧 Xorijiy til va muloqot
+                    </button>
+                </div>
+
+            </div>
+
+
+            <div class="quiz-question hidden" id="quizQuestion2">
+
+                <div class="quiz-question-title" data-i18n="quiz_q2">
+                    Qaysi natija sizga muhimroq?
+                </div>
+
+                <div class="quiz-options">
+                    <button class="quiz-option" data-quiz="2" data-course="frontend" data-i18n="quiz_q2_opt1">
+                        💼 Zamonaviy kasb egallash
+                    </button>
+                    <button class="quiz-option" data-quiz="2" data-course="ai" data-i18n="quiz_q2_opt2">
+                        🚀 Kelajak texnologiyalarida ilg‘or bo‘lish
+                    </button>
+                    <button class="quiz-option" data-quiz="2" data-course="mental" data-i18n="quiz_q2_opt3">
+                        🧠 Miya faoliyatini rivojlantirish
+                    </button>
+                    <button class="quiz-option" data-quiz="2" data-course="english" data-i18n="quiz_q2_opt4">
+                        🎓 Xalqaro sertifikat va til bilimi
+                    </button>
+                </div>
+
+            </div>
+
+
+            <div class="quiz-result" id="quizResult">
+
+                <div class="quiz-result-icon" id="quizResultIcon">🎯</div>
+
+                <div data-i18n="quiz_result_title">Sizga mos kurs:</div>
+
+                <div class="quiz-result-course" id="quizResultCourse"></div>
+
+                <button class="btn btn-primary" id="quizCtaBtn" data-i18n="quiz_cta">
+                    Ariza qoldirish
+                </button>
+
+                <br>
+
+                <button class="quiz-restart" id="quizRestartBtn" data-i18n="quiz_restart">
+                    Qayta boshlash
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
      TEACHERS
 ========================= -->
 
@@ -1916,6 +2572,201 @@
 
 
 <!-- =========================
+     PORTFOLIO / STUDENT PROJECTS
+========================= -->
+
+<section id="portfolio">
+
+    <div class="container">
+
+        <div class="section-head">
+
+            <div class="section-label" data-i18n="portfolio_label">
+                Loyihalar
+            </div>
+
+            <h2 class="section-title" data-i18n="portfolio_title">
+                O‘quvchilarimiz nima yaratmoqda?
+            </h2>
+
+            <p class="section-text" data-i18n="portfolio_text">
+                Kurs davomida o‘quvchilar yaratgan namunaviy loyihalar.
+            </p>
+
+        </div>
+
+
+        <div class="portfolio-scroll">
+
+            <div class="portfolio-card">
+                <div class="portfolio-thumb" style="background:linear-gradient(135deg,#16a34a,#4ade80);">🌐</div>
+                <div class="portfolio-info">
+                    <strong data-i18n="portfolio1_title">Veb-sayt loyihasi</strong>
+                    <span data-i18n="portfolio1_desc">Frontend kursi o‘quvchisi ishi</span>
+                </div>
+            </div>
+
+            <div class="portfolio-card">
+                <div class="portfolio-thumb" style="background:linear-gradient(135deg,#111,#333);">🤖</div>
+                <div class="portfolio-info">
+                    <strong data-i18n="portfolio2_title">AI chatbot</strong>
+                    <span data-i18n="portfolio2_desc">Sun’iy intellekt kursi o‘quvchisi ishi</span>
+                </div>
+            </div>
+
+            <div class="portfolio-card">
+                <div class="portfolio-thumb" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);">🦾</div>
+                <div class="portfolio-info">
+                    <strong data-i18n="portfolio3_title">Robot loyihasi</strong>
+                    <span data-i18n="portfolio3_desc">Robototexnika kursi o‘quvchisi ishi</span>
+                </div>
+            </div>
+
+            <div class="portfolio-card">
+                <div class="portfolio-thumb" style="background:linear-gradient(135deg,#3b82f6,#60a5fa);">🧊</div>
+                <div class="portfolio-info">
+                    <strong data-i18n="portfolio4_title">3D model</strong>
+                    <span data-i18n="portfolio4_desc">3D Modellashtirish kursi o‘quvchisi ishi</span>
+                </div>
+            </div>
+
+            <div class="portfolio-card">
+                <div class="portfolio-thumb" style="background:linear-gradient(135deg,#ec4899,#f472b6);">🎨</div>
+                <div class="portfolio-info">
+                    <strong data-i18n="portfolio5_title">Grafik dizayn</strong>
+                    <span data-i18n="portfolio5_desc">Dizayn kursi o‘quvchisi ishi</span>
+                </div>
+            </div>
+
+            <div class="portfolio-card">
+                <div class="portfolio-thumb" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);">📱</div>
+                <div class="portfolio-info">
+                    <strong data-i18n="portfolio6_title">Ilova prototipi</strong>
+                    <span data-i18n="portfolio6_desc">Backend kursi o‘quvchisi ishi</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     TESTIMONIALS
+========================= -->
+
+<section id="testimonials">
+
+    <div class="container">
+
+        <div class="section-head">
+
+            <div class="section-label" data-i18n="testimonials_label">
+                Fikrlar
+            </div>
+
+            <h2 class="section-title" data-i18n="testimonials_title">
+                O‘quvchi va ota-onalar fikri
+            </h2>
+
+        </div>
+
+
+        <!-- DIQQAT: bu namunaviy (o'rinbosar) sharhlar — real o'quvchi fikrlariga almashtiring -->
+
+        <div class="testimonials-grid">
+
+            <div class="testimonial-card">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text" data-i18n="testimonial1_text">
+                    “Farzandim mental arifmetika darslariga qatnab, hisoblashni ancha tezlashtirdi. Ustozlar juda e’tiborli.”
+                </p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">D</div>
+                    <div>
+                        <strong data-i18n="testimonial1_name">Dilnoza (ona)</strong>
+                        <span data-i18n="testimonial1_role">O‘quvchi ota-onasi</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text" data-i18n="testimonial2_text">
+                    “Frontend kursida noldan boshlab, hozir o‘zimning birinchi web-saytimni yaratdim. Amaliyot juda ko‘p edi.”
+                </p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">J</div>
+                    <div>
+                        <strong data-i18n="testimonial2_name">Jasur</strong>
+                        <span data-i18n="testimonial2_role">Frontend kursi bitiruvchisi</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text" data-i18n="testimonial3_text">
+                    “AI kursi menga zamonaviy texnologiyalarni chuqur tushunishga yordam berdi. Ustozlar amaliyotchi mutaxassislar.”
+                </p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">M</div>
+                    <div>
+                        <strong data-i18n="testimonial3_name">Muslima</strong>
+                        <span data-i18n="testimonial3_role">Sun’iy intellekt kursi o‘quvchisi</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     CERTIFICATE
+========================= -->
+
+<section id="certificate">
+
+    <div class="container">
+
+        <div class="certificate-wrap">
+
+            <div>
+
+                <div class="section-label" data-i18n="certificate_label">
+                    Sertifikat
+                </div>
+
+                <h2 class="section-title" data-i18n="certificate_title">
+                    Kursni tugatib, sertifikat oling
+                </h2>
+
+                <p class="section-text" data-i18n="certificate_text">
+                    Har bir kursni muvaffaqiyatli tugatgan o‘quvchi rasmiy sertifikat bilan taqdirlanadi — bu portfolio va rezyumeingizga qo‘shimcha kuch bag‘ishlaydi.
+                </p>
+
+            </div>
+
+            <div class="certificate-mockup">
+                <h4 data-i18n="certificate_mockup_label">Sertifikat</h4>
+                <div class="cert-name" data-i18n="certificate_mockup_name">F. I. Sh.</div>
+                <div class="cert-sub" data-i18n="certificate_mockup_sub">AKHSIKENT IT — kursni muvaffaqiyatli tamomlagani uchun</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
      HISTORY
 ========================= -->
 
@@ -2091,10 +2942,55 @@
 
 
 <!-- =========================
+     COUNTDOWN BANNER
+========================= -->
+
+<section style="padding-top: 0;">
+
+    <div class="container">
+
+        <div class="countdown-banner">
+
+            <div class="countdown-text">
+                <strong data-i18n="countdown_title">Yangi guruh boshlanishiga:</strong>
+                <span data-i18n="countdown_subtitle">O‘rinlar soni cheklangan — hoziroq yoziling</span>
+            </div>
+
+            <div class="countdown-timer" id="countdownTimer">
+                <div class="countdown-box">
+                    <strong id="cdDays">00</strong>
+                    <small data-i18n="countdown_days">kun</small>
+                </div>
+                <div class="countdown-box">
+                    <strong id="cdHours">00</strong>
+                    <small data-i18n="countdown_hours">soat</small>
+                </div>
+                <div class="countdown-box">
+                    <strong id="cdMinutes">00</strong>
+                    <small data-i18n="countdown_minutes">daqiqa</small>
+                </div>
+                <div class="countdown-box">
+                    <strong id="cdSeconds">00</strong>
+                    <small data-i18n="countdown_seconds">soniya</small>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
      APPLICATION
 ========================= -->
 
 <section id="application" class="application">
+
+    <div class="application-orb o1"></div>
+    <div class="application-orb o2"></div>
+    <div class="application-orb o3"></div>
 
     <div class="container application-grid">
 
@@ -2428,6 +3324,43 @@
 
 
 <!-- =========================
+     SOCIAL FOLLOW
+========================= -->
+
+<section style="background:#111; padding: 50px 0;">
+
+    <div class="container" style="text-align:center;">
+
+        <div class="section-label" style="color:#4ade80; justify-content:center;" data-i18n="follow_us">
+            Bizni kuzating
+        </div>
+
+        <div class="social-icons" style="justify-content:center; margin-top:14px;">
+
+            <a href="https://t.me/akhsikent_it" target="_blank" rel="noopener" class="social-icon" aria-label="Telegram">
+                <svg viewBox="0 0 24 24"><path d="M21.9 3.6c.3-1.1-.7-2-1.8-1.6L1.6 9.6c-1.1.4-1.1 1.9 0 2.3l4.8 1.6 1.9 5.9c.3.9 1.5 1.1 2.1.4l2.6-2.9 4.9 3.6c.9.6 2.1.1 2.3-1L21.9 3.6zM8.6 13.8l9.1-6.9c.3-.2.6.2.4.4l-7.6 7.2-.3 3-1.6-3.7z"/></svg>
+            </a>
+
+            <a href="https://instagram.com/akhsikent_it" target="_blank" rel="noopener" class="social-icon" aria-label="Instagram">
+                <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 2 .3 2.4.5.6.2 1 .5 1.5 1 .4.4.7.8 1 1.5.2.5.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 2-.5 2.4-.2.6-.5 1-1 1.5-.4.4-.8.7-1.5 1-.5.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-2-.3-2.4-.5-.6-.2-1-.5-1.5-1-.4-.4-.7-.8-1-1.5-.2-.5-.4-1.2-.5-2.4-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c.1-1.2.3-2 .5-2.4.2-.6.5-1 1-1.5.4-.4.8-.7 1.5-1 .5-.2 1.2-.4 2.4-.5 1.3-.1 1.7-.1 4.9-.1zM12 0C8.7 0 8.3 0 7 .1c-1.3.1-2.2.3-3 .6-.8.3-1.5.7-2.2 1.4C1.1 2.8.7 3.5.4 4.3c-.3.8-.5 1.7-.6 3C-.3 8.6-.3 9 -.3 12.3s0 3.7.1 5c.1 1.3.3 2.2.6 3 .3.8.7 1.5 1.4 2.2.7.7 1.4 1.1 2.2 1.4.8.3 1.7.5 3 .6 1.3.1 1.7.1 5 .1s3.7 0 5-.1c1.3-.1 2.2-.3 3-.6.8-.3 1.5-.7 2.2-1.4.7-.7 1.1-1.4 1.4-2.2.3-.8.5-1.7.6-3 .1-1.3.1-1.7.1-5s0-3.7-.1-5c-.1-1.3-.3-2.2-.6-3-.3-.8-.7-1.5-1.4-2.2C21.2 1.1 20.5.7 19.7.4c-.8-.3-1.7-.5-3-.6C15.4 0 15 0 12 0zm0 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zm0 10.2a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm7.9-10.5a1.4 1.4 0 1 1-2.9 0 1.4 1.4 0 0 1 2.9 0z"/></svg>
+            </a>
+
+            <a href="https://youtube.com/@akhsikent_it" target="_blank" rel="noopener" class="social-icon" aria-label="YouTube">
+                <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+            </a>
+
+            <a href="https://facebook.com/akhsikent_it" target="_blank" rel="noopener" class="social-icon" aria-label="Facebook">
+                <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg>
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
      FOOTER
 ========================= -->
 
@@ -2531,6 +3464,11 @@
 <!-- =========================
      COURSE MODAL
 ========================= -->
+
+<a href="https://t.me/akhsikent_it" target="_blank" rel="noopener" class="floating-tg-btn" aria-label="Telegram">
+    <svg viewBox="0 0 24 24"><path d="M21.9 3.6c.3-1.1-.7-2-1.8-1.6L1.6 9.6c-1.1.4-1.1 1.9 0 2.3l4.8 1.6 1.9 5.9c.3.9 1.5 1.1 2.1.4l2.6-2.9 4.9 3.6c.9.6 2.1.1 2.3-1L21.9 3.6zM8.6 13.8l9.1-6.9c.3-.2.6.2.4.4l-7.6 7.2-.3 3-1.6-3.7z"/></svg>
+</a>
+
 
 <div class="modal" id="courseModal">
 
@@ -3683,7 +4621,68 @@
 
             footer_tagline: "Zamonaviy bilim, amaliyot va kelajak kasblari.",
             footer_platform_header: "Platforma",
-            footer_rights: "Barcha huquqlar himoyalangan."
+            footer_rights: "Barcha huquqlar himoyalangan.",
+
+            quiz_label: "Test",
+            quiz_title: "Qaysi kurs senga mos?",
+            quiz_subtitle: "2 ta savolga javob bering — sizga mos yo‘nalishni taklif qilamiz.",
+            quiz_q1: "Nimalar sizni ko‘proq qiziqtiradi?",
+            quiz_q1_opt1: "🌐 Sayt va ilovalar yaratish",
+            quiz_q1_opt2: "🤖 Sun’iy intellekt va robotlar",
+            quiz_q1_opt3: "🧮 Tez va aniq hisoblash",
+            quiz_q1_opt4: "🇬🇧 Xorijiy til va muloqot",
+            quiz_q2: "Qaysi natija sizga muhimroq?",
+            quiz_q2_opt1: "💼 Zamonaviy kasb egallash",
+            quiz_q2_opt2: "🚀 Kelajak texnologiyalarida ilg‘or bo‘lish",
+            quiz_q2_opt3: "🧠 Miya faoliyatini rivojlantirish",
+            quiz_q2_opt4: "🎓 Xalqaro sertifikat va til bilimi",
+            quiz_result_title: "Sizga mos kurs:",
+            quiz_cta: "Ariza qoldirish",
+            quiz_restart: "Qayta boshlash",
+
+            portfolio_label: "Loyihalar",
+            portfolio_title: "O‘quvchilarimiz nima yaratmoqda?",
+            portfolio_text: "Kurs davomida o‘quvchilar yaratgan namunaviy loyihalar.",
+            portfolio1_title: "Veb-sayt loyihasi",
+            portfolio1_desc: "Frontend kursi o‘quvchisi ishi",
+            portfolio2_title: "AI chatbot",
+            portfolio2_desc: "Sun’iy intellekt kursi o‘quvchisi ishi",
+            portfolio3_title: "Robot loyihasi",
+            portfolio3_desc: "Robototexnika kursi o‘quvchisi ishi",
+            portfolio4_title: "3D model",
+            portfolio4_desc: "3D Modellashtirish kursi o‘quvchisi ishi",
+            portfolio5_title: "Grafik dizayn",
+            portfolio5_desc: "Dizayn kursi o‘quvchisi ishi",
+            portfolio6_title: "Ilova prototipi",
+            portfolio6_desc: "Backend kursi o‘quvchisi ishi",
+
+            testimonials_label: "Fikrlar",
+            testimonials_title: "O‘quvchi va ota-onalar fikri",
+            testimonial1_text: "“Farzandim mental arifmetika darslariga qatnab, hisoblashni ancha tezlashtirdi. Ustozlar juda e’tiborli.”",
+            testimonial1_name: "Dilnoza (ona)",
+            testimonial1_role: "O‘quvchi ota-onasi",
+            testimonial2_text: "“Frontend kursida noldan boshlab, hozir o‘zimning birinchi web-saytimni yaratdim. Amaliyot juda ko‘p edi.”",
+            testimonial2_name: "Jasur",
+            testimonial2_role: "Frontend kursi bitiruvchisi",
+            testimonial3_text: "“AI kursi menga zamonaviy texnologiyalarni chuqur tushunishga yordam berdi. Ustozlar amaliyotchi mutaxassislar.”",
+            testimonial3_name: "Muslima",
+            testimonial3_role: "Sun’iy intellekt kursi o‘quvchisi",
+
+            certificate_label: "Sertifikat",
+            certificate_title: "Kursni tugatib, sertifikat oling",
+            certificate_text: "Har bir kursni muvaffaqiyatli tugatgan o‘quvchi rasmiy sertifikat bilan taqdirlanadi — bu portfolio va rezyumeingizga qo‘shimcha kuch bag‘ishlaydi.",
+            certificate_mockup_label: "Sertifikat",
+            certificate_mockup_name: "F. I. Sh.",
+            certificate_mockup_sub: "AKHSIKENT IT — kursni muvaffaqiyatli tamomlagani uchun",
+
+            countdown_title: "Yangi guruh boshlanishiga:",
+            countdown_subtitle: "O‘rinlar soni cheklangan — hoziroq yoziling",
+            countdown_days: "kun",
+            countdown_hours: "soat",
+            countdown_minutes: "daqiqa",
+            countdown_seconds: "soniya",
+
+            follow_us: "Bizni kuzating"
         },
 
 
@@ -3844,7 +4843,68 @@
 
             footer_tagline: "Современные знания, практика и профессии будущего.",
             footer_platform_header: "Платформа",
-            footer_rights: "Все права защищены."
+            footer_rights: "Все права защищены.",
+
+            quiz_label: "Тест",
+            quiz_title: "Какой курс вам подходит?",
+            quiz_subtitle: "Ответьте на 2 вопроса — мы подберём подходящее направление.",
+            quiz_q1: "Что вас больше всего интересует?",
+            quiz_q1_opt1: "🌐 Создание сайтов и приложений",
+            quiz_q1_opt2: "🤖 Искусственный интеллект и роботы",
+            quiz_q1_opt3: "🧮 Быстрый и точный счёт",
+            quiz_q1_opt4: "🇬🇧 Иностранный язык и общение",
+            quiz_q2: "Какой результат для вас важнее?",
+            quiz_q2_opt1: "💼 Освоить современную профессию",
+            quiz_q2_opt2: "🚀 Быть впереди в технологиях будущего",
+            quiz_q2_opt3: "🧠 Развить работу мозга",
+            quiz_q2_opt4: "🎓 Международный сертификат и язык",
+            quiz_result_title: "Вам подходит курс:",
+            quiz_cta: "Оставить заявку",
+            quiz_restart: "Начать заново",
+
+            portfolio_label: "Проекты",
+            portfolio_title: "Что создают наши ученики?",
+            portfolio_text: "Примеры проектов, созданных учениками во время курса.",
+            portfolio1_title: "Веб-сайт проект",
+            portfolio1_desc: "Работа ученика курса Frontend",
+            portfolio2_title: "AI чат-бот",
+            portfolio2_desc: "Работа ученика курса ИИ",
+            portfolio3_title: "Проект робота",
+            portfolio3_desc: "Работа ученика курса Робототехники",
+            portfolio4_title: "3D модель",
+            portfolio4_desc: "Работа ученика курса 3D-моделирования",
+            portfolio5_title: "Графический дизайн",
+            portfolio5_desc: "Работа ученика курса дизайна",
+            portfolio6_title: "Прототип приложения",
+            portfolio6_desc: "Работа ученика курса Backend",
+
+            testimonials_label: "Отзывы",
+            testimonials_title: "Мнение учеников и родителей",
+            testimonial1_text: "«Мой ребёнок посещает занятия по ментальной арифметике и стал считать намного быстрее. Преподаватели очень внимательные».",
+            testimonial1_name: "Дилноза (мама)",
+            testimonial1_role: "Родитель ученика",
+            testimonial2_text: "«Начал с нуля на курсе Frontend, а сейчас создал свой первый веб-сайт. Практики было очень много».",
+            testimonial2_name: "Жасур",
+            testimonial2_role: "Выпускник курса Frontend",
+            testimonial3_text: "«Курс ИИ помог мне глубоко понять современные технологии. Преподаватели — практикующие специалисты».",
+            testimonial3_name: "Муслима",
+            testimonial3_role: "Ученица курса ИИ",
+
+            certificate_label: "Сертификат",
+            certificate_title: "Завершите курс и получите сертификат",
+            certificate_text: "Каждый ученик, успешно завершивший курс, получает официальный сертификат — это дополнительная сила для вашего портфолио и резюме.",
+            certificate_mockup_label: "Сертификат",
+            certificate_mockup_name: "Ф. И. О.",
+            certificate_mockup_sub: "AKHSIKENT IT — за успешное завершение курса",
+
+            countdown_title: "До начала новой группы:",
+            countdown_subtitle: "Количество мест ограничено — записывайтесь прямо сейчас",
+            countdown_days: "дн.",
+            countdown_hours: "ч.",
+            countdown_minutes: "мин.",
+            countdown_seconds: "сек.",
+
+            follow_us: "Мы в соцсетях"
         },
 
 
@@ -4005,7 +5065,68 @@
 
             footer_tagline: "Modern knowledge, practice and future careers.",
             footer_platform_header: "Platform",
-            footer_rights: "All rights reserved."
+            footer_rights: "All rights reserved.",
+
+            quiz_label: "Quiz",
+            quiz_title: "Which course fits you?",
+            quiz_subtitle: "Answer 2 questions — we'll suggest the right direction for you.",
+            quiz_q1: "What interests you the most?",
+            quiz_q1_opt1: "🌐 Building websites and apps",
+            quiz_q1_opt2: "🤖 Artificial intelligence and robots",
+            quiz_q1_opt3: "🧮 Fast and accurate calculation",
+            quiz_q1_opt4: "🇬🇧 Foreign language and communication",
+            quiz_q2: "Which outcome matters more to you?",
+            quiz_q2_opt1: "💼 Gaining a modern profession",
+            quiz_q2_opt2: "🚀 Staying ahead in future technology",
+            quiz_q2_opt3: "🧠 Developing brain performance",
+            quiz_q2_opt4: "🎓 International certificate and language skills",
+            quiz_result_title: "The course for you:",
+            quiz_cta: "Apply now",
+            quiz_restart: "Start over",
+
+            portfolio_label: "Projects",
+            portfolio_title: "What are our students building?",
+            portfolio_text: "Sample projects created by students during the course.",
+            portfolio1_title: "Website project",
+            portfolio1_desc: "Work by a Frontend course student",
+            portfolio2_title: "AI chatbot",
+            portfolio2_desc: "Work by an AI course student",
+            portfolio3_title: "Robot project",
+            portfolio3_desc: "Work by a Robotics course student",
+            portfolio4_title: "3D model",
+            portfolio4_desc: "Work by a 3D Modeling course student",
+            portfolio5_title: "Graphic design",
+            portfolio5_desc: "Work by a Design course student",
+            portfolio6_title: "App prototype",
+            portfolio6_desc: "Work by a Backend course student",
+
+            testimonials_label: "Testimonials",
+            testimonials_title: "What students and parents say",
+            testimonial1_text: "\"My child attends the mental arithmetic classes and calculates much faster now. The teachers are very attentive.\"",
+            testimonial1_name: "Dilnoza (parent)",
+            testimonial1_role: "Parent of a student",
+            testimonial2_text: "\"I started from scratch in the Frontend course, and now I've built my first website. There was a lot of practice.\"",
+            testimonial2_name: "Jasur",
+            testimonial2_role: "Frontend course graduate",
+            testimonial3_text: "\"The AI course helped me deeply understand modern technology. The teachers are practicing specialists.\"",
+            testimonial3_name: "Muslima",
+            testimonial3_role: "AI course student",
+
+            certificate_label: "Certificate",
+            certificate_title: "Finish the course and get a certificate",
+            certificate_text: "Every student who successfully completes a course receives an official certificate — an extra boost for your portfolio and resume.",
+            certificate_mockup_label: "Certificate",
+            certificate_mockup_name: "Full Name",
+            certificate_mockup_sub: "AKHSIKENT IT — for successfully completing the course",
+
+            countdown_title: "New group starts in:",
+            countdown_subtitle: "Limited seats available — sign up now",
+            countdown_days: "days",
+            countdown_hours: "hrs",
+            countdown_minutes: "min",
+            countdown_seconds: "sec",
+
+            follow_us: "Follow us"
         }
 
     };
@@ -4107,6 +5228,329 @@
         setLanguage(savedLanguage);
 
     }
+
+
+    /* =========================
+       HERO PARTICLES (canvas)
+    ========================= */
+
+    (function initHeroParticles() {
+
+        const canvas = document.getElementById("heroParticles");
+
+        if (!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+
+        let particles = [];
+        let width, height;
+
+        function resize() {
+            const hero = canvas.closest(".hero");
+            width = canvas.width = hero.offsetWidth;
+            height = canvas.height = hero.offsetHeight;
+        }
+
+        function createParticles() {
+            const count = Math.min(60, Math.floor((width * height) / 18000));
+            particles = [];
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    r: Math.random() * 2 + 1
+                });
+            }
+        }
+
+        function tick() {
+
+            ctx.clearRect(0, 0, width, height);
+
+            for (let i = 0; i < particles.length; i++) {
+
+                const p = particles[i];
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < 0 || p.x > width) p.vx *= -1;
+                if (p.y < 0 || p.y > height) p.vy *= -1;
+
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = "rgba(22,163,74,0.35)";
+                ctx.fill();
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    const q = particles[j];
+                    const dx = p.x - q.x;
+                    const dy = p.y - q.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(q.x, q.y);
+                        ctx.strokeStyle = "rgba(22,163,74," + (0.15 * (1 - dist / 120)) + ")";
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(tick);
+        }
+
+        resize();
+        createParticles();
+        tick();
+
+        window.addEventListener("resize", function() {
+            resize();
+            createParticles();
+        });
+
+    })();
+
+
+    /* =========================
+       COURSE CARD 3D TILT
+    ========================= */
+
+    document.querySelectorAll(".course-card").forEach(card => {
+
+        card.addEventListener("mousemove", function(e) {
+
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const rotateX = ((y / rect.height) - 0.5) * -10;
+            const rotateY = ((x / rect.width) - 0.5) * 10;
+
+            card.style.transform =
+                `translateY(-5px) perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+        });
+
+        card.addEventListener("mouseleave", function() {
+            card.style.transform = "";
+        });
+
+    });
+
+
+    /* =========================
+       ANIMATED STAT COUNTERS
+    ========================= */
+
+    (function initStatCounters() {
+
+        const statEls = document.querySelectorAll(".stat strong");
+
+        const observer = new IntersectionObserver(function(entries) {
+
+            entries.forEach(entry => {
+
+                if (!entry.isIntersecting) return;
+
+                const el = entry.target;
+
+                if (el.dataset.counted) return;
+                el.dataset.counted = "1";
+
+                const raw = el.textContent.trim();
+                const match = raw.match(/[\d.]+/);
+
+                if (!match) return; // e.g. "∞" — leave as-is
+
+                const target = parseFloat(match[0]);
+                const prefix = raw.slice(0, match.index);
+                const suffix = raw.slice(match.index + match[0].length);
+
+                let current = 0;
+                const duration = 1200;
+                const startTime = performance.now();
+
+                function step(now) {
+                    const progress = Math.min((now - startTime) / duration, 1);
+                    current = Math.floor(progress * target);
+                    el.textContent = prefix + current + suffix;
+                    if (progress < 1) {
+                        requestAnimationFrame(step);
+                    } else {
+                        el.textContent = prefix + target + suffix;
+                    }
+                }
+
+                requestAnimationFrame(step);
+
+                observer.unobserve(el);
+
+            });
+
+        }, { threshold: 0.4 });
+
+        statEls.forEach(el => observer.observe(el));
+
+    })();
+
+
+    /* =========================
+       QUIZ — QAYSI KURS SENGA MOS?
+    ========================= */
+
+    (function initQuiz() {
+
+        const quizScores = { frontend: 0, ai: 0, mental: 0, english: 0 };
+        const quizIcons = { frontend: "🌐", ai: "🤖", mental: "🧮", english: "🇬🇧" };
+        const quizSelectValue = {
+            frontend: "Frontend",
+            ai: "Sun’iy intellekt",
+            mental: "Mental arifmetika",
+            english: "Ingliz tili"
+        };
+
+        const q1 = document.getElementById("quizQuestion1");
+        const q2 = document.getElementById("quizQuestion2");
+        const resultBox = document.getElementById("quizResult");
+        const step1 = document.getElementById("quizStep1");
+        const step2 = document.getElementById("quizStep2");
+
+        if (!q1 || !q2) return;
+
+        document.querySelectorAll('.quiz-option[data-quiz="1"]').forEach(btn => {
+            btn.addEventListener("click", function() {
+                quizScores[this.dataset.course]++;
+                q1.classList.add("hidden");
+                q2.classList.remove("hidden");
+                step2.classList.add("done");
+            });
+        });
+
+        document.querySelectorAll('.quiz-option[data-quiz="2"]').forEach(btn => {
+            btn.addEventListener("click", function() {
+                quizScores[this.dataset.course]++;
+                q2.classList.add("hidden");
+                showQuizResult();
+            });
+        });
+
+        function showQuizResult() {
+
+            let bestKey = "frontend";
+            let bestScore = -1;
+
+            Object.keys(quizScores).forEach(key => {
+                if (quizScores[key] > bestScore) {
+                    bestScore = quizScores[key];
+                    bestKey = key;
+                }
+            });
+
+            const data = translations[currentLang] || translations.uz;
+
+            document.getElementById("quizResultIcon").textContent = quizIcons[bestKey];
+            document.getElementById("quizResultCourse").textContent = data["course_" + bestKey + "_title"];
+
+            resultBox.classList.add("active");
+            resultBox.dataset.selectedCourse = bestKey;
+
+        }
+
+        const ctaBtn = document.getElementById("quizCtaBtn");
+
+        if (ctaBtn) {
+            ctaBtn.addEventListener("click", function() {
+
+                const bestKey = resultBox.dataset.selectedCourse || "frontend";
+
+                document.getElementById("application")
+                    .scrollIntoView({ behavior: "smooth" });
+
+                setTimeout(() => {
+                    const select = document.getElementById("interested_course");
+                    if (select) {
+                        select.value = quizSelectValue[bestKey];
+                    }
+                }, 500);
+
+            });
+        }
+
+        const restartBtn = document.getElementById("quizRestartBtn");
+
+        if (restartBtn) {
+            restartBtn.addEventListener("click", function() {
+
+                Object.keys(quizScores).forEach(k => quizScores[k] = 0);
+
+                resultBox.classList.remove("active");
+                q2.classList.add("hidden");
+                q1.classList.remove("hidden");
+                step2.classList.remove("done");
+
+            });
+        }
+
+    })();
+
+
+    /* =========================
+       COUNTDOWN — YANGI GURUH
+    ========================= */
+
+    (function initCountdown() {
+
+        const dEl = document.getElementById("cdDays");
+        const hEl = document.getElementById("cdHours");
+        const mEl = document.getElementById("cdMinutes");
+        const sEl = document.getElementById("cdSeconds");
+
+        if (!dEl) return;
+
+        function getNextTarget() {
+            // Har doim "keyingi oyning 1-kuni, 09:00" ga sanaydi
+            const now = new Date();
+            const target = new Date(now.getFullYear(), now.getMonth() + 1, 1, 9, 0, 0);
+            return target;
+        }
+
+        let target = getNextTarget();
+
+        function pad(n) {
+            return String(n).padStart(2, "0");
+        }
+
+        function tick() {
+
+            const now = new Date();
+            let diff = target - now;
+
+            if (diff <= 0) {
+                target = getNextTarget();
+                diff = target - now;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            dEl.textContent = pad(days);
+            hEl.textContent = pad(hours);
+            mEl.textContent = pad(minutes);
+            sEl.textContent = pad(seconds);
+
+        }
+
+        tick();
+        setInterval(tick, 1000);
+
+    })();
 
 
 </script>
