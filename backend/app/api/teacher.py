@@ -85,7 +85,7 @@ def login_teacher(
 
     access_token = create_access_token(
     {
-        "sub": str(teacher.id),
+        "sub": str(user.id),
         "role": "teacher"
     }
 )
