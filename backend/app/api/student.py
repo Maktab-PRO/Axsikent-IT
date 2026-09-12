@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
@@ -9,6 +10,8 @@ from app.core.security import create_access_token
 
 
 router = APIRouter(prefix="/students", tags=["Students"])
+
+security = HTTPBearer()
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
@@ -85,3 +88,35 @@ def login_student(
     "full_name": user.full_name,
     "role": "student"
 }
+
+@router.get("/me")
+def get_current_student(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    from app.core.security import verify_token
+
+    student_id = verify_token(credentials.credentials)
+
+    if not student_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    student = db.query(Student).filter(
+        Student.id == student_id
+    ).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="O'quvchi topilmadi"
+        )
+
+    return {
+        "id": student.id,
+        "full_name": student.full_name,
+        "phone": student.phone,
+        "is_active": student.is_active
+    }
