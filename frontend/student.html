@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Axsikent IT — Student Cabinet</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .topbar {
+            height: 72px;
+            background: #ffffff;
+            border-bottom: 1px solid #e5e9f2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 35px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .notification {
+            width: 42px;
+            height: 42px;
+            border: 1px solid #e5e9f2;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .profile-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 10px;
+            border-radius: 12px;
+            background: #f7f8fc;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .profile-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* =========================
+           LAYOUT
+        ========================= */
+
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 72px);
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            width: 255px;
+            background: #111827;
+            color: white;
+            padding: 25px 15px;
+            flex-shrink: 0;
+        }
+
+        .menu-title {
+            color: #8f9bb3;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 15px;
+            margin-bottom: 5px;
+        }
+
+        .menu-item {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: #cbd5e1;
+            padding: 13px 15px;
+            border-radius: 10px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: left;
+            transition: 0.2s;
+        }
+
+        .menu-item:hover,
+        .menu-item.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .menu-icon {
+            width: 22px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .logout {
+            margin-top: 30px;
+            color: #fca5a5;
+        }
+
+        .logout:hover {
+            background: #7f1d1d;
+            color: white;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            flex: 1;
+            padding: 35px;
+            max-width: 1500px;
+        }
+
+        .welcome {
+            background: linear-gradient(135deg, #1d4ed8, #6d28d9);
+            color: white;
+            border-radius: 22px;
+            padding: 35px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome::after {
+            content: "🎓";
+            position: absolute;
+            right: 50px;
+            bottom: -15px;
+            font-size: 110px;
+            opacity: 0.15;
+        }
+
+        .welcome-small {
+            font-size: 13px;
+            opacity: 0.85;
+            margin-bottom: 10px;
+        }
+
+        .welcome h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            opacity: 0.9;
+            max-width: 650px;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e7ebf2;
+            border-radius: 17px;
+            padding: 22px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: #eef4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #7b8496;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        /* =========================
+           GRID
+        ========================= */
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 22px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e7ebf2;
+            border-radius: 18px;
+            padding: 25px;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .card-header h2 {
+            font-size: 19px;
+        }
+
+        .view-all {
+            color: #2563eb;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* =========================
+           COURSE
+        ========================= */
+
+        .course {
+            border: 1px solid #e7ebf2;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 12px;
+        }
+
+        .course:last-child {
+            margin-bottom: 0;
+        }
+
+        .course-top {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .course-icon {
+            width: 45px;
+            height: 45px;
+            background: #eef4ff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .course-name {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .course-info {
+            color: #7b8496;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .progress {
+            height: 7px;
+            background: #edf0f5;
+            border-radius: 10px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #7b8496;
+            margin-top: 7px;
+        }
+
+        /* =========================
+           QUICK ACTIONS
+        ========================= */
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .quick {
+            border: 1px solid #e7ebf2;
+            background: white;
+            border-radius: 14px;
+            padding: 18px 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .quick:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .quick-icon {
+            font-size: 25px;
+            margin-bottom: 8px;
+        }
+
+        .quick span {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* =========================
+           TASKS
+        ========================= */
+
+        .task {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 0;
+            border-bottom: 1px solid #edf0f5;
+        }
+
+        .task:last-child {
+            border-bottom: none;
+        }
+
+        .task-check {
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            background: #eef4ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .task-name {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .task-date {
+            color: #8a93a5;
+            font-size: 11px;
+            margin-top: 3px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 1000px) {
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 750px) {
+            .topbar {
+                padding: 0 15px;
+            }
+
+            .profile-name {
+                display: none;
+            }
+
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 10px;
+                display: flex;
+                overflow-x: auto;
+                gap: 5px;
+            }
+
+            .menu-title {
+                display: none;
+            }
+
+            .menu-item {
+                width: auto;
+                white-space: nowrap;
+                margin: 0;
+            }
+
+            .logout {
+                margin-top: 0;
+            }
+
+            .main {
+                padding: 18px 14px;
+            }
+
+            .welcome {
+                padding: 25px;
+            }
+
+            .welcome h1 {
+                font-size: 23px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+
+            .stat-value {
+                font-size: 18px;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                height: 62px;
+            }
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .logo-icon {
+                width: 36px;
+                height: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- =========================
+     TOPBAR
+========================= -->
+
+<header class="topbar">
+
+    <div class="logo">
+        <div class="logo-icon">A</div>
+        Axsikent IT
+    </div>
+
+    <div class="topbar-right">
+
+        <button class="notification" onclick="showMessage('Hozircha yangi bildirishnoma yo‘q 🔔')">
+            🔔
+        </button>
+
+        <div class="profile-mini">
+            <div class="avatar" id="avatarLetter">A</div>
+
+            <div class="profile-name" id="topStudentName">
+                O‘quvchi
+            </div>
+        </div>
+
+    </div>
+
+</header>
+
+
+<div class="layout">
+
+    <!-- =========================
+         SIDEBAR
+    ========================= -->
+
+    <aside class="sidebar">
+
+        <div class="menu-title">
+            Asosiy
+        </div>
+
+        <button class="menu-item active" onclick="selectMenu(this)">
+            <span class="menu-icon">🏠</span>
+            Bosh sahifa
+        </button>
+
+        <button class="menu-item" onclick="showMessage('Mening kurslarim bo‘limi tez orada ishga tushadi 📚')">
+            <span class="menu-icon">📚</span>
+            Mening kurslarim
+        </button>
+
+        <button class="menu-item" onclick="showMessage('Uy vazifalari bo‘limi tez orada ishga tushadi 📝')">
+            <span class="menu-icon">📝</span>
+            Uy vazifalarim
+        </button>
+
+        <div class="menu-title">
+            Natijalar
+        </div>
+
+        <button class="menu-item" onclick="showMessage('Reyting tizimi tez orada ishga tushadi 🏆')">
+            <span class="menu-icon">🏆</span>
+            Reyting
+        </button>
+
+        <button class="menu-item" onclick="showMessage('Mukofotlar tizimi tez orada ishga tushadi 🎁')">
+            <span class="menu-icon">🎁</span>
+            Mukofotlar
+        </button>
+
+        <div class="menu-title">
+            Resurslar
+        </div>
+
+        <button class="menu-item" onclick="showMessage('Kitoblar bo‘limi tez orada ishga tushadi 📖')">
+            <span class="menu-icon">📖</span>
+            Kitoblar
+        </button>
+
+        <button class="menu-item" onclick="showMessage('Podcastlar bo‘limi tez orada ishga tushadi 🎧')">
+            <span class="menu-icon">🎧</span>
+            Podcastlar
+        </button>
+
+        <button class="menu-item" onclick="showMessage('Treninglar bo‘limi tez orada ishga tushadi 📅')">
+            <span class="menu-icon">📅</span>
+            Treninglar
+        </button>
+
+        <button class="menu-item" onclick="showMessage('Imtihonlar bo‘limi tez orada ishga tushadi 🧪')">
+            <span class="menu-icon">🧪</span>
+            Imtihonlar
+        </button>
+
+        <button class="menu-item logout" onclick="logoutStudent()">
+            <span class="menu-icon">🚪</span>
+            Chiqish
+        </button>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================= -->
+
+    <main class="main">
+
+        <!-- WELCOME -->
+
+        <section class="welcome">
+
+            <div class="welcome-small">
+                🎓 AKHSIKENT IT STUDENT CABINET
+            </div>
+
+            <h1 id="welcomeName">
+                Xush kelibsiz! 👋
+            </h1>
+
+            <p>
+                Bu sizning shaxsiy o‘quv kabinetingiz.
+                Kurslaringiz, vazifalaringiz, reytingingiz va
+                natijalaringizni shu yerdan boshqarishingiz mumkin.
+            </p>
+
+        </section>
+
+
+        <!-- STATS -->
+
+        <section class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    ⭐
+                </div>
+
+                <div>
+                    <div class="stat-label">
+                        Umumiy ball
+                    </div>
+
+                    <div class="stat-value">
+                        0
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🏆
+                </div>
+
+                <div>
+                    <div class="stat-label">
+                        Reytingdagi o‘rin
+                    </div>
+
+                    <div class="stat-value">
+                        —
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    📝
+                </div>
+
+                <div>
+                    <div class="stat-label">
+                        Bajarilgan vazifa
+                    </div>
+
+                    <div class="stat-value">
+                        0
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🔥
+                </div>
+
+                <div>
+                    <div class="stat-label">
+                        Faollik
+                    </div>
+
+                    <div class="stat-value">
+                        0 kun
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CONTENT -->
+
+        <section class="content-grid">
+
+
+            <!-- COURSES -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2>📚 Mening kurslarim</h2>
+
+                    <span
+                        class="view-all"
+                        onclick="showMessage('Kurslar bo‘limi tez orada ishga tushadi')">
+                        Barchasi →
+                    </span>
+
+                </div>
+
+
+                <div class="course">
+
+                    <div class="course-top">
+
+                        <div class="course-icon">
+                            💻
+                        </div>
+
+                        <div>
+
+                            <div class="course-name">
+                                Kurs hali biriktirilmagan
+                            </div>
+
+                            <div class="course-info">
+                                Administrator sizga kurs biriktirganda shu yerda ko‘rinadi.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+
+                    <div class="progress-text">
+                        <span>Jarayon</span>
+                        <span>0%</span>
+                    </div>
+
+                </div>
+
+
+                <div class="course">
+
+                    <div class="course-top">
+
+                        <div class="course-icon">
+                            📝
+                        </div>
+
+                        <div>
+
+                            <div class="course-name">
+                                Uy vazifalari
+                            </div>
+
+                            <div class="course-info">
+                                Hozircha yangi vazifa mavjud emas.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUICK ACTIONS -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2>⚡ Tezkor bo‘limlar</h2>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+                    <button class="quick"
+                            onclick="showMessage('Profil bo‘limi tez orada ishga tushadi 👤')">
+
+                        <div class="quick-icon">👤</div>
+                        <span>Profilim</span>
+
+                    </button>
+
+
+                    <button class="quick"
+                            onclick="showMessage('Uy vazifalarim bo‘limi tez orada ishga tushadi 📝')">
+
+                        <div class="quick-icon">📝</div>
+                        <span>Vazifalar</span>
+
+                    </button>
+
+
+                    <button class="quick"
+                            onclick="showMessage('Reyting tizimi tez orada ishga tushadi 🏆')">
+
+                        <div class="quick-icon">🏆</div>
+                        <span>Reyting</span>
+
+                    </button>
+
+
+                    <button class="quick"
+                            onclick="showMessage('Mukofotlar tizimi tez orada ishga tushadi 🎁')">
+
+                        <div class="quick-icon">🎁</div>
+                        <span>Mukofotlar</span>
+
+                    </button>
+
+
+                    <button class="quick"
+                            onclick="showMessage('Elektron kitoblar tez orada qo‘shiladi 📖')">
+
+                        <div class="quick-icon">📖</div>
+                        <span>Kitoblar</span>
+
+                    </button>
+
+
+                    <button class="quick"
+                            onclick="showMessage('Podcastlar tez orada qo‘shiladi 🎧')">
+
+                        <div class="quick-icon">🎧</div>
+                        <span>Podcast</span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- TASKS -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2>📝 So‘nggi vazifalar</h2>
+
+                    <span class="view-all">
+                        Barchasi →
+                    </span>
+
+                </div>
+
+
+                <div class="task">
+
+                    <div class="task-check">
+                        📝
+                    </div>
+
+                    <div>
+
+                        <div class="task-name">
+                            Hozircha vazifa yo‘q
+                        </div>
+
+                        <div class="task-date">
+                            Yangi vazifalar shu yerda ko‘rinadi
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="task">
+
+                    <div class="task-check">
+                        📚
+                    </div>
+
+                    <div>
+
+                        <div class="task-name">
+                            Kurs biriktirilishini kutmoqda
+                        </div>
+
+                        <div class="task-date">
+                            Administrator tomonidan
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIVITY -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2>🔥 Faollik</h2>
+
+                </div>
+
+                <div style="
+                    text-align:center;
+                    padding:35px 10px;
+                    color:#7b8496;
+                ">
+
+                    <div style="font-size:45px; margin-bottom:12px;">
+                        🔥
+                    </div>
+
+                    <strong style="
+                        display:block;
+                        color:#172033;
+                        margin-bottom:7px;
+                    ">
+                        Faollik hali boshlanmadi
+                    </strong>
+
+                    <span style="font-size:13px;">
+                        Dars va vazifalarni bajarganingiz sari
+                        faollik ko‘rsatkichi oshadi.
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    const API_URL = "https://axsikent-it-4.onrender.com";
+
+
+    /* =========================
+       LOAD STUDENT
+    ========================= */
+
+    async function loadStudent() {
+
+        const token = localStorage.getItem("access_token");
+
+        if (!token) {
+
+            window.location.href = "index.html";
+
+            return;
+        }
+
+
+        try {
+
+            const response = await fetch(
+                `${API_URL}/students/me`,
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+
+            if (response.status === 401) {
+
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user_role");
+
+                window.location.href = "index.html";
+
+                return;
+            }
+
+
+            const data = await response.json();
+
+
+            if (!response.ok) {
+
+                showMessage(
+                    data.detail || "Ma'lumotlarni olishda xatolik."
+                );
+
+                return;
+            }
+
+
+            const fullName = data.full_name || "O‘quvchi";
+
+
+            document.getElementById(
+                "welcomeName"
+            ).textContent =
+                `Xush kelibsiz, ${fullName}! 👋`;
+
+
+            document.getElementById(
+                "topStudentName"
+            ).textContent = fullName;
+
+
+            const firstLetter =
+                fullName.charAt(0).toUpperCase();
+
+
+            document.getElementById(
+                "avatarLetter"
+            ).textContent = firstLetter;
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Server bilan bog‘lanishda xatolik."
+            );
+
+        }
+
+    }
+
+
+    /* =========================
+       LOGOUT
+    ========================= */
+
+    function logoutStudent() {
+
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("user_role");
+
+        window.location.href = "index.html";
+
+    }
+
+
+    /* =========================
+       MENU
+    ========================= */
+
+    function selectMenu(element) {
+
+        document
+            .querySelectorAll(".menu-item")
+            .forEach(item => {
+                item.classList.remove("active");
+            });
+
+
+        element.classList.add("active");
+
+    }
+
+
+    /* =========================
+       MESSAGE
+    ========================= */
+
+    function showMessage(message) {
+
+        alert(message);
+
+    }
+
+
+    /* =========================
+       START
+    ========================= */
+
+    loadStudent();
+
+</script>
+
+</body>
+</html>
