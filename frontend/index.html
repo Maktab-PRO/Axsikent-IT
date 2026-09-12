@@ -1646,6 +1646,69 @@
             }
         }
 
+    .login-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.55);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-modal.active {
+    display: flex;
+}
+
+.login-box {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+.login-box h2 {
+    margin: 0 0 8px;
+}
+
+.login-box p {
+    margin-bottom: 22px;
+    color: #666;
+}
+
+.login-box input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.login-submit {
+    width: 100%;
+}
+
+.login-close {
+    position: absolute;
+    top: 12px;
+    right: 15px;
+    border: none;
+    background: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #666;
+}
+
+#loginMessage {
+    margin-top: 15px;
+    text-align: center;
+}
     </style>
 </head>
 
@@ -1679,10 +1742,9 @@
                 <option value="en">EN</option>
             </select>
 
-            <a href="#application" class="btn btn-primary" data-i18n="apply">
-                Ariza qoldirish
-            </a>
-
+            <button class="btn btn-primary" onclick="openLoginModal()">
+                🔐 Kirish
+            </button>
             <button class="mobile-menu" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Menyu">
                 ☰
             </button>
@@ -5521,8 +5583,93 @@
 
     })();
 
+    function openLoginModal() {
+    document.getElementById("loginModal").classList.add("active");
+}
+
+function closeLoginModal() {
+    document.getElementById("loginModal").classList.remove("active");
+}
+
+async function loginUser() {
+    const phone = document.getElementById("loginPhone").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const message = document.getElementById("loginMessage");
+
+    if (!phone || !password) {
+        message.textContent = "Telefon raqam va parolni kiriting.";
+        return;
+    }
+
+    message.textContent = "Kirilmoqda...";
+
+    try {
+        const response = await fetch(
+            "https://axsikent-it-4.onrender.com/students/login",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    phone: phone,
+                    password: password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            message.textContent =
+                data.detail || "Login yoki parol noto‘g‘ri.";
+            return;
+        }
+
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("user_role", data.role || "student");
+
+        message.textContent = "Muvaffaqiyatli kirildi!";
+
+        setTimeout(() => {
+            window.location.href = "#";
+        }, 700);
+
+    } catch (error) {
+        message.textContent =
+            "Server bilan bog‘lanishda xatolik.";
+    }
+                   }
+
 
 </script>
 
+<!-- LOGIN MODAL -->
+<div id="loginModal" class="login-modal">
+    <div class="login-box">
+        <button class="login-close" onclick="closeLoginModal()">×</button>
+
+        <h2>🔐 Kirish</h2>
+        <p>Axsikent IT akkauntingizga kiring</p>
+
+        <input
+            type="text"
+            id="loginPhone"
+            placeholder="Telefon raqam"
+        >
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Parol"
+        >
+
+        <button class="btn btn-primary login-submit" onclick="loginUser()">
+            Kirish
+        </button>
+
+        <div id="loginMessage"></div>
+    </div>
+</div>
 </body>
 </html>
