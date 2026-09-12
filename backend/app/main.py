@@ -71,19 +71,13 @@ app.include_router(lead_router)
 
 @app.get("/")
 def home():
-return {
-"message": "Axsikent IT platformasi ishlayapti! 🚀"
-}
-
-# =========================
-
-# HEALTH
-
-# =========================
+    return {
+        "message": "Axsikent IT platformasi ishlayapti! 🚀"
+    }
 
 @app.get("/health")
 def health():
-return {
-"status": "ok",
-"platform": "Axsikent IT"
-}
+    return {
+        "status": "ok",
+        "platform": "Axsikent IT"
+    }
