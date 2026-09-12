@@ -5881,15 +5881,9 @@ if (studentResponse.ok) {
 
         message.textContent = "Muvaffaqiyatli kirildi!";
 
-        setTimeout(() => {
+       setTimeout(() => {
     closeLoginModal();
-
-    document.getElementById("studentDashboard").style.display = "block";
-
-    window.scrollTo({
-        top: document.getElementById("studentDashboard").offsetTop,
-        behavior: "smooth"
-    });
+    window.location.href = "student.html";
 }, 700);
 
     } catch (error) {
