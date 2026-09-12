@@ -242,6 +242,7 @@
             line-height: 1.05;
             letter-spacing: -3px;
             margin-bottom: 25px;
+            color: #16a34a;
         }
 
         .hero h1 span {
@@ -543,6 +544,13 @@
         .opportunities {
             background: #111;
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .opportunities .container {
+            position: relative;
+            z-index: 1;
         }
 
         .opportunities .section-text {
@@ -1429,6 +1437,14 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-text,
+        .countdown-timer {
+            position: relative;
+            z-index: 1;
         }
 
         .countdown-text strong {
@@ -1514,6 +1530,20 @@
             0%, 100% { transform: translate(0, 0) scale(1); }
             33% { transform: translate(30px, -25px) scale(1.1); }
             66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        .application-orb.light {
+            opacity: .18;
+        }
+
+        #contact {
+            position: relative;
+            overflow: hidden;
+        }
+
+        #contact .container {
+            position: relative;
+            z-index: 1;
         }
 
         .application-grid,
@@ -1682,13 +1712,6 @@
 <section class="hero" id="home">
 
     <canvas id="heroParticles"></canvas>
-
-    <div class="hero-3d-badges">
-        <div class="hero-3d-badge b1">🤖</div>
-        <div class="hero-3d-badge b2">💻</div>
-        <div class="hero-3d-badge b3">🧮</div>
-        <div class="hero-3d-badge b4">🇬🇧</div>
-    </div>
 
     <div class="container hero-grid">
 
@@ -2436,6 +2459,10 @@
 
 <section id="opportunities" class="opportunities">
 
+    <div class="application-orb o1"></div>
+    <div class="application-orb o2"></div>
+    <div class="application-orb o3"></div>
+
     <div class="container">
 
         <div class="section-head">
@@ -2643,80 +2670,6 @@
                 <div class="portfolio-info">
                     <strong data-i18n="portfolio6_title">Ilova prototipi</strong>
                     <span data-i18n="portfolio6_desc">Backend kursi o‘quvchisi ishi</span>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================
-     TESTIMONIALS
-========================= -->
-
-<section id="testimonials">
-
-    <div class="container">
-
-        <div class="section-head">
-
-            <div class="section-label" data-i18n="testimonials_label">
-                Fikrlar
-            </div>
-
-            <h2 class="section-title" data-i18n="testimonials_title">
-                O‘quvchi va ota-onalar fikri
-            </h2>
-
-        </div>
-
-
-        <!-- DIQQAT: bu namunaviy (o'rinbosar) sharhlar — real o'quvchi fikrlariga almashtiring -->
-
-        <div class="testimonials-grid">
-
-            <div class="testimonial-card">
-                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-                <p class="testimonial-text" data-i18n="testimonial1_text">
-                    “Farzandim mental arifmetika darslariga qatnab, hisoblashni ancha tezlashtirdi. Ustozlar juda e’tiborli.”
-                </p>
-                <div class="testimonial-author">
-                    <div class="testimonial-avatar">D</div>
-                    <div>
-                        <strong data-i18n="testimonial1_name">Dilnoza (ona)</strong>
-                        <span data-i18n="testimonial1_role">O‘quvchi ota-onasi</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="testimonial-card">
-                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-                <p class="testimonial-text" data-i18n="testimonial2_text">
-                    “Frontend kursida noldan boshlab, hozir o‘zimning birinchi web-saytimni yaratdim. Amaliyot juda ko‘p edi.”
-                </p>
-                <div class="testimonial-author">
-                    <div class="testimonial-avatar">J</div>
-                    <div>
-                        <strong data-i18n="testimonial2_name">Jasur</strong>
-                        <span data-i18n="testimonial2_role">Frontend kursi bitiruvchisi</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="testimonial-card">
-                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-                <p class="testimonial-text" data-i18n="testimonial3_text">
-                    “AI kursi menga zamonaviy texnologiyalarni chuqur tushunishga yordam berdi. Ustozlar amaliyotchi mutaxassislar.”
-                </p>
-                <div class="testimonial-author">
-                    <div class="testimonial-avatar">M</div>
-                    <div>
-                        <strong data-i18n="testimonial3_name">Muslima</strong>
-                        <span data-i18n="testimonial3_role">Sun’iy intellekt kursi o‘quvchisi</span>
-                    </div>
                 </div>
             </div>
 
@@ -2950,6 +2903,10 @@
     <div class="container">
 
         <div class="countdown-banner">
+
+            <div class="application-orb o1"></div>
+            <div class="application-orb o2"></div>
+            <div class="application-orb o3"></div>
 
             <div class="countdown-text">
                 <strong data-i18n="countdown_title">Yangi guruh boshlanishiga:</strong>
@@ -3245,6 +3202,10 @@
 ========================= -->
 
 <section id="contact">
+
+    <div class="application-orb o1 light"></div>
+    <div class="application-orb o2 light"></div>
+    <div class="application-orb o3 light"></div>
 
     <div class="container">
 
