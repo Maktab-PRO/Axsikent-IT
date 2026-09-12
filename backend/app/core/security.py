@@ -33,15 +33,11 @@ def verify_token(token: str):
         )
 
         user_id = payload.get("sub")
-        role = payload.get("role")
 
-        if user_id is None or role is None:
+        if user_id is None:
             return None
 
-        return {
-            "id": int(user_id),
-            "role": role
-        }
+        return int(user_id)
 
     except (JWTError, ValueError, TypeError):
         return None
