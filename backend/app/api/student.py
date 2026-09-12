@@ -78,9 +78,10 @@ def login_student(
 )
 
     return {
-        "message": "Login muvaffaqiyatli",
-        "access_token": access_token,
-        "token_type": "bearer",
-        "student_id": user.id,
-        "full_name": user.full_name
-    }
+    "message": "Login muvaffaqiyatli",
+    "access_token": access_token,
+    "token_type": "bearer",
+    "student_id": user.id,
+    "full_name": user.full_name,
+    "role": "student"
+}
