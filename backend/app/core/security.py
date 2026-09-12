@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 
 
-SECRET_KEY = "CHANGE_THIS_LATER"
+SECRET_KEY = "axsikent-it-secret-key-change-later"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
