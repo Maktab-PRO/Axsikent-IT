@@ -5632,8 +5632,15 @@ async function loginUser() {
         message.textContent = "Muvaffaqiyatli kirildi!";
 
         setTimeout(() => {
-            window.location.href = "#";
-        }, 700);
+    closeLoginModal();
+
+    document.getElementById("studentDashboard").style.display = "block";
+
+    window.scrollTo({
+        top: document.getElementById("studentDashboard").offsetTop,
+        behavior: "smooth"
+    });
+}, 700);
 
     } catch (error) {
         message.textContent =
