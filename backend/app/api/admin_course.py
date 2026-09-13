@@ -21,21 +21,12 @@ def get_current_admin(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    token_data = verify_token(credentials.credentials)
+    admin_id = verify_token(credentials.credentials)
 
-    if not token_data:
+    if not admin_id:
         raise HTTPException(
             status_code=401,
             detail="Token noto'g'ri yoki muddati tugagan"
-        )
-
-    admin_id = token_data["id"]
-    role = token_data["role"]
-
-    if role != "admin":
-        raise HTTPException(
-            status_code=403,
-            detail="Faqat admin uchun"
         )
 
     admin = db.query(Admin).filter(
