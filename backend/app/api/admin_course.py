@@ -194,6 +194,33 @@ def deactivate_course(
     return {
         "message": "Kurs deaktiv qilindi"
     }
+    @router.put("/{course_id}/activate")
+def activate_course(
+    course_id: int,
+    admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    course = db.query(Course).filter(
+        Course.id == course_id
+    ).first()
+
+    if not course:
+        raise HTTPException(
+            status_code=404,
+            detail="Kurs topilmadi"
+        )
+
+    course.is_active = True
+
+    db.commit()
+    db.refresh(course)
+
+    return {
+        "message": "Kurs qayta faollashtirildi",
+        "course_id": course.id,
+        "name": course.name,
+        "is_active": course.is_active
+    }
     @router.post("/{course_id}/modules")
 def create_course_module(
     course_id: int,
