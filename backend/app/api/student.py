@@ -7,6 +7,7 @@ from app.db import get_db
 from app.models.student import Student
 from app.models.student_course import StudentCourse
 from app.models.course import Course
+from app.models.course_module import CourseModule
 from app.schemas.student import StudentCreate, StudentLogin, StudentResponse
 from app.core.security import create_access_token
 
@@ -177,3 +178,72 @@ def get_my_courses(
         }
         for student_course, course in student_courses
     ]
+@router.get("/courses/{course_id}/modules")
+def get_course_modules(
+    course_id: int,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    from app.core.security import verify_token
+
+    student_id = verify_token(credentials.credentials)
+
+    if not student_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="O'quvchi topilmadi"
+        )
+
+    student_course = db.query(StudentCourse).filter(
+        StudentCourse.student_id == student_id,
+        StudentCourse.course_id == course_id,
+        StudentCourse.is_active == True
+    ).first()
+
+    if not student_course:
+        raise HTTPException(
+            status_code=403,
+            detail="Bu kurs sizga biriktirilmagan"
+        )
+
+    course = db.query(Course).filter(
+        Course.id == course_id,
+        Course.is_active == True
+    ).first()
+
+    if not course:
+        raise HTTPException(
+            status_code=404,
+            detail="Kurs topilmadi"
+        )
+
+    modules = db.query(CourseModule).filter(
+        CourseModule.course_id == course_id,
+        CourseModule.is_active == True
+    ).order_by(
+        CourseModule.sort_order.asc(),
+        CourseModule.id.asc()
+    ).all()
+
+    return [
+        {
+            "id": module.id,
+            "course_id": module.course_id,
+            "title": module.title,
+            "description": module.description,
+            "sort_order": module.sort_order,
+            "is_active": module.is_active
+        }
+        for module in modules
+        ]
