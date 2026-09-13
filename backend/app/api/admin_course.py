@@ -1,16 +1,21 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.models.category import Category
 from app.models.course import Course
+from app.models.student import Student
+from app.models.student_course import StudentCourse
+from app.models.admin import Admin
+from app.core.security import verify_token
 
 
 router = APIRouter(
     prefix="/admin/courses",
     tags=["Admin Courses"]
 )
-
+security = HTTPBearer()
 
 @router.post("/categories")
 def create_category(
