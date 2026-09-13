@@ -8,6 +8,7 @@ from app.models.course import Course
 from app.models.student import Student
 from app.models.student_course import StudentCourse
 from app.models.course_module import CourseModule
+from app.models.lesson import Lesson
 from app.models.admin import Admin
 from app.core.security import verify_token
 
@@ -261,4 +262,62 @@ def create_course_module(
         "description": module.description,
         "sort_order": module.sort_order,
         "is_active": module.is_active
+    }
+@router.post("/{course_id}/modules/{module_id}/lessons")
+def create_lesson(
+    course_id: int,
+    module_id: int,
+    title: str,
+    content: str | None = None,
+    video_url: str | None = None,
+    sort_order: int = 0,
+    admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    course = db.query(Course).filter(
+        Course.id == course_id,
+        Course.is_active == True
+    ).first()
+
+    if not course:
+        raise HTTPException(
+            status_code=404,
+            detail="Kurs topilmadi"
+        )
+
+    module = db.query(CourseModule).filter(
+        CourseModule.id == module_id,
+        CourseModule.course_id == course_id,
+        CourseModule.is_active == True
+    ).first()
+
+    if not module:
+        raise HTTPException(
+            status_code=404,
+            detail="Modul topilmadi"
+        )
+
+    lesson = Lesson(
+        module_id=module_id,
+        title=title,
+        content=content,
+        video_url=video_url,
+        sort_order=sort_order,
+        is_active=True
+    )
+
+    db.add(lesson)
+    db.commit()
+    db.refresh(lesson)
+
+    return {
+        "message": "Dars yaratildi",
+        "id": lesson.id,
+        "course_id": course_id,
+        "module_id": lesson.module_id,
+        "title": lesson.title,
+        "content": lesson.content,
+        "video_url": lesson.video_url,
+        "sort_order": lesson.sort_order,
+        "is_active": lesson.is_active
     }
