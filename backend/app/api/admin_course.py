@@ -17,6 +17,30 @@ router = APIRouter(
 )
 security = HTTPBearer()
 
+def get_current_admin(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    admin_id = verify_token(credentials.credentials)
+
+    if not admin_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    admin = db.query(Admin).filter(
+        Admin.id == admin_id
+    ).first()
+
+    if not admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Faqat admin uchun"
+        )
+
+    return admin
+
 @router.post("/categories")
 def create_category(
     name: str,
