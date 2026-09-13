@@ -7,6 +7,7 @@ from app.models.category import Category
 from app.models.course import Course
 from app.models.student import Student
 from app.models.student_course import StudentCourse
+from app.models.course_module import CourseModule
 from app.models.admin import Admin
 from app.core.security import verify_token
 
@@ -192,4 +193,45 @@ def deactivate_course(
 
     return {
         "message": "Kurs deaktiv qilindi"
+    }
+    @router.post("/{course_id}/modules")
+def create_course_module(
+    course_id: int,
+    title: str,
+    description: str | None = None,
+    sort_order: int = 0,
+    admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    course = db.query(Course).filter(
+        Course.id == course_id,
+        Course.is_active == True
+    ).first()
+
+    if not course:
+        raise HTTPException(
+            status_code=404,
+            detail="Kurs topilmadi"
+        )
+
+    module = CourseModule(
+        course_id=course_id,
+        title=title,
+        description=description,
+        sort_order=sort_order,
+        is_active=True
+    )
+
+    db.add(module)
+    db.commit()
+    db.refresh(module)
+
+    return {
+        "message": "Modul yaratildi",
+        "id": module.id,
+        "course_id": module.course_id,
+        "title": module.title,
+        "description": module.description,
+        "sort_order": module.sort_order,
+        "is_active": module.is_active
     }
