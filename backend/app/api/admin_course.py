@@ -170,8 +170,6 @@ def create_course(
         "name": course.name,
         "category_id": course.category_id
     }
-
-
 @router.delete("/{course_id}")
 def deactivate_course(
     course_id: int,
@@ -194,7 +192,9 @@ def deactivate_course(
     return {
         "message": "Kurs deaktiv qilindi"
     }
-    @router.put("/{course_id}/activate")
+
+
+@router.put("/{course_id}/activate")
 def activate_course(
     course_id: int,
     admin: Admin = Depends(get_current_admin),
