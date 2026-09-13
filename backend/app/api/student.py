@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -9,6 +10,7 @@ from app.models.student_course import StudentCourse
 from app.models.course import Course
 from app.models.course_module import CourseModule
 from app.models.lesson import Lesson
+from app.models.lesson_progress import LessonProgress
 from app.schemas.student import StudentCreate, StudentLogin, StudentResponse
 from app.core.security import create_access_token
 
@@ -332,3 +334,128 @@ def get_module_lessons(
         }
         for lesson in lessons
     ]
+@router.post("/courses/{course_id}/modules/{module_id}/lessons/{lesson_id}/complete")
+def complete_lesson(
+    course_id: int,
+    module_id: int,
+    lesson_id: int,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    from app.core.security import verify_token
+
+    student_id = verify_token(credentials.credentials)
+
+    if not student_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="O'quvchi topilmadi"
+        )
+
+    student_course = db.query(StudentCourse).filter(
+        StudentCourse.student_id == student_id,
+        StudentCourse.course_id == course_id,
+        StudentCourse.is_active == True
+    ).first()
+
+    if not student_course:
+        raise HTTPException(
+            status_code=403,
+            detail="Bu kurs sizga biriktirilmagan"
+        )
+
+    module = db.query(CourseModule).filter(
+        CourseModule.id == module_id,
+        CourseModule.course_id == course_id,
+        CourseModule.is_active == True
+    ).first()
+
+    if not module:
+        raise HTTPException(
+            status_code=404,
+            detail="Modul topilmadi"
+        )
+
+    lesson = db.query(Lesson).filter(
+        Lesson.id == lesson_id,
+        Lesson.module_id == module_id,
+        Lesson.is_active == True
+    ).first()
+
+    if not lesson:
+        raise HTTPException(
+            status_code=404,
+            detail="Dars topilmadi"
+        )
+
+    progress = db.query(LessonProgress).filter(
+        LessonProgress.student_id == student_id,
+        LessonProgress.lesson_id == lesson_id
+    ).first()
+
+    if progress:
+        progress.is_completed = True
+        progress.completed_at = datetime.utcnow()
+    else:
+        progress = LessonProgress(
+            student_id=student_id,
+            lesson_id=lesson_id,
+            is_completed=True,
+            completed_at=datetime.utcnow()
+        )
+        db.add(progress)
+
+    db.commit()
+    db.refresh(progress)
+
+    total_lessons = db.query(Lesson).join(
+        CourseModule,
+        Lesson.module_id == CourseModule.id
+    ).filter(
+        CourseModule.course_id == course_id,
+        Lesson.is_active == True,
+        CourseModule.is_active == True
+    ).count()
+
+    completed_lessons = db.query(LessonProgress).join(
+        Lesson,
+        LessonProgress.lesson_id == Lesson.id
+    ).join(
+        CourseModule,
+        Lesson.module_id == CourseModule.id
+    ).filter(
+        LessonProgress.student_id == student_id,
+        LessonProgress.is_completed == True,
+        CourseModule.course_id == course_id,
+        Lesson.is_active == True,
+        CourseModule.is_active == True
+    ).count()
+
+    if total_lessons > 0:
+        student_course.progress = round(
+            completed_lessons / total_lessons * 100
+        )
+    else:
+        student_course.progress = 0
+
+    db.commit()
+
+    return {
+        "message": "Dars tugallandi",
+        "lesson_id": lesson_id,
+        "course_id": course_id,
+        "progress": student_course.progress,
+        "completed_lessons": completed_lessons,
+        "total_lessons": total_lessons
+    }
