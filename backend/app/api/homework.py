@@ -1,0 +1,83 @@
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlalchemy.orm import Session
+
+from app.db import get_db
+from app.models.homework import Homework
+from app.models.teacher import Teacher
+from app.models.admin import Admin
+from app.core.security import verify_token
+
+router = APIRouter(
+    prefix="/homework",
+    tags=["Homework"]
+)
+
+security = HTTPBearer()
+
+
+def get_current_user_id(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    user_id = verify_token(credentials.credentials)
+
+    if not user_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    return user_id
+
+
+@router.post("/")
+def create_homework(
+    group_id: int,
+    teacher_id: int,
+    title: str,
+    description: str,
+    deadline: str | None = None,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    user_id = verify_token(credentials.credentials)
+
+    if not user_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id,
+        Teacher.is_active == True
+    ).first()
+
+    if not teacher:
+        raise HTTPException(
+            status_code=404,
+            detail="O'qituvchi topilmadi"
+        )
+
+    homework = Homework(
+        group_id=group_id,
+        teacher_id=teacher_id,
+        title=title,
+        description=description,
+        deadline=deadline
+    )
+
+    db.add(homework)
+    db.commit()
+    db.refresh(homework)
+
+    return {
+        "message": "Uy vazifasi yaratildi",
+        "id": homework.id,
+        "group_id": homework.group_id,
+        "teacher_id": homework.teacher_id,
+        "title": homework.title,
+        "description": homework.description,
+        "deadline": homework.deadline,
+        "status": homework.status
+    }
