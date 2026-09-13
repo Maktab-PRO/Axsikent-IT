@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -7,6 +9,7 @@ from app.models.homework import Homework
 from app.models.teacher import Teacher
 from app.models.admin import Admin
 from app.core.security import verify_token
+
 
 router = APIRouter(
     prefix="/homework",
@@ -81,6 +84,8 @@ def create_homework(
         "deadline": homework.deadline,
         "status": homework.status
     }
+
+
 @router.get("/student")
 def get_student_homework(
     credentials: HTTPAuthorizationCredentials = Depends(security),
@@ -121,7 +126,9 @@ def get_student_homework(
     homeworks = db.query(Homework).filter(
         Homework.group_id.in_(group_ids),
         Homework.status == "active"
-    ).order_by(Homework.id.desc()).all()
+    ).order_by(
+        Homework.id.desc()
+    ).all()
 
     return [
         {
@@ -135,7 +142,9 @@ def get_student_homework(
         }
         for homework in homeworks
     ]
- @router.post("/{homework_id}/submit")
+
+
+@router.post("/{homework_id}/submit")
 def submit_homework(
     homework_id: int,
     answer: str,
@@ -188,7 +197,9 @@ def submit_homework(
             detail="Bu uy vazifasi sizga tegishli emas"
         )
 
-    existing_submission = db.query(HomeworkSubmission).filter(
+    existing_submission = db.query(
+        HomeworkSubmission
+    ).filter(
         HomeworkSubmission.homework_id == homework_id,
         HomeworkSubmission.student_id == student_id
     ).first()
@@ -228,4 +239,4 @@ def submit_homework(
         "student_id": submission.student_id,
         "answer": submission.answer,
         "status": submission.status
-    }   
+    }
