@@ -15,6 +15,7 @@ from app.api.admin_course import router as admin_course_router
 from app.api.group import router as group_router
 from app.api.lead import router as lead_router
 from app.api.student_course import router as student_course_router
+from app.api.homework import router as homework_router
 
 from app.seed import seed_data
 
@@ -64,6 +65,7 @@ app.include_router(admin_course_router)
 app.include_router(group_router)
 app.include_router(lead_router)
 app.include_router(student_course_router)
+app.include_router(homework_router)
 
 # =========================
 
