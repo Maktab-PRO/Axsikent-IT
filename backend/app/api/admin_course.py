@@ -221,7 +221,7 @@ def activate_course(
         "name": course.name,
         "is_active": course.is_active
     }
-    @router.post("/{course_id}/modules")
+@router.post("/{course_id}/modules")
 def create_course_module(
     course_id: int,
     title: str,
