@@ -21,3 +21,4 @@ from app.models.course_module import CourseModule
 from app.models.lead import Lead
 from app.models.student_course import StudentCourse
 from app.models.lesson import Lesson
+from app.models.lesson_progress import LessonProgress
