@@ -5,6 +5,8 @@ from passlib.context import CryptContext
 
 from app.db import get_db
 from app.models.student import Student
+from app.models.student_course import StudentCourse
+from app.models.course import Course
 from app.schemas.student import StudentCreate, StudentLogin, StudentResponse
 from app.core.security import create_access_token
 
@@ -120,3 +122,58 @@ def get_current_student(
         "phone": student.phone,
         "is_active": student.is_active
     }
+@router.get("/courses")
+def get_my_courses(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    from app.core.security import verify_token
+
+    student_id = verify_token(credentials.credentials)
+
+    if not student_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="O'quvchi topilmadi"
+        )
+
+    student_courses = db.query(
+        StudentCourse,
+        Course
+    ).join(
+        Course,
+        StudentCourse.course_id == Course.id
+    ).filter(
+        StudentCourse.student_id == student_id,
+        StudentCourse.is_active == True,
+        Course.is_active == True
+    ).all()
+
+    return [
+        {
+            "id": course.id,
+            "name": course.name,
+            "description": course.description,
+            "category_id": course.category_id,
+            "age_min": course.age_min,
+            "age_max": course.age_max,
+            "lesson_minutes": course.lesson_minutes,
+            "lessons_per_week": course.lessons_per_week,
+            "price_min": course.price_min,
+            "price_max": course.price_max,
+            "progress": student_course.progress,
+            "enrolled_at": student_course.enrolled_at
+        }
+        for student_course, course in student_courses
+    ]
