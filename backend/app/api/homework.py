@@ -135,3 +135,97 @@ def get_student_homework(
         }
         for homework in homeworks
     ]
+ @router.post("/{homework_id}/submit")
+def submit_homework(
+    homework_id: int,
+    answer: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    from app.models.student import Student
+    from app.models.student_group import StudentGroup
+    from app.models.homework import HomeworkSubmission
+
+    student_id = verify_token(credentials.credentials)
+
+    if not student_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="O'quvchi topilmadi"
+        )
+
+    homework = db.query(Homework).filter(
+        Homework.id == homework_id,
+        Homework.status == "active"
+    ).first()
+
+    if not homework:
+        raise HTTPException(
+            status_code=404,
+            detail="Uy vazifasi topilmadi"
+        )
+
+    student_group = db.query(StudentGroup).filter(
+        StudentGroup.student_id == student_id,
+        StudentGroup.group_id == homework.group_id,
+        StudentGroup.is_active == True
+    ).first()
+
+    if not student_group:
+        raise HTTPException(
+            status_code=403,
+            detail="Bu uy vazifasi sizga tegishli emas"
+        )
+
+    existing_submission = db.query(HomeworkSubmission).filter(
+        HomeworkSubmission.homework_id == homework_id,
+        HomeworkSubmission.student_id == student_id
+    ).first()
+
+    if existing_submission:
+        existing_submission.answer = answer
+        existing_submission.submitted_at = datetime.utcnow()
+        existing_submission.status = "submitted"
+
+        db.commit()
+        db.refresh(existing_submission)
+
+        return {
+            "message": "Uy vazifasi qayta topshirildi",
+            "id": existing_submission.id,
+            "homework_id": existing_submission.homework_id,
+            "student_id": existing_submission.student_id,
+            "answer": existing_submission.answer,
+            "status": existing_submission.status
+        }
+
+    submission = HomeworkSubmission(
+        homework_id=homework_id,
+        student_id=student_id,
+        answer=answer,
+        status="submitted"
+    )
+
+    db.add(submission)
+    db.commit()
+    db.refresh(submission)
+
+    return {
+        "message": "Uy vazifasi topshirildi",
+        "id": submission.id,
+        "homework_id": submission.homework_id,
+        "student_id": submission.student_id,
+        "answer": submission.answer,
+        "status": submission.status
+    }   
