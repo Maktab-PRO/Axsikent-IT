@@ -248,3 +248,87 @@ def get_course_modules(
         }
         for module in modules
         ]
+
+@router.get("/courses/{course_id}/modules/{module_id}/lessons")
+def get_module_lessons(
+    course_id: int,
+    module_id: int,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    from app.core.security import verify_token
+
+    student_id = verify_token(credentials.credentials)
+
+    if not student_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="O'quvchi topilmadi"
+        )
+
+    student_course = db.query(StudentCourse).filter(
+        StudentCourse.student_id == student_id,
+        StudentCourse.course_id == course_id,
+        StudentCourse.is_active == True
+    ).first()
+
+    if not student_course:
+        raise HTTPException(
+            status_code=403,
+            detail="Bu kurs sizga biriktirilmagan"
+        )
+
+    course = db.query(Course).filter(
+        Course.id == course_id,
+        Course.is_active == True
+    ).first()
+
+    if not course:
+        raise HTTPException(
+            status_code=404,
+            detail="Kurs topilmadi"
+        )
+
+    module = db.query(CourseModule).filter(
+        CourseModule.id == module_id,
+        CourseModule.course_id == course_id,
+        CourseModule.is_active == True
+    ).first()
+
+    if not module:
+        raise HTTPException(
+            status_code=404,
+            detail="Modul topilmadi"
+        )
+
+    lessons = db.query(Lesson).filter(
+        Lesson.module_id == module_id,
+        Lesson.is_active == True
+    ).order_by(
+        Lesson.sort_order.asc(),
+        Lesson.id.asc()
+    ).all()
+
+    return [
+        {
+            "id": lesson.id,
+            "module_id": lesson.module_id,
+            "title": lesson.title,
+            "content": lesson.content,
+            "video_url": lesson.video_url,
+            "sort_order": lesson.sort_order,
+            "is_active": lesson.is_active
+        }
+        for lesson in lessons
+    ]
