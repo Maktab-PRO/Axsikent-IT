@@ -238,19 +238,46 @@ def get_course_modules(
         CourseModule.sort_order.asc(),
         CourseModule.id.asc()
     ).all()
+    result = []
 
-    return [
-        {
+    for module in modules:
+
+        total_lessons = db.query(Lesson).filter(
+            Lesson.module_id == module.id,
+            Lesson.is_active == True
+        ).count()
+
+        completed_lessons = db.query(LessonProgress).join(
+            Lesson,
+            LessonProgress.lesson_id == Lesson.id
+        ).filter(
+            LessonProgress.student_id == student_id,
+            LessonProgress.is_completed == True,
+            Lesson.module_id == module.id,
+            Lesson.is_active == True
+        ).count()
+
+        if total_lessons > 0:
+            progress = round(
+                completed_lessons / total_lessons * 100
+            )
+        else:
+            progress = 0
+
+        result.append({
             "id": module.id,
             "course_id": module.course_id,
             "title": module.title,
             "description": module.description,
             "sort_order": module.sort_order,
-            "is_active": module.is_active
-        }
-        for module in modules
-        ]
+            "is_active": module.is_active,
+            "progress": progress,
+            "completed_lessons": completed_lessons,
+            "total_lessons": total_lessons
+        })
 
+    return result
+    
 @router.get("/courses/{course_id}/modules/{module_id}/lessons")
 def get_module_lessons(
     course_id: int,
