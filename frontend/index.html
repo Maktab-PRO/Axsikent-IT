@@ -2123,7 +2123,24 @@
     .premium-brand-name {
         font-size: 18px;
     }
-}       
+}
+   .mobile-nav-login {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 10px;
+    background: #22c55e;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.mobile-nav-login:active {
+    transform: scale(0.98);
+}         
+    
     </style>
 <script
     src="https://challenges.cloudflare.com/turnstile/v0/api.js"
@@ -2210,9 +2227,6 @@
                 <option value="en">EN</option>
             </select>
 
-            <button class="btn btn-primary login-submit" onclick="openLoginModal()">
-    🔐 Kirish
-</button>
            
             <button class="mobile-menu" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Menyu">
                 ☰
@@ -2227,6 +2241,12 @@
                 <a href="#contact" onclick="closeMobileMenu()">Aloqa</a>
                 <div class="mobile-nav-divider"></div>
                 <a href="#application" class="mobile-nav-apply" onclick="closeMobileMenu()">Ariza qoldirish</a>
+                <button
+                    class="mobile-nav-login"
+                    onclick="closeMobileMenu(); openLoginModal();
+                >
+                    🔐 Kirish
+                        </button>
             </nav>
 
         </div>
