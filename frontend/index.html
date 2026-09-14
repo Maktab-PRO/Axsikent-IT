@@ -11,6 +11,64 @@
         content="AKHSIKENT IT — IT, sun’iy intellekt, ingliz tili va mental arifmetika bo‘yicha zamonaviy ta’lim markazi."
     >
 
+    /* LOGIN → REGISTRATION */
+
+.login-register-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin: 18px 0 12px;
+
+    color: #777;
+    font-size: 11px;
+}
+
+.login-register-divider::before,
+.login-register-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+}
+
+.login-register-text {
+    text-align: center;
+
+    color: #777;
+
+    font-size: 12px;
+
+    margin-bottom: 8px;
+}
+
+.login-register-btn {
+    width: 100%;
+
+    padding: 11px 15px;
+
+    border-radius: 11px;
+
+    border: 1px solid #22c55e;
+
+    background: rgba(34,197,94,.07);
+
+    color: #15803d;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+.login-register-btn:hover {
+    background: #22c55e;
+    color: white;
+
+    transform: translateY(-1px);
+}
+
     <style>
         * {
             margin: 0;
@@ -1970,9 +2028,25 @@
                 <option value="en">EN</option>
             </select>
 
-            <button class="btn btn-primary" onclick="openLoginModal()">
-                🔐 Kirish
+            <button class="btn btn-primary login-submit" onclick="loginUser()">
+                Kirish
             </button>
+            <div class="login-register-divider">
+    <span>yoki</span>
+</div>
+
+<div class="login-register-text">
+    Akkauntingiz yo‘qmi?
+</div>
+
+<button
+    type="button"
+    class="login-register-btn"
+    onclick="goToRegistration()"
+>
+    ✨ Ro‘yxatdan o‘tish
+</button>
+            <div id="loginMessage"></div>
             <button class="mobile-menu" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Menyu">
                 ☰
             </button>
@@ -3766,6 +3840,28 @@
 
 
 <script>
+
+function goToRegistration() {
+
+    closeLoginModal();
+
+    setTimeout(() => {
+
+        const registration =
+            document.getElementById("application");
+
+        if (registration) {
+
+            registration.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }
+
+    }, 150);
+
+}
 
     /* =========================
        API
