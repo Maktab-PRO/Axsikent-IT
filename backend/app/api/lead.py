@@ -1,4 +1,9 @@
-from fastapi import APIRouter, Depends
+import os
+import json
+import urllib.parse
+import urllib.request
+
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -11,6 +16,47 @@ router = APIRouter(
 )
 
 
+def verify_turnstile(token: str) -> bool:
+    """
+    Cloudflare Turnstile tokenini tekshiradi.
+    """
+
+    secret_key = os.getenv("TURNSTILE_SECRET_KEY")
+
+    if not secret_key:
+        return False
+
+    if not token:
+        return False
+
+    url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+
+    data = urllib.parse.urlencode({
+        "secret": secret_key,
+        "response": token
+    }).encode("utf-8")
+
+    request = urllib.request.Request(
+        url,
+        data=data,
+        method="POST",
+        headers={
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            result = json.loads(
+                response.read().decode("utf-8")
+            )
+
+        return result.get("success", False)
+
+    except Exception:
+        return False
+
+
 @router.post("/")
 def create_lead(
     full_name: str,
@@ -20,8 +66,24 @@ def create_lead(
     preferred_time: str | None = None,
     previous_it_course: str | None = None,
     comment: str | None = None,
+    cf_turnstile_response: str | None = None,
     db: Session = Depends(get_db)
 ):
+
+    # =========================================
+    # CLOUDFLARE TURNSTILE TEKSHIRUVI
+    # =========================================
+
+    if not verify_turnstile(cf_turnstile_response or ""):
+        raise HTTPException(
+            status_code=403,
+            detail="Robot tekshiruvidan o‘ting."
+        )
+
+    # =========================================
+    # LEAD YARATISH
+    # =========================================
+
     lead = Lead(
         full_name=full_name,
         phone=phone,
