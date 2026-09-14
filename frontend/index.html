@@ -4733,94 +4733,128 @@ function goToRegistration() {
 
 
     /* =========================
-       APPLICATION FORM
-    ========================= */
+   APPLICATION FORM
+========================= */
 
-    document
-        .getElementById("applicationForm")
-        .addEventListener("submit", async function(event) {
+document
+    .getElementById("applicationForm")
+    .addEventListener("submit", async function(event) {
 
-            event.preventDefault();
+        event.preventDefault();
 
-            const message =
-                document.getElementById("formMessage");
+        const message =
+            document.getElementById("formMessage");
+
+
+        /* =========================================
+           CLOUDFLARE TURNSTILE TOKEN
+           ========================================= */
+
+        const turnstileToken =
+            document.querySelector(
+                'input[name="cf-turnstile-response"]'
+            )?.value;
+
+
+        if (!turnstileToken) {
 
             message.textContent =
-                translations[currentLang].formMsgSending;
+                "Iltimos, robot emasligingizni tasdiqlang.";
 
             message.style.color =
-                "#555";
+                "#dc2626";
+
+            return;
+        }
 
 
-            const params =
-                new URLSearchParams({
+        message.textContent =
+            translations[currentLang].formMsgSending;
 
-                    full_name:
-                        document.getElementById("full_name").value,
-
-                    phone:
-                        document.getElementById("phone").value,
-
-                    age:
-                        document.getElementById("age").value,
-
-                    preferred_time:
-                        document.getElementById("preferred_time").value,
-
-                    interested_course:
-                        document.getElementById("interested_course").value,
-
-                    previous_it_course:
-                        document.getElementById("previous_it_course").value,
-
-                    comment:
-                        document.getElementById("comment").value
-
-                });
+        message.style.color =
+            "#555";
 
 
-            try {
+        const params =
+            new URLSearchParams({
 
-                const response =
-                    await fetch(
-                        `${API_URL}/leads/?${params.toString()}`,
-                        {
-                            method: "POST"
-                        }
-                    );
+                full_name:
+                    document.getElementById("full_name").value,
+
+                phone:
+                    document.getElementById("phone").value,
+
+                age:
+                    document.getElementById("age").value,
+
+                preferred_time:
+                    document.getElementById("preferred_time").value,
+
+                interested_course:
+                    document.getElementById("interested_course").value,
+
+                previous_it_course:
+                    document.getElementById("previous_it_course").value,
+
+                comment:
+                    document.getElementById("comment").value,
+
+                /* CLOUDFLARE TOKEN */
+                cf_turnstile_response:
+                    turnstileToken
+
+            });
 
 
-                if (!response.ok) {
-                    throw new Error("Server xatosi");
-                }
+        try {
+
+            const response =
+                await fetch(
+                    `${API_URL}/leads/?${params.toString()}`,
+                    {
+                        method: "POST"
+                    }
+                );
 
 
-                message.textContent =
-                    translations[currentLang].formMsgSuccess;
-
-                message.style.color =
-                    "#16a34a";
-
-
-                document
-                    .getElementById("applicationForm")
-                    .reset();
-
-
-            } catch (error) {
-
-                console.error(error);
-
-                message.textContent =
-                    translations[currentLang].formMsgError;
-
-                message.style.color =
-                    "#dc2626";
-
+            if (!response.ok) {
+                throw new Error("Server xatosi");
             }
 
-        });
 
+            message.textContent =
+                translations[currentLang].formMsgSuccess;
+
+            message.style.color =
+                "#16a34a";
+
+
+            document
+                .getElementById("applicationForm")
+                .reset();
+
+
+            /* Turnstile'ni ham qayta yuklash */
+            if (
+                typeof turnstile !== "undefined"
+            ) {
+                turnstile.reset();
+            }
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            message.textContent =
+                translations[currentLang].formMsgError;
+
+            message.style.color =
+                "#dc2626";
+
+        }
+
+    });
 
     /* =========================
        TRANSLATIONS
