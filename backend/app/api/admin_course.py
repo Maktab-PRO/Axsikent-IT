@@ -321,3 +321,70 @@ def create_lesson(
         "sort_order": lesson.sort_order,
         "is_active": lesson.is_active
     }
+
+from app.models.lesson import Lesson
+
+
+@router.post("/modules/{module_id}/lessons")
+def create_lesson(
+    module_id: int,
+    title: str,
+    content: str = None,
+    video_url: str = None,
+    sort_order: int = 0,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    admin_id = verify_token(credentials.credentials)
+
+    if not admin_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    admin = db.query(Admin).filter(
+        Admin.id == admin_id,
+        Admin.is_active == True
+    ).first()
+
+    if not admin:
+        raise HTTPException(
+            status_code=403,
+            detail="Admin topilmadi"
+        )
+
+    module = db.query(CourseModule).filter(
+        CourseModule.id == module_id,
+        CourseModule.is_active == True
+    ).first()
+
+    if not module:
+        raise HTTPException(
+            status_code=404,
+            detail="Modul topilmadi"
+        )
+
+    lesson = Lesson(
+        module_id=module_id,
+        title=title,
+        content=content,
+        video_url=video_url,
+        sort_order=sort_order,
+        is_active=True
+    )
+
+    db.add(lesson)
+    db.commit()
+    db.refresh(lesson)
+
+    return {
+        "message": "Dars muvaffaqiyatli yaratildi",
+        "id": lesson.id,
+        "module_id": lesson.module_id,
+        "title": lesson.title,
+        "content": lesson.content,
+        "video_url": lesson.video_url,
+        "sort_order": lesson.sort_order,
+        "is_active": lesson.is_active
+    }
