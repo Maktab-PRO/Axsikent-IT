@@ -5,7 +5,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.models.homework import Homework
+from app.models.homework import Homework, HomeworkSubmission
 from app.models.teacher import Teacher
 from app.models.admin import Admin
 from app.core.security import verify_token
@@ -239,4 +239,135 @@ def submit_homework(
         "student_id": submission.student_id,
         "answer": submission.answer,
         "status": submission.status
+    }
+    
+@router.get("/teacher/{homework_id}/submissions")
+def get_homework_submissions(
+    homework_id: int,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    teacher_id = verify_token(credentials.credentials)
+
+    if not teacher_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id,
+        Teacher.is_active == True
+    ).first()
+
+    if not teacher:
+        raise HTTPException(
+            status_code=403,
+            detail="O'qituvchi topilmadi"
+        )
+
+    homework = db.query(Homework).filter(
+        Homework.id == homework_id,
+        Homework.teacher_id == teacher_id
+    ).first()
+
+    if not homework:
+        raise HTTPException(
+            status_code=404,
+            detail="Uy vazifasi topilmadi yoki sizga tegishli emas"
+        )
+
+    submissions = db.query(HomeworkSubmission).filter(
+        HomeworkSubmission.homework_id == homework_id
+    ).order_by(
+        HomeworkSubmission.id.desc()
+    ).all()
+
+    return [
+        {
+            "id": submission.id,
+            "homework_id": submission.homework_id,
+            "student_id": submission.student_id,
+            "answer": submission.answer,
+            "file_url": submission.file_url,
+            "status": submission.status,
+            "score": submission.score,
+            "teacher_comment": submission.teacher_comment,
+            "submitted_at": submission.submitted_at,
+            "checked_at": submission.checked_at
+        }
+        for submission in submissions
+    ]
+
+@router.put("/teacher/submissions/{submission_id}/grade")
+def grade_homework_submission(
+    submission_id: int,
+    score: int,
+    teacher_comment: str | None = None,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    teacher_id = verify_token(credentials.credentials)
+
+    if not teacher_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id,
+        Teacher.is_active == True
+    ).first()
+
+    if not teacher:
+        raise HTTPException(
+            status_code=403,
+            detail="O'qituvchi topilmadi"
+        )
+
+    if score < 0 or score > 100:
+        raise HTTPException(
+            status_code=400,
+            detail="Baho 0 dan 100 gacha bo'lishi kerak"
+        )
+
+    submission = db.query(HomeworkSubmission).filter(
+        HomeworkSubmission.id == submission_id
+    ).first()
+
+    if not submission:
+        raise HTTPException(
+            status_code=404,
+            detail="Topshiriq topilmadi"
+        )
+
+    homework = db.query(Homework).filter(
+        Homework.id == submission.homework_id,
+        Homework.teacher_id == teacher_id
+    ).first()
+
+    if not homework:
+        raise HTTPException(
+            status_code=403,
+            detail="Bu topshiriqni baholash huquqingiz yo'q"
+        )
+
+    submission.score = score
+    submission.teacher_comment = teacher_comment
+    submission.status = "checked"
+    submission.checked_at = datetime.utcnow()
+
+    db.commit()
+    db.refresh(submission)
+
+    return {
+        "message": "Uy vazifasi baholandi",
+        "id": submission.id,
+        "homework_id": submission.homework_id,
+        "student_id": submission.student_id,
+        "score": submission.score,
+        "teacher_comment": submission.teacher_comment,
+        "status": submission.status,
+        "checked_at": submission.checked_at
     }
