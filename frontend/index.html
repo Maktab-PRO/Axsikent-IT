@@ -11,64 +11,7 @@
         content="AKHSIKENT IT — IT, sun’iy intellekt, ingliz tili va mental arifmetika bo‘yicha zamonaviy ta’lim markazi."
     >
 
-    /* LOGIN → REGISTRATION */
-
-.login-register-divider {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    margin: 18px 0 12px;
-
-    color: #777;
-    font-size: 11px;
-}
-
-.login-register-divider::before,
-.login-register-divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: #e5e7eb;
-}
-
-.login-register-text {
-    text-align: center;
-
-    color: #777;
-
-    font-size: 12px;
-
-    margin-bottom: 8px;
-}
-
-.login-register-btn {
-    width: 100%;
-
-    padding: 11px 15px;
-
-    border-radius: 11px;
-
-    border: 1px solid #22c55e;
-
-    background: rgba(34,197,94,.07);
-
-    color: #15803d;
-
-    font-weight: 800;
-
-    cursor: pointer;
-
-    transition: .2s ease;
-}
-
-.login-register-btn:hover {
-    background: #22c55e;
-    color: white;
-
-    transform: translateY(-1px);
-}
-
+    
     <style>
         * {
             margin: 0;
@@ -1995,6 +1938,91 @@
         padding: 20px;
     }
 }
+        /* =========================================
+   LOGIN → REGISTRATION
+   ========================================= */
+
+.login-register-box {
+    margin: 14px 0 12px;
+    text-align: center;
+}
+
+.login-register-text {
+    color: #64748b;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.login-register-btn {
+    width: 100%;
+    padding: 11px 15px;
+
+    border-radius: 11px;
+
+    border: 1px solid rgba(34,197,94,.35);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(34,197,94,.08),
+            rgba(34,197,94,.03)
+        );
+
+    color: #15803d;
+
+    font-weight: 800;
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+.login-register-btn:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #22c55e,
+            #15803d
+        );
+
+    color: white;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 22px rgba(34,197,94,.20);
+}
+
+
+/* =========================================
+   TURNSTILE — REGISTRATION BOTTOM
+   ========================================= */
+
+.turnstile-bottom {
+    margin-top: 20px;
+    margin-bottom: 15px;
+
+    padding: 14px;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #f8fafc,
+            #ffffff
+        );
+
+    border: 1px solid #e2e8f0;
+
+    text-align: center;
+}
+
+.turnstile-label {
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
     </style>
 <script
     src="https://challenges.cloudflare.com/turnstile/v0/api.js"
@@ -3354,12 +3382,6 @@
                 Ro‘yxatdan o‘tish
             </div>
 
-            <div
-    class="cf-turnstile"
-    data-sitekey="0x4AAAAAAE0axiMXsiHC6EHT"
-    data-theme="light"
-    data-size="flexible"
-></div>
 
             <div class="application-form-subtitle" data-i18n="form_subtitle">
                 Ma’lumotlaringizni qoldiring — biz siz bilan bog‘lanamiz.
@@ -3393,7 +3415,7 @@
                     <input
                         type="tel"
                         id="phone"
-                        placeholder="+998 90 123 45 67"
+                        placeholder="+998901234567"
                         required
                     >
 
@@ -3411,6 +3433,7 @@
                         id="age"
                         placeholder="Yoshingiz"
                         data-i18n-placeholder="placeholder_age"
+                        required
                     >
 
                 </div>
@@ -3422,7 +3445,7 @@
                         Qulay vaqt
                     </label>
 
-                    <select id="preferred_time">
+                    <select id="preferred_time" required>
 
                         <option value="" data-i18n="select_choose">
                             Tanlang
@@ -3455,7 +3478,7 @@
                         Qaysi kursga qiziqasiz?
                     </label>
 
-                    <select id="interested_course">
+                    <select id="interested_course" required>
 
                         <option value="" data-i18n="select_course_placeholder">
                             Kursni tanlang
@@ -3520,7 +3543,7 @@
                         Avval IT kursida o‘qiganmisiz?
                     </label>
 
-                    <select id="previous_it_course">
+                    <select id="previous_it_course" required>
 
                         <option value="" data-i18n="select_choose">
                             Tanlang
@@ -3565,7 +3588,21 @@
                 Ariza yuborish
             </button>
 
+            <div class="turnstile-bottom">
 
+    <div class="turnstile-label">
+        🛡️ Robot emasligingizni tasdiqlang
+    </div>
+
+    <div
+        class="cf-turnstile"
+        data-sitekey="0x4AAAAAAE0axiMXsiHC6EHT"
+        data-theme="light"
+        data-size="flexible"
+    ></div>
+
+</div>
+            
             <div
                 class="form-message"
                 id="formMessage"
@@ -5960,7 +5997,26 @@ document
 function closeLoginModal() {
     document.getElementById("loginModal").classList.remove("active");
 }
+function goToRegistration() {
 
+    closeLoginModal();
+
+    setTimeout(() => {
+
+        const registration =
+            document.getElementById("application");
+
+        if (registration) {
+
+            registration.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }
+
+    }, 150);
+}
 async function loginUser() {
     const phone = document.getElementById("loginPhone").value.trim();
     const password = document.getElementById("loginPassword").value;
@@ -6473,6 +6529,21 @@ async function loadStudentHomeworkResults() {
             id="loginPassword"
             placeholder="Parol"
         >
+        <div class="login-register-box">
+
+    <div class="login-register-text">
+        Akkauntingiz yo‘qmi?
+    </div>
+
+    <button
+        type="button"
+        class="login-register-btn"
+        onclick="goToRegistration()"
+    >
+        ✨ Ro‘yxatdan o‘tish
+    </button>
+
+</div>
 
         <button class="btn btn-primary login-submit" onclick="loginUser()">
             Kirish
