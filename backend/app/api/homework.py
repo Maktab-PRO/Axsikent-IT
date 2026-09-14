@@ -371,3 +371,49 @@ def grade_homework_submission(
         "status": submission.status,
         "checked_at": submission.checked_at
     }
+@router.get("/student/submissions")
+def get_student_submissions(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    student_id = verify_token(credentials.credentials)
+
+    if not student_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    from app.models.student import Student
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="O'quvchi topilmadi"
+        )
+
+    submissions = db.query(HomeworkSubmission).filter(
+        HomeworkSubmission.student_id == student_id
+    ).order_by(
+        HomeworkSubmission.id.desc()
+    ).all()
+
+    return [
+        {
+            "id": submission.id,
+            "homework_id": submission.homework_id,
+            "answer": submission.answer,
+            "file_url": submission.file_url,
+            "status": submission.status,
+            "score": submission.score,
+            "teacher_comment": submission.teacher_comment,
+            "submitted_at": submission.submitted_at,
+            "checked_at": submission.checked_at
+        }
+        for submission in submissions
+    ]
