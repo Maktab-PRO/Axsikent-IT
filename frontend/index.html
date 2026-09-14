@@ -5892,6 +5892,201 @@ if (studentResponse.ok) {
             "Server bilan bog‘lanishda xatolik.";
     }
                    }
+async function loadStudentHomeworkResults() {
+
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        return;
+    }
+
+    const container =
+        document.getElementById("studentHomeworkResults");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="padding:20px;text-align:center;color:#777;">
+            📝 Uy vazifalari yuklanmoqda...
+        </div>
+    `;
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/homework/student/submissions`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            container.innerHTML = `
+                <div style="
+                    padding:20px;
+                    background:#fff1f2;
+                    border-radius:15px;
+                    color:#b91c1c;
+                ">
+                    ${data.detail || "Uy vazifalarini yuklab bo‘lmadi."}
+                </div>
+            `;
+            return;
+        }
+
+        if (!data.length) {
+            container.innerHTML = `
+                <div style="
+                    padding:25px;
+                    background:white;
+                    border:1px solid #e5e7eb;
+                    border-radius:18px;
+                    text-align:center;
+                    color:#777;
+                ">
+                    📝 Hozircha topshirilgan uy vazifalari yo‘q.
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = data.map(item => {
+
+            const checked = item.status === "checked";
+
+            return `
+                <div style="
+                    background:white;
+                    border:1px solid #e5e7eb;
+                    border-radius:20px;
+                    padding:22px;
+                    margin-bottom:15px;
+                ">
+
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        gap:15px;
+                        flex-wrap:wrap;
+                        margin-bottom:15px;
+                    ">
+
+                        <strong style="font-size:18px;">
+                            📝 Uy vazifasi #${item.homework_id}
+                        </strong>
+
+                        <span style="
+                            padding:6px 12px;
+                            border-radius:20px;
+                            background:${checked ? "#dcfce7" : "#fef3c7"};
+                            color:${checked ? "#166534" : "#92400e"};
+                            font-weight:700;
+                        ">
+                            ${checked ? "✅ Tekshirildi" : "⏳ Tekshirilmoqda"}
+                        </span>
+
+                    </div>
+
+                    <div style="
+                        background:#f7f8fc;
+                        border-radius:14px;
+                        padding:15px;
+                        margin-bottom:15px;
+                    ">
+                        <strong>Javobingiz:</strong>
+                        <p style="margin-top:8px;color:#555;">
+                            ${item.answer || "Javob yo‘q"}
+                        </p>
+                    </div>
+
+                    ${
+                        checked
+                        ? `
+                            <div style="
+                                display:grid;
+                                grid-template-columns:120px 1fr;
+                                gap:15px;
+                                align-items:start;
+                            ">
+
+                                <div style="
+                                    background:#111;
+                                    color:white;
+                                    border-radius:15px;
+                                    padding:18px;
+                                    text-align:center;
+                                ">
+                                    <div style="font-size:30px;">
+                                        ⭐
+                                    </div>
+
+                                    <strong style="font-size:28px;">
+                                        ${item.score ?? 0}
+                                    </strong>
+
+                                    <div style="color:#bbb;">
+                                        / 100
+                                    </div>
+                                </div>
+
+                                <div style="
+                                    background:#eaf8ef;
+                                    border-radius:15px;
+                                    padding:18px;
+                                ">
+                                    <strong style="color:#166534;">
+                                        💬 Ustoz izohi
+                                    </strong>
+
+                                    <p style="
+                                        margin-top:8px;
+                                        color:#444;
+                                    ">
+                                        ${item.teacher_comment || "Izoh qoldirilmagan."}
+                                    </p>
+                                </div>
+
+                            </div>
+                        `
+                        : `
+                            <div style="
+                                padding:15px;
+                                background:#fff7ed;
+                                border-radius:14px;
+                                color:#9a3412;
+                            ">
+                                ⏳ Ustoz hali bu vazifani tekshirmagan.
+                            </div>
+                        `
+                    }
+
+                </div>
+            `;
+
+        }).join("");
+
+    } catch (error) {
+
+        container.innerHTML = `
+            <div style="
+                padding:20px;
+                background:#fff1f2;
+                border-radius:15px;
+                color:#b91c1c;
+            ">
+                Server bilan bog‘lanishda xatolik.
+            </div>
+        `;
+    }
+}
+    
     function logoutStudent() {
 
     localStorage.removeItem("access_token");
@@ -5940,6 +6135,17 @@ if (studentResponse.ok) {
 
         </div>
 
+<div style="margin-bottom:30px;">
+    <h3 style="font-size:28px;margin-bottom:10px;">
+        📝 Uy vazifalari
+    </h3>
+
+    <p style="color:#666;margin-bottom:20px;">
+        Topshirgan vazifalaringiz, baholaringiz va ustoz izohlarini shu yerda ko‘rasiz.
+    </p>
+
+    <div id="studentHomeworkResults"></div>
+</div>
 
         <!-- STATISTIKA -->
 
