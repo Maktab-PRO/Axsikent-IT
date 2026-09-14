@@ -1836,7 +1836,7 @@ async function loadStudentHomeworkResults() {
 
         }).join("");
 
-    } catch (error) {
+        } catch (error) {
 
         console.error(error);
 
@@ -1851,13 +1851,16 @@ async function loadStudentHomeworkResults() {
             </div>
         `;
     }
-    
-    
+
+} // loadStudentHomeworkResults() funksiyasi tugadi
+
+
+/* =========================
+   START STUDENT CABINET
+========================= */
+
 loadStudent();
 loadStudentHomeworkResults();
 loadStudentCourses();
 
 </script>
-
-</body>
-</html>
