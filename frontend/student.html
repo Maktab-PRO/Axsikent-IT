@@ -535,6 +535,176 @@
                 height: 36px;
             }
         }
+  
+    /* =========================================
+   AXSIKENT IT — STUDENT CABINET PRO DESIGN
+   ========================================= */
+
+body {
+    background:
+        radial-gradient(
+            circle at 15% 10%,
+            rgba(34, 197, 94, 0.08),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 85% 80%,
+            rgba(132, 204, 22, 0.06),
+            transparent 30%
+        ),
+        #05080d !important;
+
+    color: #f8fafc !important;
+}
+
+/* Asosiy konteynerlar */
+
+.container,
+.dashboard,
+.student-dashboard,
+.main-content {
+    background: transparent !important;
+}
+
+/* Kartalar */
+
+.card,
+.course,
+.stat-card,
+.profile-card {
+    background:
+        linear-gradient(
+            145deg,
+            #111827,
+            #0b1220
+        ) !important;
+
+    border: 1px solid #1f2937 !important;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.25) !important;
+
+    color: #f8fafc !important;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.card:hover,
+.course:hover,
+.stat-card:hover {
+    transform: translateY(-3px);
+
+    border-color: rgba(34, 197, 94, 0.45) !important;
+
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.35),
+        0 0 20px rgba(34, 197, 94, 0.05) !important;
+}
+
+/* Sarlavhalar */
+
+h1,
+h2,
+h3,
+h4 {
+    color: #f8fafc !important;
+}
+
+p {
+    color: #94a3b8;
+}
+
+/* Yashil aksent */
+
+.green,
+.success,
+.text-success {
+    color: #22c55e !important;
+}
+
+/* Progress */
+
+.progress {
+    background: #1f2937 !important;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background:
+        linear-gradient(
+            90deg,
+            #22c55e,
+            #84cc16
+        ) !important;
+
+    border-radius: 20px;
+}
+
+/* Tugmalar */
+
+button {
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+/* Input */
+
+input,
+select,
+textarea {
+    background: #0b1220 !important;
+    color: #f8fafc !important;
+    border: 1px solid #263244 !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #64748b;
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar {
+    width: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: #05080d;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #263244;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #22c55e;
+}
+
+/* Mobil */
+
+@media (max-width: 600px) {
+
+    body {
+        font-size: 14px;
+    }
+
+    .card,
+    .course,
+    .stat-card,
+    .profile-card {
+        border-radius: 16px !important;
+    }
+
+}
+    
     </style>
 </head>
 
