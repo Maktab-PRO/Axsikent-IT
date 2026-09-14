@@ -1314,7 +1314,212 @@ async function openStudentCourse(courseId) {
             </div>
         `;
     }
-}    
+}
+
+async function openStudentModule(courseId, moduleId) {
+
+    const token = localStorage.getItem("access_token");
+    const container = document.getElementById("studentCourses");
+
+    if (!token) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="
+            text-align:center;
+            padding:25px;
+            color:#7b8496;
+        ">
+            📖 Darslar yuklanmoqda...
+        </div>
+    `;
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const lessons = await response.json();
+
+        if (!response.ok) {
+            throw new Error("Darslarni yuklashda xatolik");
+        }
+
+        if (!lessons.length) {
+
+            container.innerHTML = `
+                <div style="
+                    text-align:center;
+                    padding:25px;
+                    color:#7b8496;
+                ">
+                    📖 Bu modulda hozircha darslar mavjud emas.
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = `
+            <div style="margin-bottom:15px;">
+
+                <button
+                    onclick="openStudentCourse(${courseId})"
+                    style="
+                        border:none;
+                        background:#eef2f7;
+                        padding:9px 14px;
+                        border-radius:10px;
+                        cursor:pointer;
+                    "
+                >
+                    ← Modullarga qaytish
+                </button>
+
+            </div>
+
+            ${lessons.map((lesson, index) => `
+                <div
+                    style="
+                        padding:18px;
+                        margin-bottom:12px;
+                        border:1px solid #e8ecf2;
+                        border-radius:14px;
+                        background:#fff;
+                    "
+                >
+
+                    <div style="
+                        font-size:13px;
+                        color:#7b8496;
+                        margin-bottom:5px;
+                    ">
+                        Dars ${index + 1}
+                    </div>
+
+                    <div style="
+                        font-weight:700;
+                        color:#172033;
+                    ">
+                        📖 ${lesson.title}
+                    </div>
+
+                    <div style="
+                        margin-top:8px;
+                        font-size:14px;
+                        color:#5f6878;
+                        line-height:1.6;
+                    ">
+                        ${lesson.content || "Bu dars uchun hozircha matn mavjud emas."}
+                    </div>
+
+                    ${
+                        lesson.video_url
+                        ? `
+                            <a
+                                href="${lesson.video_url}"
+                                target="_blank"
+                                style="
+                                    display:inline-block;
+                                    margin-top:12px;
+                                    color:#16a34a;
+                                    font-weight:600;
+                                    text-decoration:none;
+                                "
+                            >
+                                ▶️ Videoni ko‘rish
+                            </a>
+                        `
+                        : ""
+                    }
+                <div style="margin-top:15px;">
+
+    <button
+        onclick="completeStudentLesson(${courseId}, ${moduleId}, ${lesson.id})"
+        style="
+            width:100%;
+            border:none;
+            background:#16a34a;
+            color:white;
+            padding:12px;
+            border-radius:10px;
+            font-weight:600;
+            cursor:pointer;
+        "
+    >
+        ✅ Darsni tugatdim
+    </button>
+
+</div>
+
+                </div>
+            `).join("")}
+        `;
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div style="
+                text-align:center;
+                padding:25px;
+                color:#dc2626;
+            ">
+                Darslarni yuklashda xatolik yuz berdi.
+            </div>
+        `;
+    }
+}
+    async function completeStudentLesson(courseId, moduleId, lessonId) {
+
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/complete`,
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.detail || "Darsni yakunlashda xatolik");
+            return;
+        }
+
+        alert(
+            `✅ Dars tugatildi!\n\nProgress: ${result.progress}%`
+        );
+
+        await openStudentModule(courseId, moduleId);
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Server bilan bog‘lanishda xatolik.");
+    }
+    }
 
     async function loadStudent() {
 
