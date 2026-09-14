@@ -905,6 +905,23 @@
 
             </div>
 
+        <!-- HOMEWORK RESULTS -->
+        <div class="card">
+            <div class="card-header">
+        <h2>📝 Uy vazifalarim</h2>
+    </div>
+
+    <div id="studentHomeworkResults">
+        <div style="
+            text-align:center;
+            padding:25px;
+            color:#7b8496;
+        ">
+            Uy vazifalari yuklanmoqda...
+        </div>
+    </div>
+</div>
+
 
             <!-- TASKS -->
 
@@ -1150,8 +1167,205 @@
     /* =========================
        START
     ========================= */
+async function loadStudentHomeworkResults() {
 
-    loadStudent();
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        return;
+    }
+
+    const container =
+        document.getElementById("studentHomeworkResults");
+
+    if (!container) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/homework/student/submissions`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            container.innerHTML = `
+                <div style="
+                    padding:20px;
+                    background:#fff1f2;
+                    border-radius:14px;
+                    color:#b91c1c;
+                ">
+                    ${data.detail || "Uy vazifalarini yuklab bo'lmadi."}
+                </div>
+            `;
+            return;
+        }
+
+        if (!data.length) {
+            container.innerHTML = `
+                <div style="
+                    text-align:center;
+                    padding:25px;
+                    color:#7b8496;
+                ">
+                    Hozircha topshirilgan uy vazifalari yo'q.
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = data.map(item => {
+
+            const checked = item.status === "checked";
+
+            return `
+                <div style="
+                    border:1px solid #e7ebf2;
+                    border-radius:15px;
+                    padding:18px;
+                    margin-bottom:12px;
+                ">
+
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:center;
+                        gap:10px;
+                        margin-bottom:12px;
+                    ">
+                        <strong>
+                            📝 Uy vazifasi #${item.homework_id}
+                        </strong>
+
+                        <span style="
+                            padding:6px 10px;
+                            border-radius:20px;
+                            background:${checked ? "#dcfce7" : "#fef3c7"};
+                            color:${checked ? "#166534" : "#92400e"};
+                            font-size:12px;
+                            font-weight:700;
+                        ">
+                            ${checked ? "✅ Tekshirildi" : "⏳ Tekshirilmoqda"}
+                        </span>
+                    </div>
+
+                    <div style="
+                        background:#f7f8fc;
+                        border-radius:12px;
+                        padding:14px;
+                        margin-bottom:12px;
+                    ">
+                        <div style="
+                            font-size:12px;
+                            color:#7b8496;
+                            margin-bottom:5px;
+                        ">
+                            Sizning javobingiz
+                        </div>
+
+                        <div>
+                            ${item.answer || "Javob yo'q"}
+                        </div>
+                    </div>
+
+                    ${
+                        checked
+                        ? `
+                            <div style="
+                                display:flex;
+                                gap:12px;
+                                flex-wrap:wrap;
+                            ">
+
+                                <div style="
+                                    background:#eef4ff;
+                                    border-radius:12px;
+                                    padding:14px 20px;
+                                ">
+                                    <div style="
+                                        font-size:11px;
+                                        color:#7b8496;
+                                    ">
+                                        Baho
+                                    </div>
+
+                                    <strong style="
+                                        font-size:25px;
+                                        color:#2563eb;
+                                    ">
+                                        ${item.score ?? 0}/100
+                                    </strong>
+                                </div>
+
+                                <div style="
+                                    flex:1;
+                                    min-width:200px;
+                                    background:#f0fdf4;
+                                    border-radius:12px;
+                                    padding:14px;
+                                ">
+                                    <div style="
+                                        font-size:11px;
+                                        color:#166534;
+                                        margin-bottom:5px;
+                                    ">
+                                        💬 Ustoz izohi
+                                    </div>
+
+                                    <div>
+                                        ${item.teacher_comment || "Izoh qoldirilmagan."}
+                                    </div>
+                                </div>
+
+                            </div>
+                        `
+                        : `
+                            <div style="
+                                padding:12px;
+                                background:#fff7ed;
+                                border-radius:12px;
+                                color:#9a3412;
+                                font-size:13px;
+                            ">
+                                ⏳ Ustoz hali bu vazifani tekshirmagan.
+                            </div>
+                        `
+                    }
+
+                </div>
+            `;
+
+        }).join("");
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div style="
+                padding:20px;
+                background:#fff1f2;
+                border-radius:14px;
+                color:#b91c1c;
+            ">
+                Server bilan bog'lanishda xatolik.
+            </div>
+        `;
+    }
+                                }
+    
+    
+loadStudent();
+loadStudentHomeworkResults();
 
 </script>
 
