@@ -2023,6 +2023,107 @@
     font-weight: 700;
     margin-bottom: 10px;
 }
+
+ /* ===== PREMIUM AXSikent IT LOGO ===== */
+
+.premium-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    text-decoration: none;
+    user-select: none;
+}
+
+.premium-brand-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #16a34a;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(34, 197, 94, 0.14),
+            rgba(34, 197, 94, 0.03)
+        );
+
+    border: 1px solid rgba(34, 197, 94, 0.28);
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 8px 24px rgba(22, 163, 74, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+    transition: 0.25s ease;
+}
+
+.premium-brand-icon svg {
+    width: 27px;
+    height: 27px;
+    display: block;
+}
+
+.premium-brand-name {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+
+    font-size: 21px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -0.8px;
+
+    color: #111827;
+}
+
+.premium-brand-name span {
+    color: #111827;
+}
+
+.premium-brand-name strong {
+    color: #16a34a;
+    font-weight: 950;
+    letter-spacing: -0.5px;
+}
+
+.premium-brand:hover .premium-brand-icon {
+    transform: translateY(-2px) scale(1.03);
+
+    box-shadow:
+        0 12px 30px rgba(22, 163, 74, 0.20),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.premium-brand:hover .premium-brand-name {
+    transform: translateX(1px);
+}
+
+@media (max-width: 600px) {
+
+    .premium-brand {
+        gap: 8px;
+    }
+
+    .premium-brand-icon {
+        width: 37px;
+        height: 37px;
+        border-radius: 10px;
+    }
+
+    .premium-brand-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .premium-brand-name {
+        font-size: 18px;
+    }
+}       
     </style>
 <script
     src="https://challenges.cloudflare.com/turnstile/v0/api.js"
@@ -2040,9 +2141,57 @@
 <header>
     <div class="container navbar">
 
-        <a href="#home" class="logo">
-            AKHSIKENT <span>IT</span>
-        </a>
+        <a href="#home" class="premium-brand">
+
+    <div class="premium-brand-icon">
+        <svg
+            viewBox="0 0 48 48"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+        >
+            <rect
+                x="3"
+                y="3"
+                width="42"
+                height="42"
+                rx="13"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+            />
+
+            <path
+                d="M14 32L24 14L34 32"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+
+            <path
+                d="M18 26H30"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3.5"
+                stroke-linecap="round"
+            />
+
+            <circle
+                cx="24"
+                cy="14"
+                r="2.5"
+                fill="currentColor"
+            />
+        </svg>
+    </div>
+
+    <div class="premium-brand-name">
+        <span>Axsikent</span>
+        <strong>IT</strong>
+    </div>
+
+</a>
 
         <nav class="nav-links">
             <a href="#courses" data-i18n="nav_courses">Kurslar</a>
@@ -2065,7 +2214,6 @@
     🔐 Kirish
 </button>
            
-            <div id="loginMessage"></div>
             <button class="mobile-menu" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Menyu">
                 ☰
             </button>
@@ -6499,10 +6647,19 @@ async function loadStudentHomeworkResults() {
 <!-- LOGIN MODAL -->
 <div id="loginModal" class="login-modal">
     <div class="login-box">
-        <button class="login-close" onclick="closeLoginModal()">×</button>
+
+        <button
+            class="login-close"
+            onclick="closeLoginModal()"
+        >
+            ×
+        </button>
 
         <h2>🔐 Kirish</h2>
-        <p>Axsikent IT akkauntingizga kiring</p>
+
+        <p>
+            Axsikent IT akkauntingizga kiring
+        </p>
 
         <input
             type="text"
@@ -6515,19 +6672,34 @@ async function loadStudentHomeworkResults() {
             id="loginPassword"
             placeholder="Parol"
         >
+
+        <button
+            class="btn btn-primary login-submit"
+            onclick="loginUser()"
+        >
+            🔐 Kirish
+        </button>
+
         <div class="login-register-box">
 
-    <div class="login-register-text">
-        Akkauntingiz yo‘qmi?
-    </div>
+            <div class="login-register-text">
+                Akkauntingiz yo‘qmi?
+            </div>
 
-    <button
-        type="button"
-        class="login-register-btn"
-        onclick="goToRegistration()"
-    >
-        ✨ Ro‘yxatdan o‘tish
-    </button>
+            <button
+                type="button"
+                class="login-register-btn"
+                onclick="goToRegistration()"
+            >
+                ✨ Ro‘yxatdan o‘tish
+            </button>
+
+        </div>
+
+        <div id="loginMessage"></div>
+
+    </div>
+</div>
 
 </div>
 
