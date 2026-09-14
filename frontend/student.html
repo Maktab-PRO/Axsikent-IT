@@ -1056,7 +1056,7 @@ async function loadStudentCourses() {
     try {
 
         const response = await fetch(
-            `${API_URL}/student/courses/`,
+            `${API_URL}/student/courses`,
             {
                 method: "GET",
                 headers: {
@@ -1141,9 +1141,9 @@ async function loadStudentCourses() {
                             <div class="course-name">
                                 ${course.name}
                             </div>
-
-                            <div class="course-info">
-                                ${course.modules_count || 0} ta modul
+                            
+                          <div class="course-info">
+                            Kurs davom etmoqda
                             </div>
                         </div>
 
