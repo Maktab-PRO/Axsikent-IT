@@ -13,6 +13,16 @@
 
     
     <style>
+
+        .desktop-login-btn {
+    display: inline-flex;
+}
+
+@media (max-width: 1000px) {
+    .desktop-login-btn {
+        display: none;
+    }
+}
         * {
             margin: 0;
             padding: 0;
@@ -2226,6 +2236,14 @@
                 <option value="ru">RU</option>
                 <option value="en">EN</option>
             </select>
+
+            <button
+                type="button"
+                class="btn btn-primary desktop-login-btn"
+                onclick="openLoginModal()"
+            >
+                🔐 Kirish
+            </button>
 
            
             <button class="mobile-menu" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Menyu">
@@ -6722,13 +6740,6 @@ async function loadStudentHomeworkResults() {
 </div>
 
 </div>
-
-        <button class="btn btn-primary login-submit" onclick="loginUser()">
-            Kirish
-        </button>
-
-        <div id="loginMessage"></div>
-    </div>
-</div>
+    
 </body>
 </html>
