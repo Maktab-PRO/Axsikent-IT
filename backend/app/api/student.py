@@ -10,6 +10,7 @@ from app.models.student_course import StudentCourse
 from app.models.course import Course
 from app.models.course_module import CourseModule
 from app.models.lesson import Lesson
+from app.models.student_lesson import StudentLesson
 from app.models.lesson_progress import LessonProgress
 from app.schemas.student import StudentCreate, StudentLogin, StudentResponse
 from app.core.security import create_access_token
