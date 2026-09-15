@@ -2553,7 +2553,7 @@ async function openStudentModule(courseId, moduleId) {
                 <div style="margin-top:15px;">
 
     <button
-        onclick="completeStudentLesson(${courseId}, ${moduleId}, ${lesson.id})"
+        onclick="completeStudentLesson(${courseId}, ${moduleId}, ${lesson.id}, this)"
         style="
             width:100%;
             border:none;
@@ -2589,7 +2589,7 @@ async function openStudentModule(courseId, moduleId) {
         `;
     }
 }
-        async function completeStudentLesson(courseId, moduleId, lessonId) {
+        async function completeStudentLesson(courseId, moduleId, lessonId, button) {
 
         const token = localStorage.getItem("access_token");
 
@@ -2623,8 +2623,16 @@ async function openStudentModule(courseId, moduleId) {
 
             showLessonSuccessModal(result.progress);
 
-            await openStudentModule(courseId, moduleId);
+           if (button) {
 
+    button.textContent = "✅ Tugallandi";
+
+    button.disabled = true;
+
+    button.style.background = "#166534";
+
+    button.style.cursor = "default";
+}
         } catch (error) {
 
             console.error(error);
