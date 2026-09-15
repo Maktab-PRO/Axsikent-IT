@@ -2553,20 +2553,21 @@ async function openStudentModule(courseId, moduleId) {
                 <div style="margin-top:15px;">
 
     <button
-        onclick="completeStudentLesson(${courseId}, ${moduleId}, ${lesson.id}, this)"
-        style="
-            width:100%;
-            border:none;
-            background:#16a34a;
-            color:white;
-            padding:12px;
-            border-radius:10px;
-            font-weight:600;
-            cursor:pointer;
-        "
-    >
-        ✅ Darsni tugatdim
-    </button>
+    onclick="completeStudentLesson(${courseId}, ${moduleId}, ${lesson.id}, this)"
+    ${lesson.completed ? "disabled" : ""}
+    style="
+        width:100%;
+        border:none;
+        background:${lesson.completed ? "#166534" : "#16a34a"};
+        color:white;
+        padding:12px;
+        border-radius:10px;
+        font-weight:600;
+        cursor:${lesson.completed ? "default" : "pointer"};
+    "
+>
+    ${lesson.completed ? "✅ Tugallandi" : "✅ Darsni tugatdim"}
+</button>
 
 </div>
 
