@@ -7,6 +7,207 @@
     <title>Axsikent IT — Student Cabinet</title>
 
     <style>
+        /* =========================================
+   PREMIUM LESSON MODALS
+========================================= */
+
+.lesson-success-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.lesson-success-modal.show {
+    display: flex;
+}
+
+.lesson-success-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .78);
+    backdrop-filter: blur(10px);
+}
+
+.lesson-success-box {
+    position: relative;
+    z-index: 2;
+    width: min(460px, 100%);
+    padding: 34px 28px 28px;
+    text-align: center;
+
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(34,197,94,.14),
+            transparent 42%
+        ),
+        linear-gradient(
+            145deg,
+            #111827,
+            #080d16
+        );
+
+    border: 1px solid rgba(34,197,94,.25);
+    border-radius: 26px;
+
+    box-shadow:
+        0 35px 100px rgba(0,0,0,.65),
+        0 0 50px rgba(34,197,94,.08);
+
+    animation: lessonSuccessIn .35s ease;
+}
+
+.lesson-success-icon {
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 22px;
+    font-size: 38px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(34,197,94,.20),
+            rgba(34,197,94,.05)
+        );
+
+    border: 1px solid rgba(34,197,94,.28);
+
+    box-shadow:
+        0 0 35px rgba(34,197,94,.14),
+        inset 0 0 20px rgba(34,197,94,.05);
+
+    animation: lessonSuccessPulse 1.8s ease-in-out infinite;
+}
+
+.lesson-success-box h3 {
+    margin-bottom: 10px;
+    color: #f8fafc !important;
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.lesson-success-box p {
+    margin: 0 auto;
+    max-width: 370px;
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.lesson-success-progress {
+    margin-top: 22px;
+}
+
+.lesson-success-progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: #94a3b8;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.lesson-success-progress-label strong {
+    color: #4ade80;
+}
+
+.lesson-success-progress-bar {
+    height: 9px;
+    overflow: hidden;
+    background: #1f2937;
+    border-radius: 20px;
+}
+
+.lesson-success-progress-fill {
+    width: 100%;
+    height: 100%;
+    background:
+        linear-gradient(
+            90deg,
+            #16a34a,
+            #4ade80,
+            #84cc16
+        );
+    border-radius: 20px;
+    box-shadow:
+        0 0 15px rgba(34,197,94,.35);
+
+    animation: lessonProgressFill .8s ease;
+}
+
+.lesson-success-button {
+    width: 100%;
+    margin-top: 24px;
+    padding: 13px 18px;
+
+    border: none;
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #22c55e,
+            #15803d
+        );
+
+    color: white;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 25px rgba(34,197,94,.16);
+}
+
+.lesson-success-button:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 14px 30px rgba(34,197,94,.25);
+}
+
+@keyframes lessonSuccessIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(.94);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes lessonSuccessPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.06);
+    }
+}
+
+@keyframes lessonProgressFill {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+        
         * {
             margin: 0;
             padding: 0;
@@ -2388,48 +2589,138 @@ async function openStudentModule(courseId, moduleId) {
         `;
     }
 }
-    async function completeStudentLesson(courseId, moduleId, lessonId) {
+        async function completeStudentLesson(courseId, moduleId, lessonId) {
 
-    const token = localStorage.getItem("access_token");
+        const token = localStorage.getItem("access_token");
 
-    if (!token) {
-        window.location.href = "index.html";
-        return;
-    }
-
-    try {
-
-        const response = await fetch(
-            `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/complete`,
-            {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            }
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            alert(result.detail || "Darsni yakunlashda xatolik");
+        if (!token) {
+            window.location.href = "index.html";
             return;
         }
 
-        alert(
-            `✅ Dars tugatildi!\n\nProgress: ${result.progress}%`
+        try {
+
+            const response = await fetch(
+                `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/complete`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+
+                showLessonErrorModal(
+                    result.detail || "Darsni yakunlashda xatolik"
+                );
+
+                return;
+            }
+
+            showLessonSuccessModal(result.progress);
+
+            await openStudentModule(courseId, moduleId);
+
+        } catch (error) {
+
+            console.error(error);
+
+            showLessonErrorModal(
+                "Server bilan bog‘lanishda xatolik."
+            );
+        }
+    }
+
+        function showLessonErrorModal(message) {
+
+        const modal =
+            document.getElementById("lessonErrorModal");
+
+        const text =
+            document.getElementById("lessonErrorText");
+
+        if (!modal) return;
+
+        if (text) {
+            text.textContent =
+                message || "Darsni yakunlashda xatolik";
+        }
+
+        modal.classList.add("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
         );
-
-        await openStudentModule(courseId, moduleId);
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert("Server bilan bog‘lanishda xatolik.");
-    }
     }
 
+
+    function closeLessonErrorModal() {
+
+        const modal =
+            document.getElementById("lessonErrorModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+    }
+
+
+    function showLessonSuccessModal(progress) {
+
+        const modal =
+            document.getElementById("lessonSuccessModal");
+
+        const percent =
+            document.getElementById("lessonSuccessPercent");
+
+        const fill =
+            document.getElementById("lessonSuccessFill");
+
+        if (!modal) return;
+
+        if (percent) {
+            percent.textContent =
+                `${progress}%`;
+        }
+
+        if (fill) {
+            fill.style.width =
+                `${progress}%`;
+        }
+
+        modal.classList.add("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+    }
+
+
+    function closeLessonSuccessModal() {
+
+        const modal =
+            document.getElementById("lessonSuccessModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+    }
     async function loadStudent() {
 
         const token = localStorage.getItem("access_token");
@@ -2793,3 +3084,129 @@ loadStudentHomeworkResults();
 loadStudentCourses();
 
 </script>
+
+    <!-- PREMIUM LESSON SUCCESS MODAL -->
+
+<div
+    id="lessonSuccessModal"
+    class="lesson-success-modal"
+    aria-hidden="true"
+>
+
+    <div
+        class="lesson-success-backdrop"
+        onclick="closeLessonSuccessModal()"
+    ></div>
+
+    <div class="lesson-success-box">
+
+        <div class="lesson-success-icon">
+            🎉
+        </div>
+
+        <h3>
+            Tabriklaymiz! 🎓
+        </h3>
+
+        <p id="lessonSuccessText">
+            Siz hozirgina o‘zingizga biriktirilgan
+            darsni 100% muvaffaqiyatli tugatdingiz!
+        </p>
+
+        <div class="lesson-success-progress">
+
+            <div class="lesson-success-progress-label">
+                <span>Dars progressi</span>
+
+                <strong id="lessonSuccessPercent">
+                    100%
+                </strong>
+            </div>
+
+            <div class="lesson-success-progress-bar">
+
+                <div
+                    class="lesson-success-progress-fill"
+                    id="lessonSuccessFill"
+                ></div>
+
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="lesson-success-button"
+            onclick="closeLessonSuccessModal()"
+        >
+            Davom etish 🚀
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- PREMIUM LESSON ERROR MODAL -->
+
+<div
+    id="lessonErrorModal"
+    class="lesson-success-modal"
+    aria-hidden="true"
+>
+
+    <div
+        class="lesson-success-backdrop"
+        onclick="closeLessonErrorModal()"
+    ></div>
+
+    <div class="lesson-success-box">
+
+        <div
+            class="lesson-success-icon"
+            style="
+                background: linear-gradient(
+                    145deg,
+                    rgba(239,68,68,.20),
+                    rgba(239,68,68,.05)
+                );
+
+                border-color: rgba(239,68,68,.28);
+
+                box-shadow:
+                    0 0 35px rgba(239,68,68,.14),
+                    inset 0 0 20px rgba(239,68,68,.05);
+            "
+        >
+            ⚠️
+        </div>
+
+        <h3>
+            Darsni yakunlashda xatolik
+        </h3>
+
+        <p id="lessonErrorText">
+            Darsni yakunlashda kutilmagan xatolik yuz berdi.
+        </p>
+
+        <button
+            type="button"
+            class="lesson-success-button"
+            onclick="closeLessonErrorModal()"
+            style="
+                background: linear-gradient(
+                    135deg,
+                    #ef4444,
+                    #b91c1c
+                );
+
+                box-shadow:
+                    0 10px 25px rgba(239,68,68,.16);
+            "
+        >
+            Tushundim 👍
+        </button>
+
+    </div>
+
+</div>
