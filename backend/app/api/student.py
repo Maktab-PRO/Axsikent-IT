@@ -350,7 +350,7 @@ def get_module_lessons(
         Lesson.id.asc()
     ).all()
 
-    return [
+        return [
         {
             "id": lesson.id,
             "module_id": lesson.module_id,
@@ -358,7 +358,12 @@ def get_module_lessons(
             "content": lesson.content,
             "video_url": lesson.video_url,
             "sort_order": lesson.sort_order,
-            "is_active": lesson.is_active
+            "is_active": lesson.is_active,
+            "completed": db.query(StudentLesson).filter(
+                StudentLesson.student_id == student_id,
+                StudentLesson.lesson_id == lesson.id,
+                StudentLesson.completed == True
+            ).first() is not None
         }
         for lesson in lessons
     ]
