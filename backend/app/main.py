@@ -17,6 +17,7 @@ from app.api.lead import router as lead_router
 from app.api.student_course import router as student_course_router
 from app.api.homework import router as homework_router
 from app.api.student_group import router as student_group_router
+from app.api.lesson_quiz import router as lesson_quiz_router
 
 from app.seed import seed_data
 
