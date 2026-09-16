@@ -1390,7 +1390,7 @@ textarea::placeholder {
             Natijalar
         </div>
 
-        <button class="menu-item" onclick="showMessage('Reyting tizimi tez orada ishga tushadi 🏆')">
+        <button class="menu-item" onclick="openStudentRankingMenu(this)">
             <span class="menu-icon">🏆</span>
             Reyting
         </button>
@@ -3591,6 +3591,24 @@ function confirmLogoutStudent() {
         element.classList.add("active");
 
     }
+
+    async function openStudentRankingMenu(element) {
+
+    selectMenu(element);
+
+    const container = document.getElementById("studentRanking");
+
+    if (!container) {
+        return;
+    }
+
+    container.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+    await loadStudentRanking();
+}
 
     async function openStudentCoursesMenu(element) {
 
