@@ -10,6 +10,7 @@ from app.models.student_course import StudentCourse
 from app.models.course import Course
 from app.models.course_module import CourseModule
 from app.models.lesson import Lesson
+from app.models.lesson_quiz import LessonQuiz
 from app.models.student_lesson import StudentLesson
 from app.models.lesson_progress import LessonProgress
 from app.schemas.student import StudentCreate, StudentLogin, StudentResponse
@@ -350,7 +351,7 @@ def get_module_lessons(
         Lesson.id.asc()
     ).all()
 
-        return [
+    return [
         {
             "id": lesson.id,
             "module_id": lesson.module_id,
@@ -457,6 +458,187 @@ def mark_lesson_as_read(
         "is_completed": progress.is_completed
     }
 
+@router.get("/courses/{course_id}/modules/{module_id}/lessons/{lesson_id}/quiz")
+def get_lesson_quiz(
+    course_id: int,
+    module_id: int,
+    lesson_id: int,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    from app.core.security import verify_token
+
+    student_id = verify_token(credentials.credentials)
+
+    if not student_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    student_course = db.query(StudentCourse).filter(
+        StudentCourse.student_id == student_id,
+        StudentCourse.course_id == course_id,
+        StudentCourse.is_active == True
+    ).first()
+
+    if not student_course:
+        raise HTTPException(
+            status_code=403,
+            detail="Bu kurs sizga biriktirilmagan"
+        )
+
+    module = db.query(CourseModule).filter(
+        CourseModule.id == module_id,
+        CourseModule.course_id == course_id,
+        CourseModule.is_active == True
+    ).first()
+
+    if not module:
+        raise HTTPException(
+            status_code=404,
+            detail="Modul topilmadi"
+        )
+
+    lesson = db.query(Lesson).filter(
+        Lesson.id == lesson_id,
+        Lesson.module_id == module_id,
+        Lesson.is_active == True
+    ).first()
+
+    if not lesson:
+        raise HTTPException(
+            status_code=404,
+            detail="Dars topilmadi"
+        )
+
+    quizzes = db.query(LessonQuiz).filter(
+        LessonQuiz.lesson_id == lesson_id,
+        LessonQuiz.is_active == True
+    ).all()
+
+    if not quizzes:
+        raise HTTPException(
+            status_code=404,
+            detail="Bu dars uchun tekshiruv hali qo'shilmagan"
+        )
+
+    return [
+        {
+            "id": quiz.id,
+            "question": quiz.question,
+            "option_a": quiz.option_a,
+            "option_b": quiz.option_b,
+            "option_c": quiz.option_c,
+            "option_d": quiz.option_d
+        }
+        for quiz in quizzes
+    ]
+
+@router.post("/courses/{course_id}/modules/{module_id}/lessons/{lesson_id}/quiz")
+def submit_lesson_quiz(
+    course_id: int,
+    module_id: int,
+    lesson_id: int,
+    answers: dict,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    from app.core.security import verify_token
+
+    student_id = verify_token(credentials.credentials)
+
+    if not student_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    student_course = db.query(StudentCourse).filter(
+        StudentCourse.student_id == student_id,
+        StudentCourse.course_id == course_id,
+        StudentCourse.is_active == True
+    ).first()
+
+    if not student_course:
+        raise HTTPException(
+            status_code=403,
+            detail="Bu kurs sizga biriktirilmagan"
+        )
+
+    module = db.query(CourseModule).filter(
+        CourseModule.id == module_id,
+        CourseModule.course_id == course_id,
+        CourseModule.is_active == True
+    ).first()
+
+    if not module:
+        raise HTTPException(
+            status_code=404,
+            detail="Modul topilmadi"
+        )
+
+    lesson = db.query(Lesson).filter(
+        Lesson.id == lesson_id,
+        Lesson.module_id == module_id,
+        Lesson.is_active == True
+    ).first()
+
+    if not lesson:
+        raise HTTPException(
+            status_code=404,
+            detail="Dars topilmadi"
+        )
+
+    progress = db.query(LessonProgress).filter(
+        LessonProgress.student_id == student_id,
+        LessonProgress.lesson_id == lesson_id
+    ).first()
+
+    if not progress or not progress.is_read:
+        raise HTTPException(
+            status_code=400,
+            detail="Avval darsni o'qib chiqing"
+        )
+
+    quizzes = db.query(LessonQuiz).filter(
+        LessonQuiz.lesson_id == lesson_id,
+        LessonQuiz.is_active == True
+    ).all()
+
+    if not quizzes:
+        raise HTTPException(
+            status_code=404,
+            detail="Bu dars uchun tekshiruv mavjud emas"
+        )
+
+    score = 0
+
+    for quiz in quizzes:
+        answer = answers.get(str(quiz.id))
+
+        if answer and answer.upper() == quiz.correct_answer.upper():
+            score += 1
+
+    total = len(quizzes)
+
+    passed = score == total
+
+    progress.quiz_passed = passed
+
+    db.commit()
+
+    return {
+        "passed": passed,
+        "score": score,
+        "total": total,
+        "message": (
+            "✅ Tekshiruvdan muvaffaqiyatli o'tdingiz"
+            if passed
+            else "❌ Javoblarda xatolik bor. Qayta urinib ko'ring."
+        )
+    }
+
 @router.post("/courses/{course_id}/modules/{module_id}/lessons/{lesson_id}/complete")
 def complete_lesson(
     course_id: int,
@@ -522,13 +704,39 @@ def complete_lesson(
             detail="Dars topilmadi"
         )
 
-    progress = db.query(LessonProgress).filter(
+        progress = db.query(LessonProgress).filter(
         LessonProgress.student_id == student_id,
         LessonProgress.lesson_id == lesson_id
     ).first()
 
-    if progress:
-        progress.is_completed = True
+    if not progress:
+        raise HTTPException(
+            status_code=400,
+            detail="Avval darsni o'qib chiqing va tekshiruvdan o'ting"
+        )
+
+    if not progress.is_read:
+        raise HTTPException(
+            status_code=400,
+            detail="Avval darsni o'qib chiqing"
+        )
+
+    if not progress.quiz_passed:
+        raise HTTPException(
+            status_code=400,
+            detail="Avval dars yakuniy tekshiruvdan o'ting"
+        )
+
+    if progress.is_completed:
+        return {
+            "message": "Dars allaqachon tugallangan",
+            "lesson_id": lesson_id,
+            "course_id": course_id,
+            "progress": student_course.progress
+        }
+
+    progress.is_completed = True
+    progress.completed_at = datetime.utcnow()
         progress.completed_at = datetime.utcnow()
     else:
         progress = LessonProgress(
