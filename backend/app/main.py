@@ -22,6 +22,7 @@ from app.api.admin_lesson import router as admin_lesson_router
 from app.api.ranking import router as ranking_router
 from app.api.rewards import router as rewards_router
 from app.api.admin_shop import router as admin_shop_router
+from app.api.books import router as books_router
 
 
 from app.seed import seed_data
@@ -91,6 +92,7 @@ app.include_router(admin_lesson_router)
 app.include_router(ranking_router)
 app.include_router(rewards_router)
 app.include_router(admin_shop_router)
+app.include_router(books_router)
 
 # =========================
 
