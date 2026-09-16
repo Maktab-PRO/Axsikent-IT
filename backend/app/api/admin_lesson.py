@@ -198,4 +198,3 @@ def delete_lesson(
         "message": "Dars muvaffaqiyatli o'chirildi",
         "id": lesson_id
     }
-```
