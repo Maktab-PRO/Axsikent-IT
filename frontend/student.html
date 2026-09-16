@@ -3239,6 +3239,9 @@ if (finishButton) {
 
         console.log("Darsni tugatdim bosildi");
 
+    let currentCourseId = null;
+    let currentModuleId = null;
+
         completeStudentLesson(
             courseId,
             moduleId,
@@ -3309,6 +3312,8 @@ if (finishButton) {
 }
     
         async function completeStudentLesson(courseId, moduleId, lessonId, button) {
+        currentCourseId = courseId;
+        currentModuleId = moduleId;
 
         const token = localStorage.getItem("access_token");
 
@@ -3864,7 +3869,7 @@ loadStudentCourses();
         <button
             type="button"
             class="lesson-success-button"
-            onclick="closeLessonSuccessModal()"
+            onclick="closeLessonSuccessModal(); openStudentModule(currentCourseId, currentModuleId)"
         >
             Davom etish 🚀
         </button>
