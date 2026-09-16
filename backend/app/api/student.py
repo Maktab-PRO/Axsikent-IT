@@ -367,6 +367,96 @@ def get_module_lessons(
         }
         for lesson in lessons
     ]
+@router.post("/courses/{course_id}/modules/{module_id}/lessons/{lesson_id}/read")
+def mark_lesson_as_read(
+    course_id: int,
+    module_id: int,
+    lesson_id: int,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    from app.core.security import verify_token
+
+    student_id = verify_token(credentials.credentials)
+
+    if not student_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="O'quvchi topilmadi"
+        )
+
+    student_course = db.query(StudentCourse).filter(
+        StudentCourse.student_id == student_id,
+        StudentCourse.course_id == course_id,
+        StudentCourse.is_active == True
+    ).first()
+
+    if not student_course:
+        raise HTTPException(
+            status_code=403,
+            detail="Bu kurs sizga biriktirilmagan"
+        )
+
+    module = db.query(CourseModule).filter(
+        CourseModule.id == module_id,
+        CourseModule.course_id == course_id,
+        CourseModule.is_active == True
+    ).first()
+
+    if not module:
+        raise HTTPException(
+            status_code=404,
+            detail="Modul topilmadi"
+        )
+
+    lesson = db.query(Lesson).filter(
+        Lesson.id == lesson_id,
+        Lesson.module_id == module_id,
+        Lesson.is_active == True
+    ).first()
+
+    if not lesson:
+        raise HTTPException(
+            status_code=404,
+            detail="Dars topilmadi"
+        )
+
+    progress = db.query(LessonProgress).filter(
+        LessonProgress.student_id == student_id,
+        LessonProgress.lesson_id == lesson_id
+    ).first()
+
+    if not progress:
+        progress = LessonProgress(
+            student_id=student_id,
+            lesson_id=lesson_id,
+            is_read=True
+        )
+        db.add(progress)
+    else:
+        progress.is_read = True
+
+    db.commit()
+
+    return {
+        "message": "Dars o'qilgan deb belgilandi",
+        "lesson_id": lesson_id,
+        "is_read": True,
+        "quiz_passed": progress.quiz_passed,
+        "is_completed": progress.is_completed
+    }
+
 @router.post("/courses/{course_id}/modules/{module_id}/lessons/{lesson_id}/complete")
 def complete_lesson(
     course_id: int,
