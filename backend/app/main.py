@@ -80,6 +80,7 @@ app.include_router(lead_router)
 app.include_router(student_course_router)
 app.include_router(homework_router)
 app.include_router(student_group_router)
+app.include_router(lesson_quiz_router)
 
 # =========================
 
