@@ -5059,52 +5059,70 @@ async function loadStudentBooks() {
 
 
 async function buyStudentBook(bookId) {
-    const token = localStorage.getItem("access_token");
+    
+const token = localStorage.getItem("access_token");
 
-    if (!token) {
-        alert("Avval tizimga kiring.");
-        return;
-    }
-
-    const confirmed = confirm(
-        "Bu kitobni Coin orqali sotib olishni xohlaysizmi?"
+if (!token) {
+    showPremiumModal(
+        "Tizimga kirish kerak",
+        "Kitob sotib olish uchun avval tizimga kiring.",
+        "Kirish"
     );
-
-    if (!confirmed) {
-        return;
-    }
-
-    try {
-        const response = await fetch(
-            `${API_URL}/students/books/${bookId}/buy`,
-            {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            alert(data.detail || "Kitobni sotib olishda xatolik");
-            return;
-        }
-
-        alert(
-            `${data.message}\n\nQolgan Coin: ${data.student.coins}`
-        );
-
-        await loadStudentBooks();
-
-    } catch (error) {
-        console.error(error);
-        alert("Server bilan bog'lanishda xatolik yuz berdi.");
-    }
+    return;
 }
 
-    function showPremiumModal(title, message, buttonText = "Yopish", onConfirm = null) {
+showPremiumModal(
+    "📖 Kitobni sotib olish",
+    "Bu kitobni Coin orqali sotib olishni tasdiqlaysizmi?",
+    "Sotib olish",
+    async () => {
+
+        try {
+
+            const response = await fetch(
+                `${API_URL}/students/books/${bookId}/buy`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Kitobni sotib olishda xatolik"
+                );
+            }
+
+            showPremiumModal(
+                "Xarid muvaffaqiyatli!",
+                `🎉 ${data.message}<br><br>` +
+                `Buyurtma №${data.order_id}<br>` +
+                `🪙 Qolgan Coin: ${data.student.coins}`,
+                "Ajoyib!"
+            );
+
+            await loadStudentBooks();
+
+        } catch (error) {
+
+            console.error(error);
+
+            showPremiumModal(
+                "Xatolik yuz berdi",
+                error.message,
+                "Yopish"
+            );
+        }
+    }
+);
+
+}
+
+   function showPremiumModal(title, message, buttonText = "Yopish", onConfirm = null) {
 
 const oldModal = document.getElementById("premiumPurchaseModal");
 
