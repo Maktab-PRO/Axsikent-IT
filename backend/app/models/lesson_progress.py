@@ -30,6 +30,17 @@ class LessonProgress(Base):
         default=False,
         nullable=False
     )
+         is_read = Column(
+        Boolean,
+        default=False,
+        nullable=False
+    )
+
+    quiz_passed = Column(
+        Boolean,
+        default=False,
+        nullable=False
+    )
 
     completed_at = Column(
         DateTime,
