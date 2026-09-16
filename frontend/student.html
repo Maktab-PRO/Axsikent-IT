@@ -4811,7 +4811,7 @@ async function loadStudentBooks() {
         return;
     }
 
-    const token = localStorage.getItem("student_token");
+    const token = localStorage.getItem("access_token");
 
     if (!token) {
         container.innerHTML = `
@@ -4955,7 +4955,7 @@ async function loadStudentBooks() {
 
 
 async function buyStudentBook(bookId) {
-    const token = localStorage.getItem("student_token");
+    const token = localStorage.getItem("access_token");
 
     if (!token) {
         alert("Avval tizimga kiring.");
