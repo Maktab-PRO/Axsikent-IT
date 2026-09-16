@@ -1815,15 +1815,17 @@ textarea::placeholder {
         <h2>📝 Uy vazifalarim</h2>
     </div>
 
-    <div id="studentHomeworkResults">
-        <div style="
-            text-align:center;
-            padding:25px;
-            color:#7b8496;
-        ">
-            Uy vazifalari yuklanmoqda...
-        </div>
+    <div id="studentHomeworkList">
+    <div style="
+        text-align:center;
+        padding:25px;
+        color:#7b8496;
+    ">
+        Uy vazifalari yuklanmoqda...
     </div>
+</div>
+
+<div id="studentHomeworkResults"></div>
 </div>
 
             <div class="card" id="studentRanking">
@@ -3288,7 +3290,7 @@ async function openStudentModule(courseId, moduleId) {
     ✅ Darsni tugatdim
 </button>
                         `;
-                        const finishButton =
+const finishButton =
     document.getElementById("finishLessonButton");
 
 if (finishButton) {
@@ -4230,8 +4232,8 @@ showPremiumModal(
 
     selectMenu(element);
 
-    const container = document.getElementById("studentHomeworkResults");
-
+    
+    const container = document.getElementById("studentHomeworkList");
     if (!container) {
         return;
     }
