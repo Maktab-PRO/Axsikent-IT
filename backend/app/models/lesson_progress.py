@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, Boolean, DateTime, ForeignKey
 from datetime import datetime
-
 from app.db import Base
 
 
@@ -30,7 +29,8 @@ class LessonProgress(Base):
         default=False,
         nullable=False
     )
-         is_read = Column(
+
+    is_read = Column(
         Boolean,
         default=False,
         nullable=False
