@@ -1376,12 +1376,12 @@ textarea::placeholder {
             Bosh sahifa
         </button>
 
-        <button class="menu-item" onclick="showMessage('Mening kurslarim bo‘limi tez orada ishga tushadi 📚')">
+        <button class="menu-item" onclick="openStudentCoursesMenu(this)">
             <span class="menu-icon">📚</span>
             Mening kurslarim
         </button>
 
-        <button class="menu-item" onclick="showMessage('Uy vazifalari bo‘limi tez orada ishga tushadi 📝')">
+        <button class="menu-item" onclick="openStudentHomeworkMenu(this)">
             <span class="menu-icon">📝</span>
             Uy vazifalarim
         </button>
@@ -3592,6 +3592,430 @@ function confirmLogoutStudent() {
 
     }
 
+    async function openStudentCoursesMenu(element) {
+
+    selectMenu(element);
+
+    const container = document.getElementById("studentCourses");
+
+    if (!container) {
+        return;
+    }
+
+    await loadStudentCourses();
+
+    container.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}
+
+    async function openStudentHomeworkMenu(element) {
+
+    selectMenu(element);
+
+    const container = document.getElementById("studentHomeworkResults");
+
+    if (!container) {
+        return;
+    }
+
+    container.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+    await loadStudentHomework();
+}
+
+    async function loadStudentHomework() {
+
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    const container =
+        document.getElementById("studentHomeworkResults");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="
+            text-align:center;
+            padding:35px 20px;
+            color:#94a3b8;
+        ">
+            <div style="font-size:35px;">📝</div>
+            <div style="
+                margin-top:10px;
+                font-weight:700;
+                color:#f8fafc;
+            ">
+                Uy vazifalari yuklanmoqda...
+            </div>
+        </div>
+    `;
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/homework/student`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const homeworks = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                homeworks.detail ||
+                "Uy vazifalarini yuklashda xatolik"
+            );
+        }
+
+        if (!homeworks.length) {
+
+            container.innerHTML = `
+                <div style="
+                    text-align:center;
+                    padding:40px 20px;
+                    color:#94a3b8;
+                ">
+
+                    <div style="
+                        font-size:45px;
+                        margin-bottom:12px;
+                    ">
+                        🎉
+                    </div>
+
+                    <div style="
+                        color:#f8fafc;
+                        font-size:17px;
+                        font-weight:800;
+                    ">
+                        Hozircha uy vazifasi yo‘q
+                    </div>
+
+                    <div style="
+                        margin-top:7px;
+                        font-size:13px;
+                    ">
+                        Yangi vazifalar shu yerda ko‘rinadi.
+                    </div>
+
+                </div>
+            `;
+
+            return;
+        }
+
+        const submissionsResponse = await fetch(
+            `${API_URL}/homework/student/submissions`,
+            {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const submissions =
+            await submissionsResponse.json();
+
+        container.innerHTML = homeworks.map(homework => {
+
+            const submission =
+                submissions.find(
+                    item => item.homework_id === homework.id
+                );
+
+            const submitted =
+                submission &&
+                submission.status === "submitted";
+
+            const checked =
+                submission &&
+                submission.status === "checked";
+
+            return `
+                <div style="
+                    background:
+                        linear-gradient(
+                            145deg,
+                            #111827,
+                            #0b1220
+                        );
+                    border:1px solid #263244;
+                    border-radius:18px;
+                    padding:20px;
+                    margin-bottom:14px;
+                    box-shadow:
+                        0 10px 30px rgba(0,0,0,.25);
+                ">
+
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:flex-start;
+                        gap:12px;
+                    ">
+
+                        <div>
+                            <div style="
+                                color:#4ade80;
+                                font-size:11px;
+                                font-weight:800;
+                                letter-spacing:1px;
+                            ">
+                                📝 UY VAZIFASI
+                            </div>
+
+                            <div style="
+                                margin-top:7px;
+                                color:#f8fafc;
+                                font-size:17px;
+                                font-weight:800;
+                            ">
+                                ${homework.title}
+                            </div>
+                        </div>
+
+                        <span style="
+                            padding:6px 10px;
+                            border-radius:20px;
+                            background:${
+                                checked
+                                ? "rgba(34,197,94,.12)"
+                                : submitted
+                                ? "rgba(250,204,21,.12)"
+                                : "rgba(59,130,246,.12)"
+                            };
+                            color:${
+                                checked
+                                ? "#4ade80"
+                                : submitted
+                                ? "#facc15"
+                                : "#60a5fa"
+                            };
+                            font-size:11px;
+                            font-weight:800;
+                            white-space:nowrap;
+                        ">
+                            ${
+                                checked
+                                ? "✅ Tekshirildi"
+                                : submitted
+                                ? "⏳ Tekshirilmoqda"
+                                : "🆕 Yangi"
+                            }
+                        </span>
+
+                    </div>
+
+                    <div style="
+                        margin-top:15px;
+                        color:#94a3b8;
+                        font-size:13px;
+                        line-height:1.6;
+                    ">
+                        ${homework.description || "Izoh mavjud emas."}
+                    </div>
+
+                    ${
+                        homework.deadline
+                        ? `
+                            <div style="
+                                margin-top:12px;
+                                color:#64748b;
+                                font-size:12px;
+                            ">
+                                ⏰ Muddat: ${homework.deadline}
+                            </div>
+                        `
+                        : ""
+                    }
+
+                    ${
+                        checked
+                        ? `
+                            <div style="
+                                margin-top:15px;
+                                padding:14px;
+                                background:rgba(34,197,94,.07);
+                                border:1px solid rgba(34,197,94,.15);
+                                border-radius:12px;
+                            ">
+                                <div style="
+                                    color:#64748b;
+                                    font-size:11px;
+                                ">
+                                    Sizning bahoyingiz
+                                </div>
+
+                                <strong style="
+                                    display:block;
+                                    margin-top:4px;
+                                    color:#4ade80;
+                                    font-size:25px;
+                                ">
+                                    ${submission.score ?? 0}/100
+                                </strong>
+
+                                ${
+                                    submission.teacher_comment
+                                    ? `
+                                        <div style="
+                                            margin-top:8px;
+                                            color:#cbd5e1;
+                                            font-size:13px;
+                                        ">
+                                            💬 ${submission.teacher_comment}
+                                        </div>
+                                    `
+                                    : ""
+                                }
+                            </div>
+                        `
+                        : `
+                            <div style="
+                                margin-top:16px;
+                            ">
+
+                                <textarea
+                                    id="homeworkAnswer_${homework.id}"
+                                    placeholder="Javobingizni shu yerga yozing..."
+                                    style="
+                                        width:100%;
+                                        min-height:110px;
+                                        padding:13px;
+                                        border-radius:12px;
+                                        resize:vertical;
+                                    "
+                                >${
+                                    submission?.answer || ""
+                                }</textarea>
+
+                                <button
+                                    onclick="submitStudentHomework(${homework.id})"
+                                    style="
+                                        width:100%;
+                                        margin-top:10px;
+                                        border:none;
+                                        padding:13px;
+                                        border-radius:12px;
+                                        background:
+                                            linear-gradient(
+                                                135deg,
+                                                #22c55e,
+                                                #15803d
+                                            );
+                                        color:white;
+                                        font-weight:800;
+                                        cursor:pointer;
+                                    "
+                                >
+                                    ${
+                                        submitted
+                                        ? "🔄 Javobni qayta topshirish"
+                                        : "🚀 Javobni topshirish"
+                                    }
+                                </button>
+
+                            </div>
+                        `
+                    }
+
+                </div>
+            `;
+
+        }).join("");
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div style="
+                padding:20px;
+                background:rgba(239,68,68,.08);
+                border:1px solid rgba(239,68,68,.2);
+                border-radius:14px;
+                color:#f87171;
+            ">
+                ❌ ${error.message}
+            </div>
+        `;
+    }
+}
+
+    async function submitStudentHomework(homeworkId) {
+
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    const textarea =
+        document.getElementById(
+            `homeworkAnswer_${homeworkId}`
+        );
+
+    if (!textarea) {
+        return;
+    }
+
+    const answer = textarea.value.trim();
+
+    if (!answer) {
+        alert("Avval javobingizni yozing.");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/homework/${homeworkId}/submit?answer=${encodeURIComponent(answer)}`,
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                result.detail ||
+                "Uy vazifasini topshirishda xatolik"
+            );
+        }
+
+        alert("✅ Uy vazifasi muvaffaqiyatli topshirildi!");
+
+        await loadStudentHomework();
+        await loadStudentHomeworkResults();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("❌ " + error.message);
+    }
+}
 
     /* =========================
        MESSAGE
