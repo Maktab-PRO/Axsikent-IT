@@ -49,6 +49,18 @@ app.add_middleware(
 # =========================
 
 Base.metadata.create_all(bind=engine)
+with engine.connect() as connection:
+    connection.exec_driver_sql("""
+        ALTER TABLE lesson_progress
+        ADD COLUMN IF NOT EXISTS is_read BOOLEAN NOT NULL DEFAULT FALSE
+    """)
+
+    connection.exec_driver_sql("""
+        ALTER TABLE lesson_progress
+        ADD COLUMN IF NOT EXISTS quiz_passed BOOLEAN NOT NULL DEFAULT FALSE
+    """)
+
+    connection.commit()
 
 seed_data()
 
