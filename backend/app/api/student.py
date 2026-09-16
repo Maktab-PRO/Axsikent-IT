@@ -735,9 +735,9 @@ def complete_lesson(
             "progress": student_course.progress
         }
 
-    progress.is_completed = True
-    progress.completed_at = datetime.utcnow()
-    progress.completed_at = datetime.utcnow()
+        if progress:
+        progress.is_completed = True
+        progress.completed_at = datetime.utcnow()
     else:
         progress = LessonProgress(
             student_id=student_id,
