@@ -20,6 +20,7 @@ from app.api.student_group import router as student_group_router
 from app.api.lesson_quiz import router as lesson_quiz_router
 from app.api.admin_lesson import router as admin_lesson_router
 from app.api.ranking import router as ranking_router
+from app.api.rewards import router as rewards_router
 
 
 from app.seed import seed_data
@@ -87,6 +88,7 @@ app.include_router(student_group_router)
 app.include_router(lesson_quiz_router)
 app.include_router(admin_lesson_router)
 app.include_router(ranking_router)
+app.include_router(rewards_router)
 
 # =========================
 
