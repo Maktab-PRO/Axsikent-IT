@@ -3835,113 +3835,133 @@ function confirmLogoutStudent() {
             </h3>
 
             ${
-                rewards.length === 0
-                ? `
-                    <div style="
-                        text-align:center;
-                        padding:30px;
-                        color:#7b8496;
-                    ">
-                        Hozircha mukofotlar mavjud emas.
-                    </div>
-                `
-                : rewards.map(reward => `
+        : rewards.map(reward => `
+            <div style="
+            border:1px solid rgba(255,255,255,0.08);
+            border-radius:16px;
+            padding:18px;
+            margin-bottom:15px;
+            background:rgba(255,255,255,0.03);
+        ">
 
-                    <div style="
-                        padding:18px;
-                        margin-bottom:12px;
-                        border-radius:18px;
-                        background:linear-gradient(
-                            145deg,
-                            #111827,
-                            #0b1220
-                        );
-                        border:1px solid rgba(52,211,153,.18);
-                    ">
+        <div style="
+            display:flex;
+            align-items:center;
+            gap:14px;
+        ">
+
+            <div style="
+                width:55px;
+                height:55px;
+                flex-shrink:0;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                border-radius:15px;
+                background:rgba(255,255,255,0.05);
+                font-size:26px;
+                overflow:hidden;
+            ">
+                ${
+                    reward.image_url
+                    ? `<img
+                        src="${reward.image_url}"
+                        style="
+                            width:100%;
+                            height:100%;
+                            object-fit:cover;
+                        "
+                    >`
+                    : "🎁"
+                }
+            </div>
+
+            <div style="flex:1;">
+
+                <h3 style="
+                    margin:0 0 8px;
+                    color:#ffffff;
+                    font-size:16px;
+                    font-weight:800;
+                ">
+                    🎁 ${reward.name}
+                </h3>
+
+                <p style="
+                    color:#9aa3b2;
+                    margin:0 0 12px;
+                    font-size:13px;
+                    line-height:1.5;
+                ">
+                    ${reward.description || "Mukofot"}
+                </p>
+
+                <div style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    gap:10px;
+                    flex-wrap:wrap;
+                ">
+
+                    <div>
 
                         <div style="
-                            display:flex;
-                            align-items:center;
-                            gap:14px;
+                            color:#7b8496;
+                            font-size:13px;
                         ">
+                            🪙 ${reward.coin_price} Coin
+                        </div>
 
-                            <div style="
-                                width:55px;
-                                height:55px;
-                                display:flex;
-                                align-items:center;
-                                justify-content:center;
-                                border-radius:15px;
-                                background:rgba(52,211,153,.10);
-                                font-size:26px;
-                                overflow:hidden;
-                            ">
-                                ${
-                                    reward.image_url
-                                    ? `<img src="${reward.image_url}"
-                                        style="width:100%;height:100%;object-fit:cover;">`
-                                    : "🎁"
-                                }
-                            </div>
-
-                            <div style="flex:1;">
-
+                        ${
+                            reward.crystal_price > 0
+                            ? `
                                 <div style="
-                                    color:#fff;
-                                    font-size:16px;
-                                    font-weight:800;
-                                ">
-                                    ${reward.name}
-                                </div>
-
-                                <div style="
-                                    color:#9ca3af;
+                                    color:#7b8496;
                                     font-size:13px;
-                                    margin-top:5px;
+                                    margin-top:4px;
                                 ">
-                                    ${reward.description || "Mukofot"}
+                                    💎 ${reward.crystal_price} Crystal
                                 </div>
+                            `
+                            : ""
+                        }
 
-                                <div style="
-                                    margin-top:9px;
-                                    color:#34d399;
-                                    font-size:13px;
-                                    font-weight:700;
-                                ">
-                                    🪙 ${reward.coin_price}
-                                    ${
-                                        reward.crystal_price > 0
-                                        ? ` · 💎 ${reward.crystal_price}`
-                                        : ""
-                                    }
-                                    · ${reward.stock} dona
-                                </div>
-                                <button
-    onclick="buyStudentReward(${reward.id})"
-    style="
-        margin-top:12px;
-        width:100%;
-        padding:11px 16px;
-        border:none;
-        border-radius:12px;
-        background:linear-gradient(135deg,#34d399,#10b981);
-        color:#06120d;
-        font-weight:800;
-        font-size:14px;
-        cursor:pointer;
-    "
->
-    🎁 Sotib olish
-</button>
-
-                            </div>
-
+                        <div style="
+                            color:#7b8496;
+                            font-size:13px;
+                            margin-top:4px;
+                        ">
+                            Qoldi: ${reward.stock} dona
                         </div>
 
                     </div>
 
-                `).join("")
-            }
+                    <button
+                        onclick="buyStudentReward(${reward.id})"
+                        style="
+                            border:none;
+                            border-radius:10px;
+                            padding:10px 16px;
+                            background:#20c997;
+                            color:#ffffff;
+                            font-weight:700;
+                            cursor:pointer;
+                        "
+                    >
+                        Sotib olish
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+`).join("")
+    
+    }
 
         `;
 
