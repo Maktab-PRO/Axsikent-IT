@@ -704,7 +704,7 @@ def complete_lesson(
             detail="Dars topilmadi"
         )
 
-        progress = db.query(LessonProgress).filter(
+    progress = db.query(LessonProgress).filter(
         LessonProgress.student_id == student_id,
         LessonProgress.lesson_id == lesson_id
     ).first()
