@@ -1395,7 +1395,7 @@ textarea::placeholder {
             Reyting
         </button>
 
-        <button class="menu-item" onclick="showMessage('Mukofotlar tizimi tez orada ishga tushadi 🎁')">
+        <button class="menu-item" onclick="openStudentRewardsMenu(this)">
             <span class="menu-icon">🎁</span>
             Mukofotlar
         </button>
@@ -1827,7 +1827,8 @@ textarea::placeholder {
 </div>
 
             <div class="card" id="studentRanking">
-    <div class="card-header">
+                
+                <div class="card-header">
         <h2>🏆 Reyting</h2>
     </div>
 
@@ -1840,6 +1841,36 @@ textarea::placeholder {
             Reyting yuklanmoqda...
         </div>
     </div>
+
+</div>
+
+    <div id="studentRankingList">
+        <div style="
+            text-align:center;
+            padding:25px;
+            color:#7b8496;
+        ">
+            Reyting yuklanmoqda...
+        </div>
+    </div>
+</div>
+
+            <div class="card" id="studentRewards">
+
+    <div class="card-header">
+        <h2>🎁 Mukofotlar</h2>
+    </div>
+
+    <div id="studentRewardsContent">
+        <div style="
+            text-align:center;
+            padding:25px;
+            color:#7b8496;
+        ">
+            Mukofotlar yuklanmoqda...
+        </div>
+    </div>
+
 </div>
 
 
@@ -3624,6 +3655,275 @@ function confirmLogoutStudent() {
     });
 
     await loadStudentRanking();
+}
+
+    async function openStudentRewardsMenu(element) {
+
+    selectMenu(element);
+
+    const container = document.getElementById("studentRewards");
+
+    if (!container) {
+        return;
+    }
+
+    container.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+    await loadStudentRewards();
+}
+
+    async function loadStudentRewards() {
+
+    const container = document.getElementById("studentRewardsContent");
+
+    if (!container) {
+        return;
+    }
+
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        container.innerHTML = `
+            <div style="
+                text-align:center;
+                padding:30px;
+                color:#ef4444;
+            ">
+                Avval tizimga kiring.
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="
+            text-align:center;
+            padding:25px;
+            color:#7b8496;
+        ">
+            Mukofotlar yuklanmoqda...
+        </div>
+    `;
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/students/rewards`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Mukofotlarni yuklab bo'lmadi");
+        }
+
+        const data = await response.json();
+
+        const student = data.student;
+        const rewards = data.rewards || [];
+
+        container.innerHTML = `
+
+            <div style="
+                display:grid;
+                grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+                gap:12px;
+                margin-bottom:20px;
+            ">
+
+                <div style="
+                    padding:16px;
+                    border-radius:16px;
+                    background:rgba(52,211,153,.10);
+                    border:1px solid rgba(52,211,153,.18);
+                ">
+                    <div style="font-size:22px;">🪙</div>
+                    <div style="
+                        color:#fff;
+                        font-size:20px;
+                        font-weight:800;
+                        margin-top:5px;
+                    ">
+                        ${student.coins}
+                    </div>
+                    <div style="
+                        color:#9ca3af;
+                        font-size:12px;
+                    ">
+                        Coin
+                    </div>
+                </div>
+
+                <div style="
+                    padding:16px;
+                    border-radius:16px;
+                    background:rgba(168,85,247,.10);
+                    border:1px solid rgba(168,85,247,.18);
+                ">
+                    <div style="font-size:22px;">💎</div>
+                    <div style="
+                        color:#fff;
+                        font-size:20px;
+                        font-weight:800;
+                        margin-top:5px;
+                    ">
+                        ${student.crystals}
+                    </div>
+                    <div style="
+                        color:#9ca3af;
+                        font-size:12px;
+                    ">
+                        Crystal
+                    </div>
+                </div>
+
+                <div style="
+                    padding:16px;
+                    border-radius:16px;
+                    background:rgba(59,130,246,.10);
+                    border:1px solid rgba(59,130,246,.18);
+                ">
+                    <div style="font-size:22px;">⭐</div>
+                    <div style="
+                        color:#fff;
+                        font-size:20px;
+                        font-weight:800;
+                        margin-top:5px;
+                    ">
+                        ${student.xp}
+                    </div>
+                    <div style="
+                        color:#9ca3af;
+                        font-size:12px;
+                    ">
+                        XP · Level ${student.level}
+                    </div>
+                </div>
+
+            </div>
+
+            <h3 style="
+                color:#fff;
+                margin:0 0 14px;
+                font-size:17px;
+            ">
+                🎁 Mavjud mukofotlar
+            </h3>
+
+            ${
+                rewards.length === 0
+                ? `
+                    <div style="
+                        text-align:center;
+                        padding:30px;
+                        color:#7b8496;
+                    ">
+                        Hozircha mukofotlar mavjud emas.
+                    </div>
+                `
+                : rewards.map(reward => `
+
+                    <div style="
+                        padding:18px;
+                        margin-bottom:12px;
+                        border-radius:18px;
+                        background:linear-gradient(
+                            145deg,
+                            #111827,
+                            #0b1220
+                        );
+                        border:1px solid rgba(52,211,153,.18);
+                    ">
+
+                        <div style="
+                            display:flex;
+                            align-items:center;
+                            gap:14px;
+                        ">
+
+                            <div style="
+                                width:55px;
+                                height:55px;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                border-radius:15px;
+                                background:rgba(52,211,153,.10);
+                                font-size:26px;
+                                overflow:hidden;
+                            ">
+                                ${
+                                    reward.image_url
+                                    ? `<img src="${reward.image_url}"
+                                        style="width:100%;height:100%;object-fit:cover;">`
+                                    : "🎁"
+                                }
+                            </div>
+
+                            <div style="flex:1;">
+
+                                <div style="
+                                    color:#fff;
+                                    font-size:16px;
+                                    font-weight:800;
+                                ">
+                                    ${reward.name}
+                                </div>
+
+                                <div style="
+                                    color:#9ca3af;
+                                    font-size:13px;
+                                    margin-top:5px;
+                                ">
+                                    ${reward.description || "Mukofot"}
+                                </div>
+
+                                <div style="
+                                    margin-top:9px;
+                                    color:#34d399;
+                                    font-size:13px;
+                                    font-weight:700;
+                                ">
+                                    🪙 ${reward.coin_price}
+                                    ${
+                                        reward.crystal_price > 0
+                                        ? ` · 💎 ${reward.crystal_price}`
+                                        : ""
+                                    }
+                                    · ${reward.stock} dona
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `).join("")
+            }
+
+        `;
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div style="
+                text-align:center;
+                padding:30px;
+                color:#ef4444;
+            ">
+                Mukofotlarni yuklashda xatolik yuz berdi.
+            </div>
+        `;
+    }
 }
 
     async function loadStudentRanking() {
