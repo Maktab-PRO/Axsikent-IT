@@ -3366,8 +3366,8 @@ if (finishButton) {
 }
     
         async function completeStudentLesson(courseId, moduleId, lessonId, button) {
-        currentCourseId = courseId;
-        currentModuleId = moduleId;
+        let currentCourseId = courseId;
+        let currentModuleId = moduleId;
 
         const token = localStorage.getItem("access_token");
 
