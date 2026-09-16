@@ -24,3 +24,4 @@ from app.models.student_group import StudentGroup
 from app.models.lesson import Lesson
 from app.models.lesson_progress import LessonProgress
 from app.models.lesson_quiz import LessonQuiz
+from app.models.book import Book, BookOrder
