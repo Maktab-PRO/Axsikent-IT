@@ -3898,6 +3898,23 @@ function confirmLogoutStudent() {
                                     }
                                     · ${reward.stock} dona
                                 </div>
+                                <button
+    onclick="buyStudentReward(${reward.id})"
+    style="
+        margin-top:12px;
+        width:100%;
+        padding:11px 16px;
+        border:none;
+        border-radius:12px;
+        background:linear-gradient(135deg,#34d399,#10b981);
+        color:#06120d;
+        font-weight:800;
+        font-size:14px;
+        cursor:pointer;
+    "
+>
+    🎁 Sotib olish
+</button>
 
                             </div>
 
@@ -3923,6 +3940,60 @@ function confirmLogoutStudent() {
                 Mukofotlarni yuklashda xatolik yuz berdi.
             </div>
         `;
+    }
+}
+
+    async function buyStudentReward(productId) {
+
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        alert("Avval tizimga kiring.");
+        return;
+    }
+
+    const confirmed = confirm(
+        "Bu mukofotni sotib olishni tasdiqlaysizmi?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/students/rewards/${productId}/buy`,
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.detail || "Mukofotni sotib olishda xatolik"
+            );
+        }
+
+        alert(
+            `🎉 ${data.message}\n\n` +
+            `Buyurtma №${data.order_id}\n` +
+            `🪙 Coin: ${data.student.coins}\n` +
+            `💎 Crystal: ${data.student.crystals}`
+        );
+
+        await loadStudentRewards();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(error.message);
     }
 }
 
