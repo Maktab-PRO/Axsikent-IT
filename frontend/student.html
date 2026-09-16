@@ -2865,7 +2865,7 @@ async function openStudentModule(courseId, moduleId) {
 
                             <button
     type="button"
-    onclick="completeStudentLesson(${courseId}, ${moduleId}, ${lessonId}, this)"
+    id="finishLessonButton"
     style="
         width:100%;
         margin-top:12px;
@@ -2876,11 +2876,30 @@ async function openStudentModule(courseId, moduleId) {
         border-radius:12px;
         font-weight:700;
         cursor:pointer;
+        position:relative;
+        z-index:9999;
     "
 >
     ✅ Darsni tugatdim
 </button>
                         `;
+                        const finishButton =
+    document.getElementById("finishLessonButton");
+
+if (finishButton) {
+    finishButton.addEventListener("click", function () {
+
+        console.log("Darsni tugatdim bosildi");
+
+        completeStudentLesson(
+            courseId,
+            moduleId,
+            lessonId,
+            this
+        );
+
+    });
+}
 
                     } else {
 
