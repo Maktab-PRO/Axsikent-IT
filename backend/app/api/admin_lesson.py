@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db import get_db
+from app.core.security import require_admin
+from app.models.admin import Admin
 from app.models.lesson import Lesson
 from app.models.course_module import CourseModule
 
@@ -23,9 +25,9 @@ def create_lesson(
     content: str = None,
     video_url: str = None,
     sort_order: int = 1,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
 ):
-
     module = db.query(CourseModule).filter(
         CourseModule.id == module_id,
         CourseModule.is_active == True
@@ -51,6 +53,7 @@ def create_lesson(
     db.refresh(lesson)
 
     return {
+        "success": True,
         "message": "Dars muvaffaqiyatli qo'shildi",
         "id": lesson.id,
         "module_id": lesson.module_id,
@@ -65,9 +68,9 @@ def create_lesson(
 @router.get("/module/{module_id}")
 def get_module_lessons(
     module_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
 ):
-
     module = db.query(CourseModule).filter(
         CourseModule.id == module_id
     ).first()
@@ -106,9 +109,9 @@ def get_module_lessons(
 @router.get("/{lesson_id}")
 def get_lesson(
     lesson_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
 ):
-
     lesson = db.query(Lesson).filter(
         Lesson.id == lesson_id
     ).first()
@@ -142,9 +145,9 @@ def update_lesson(
     video_url: str = None,
     sort_order: int = 1,
     is_active: bool = True,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
 ):
-
     lesson = db.query(Lesson).filter(
         Lesson.id == lesson_id
     ).first()
@@ -165,6 +168,7 @@ def update_lesson(
     db.refresh(lesson)
 
     return {
+        "success": True,
         "message": "Dars muvaffaqiyatli yangilandi",
         "id": lesson.id,
         "title": lesson.title
@@ -178,9 +182,9 @@ def update_lesson(
 @router.delete("/{lesson_id}")
 def delete_lesson(
     lesson_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
 ):
-
     lesson = db.query(Lesson).filter(
         Lesson.id == lesson_id
     ).first()
@@ -195,6 +199,7 @@ def delete_lesson(
     db.commit()
 
     return {
+        "success": True,
         "message": "Dars muvaffaqiyatli o'chirildi",
         "id": lesson_id
     }
