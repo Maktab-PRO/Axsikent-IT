@@ -694,8 +694,390 @@ async function loadStudents() {
     }
 }
 
+   async function loadHomeworkSubmissions() {
+    const container = document.getElementById(
+        "homeworkSubmissionsContent"
+    );
 
-/* ============================================================
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="module-loading">
+            <div class="module-spinner"></div>
+            <span>Topshirilgan vazifalar yuklanmoqda...</span>
+        </div>
+    `;
+
+    try {
+        const data = await apiRequest(
+            "/admin/homework/submissions"
+        );
+
+        const submissions = data.submissions || [];
+
+        setText(
+            "homeworkTotal",
+            submissions.length
+        );
+
+        setText(
+            "homeworkPending",
+            submissions.filter(
+                item => item.status === "submitted"
+            ).length
+        );
+
+        setText(
+            "homeworkChecked",
+            submissions.filter(
+                item => item.status === "checked"
+            ).length
+        );
+
+        renderHomeworkSubmissions(
+            submissions
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Homework submissions error:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="empty-module">
+                <span>⚠</span>
+                <h2>Ma’lumotlarni yuklab bo‘lmadi</h2>
+                <p>
+                    Topshirilgan vazifalarni yuklashda xatolik yuz berdi.
+                </p>
+            </div>
+        `;
+    }
+}
+
+
+function renderHomeworkSubmissions(
+    submissions
+) {
+
+    const container = document.getElementById(
+        "homeworkSubmissionsContent"
+    );
+
+    if (!container) return;
+
+    if (!submissions.length) {
+
+        container.innerHTML = `
+            <div class="empty-module">
+                <span>📝</span>
+                <h2>Hozircha topshiriqlar yo‘q</h2>
+                <p>
+                    O‘quvchilar vazifa topshirganda
+                    shu yerda ko‘rinadi.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="homework-table-wrap">
+
+            <table class="admin-table">
+
+                <thead>
+                    <tr>
+                        <th>O‘quvchi</th>
+                        <th>Vazifa</th>
+                        <th>Javob</th>
+                        <th>Status</th>
+                        <th>Ball</th>
+                        <th>Topshirilgan vaqt</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    ${submissions.map(item => {
+
+                        let statusText =
+                            "Kutilmoqda";
+
+                        if (
+                            item.status === "checked"
+                        ) {
+                            statusText =
+                                "Tekshirildi";
+                        } else if (
+                            item.status === "late"
+                        ) {
+                            statusText =
+                                "Kechikkan";
+                        } else if (
+                            item.status === "rejected"
+                        ) {
+                            statusText =
+                                "Rad etilgan";
+                        }
+
+                        return `
+                            <tr
+                                onclick="viewHomeworkSubmission(${item.id})"
+                                style="cursor:pointer"
+                            >
+
+                                <td>
+                                    <strong>
+                                        ${escapeHtml(
+                                            item.student_name ||
+                                            "Noma’lum"
+                                        )}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                                        item.homework_title ||
+                                        "Noma’lum vazifa"
+                                    )}
+                                </td>
+
+                                <td>
+                                    <div class="homework-answer-preview">
+                                        ${escapeHtml(
+                                            item.answer ||
+                                            "Javob berilmagan"
+                                        )}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="status-badge">
+                                        ${statusText}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    ${
+                                        item.score !== null &&
+                                        item.score !== undefined
+                                            ? `${item.score}/100`
+                                            : "—"
+                                    }
+                                </td>
+
+                                <td>
+                                    ${
+                                        item.submitted_at
+                                            ? new Date(
+                                                item.submitted_at
+                                            ).toLocaleString(
+                                                "uz-UZ"
+                                            )
+                                            : "—"
+                                    }
+                                </td>
+
+                            </tr>
+                        `;
+
+                    }).join("")}
+
+                </tbody>
+
+            </table>
+
+        </div>
+    `;
+}
+
+
+function filterHomeworkSubmissions() {
+
+    const input = document.getElementById(
+        "homeworkSearch"
+    );
+
+    if (!input) return;
+
+    const search = input.value
+        .trim()
+        .toLowerCase();
+
+    const rows = document.querySelectorAll(
+        "#homeworkSubmissionsContent tbody tr"
+    );
+
+    rows.forEach(row => {
+
+        const text = row.textContent
+            .toLowerCase();
+
+        row.style.display =
+            text.includes(search)
+                ? ""
+                : "none";
+    });
+}
+
+
+async function viewHomeworkSubmission(
+    submissionId
+) {
+
+    try {
+
+        const data = await apiRequest(
+            `/admin/homework/submissions/${submissionId}`
+        );
+
+        const modal = document.createElement(
+            "div"
+        );
+
+        modal.className =
+            "admin-detail-modal";
+
+        modal.innerHTML = `
+            <div class="admin-detail-card">
+
+                <button
+                    class="admin-detail-close"
+                    onclick="this.closest('.admin-detail-modal').remove()"
+                >
+                    ×
+                </button>
+
+                <div class="section-eyebrow">
+                    UY VAZIFASI / TOPSHIRIQ
+                </div>
+
+                <h2>
+                    ${escapeHtml(
+                        data.student_name ||
+                        "Noma’lum o‘quvchi"
+                    )}
+                </h2>
+
+                <p class="admin-detail-subtitle">
+                    ${escapeHtml(
+                        data.homework_title ||
+                        "Noma’lum vazifa"
+                    )}
+                </p>
+
+                <div class="admin-detail-grid">
+
+                    <div>
+                        <small>O‘quvchi ID</small>
+                        <strong>
+                            ${data.student_id}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <small>Vazifa ID</small>
+                        <strong>
+                            ${data.homework_id}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <small>Status</small>
+                        <strong>
+                            ${escapeHtml(
+                                data.status ||
+                                "—"
+                            )}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <small>Ball</small>
+                        <strong>
+                            ${
+                                data.score !== null &&
+                                data.score !== undefined
+                                    ? `${data.score}/100`
+                                    : "—"
+                            }
+                        </strong>
+                    </div>
+
+                </div>
+
+                <div class="admin-detail-block">
+
+                    <small>O‘quvchi javobi</small>
+
+                    <div class="homework-answer-box">
+                        ${escapeHtml(
+                            data.answer ||
+                            "Javob berilmagan"
+                        )}
+                    </div>
+
+                </div>
+
+                ${
+                    data.file_url
+                        ? `
+                            <div class="admin-detail-block">
+                                <small>Fayl</small>
+                                <a
+                                    href="${escapeHtml(
+                                        data.file_url
+                                    )}"
+                                    target="_blank"
+                                >
+                                    📎 Faylni ochish
+                                </a>
+                            </div>
+                        `
+                        : ""
+                }
+
+                <div class="admin-detail-block">
+
+                    <small>
+                        O‘qituvchi izohi
+                    </small>
+
+                    <div class="homework-answer-box">
+                        ${escapeHtml(
+                            data.teacher_comment ||
+                            "Izoh berilmagan"
+                        )}
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+        document.body.appendChild(
+            modal
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Submission detail error:",
+            error
+        );
+
+        showToast(
+            "Topshiriq ma’lumotlarini yuklab bo‘lmadi.",
+            "error"
+        );
+    }
+}
+   
+   /* ============================================================
    RENDER STUDENTS
    ============================================================ */
 
