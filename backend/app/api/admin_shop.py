@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.core.security import verify_token
+from app.core.security import require_admin
+from app.models.admin import Admin
 from app.models.shop import ShopProduct
 
 
@@ -12,8 +12,10 @@ router = APIRouter(
     tags=["Admin Shop"]
 )
 
-security = HTTPBearer()
 
+# =========================================================
+# MUKOFOT QO'SHISH
+# =========================================================
 
 @router.post("/products")
 def create_product(
@@ -23,17 +25,9 @@ def create_product(
     coin_price: int = 0,
     crystal_price: int = 0,
     stock: int = 0,
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
 ):
-    admin_id = verify_token(credentials.credentials)
-
-    if not admin_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Admin token noto'g'ri"
-        )
-
     if coin_price < 0 or crystal_price < 0 or stock < 0:
         raise HTTPException(
             status_code=400,
@@ -70,19 +64,15 @@ def create_product(
     }
 
 
+# =========================================================
+# MUKOFOTLAR RO'YXATI
+# =========================================================
+
 @router.get("/products")
 def get_products(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
 ):
-    admin_id = verify_token(credentials.credentials)
-
-    if not admin_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Admin token noto'g'ri"
-        )
-
     products = db.query(ShopProduct).order_by(
         ShopProduct.id.asc()
     ).all()
