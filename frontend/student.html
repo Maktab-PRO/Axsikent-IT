@@ -2059,7 +2059,7 @@ async function loadStudentCourses() {
     try {
 
         const response = await fetch(
-            `${API_URL}/students/courses`,
+            `${API_URL}/student/courses`,
             {
                 method: "GET",
                 headers: {
@@ -2235,7 +2235,7 @@ async function openStudentCourse(courseId) {
     try {
 
         const response = await fetch(
-            `${API_URL}/students/courses/${courseId}/modules`,
+            `${API_URL}/student/courses/${courseId}/modules`,
             {
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -2507,7 +2507,7 @@ async function openStudentModule(courseId, moduleId) {
     try {
 
         const response = await fetch(
-            `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons`,
+            `${API_URL}/student/courses/${courseId}/modules/${moduleId}/lessons`,
             {
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -2698,7 +2698,7 @@ async function openStudentModule(courseId, moduleId) {
     try {
 
         const response = await fetch(
-            `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons`,
+            `${API_URL}/student/courses/${courseId}/modules/${moduleId}/lessons`,
             {
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -2922,7 +2922,7 @@ async function openStudentModule(courseId, moduleId) {
     try {
 
         const response = await fetch(
-            `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/read`,
+            `${API_URL}/student/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/read`,
             {
                 method: "POST",
                 headers: {
@@ -3046,7 +3046,7 @@ async function openStudentModule(courseId, moduleId) {
     try {
 
         const response = await fetch(
-            `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz`,
+            `${API_URL}/student/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz`,
             {
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -3226,7 +3226,7 @@ async function openStudentModule(courseId, moduleId) {
                 try {
 
                     const submitResponse = await fetch(
-                        `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz`,
+                        `${API_URL}/student/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz`,
                         {
                             method: "POST",
                             headers: {
@@ -3381,7 +3381,7 @@ if (finishButton) {
         try {
 
             const response = await fetch(
-                `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/complete`,
+                `${API_URL}/student/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/complete`,
                 {
                     method: "POST",
                     headers: {
