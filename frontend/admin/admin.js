@@ -1185,3 +1185,15 @@ async function toggleStudentStatus(studentId, currentlyActive) {
         );
     }
                           }
+
+   document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".nav-item").forEach(item => {
+        item.addEventListener("click", () => {
+            if (item.dataset.section === "students") {
+                setTimeout(() => {
+                    loadStudents();
+                }, 100);
+            }
+        });
+    });
+});
