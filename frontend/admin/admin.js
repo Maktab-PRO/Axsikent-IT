@@ -527,7 +527,8 @@ function initMobileMenu() {
         () => {
 
             sidebar.classList.toggle(
-                "mobile-open"
+               "open"
+            );
             );
 
         }
