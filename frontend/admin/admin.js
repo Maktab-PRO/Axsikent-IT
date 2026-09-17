@@ -231,6 +231,8 @@ function openSection(section) {
     if (section === "students") {
         loadStudents();
     }
+   if (section === "homework") { 
+      loadHomeworkSubmissions();
 }
 
 
