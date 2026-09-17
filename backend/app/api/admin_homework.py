@@ -304,7 +304,44 @@ def get_homework_stats(
         "pending_submissions": pending
     }
 
+    # =========================================================
+# 3. GET ALL SUBMISSIONS
+# =========================================================
 
+@router.get("/submissions")
+def get_all_admin_submissions(
+    status: str | None = Query(
+        default=None,
+        max_length=30
+    ),
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
+):
+
+    query = db.query(
+        HomeworkSubmission
+    )
+
+    if status:
+        query = query.filter(
+            HomeworkSubmission.status ==
+            status.strip().lower()
+        )
+
+    submissions = query.order_by(
+        HomeworkSubmission.id.desc()
+    ).all()
+
+    return {
+        "total": len(submissions),
+        "submissions": [
+            submission_to_dict(
+                submission,
+                db
+            )
+            for submission in submissions
+        ]
+    }
 # =========================================================
 # 3. GET SINGLE HOMEWORK
 # =========================================================
