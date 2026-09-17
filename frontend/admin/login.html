@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Axsikent IT — Admin Login</title>
+
+    <meta
+        name="description"
+        content="Axsikent IT Command Center Administration"
+    >
+
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+    <div class="admin-login-page">
+
+        <div class="admin-login-glow glow-one"></div>
+        <div class="admin-login-glow glow-two"></div>
+
+
+        <div class="admin-login-card">
+
+            <div class="login-brand">
+
+                <div class="brand-mark">
+                    <span>AX</span>
+                </div>
+
+                <div class="brand-info">
+                    <strong>AXSIKENT</strong>
+                    <small>IT COMMAND CENTER</small>
+                </div>
+
+            </div>
+
+
+            <div class="login-heading">
+
+                <span class="eyebrow">
+                    SECURE ACCESS
+                </span>
+
+                <h1>
+                    Administrator
+                    <br>
+                    <span>Sign in</span>
+                </h1>
+
+                <p>
+                    Command Center boshqaruv paneliga
+                    kirish uchun ma'lumotlaringizni kiriting.
+                </p>
+
+            </div>
+
+
+            <form id="adminLoginForm">
+
+                <div class="login-field">
+
+                    <label for="adminPhone">
+                        Telefon raqam
+                    </label>
+
+                    <div class="login-input-wrap">
+
+                        <span class="input-icon">
+                            ◉
+                        </span>
+
+                        <input
+                            type="tel"
+                            id="adminPhone"
+                            name="phone"
+                            placeholder="+998 90 123 45 67"
+                            autocomplete="username"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="login-field">
+
+                    <label for="adminPassword">
+                        Parol
+                    </label>
+
+                    <div class="login-input-wrap">
+
+                        <span class="input-icon">
+                            ◈
+                        </span>
+
+                        <input
+                            type="password"
+                            id="adminPassword"
+                            name="password"
+                            placeholder="Administrator paroli"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="passwordToggle"
+                            aria-label="Parolni ko‘rsatish"
+                        >
+                            ◉
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="login-error"
+                    id="loginError"
+                ></div>
+
+
+                <button
+                    type="submit"
+                    class="login-submit"
+                    id="loginSubmit"
+                >
+
+                    <span class="login-submit-text">
+                        Command Center'ga kirish
+                    </span>
+
+                    <span class="login-submit-loader">
+                        Kirilmoqda...
+                    </span>
+
+                    <span class="login-submit-arrow">
+                        →
+                    </span>
+
+                </button>
+
+            </form>
+
+
+            <div class="login-security">
+
+                <span class="security-icon">
+                    ◆
+                </span>
+
+                <span>
+                    Secure JWT Authentication
+                </span>
+
+            </div>
+
+
+            <div class="login-footer">
+                Axsikent IT © 2026
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="toastContainer"
+        class="toast-container"
+    ></div>
+
+
+    <script>
+
+        "use strict";
+
+
+        const API_BASE =
+            "https://axsikent-it-4.onrender.com";
+
+        const TOKEN_KEY =
+            "axsikent_admin_token";
+
+        const ADMIN_KEY =
+            "axsikent_admin";
+
+
+        const form =
+            document.getElementById(
+                "adminLoginForm"
+            );
+
+        const phoneInput =
+            document.getElementById(
+                "adminPhone"
+            );
+
+        const passwordInput =
+            document.getElementById(
+                "adminPassword"
+            );
+
+        const passwordToggle =
+            document.getElementById(
+                "passwordToggle"
+            );
+
+        const errorBox =
+            document.getElementById(
+                "loginError"
+            );
+
+        const submitButton =
+            document.getElementById(
+                "loginSubmit"
+            );
+
+
+        /* =================================================
+           AGAR OLD SESSION BOR BO'LSA
+        ================================================= */
+
+        const existingToken =
+            localStorage.getItem(
+                TOKEN_KEY
+            );
+
+        if (existingToken) {
+
+            window.location.href =
+                "index.html";
+
+        }
+
+
+        /* =================================================
+           PASSWORD SHOW / HIDE
+        ================================================= */
+
+        passwordToggle.addEventListener(
+            "click",
+            () => {
+
+                const isPassword =
+                    passwordInput.type === "password";
+
+                passwordInput.type =
+                    isPassword
+                        ? "text"
+                        : "password";
+
+                passwordToggle.textContent =
+                    isPassword
+                        ? "◎"
+                        : "◉";
+
+            }
+        );
+
+
+        /* =================================================
+           ERROR
+        ================================================= */
+
+        function showError(message) {
+
+            errorBox.textContent =
+                message;
+
+            errorBox.classList.add(
+                "show"
+            );
+
+        }
+
+
+        function clearError() {
+
+            errorBox.textContent = "";
+
+            errorBox.classList.remove(
+                "show"
+            );
+
+        }
+
+
+        /* =================================================
+           LOGIN
+        ================================================= */
+
+        form.addEventListener(
+            "submit",
+            async (event) => {
+
+                event.preventDefault();
+
+                clearError();
+
+
+                const phone =
+                    phoneInput.value.trim();
+
+                const password =
+                    passwordInput.value;
+
+
+                if (!phone || !password) {
+
+                    showError(
+                        "Telefon raqam va parolni kiriting."
+                    );
+
+                    return;
+                }
+
+
+                submitButton.classList.add(
+                    "loading"
+                );
+
+                submitButton.disabled =
+                    true;
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `${API_BASE}/admins/login`,
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body: JSON.stringify({
+                                    phone,
+                                    password
+                                })
+                            }
+                        );
+
+
+                    let data = null;
+
+                    try {
+
+                        data =
+                            await response.json();
+
+                    } catch {
+
+                        data = null;
+
+                    }
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            data?.detail ||
+                            "Login amalga oshmadi."
+                        );
+
+                    }
+
+
+                    if (!data?.access_token) {
+
+                        throw new Error(
+                            "Server token qaytarmadi."
+                        );
+
+                    }
+
+
+                    /* SAVE TOKEN */
+
+                    localStorage.setItem(
+                        TOKEN_KEY,
+                        data.access_token
+                    );
+
+
+                    /* SAVE ADMIN */
+
+                    localStorage.setItem(
+                        ADMIN_KEY,
+                        JSON.stringify({
+                            admin_id:
+                                data.admin_id,
+
+                            full_name:
+                                data.full_name,
+
+                            role:
+                                data.role
+                        })
+                    );
+
+
+                    /* SUCCESS */
+
+                    submitButton.classList.add(
+                        "success"
+                    );
+
+
+                    setTimeout(() => {
+
+                        window.location.href =
+                            "index.html";
+
+                    }, 500);
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Admin login error:",
+                        error
+                    );
+
+                    showError(
+                        error.message ||
+                        "Server bilan bog‘lanib bo‘lmadi."
+                    );
+
+
+                    submitButton.classList.remove(
+                        "loading"
+                    );
+
+                    submitButton.disabled =
+                        false;
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
