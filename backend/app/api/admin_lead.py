@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -36,7 +34,7 @@ class LeadCommentUpdate(BaseModel):
 
 
 # =========================================================
-# HELPERS
+# ALLOWED STATUSES
 # =========================================================
 
 ALLOWED_STATUSES = {
@@ -46,6 +44,10 @@ ALLOWED_STATUSES = {
     "rejected"
 }
 
+
+# =========================================================
+# HELPER
+# =========================================================
 
 def get_lead_or_404(
     lead_id: int,
@@ -76,12 +78,12 @@ def lead_to_dict(lead: Lead):
         "comment": lead.comment,
         "source": lead.source,
         "status": lead.status,
-        "created_at": lead.created_at,
+        "created_at": lead.created_at
     }
 
 
 # =========================================================
-# GET ALL LEADS
+# 1. GET ALL LEADS
 # =========================================================
 
 @router.get("/")
@@ -104,6 +106,7 @@ def get_admin_leads(
 
     query = db.query(Lead)
 
+    # Search
     if search:
         search_value = f"%{search.strip()}%"
 
@@ -113,14 +116,16 @@ def get_admin_leads(
             (Lead.interested_course.ilike(search_value))
         )
 
+    # Status filter
     if status:
         query = query.filter(
-            Lead.status == status
+            Lead.status == status.strip().lower()
         )
 
+    # Source filter
     if source:
         query = query.filter(
-            Lead.source == source
+            Lead.source == source.strip()
         )
 
     leads = query.order_by(
@@ -137,7 +142,44 @@ def get_admin_leads(
 
 
 # =========================================================
-# GET SINGLE LEAD
+# 2. LEAD STATISTICS
+# =========================================================
+
+@router.get("/stats/summary")
+def get_lead_stats(
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
+):
+
+    total = db.query(Lead).count()
+
+    new_count = db.query(Lead).filter(
+        Lead.status == "new"
+    ).count()
+
+    contacted_count = db.query(Lead).filter(
+        Lead.status == "contacted"
+    ).count()
+
+    enrolled_count = db.query(Lead).filter(
+        Lead.status == "enrolled"
+    ).count()
+
+    rejected_count = db.query(Lead).filter(
+        Lead.status == "rejected"
+    ).count()
+
+    return {
+        "total": total,
+        "new": new_count,
+        "contacted": contacted_count,
+        "enrolled": enrolled_count,
+        "rejected": rejected_count
+    }
+
+
+# =========================================================
+# 3. GET SINGLE LEAD
 # =========================================================
 
 @router.get("/{lead_id}")
@@ -156,7 +198,7 @@ def get_admin_lead(
 
 
 # =========================================================
-# UPDATE STATUS
+# 4. UPDATE STATUS
 # =========================================================
 
 @router.put("/{lead_id}/status")
@@ -196,7 +238,7 @@ def update_lead_status(
 
 
 # =========================================================
-# UPDATE COMMENT
+# 5. UPDATE COMMENT
 # =========================================================
 
 @router.put("/{lead_id}/comment")
@@ -224,7 +266,7 @@ def update_lead_comment(
 
 
 # =========================================================
-# DELETE LEAD
+# 6. DELETE LEAD
 # =========================================================
 
 @router.delete("/{lead_id}")
@@ -245,41 +287,4 @@ def delete_lead(
     return {
         "message": "Ariza o‘chirildi.",
         "lead_id": lead_id
-    }
-
-
-# =========================================================
-# LEAD STATISTICS
-# =========================================================
-
-@router.get("/stats/summary")
-def get_lead_stats(
-    db: Session = Depends(get_db),
-    admin: Admin = Depends(require_admin)
-):
-
-    total = db.query(Lead).count()
-
-    new_count = db.query(Lead).filter(
-        Lead.status == "new"
-    ).count()
-
-    contacted_count = db.query(Lead).filter(
-        Lead.status == "contacted"
-    ).count()
-
-    enrolled_count = db.query(Lead).filter(
-        Lead.status == "enrolled"
-    ).count()
-
-    rejected_count = db.query(Lead).filter(
-        Lead.status == "rejected"
-    ).count()
-
-    return {
-        "total": total,
-        "new": new_count,
-        "contacted": contacted_count,
-        "enrolled": enrolled_count,
-        "rejected": rejected_count
     }
