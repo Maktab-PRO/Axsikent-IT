@@ -43,7 +43,8 @@ version="1.0.0"
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://akhsikent-it-school.onrender.com"
+        "https://akhsikent-it-school.onrender.com",
+        "https://axsikent-it-4.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
