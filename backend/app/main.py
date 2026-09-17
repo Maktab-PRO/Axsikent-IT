@@ -29,6 +29,7 @@ from app.api.admin_teacher import router as admin_teacher_router
 from app.api.admin_group import router as admin_group_router
 from app.api.admin_lead import router as admin_lead_router
 
+
 from app.seed import seed_data
 
 app = FastAPI(
