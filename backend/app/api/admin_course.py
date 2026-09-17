@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -10,44 +9,24 @@ from app.models.student_course import StudentCourse
 from app.models.course_module import CourseModule
 from app.models.lesson import Lesson
 from app.models.admin import Admin
-from app.core.security import verify_token
+from app.core.security import require_admin
 
 
 router = APIRouter(
     prefix="/admin/courses",
     tags=["Admin Courses"]
 )
-security = HTTPBearer()
 
-def get_current_admin(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
-):
-    admin_id = verify_token(credentials.credentials)
 
-    if not admin_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+# =========================================================
+# 1. STUDENTGA KURS BIRIKTIRISH
+# =========================================================
 
-    admin = db.query(Admin).filter(
-        Admin.id == admin_id,
-        Admin.is_active == True
-    ).first()
-
-    if not admin:
-        raise HTTPException(
-            status_code=403,
-            detail="Admin topilmadi"
-        )
-
-    return admin
 @router.post("/assign")
 def assign_course_to_student(
     student_id: int,
     course_id: int,
-    admin: Admin = Depends(get_current_admin),
+    admin: Admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     student = db.query(Student).filter(
@@ -78,6 +57,7 @@ def assign_course_to_student(
     ).first()
 
     if existing:
+
         if existing.is_active:
             raise HTTPException(
                 status_code=400,
@@ -100,15 +80,22 @@ def assign_course_to_student(
     db.commit()
 
     return {
+        "success": True,
         "message": "Kurs o'quvchiga biriktirildi",
         "student_id": student_id,
         "course_id": course_id
     }
 
+
+# =========================================================
+# 2. KATEGORIYA YARATISH
+# =========================================================
+
 @router.post("/categories")
 def create_category(
     name: str,
     icon: str | None = None,
+    admin: Admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     existing = db.query(Category).filter(
@@ -131,6 +118,7 @@ def create_category(
     db.refresh(category)
 
     return {
+        "success": True,
         "message": "Kategoriya yaratildi",
         "id": category.id,
         "name": category.name,
@@ -138,11 +126,16 @@ def create_category(
     }
 
 
+# =========================================================
+# 3. KURS YARATISH
+# =========================================================
+
 @router.post("/")
 def create_course(
     category_id: int,
     name: str,
     description: str | None = None,
+    admin: Admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     category = db.query(Category).filter(
@@ -166,14 +159,22 @@ def create_course(
     db.refresh(course)
 
     return {
+        "success": True,
         "message": "Kurs yaratildi",
         "id": course.id,
         "name": course.name,
         "category_id": course.category_id
     }
+
+
+# =========================================================
+# 4. KURSNI DEAKTIV QILISH
+# =========================================================
+
 @router.delete("/{course_id}")
 def deactivate_course(
     course_id: int,
+    admin: Admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     course = db.query(Course).filter(
@@ -191,14 +192,20 @@ def deactivate_course(
     db.commit()
 
     return {
-        "message": "Kurs deaktiv qilindi"
+        "success": True,
+        "message": "Kurs deaktiv qilindi",
+        "course_id": course_id
     }
 
+
+# =========================================================
+# 5. KURSNI QAYTA FAOLLASHTIRISH
+# =========================================================
 
 @router.put("/{course_id}/activate")
 def activate_course(
     course_id: int,
-    admin: Admin = Depends(get_current_admin),
+    admin: Admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     course = db.query(Course).filter(
@@ -217,18 +224,25 @@ def activate_course(
     db.refresh(course)
 
     return {
+        "success": True,
         "message": "Kurs qayta faollashtirildi",
         "course_id": course.id,
         "name": course.name,
         "is_active": course.is_active
     }
+
+
+# =========================================================
+# 6. KURSGA MODUL QO'SHISH
+# =========================================================
+
 @router.post("/{course_id}/modules")
 def create_course_module(
     course_id: int,
     title: str,
     description: str | None = None,
     sort_order: int = 0,
-    admin: Admin = Depends(get_current_admin),
+    admin: Admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     course = db.query(Course).filter(
@@ -255,6 +269,7 @@ def create_course_module(
     db.refresh(module)
 
     return {
+        "success": True,
         "message": "Modul yaratildi",
         "id": module.id,
         "course_id": module.course_id,
@@ -263,6 +278,12 @@ def create_course_module(
         "sort_order": module.sort_order,
         "is_active": module.is_active
     }
+
+
+# =========================================================
+# 7. MODULGA DARS QO'SHISH
+# =========================================================
+
 @router.post("/{course_id}/modules/{module_id}/lessons")
 def create_lesson(
     course_id: int,
@@ -271,7 +292,7 @@ def create_lesson(
     content: str | None = None,
     video_url: str | None = None,
     sort_order: int = 0,
-    admin: Admin = Depends(get_current_admin),
+    admin: Admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
     course = db.query(Course).filter(
@@ -294,7 +315,7 @@ def create_lesson(
     if not module:
         raise HTTPException(
             status_code=404,
-            detail="Modul topilmadi"
+            detail="Modul topilmadi yoki ushbu kursga tegishli emas"
         )
 
     lesson = Lesson(
@@ -311,76 +332,10 @@ def create_lesson(
     db.refresh(lesson)
 
     return {
+        "success": True,
         "message": "Dars yaratildi",
         "id": lesson.id,
         "course_id": course_id,
-        "module_id": lesson.module_id,
-        "title": lesson.title,
-        "content": lesson.content,
-        "video_url": lesson.video_url,
-        "sort_order": lesson.sort_order,
-        "is_active": lesson.is_active
-    }
-
-from app.models.lesson import Lesson
-
-
-@router.post("/modules/{module_id}/lessons")
-def create_lesson(
-    module_id: int,
-    title: str,
-    content: str = None,
-    video_url: str = None,
-    sort_order: int = 0,
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
-):
-    admin_id = verify_token(credentials.credentials)
-
-    if not admin_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
-
-    admin = db.query(Admin).filter(
-        Admin.id == admin_id,
-        Admin.is_active == True
-    ).first()
-
-    if not admin:
-        raise HTTPException(
-            status_code=403,
-            detail="Admin topilmadi"
-        )
-
-    module = db.query(CourseModule).filter(
-        CourseModule.id == module_id,
-        CourseModule.is_active == True
-    ).first()
-
-    if not module:
-        raise HTTPException(
-            status_code=404,
-            detail="Modul topilmadi"
-        )
-
-    lesson = Lesson(
-        module_id=module_id,
-        title=title,
-        content=content,
-        video_url=video_url,
-        sort_order=sort_order,
-        is_active=True
-    )
-
-    db.add(lesson)
-    db.commit()
-    db.refresh(lesson)
-
-    return {
-        "message": "Dars muvaffaqiyatli yaratildi",
-        "id": lesson.id,
         "module_id": lesson.module_id,
         "title": lesson.title,
         "content": lesson.content,
