@@ -26,6 +26,7 @@ from app.api.books import router as books_router
 from app.api.admin_books import router as admin_books_router
 from app.api.admin_student import router as admin_student_router
 from app.api.admin_teacher import router as admin_teacher_router
+from app.api.admin_group import router as admin_group_router
 
 
 from app.seed import seed_data
@@ -100,6 +101,7 @@ app.include_router(books_router)
 app.include_router(admin_books_router)
 app.include_router(admin_student_router)
 app.include_router(admin_teacher_router)
+app.include_router(admin_group_router)
 
 # =========================
 
