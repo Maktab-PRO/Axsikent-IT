@@ -19,7 +19,16 @@ const API_BASE = "https://axsikent-it-4.onrender.com";
 
 const TOKEN_KEY = "axsikent_admin_token";
 const ADMIN_KEY = "axsikent_admin";
+function requireAdminAuth() {
+    const token = localStorage.getItem(TOKEN_KEY);
 
+    if (!token) {
+        window.location.replace("login.html");
+        return false;
+    }
+
+    return true;
+}
 
 /* =========================================================
    DOM HELPERS
@@ -704,9 +713,10 @@ function initNotifications() {
 
 async function initAdminPanel() {
 
-    console.log(
-        "Axsikent IT Command Center ishga tushdi."
-    );
+    async function initAdminPanel() {
+    if (!requireAdminAuth()) return;
+
+    console.log("Axsikent IT Command Center ishga tushdi.");
 
 
     initNavigation();
