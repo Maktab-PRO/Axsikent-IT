@@ -5,6 +5,7 @@ from passlib.context import CryptContext
 
 from app.db import get_db
 
+from app.core.security import create_access_token, require_admin
 from app.models.admin import Admin
 from app.models.student import Student
 from app.models.teacher import Teacher
@@ -14,7 +15,6 @@ from app.models.lead import Lead
 from app.models.gamification import StudentGamification
 
 from app.schemas.admin import AdminLogin
-from app.core.security import create_access_token, require_admin
 
 
 router = APIRouter(
