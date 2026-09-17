@@ -529,7 +529,6 @@ function initMobileMenu() {
             sidebar.classList.toggle(
                "open"
             );
-            );
 
         }
     );
