@@ -1,1 +1,823 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>Axsikent IT — Command Center</title>
+
+    <meta
+        name="description"
+        content="Axsikent IT Administration Command Center"
+    >
+
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+    <!-- =====================================================
+         APP
+    ====================================================== -->
+
+    <div id="adminApp" class="admin-app">
+
+        <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+        <aside class="sidebar" id="sidebar">
+
+            <div class="brand">
+
+                <div class="brand-mark">
+                    <span>AX</span>
+                </div>
+
+                <div class="brand-info">
+                    <strong>AXSIKENT</strong>
+                    <small>IT COMMAND CENTER</small>
+                </div>
+
+            </div>
+
+
+            <!-- MAIN NAVIGATION -->
+
+            <nav class="sidebar-nav">
+
+                <div class="nav-section">
+                    <span class="nav-section-title">BOSHQAruV</span>
+
+                    <button class="nav-item active" data-section="dashboard">
+                        <span class="nav-icon">◈</span>
+                        <span>Dashboard</span>
+                    </button>
+
+                </div>
+
+
+                <div class="nav-section">
+                    <span class="nav-section-title">TA'LIM</span>
+
+                    <button class="nav-item" data-section="students">
+                        <span class="nav-icon">◎</span>
+                        <span>O‘quvchilar</span>
+                    </button>
+
+                    <button class="nav-item" data-section="teachers">
+                        <span class="nav-icon">◉</span>
+                        <span>O‘qituvchilar</span>
+                    </button>
+
+                    <button class="nav-item" data-section="courses">
+                        <span class="nav-icon">▣</span>
+                        <span>Kurslar</span>
+                    </button>
+
+                    <button class="nav-item" data-section="groups">
+                        <span class="nav-icon">◇</span>
+                        <span>Guruhlar</span>
+                    </button>
+
+                    <button class="nav-item" data-section="homework">
+                        <span class="nav-icon">✓</span>
+                        <span>Uy vazifalari</span>
+                    </button>
+
+                </div>
+
+
+                <div class="nav-section">
+                    <span class="nav-section-title">CRM</span>
+
+                    <button class="nav-item" data-section="leads">
+                        <span class="nav-icon">↗</span>
+                        <span>Arizalar</span>
+                        <span class="nav-badge" id="leadBadge">0</span>
+                    </button>
+
+                </div>
+
+
+                <div class="nav-section">
+                    <span class="nav-section-title">REWARDS</span>
+
+                    <button class="nav-item" data-section="rewards">
+                        <span class="nav-icon">✦</span>
+                        <span>Mukofotlar</span>
+                    </button>
+
+                    <button class="nav-item" data-section="orders">
+                        <span class="nav-icon">◇</span>
+                        <span>Buyurtmalar</span>
+                    </button>
+
+                    <button class="nav-item" data-section="books">
+                        <span class="nav-icon">▤</span>
+                        <span>Kitoblar</span>
+                    </button>
+
+                    <button class="nav-item" data-section="ranking">
+                        <span class="nav-icon">△</span>
+                        <span>Ranking</span>
+                    </button>
+
+                </div>
+
+
+                <div class="nav-section">
+                    <span class="nav-section-title">ANALYTICS</span>
+
+                    <button class="nav-item" data-section="reports">
+                        <span class="nav-icon">▥</span>
+                        <span>Hisobotlar</span>
+                    </button>
+
+                </div>
+
+
+                <div class="nav-section">
+
+                    <button class="nav-item" data-section="settings">
+                        <span class="nav-icon">⚙</span>
+                        <span>Sozlamalar</span>
+                    </button>
+
+                </div>
+
+            </nav>
+
+
+            <!-- ADMIN PROFILE -->
+
+            <div class="sidebar-footer">
+
+                <div class="admin-profile">
+
+                    <div class="admin-avatar">
+                        A
+                    </div>
+
+                    <div class="admin-profile-info">
+                        <strong id="adminName">Axsikent Admin</strong>
+                        <span>Administrator</span>
+                    </div>
+
+                    <button
+                        class="logout-btn"
+                        id="logoutBtn"
+                        title="Chiqish"
+                    >
+                        ⤴
+                    </button>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =================================================
+             MAIN CONTENT
+        ================================================== -->
+
+        <main class="main-content">
+
+            <!-- TOPBAR -->
+
+            <header class="topbar">
+
+                <button
+                    class="mobile-menu-btn"
+                    id="mobileMenuBtn"
+                    aria-label="Menu"
+                >
+                    ☰
+                </button>
+
+
+                <div class="page-heading">
+
+                    <div class="breadcrumb">
+                        Axsikent IT
+                        <span>/</span>
+                        <span id="breadcrumbCurrent">
+                            Command Center
+                        </span>
+                    </div>
+
+                    <h1 id="pageTitle">
+                        Command Center
+                    </h1>
+
+                </div>
+
+
+                <div class="topbar-actions">
+
+                    <button
+                        class="topbar-icon-btn"
+                        id="refreshBtn"
+                        title="Yangilash"
+                    >
+                        ↻
+                    </button>
+
+                    <button
+                        class="topbar-icon-btn notification-btn"
+                        id="notificationBtn"
+                        title="Bildirishnomalar"
+                    >
+                        ◌
+                        <span class="notification-dot"></span>
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- CONTENT -->
+
+            <div class="content-area" id="contentArea">
+
+
+                <!-- =========================================
+                     DASHBOARD
+                ========================================== -->
+
+                <section
+                    class="page-section active"
+                    id="section-dashboard"
+                >
+
+                    <div class="section-intro">
+
+                        <div>
+                            <span class="eyebrow">
+                                ADMINISTRATION
+                            </span>
+
+                            <h2>
+                                Tizim holati
+                            </h2>
+
+                            <p>
+                                Axsikent IT platformasining asosiy
+                                boshqaruv markazi.
+                            </p>
+                        </div>
+
+                        <div class="system-status">
+                            <span class="status-pulse"></span>
+                            <span>System Operational</span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- STAT CARDS -->
+
+                    <div class="stats-grid">
+
+                        <article class="stat-card">
+                            <div class="stat-card-top">
+                                <span class="stat-label">
+                                    O‘QUVCHILAR
+                                </span>
+
+                                <span class="stat-icon">
+                                    ◎
+                                </span>
+                            </div>
+
+                            <strong
+                                class="stat-value"
+                                id="statStudents"
+                            >
+                                —
+                            </strong>
+
+                            <span class="stat-meta">
+                                Faol o‘quvchilar
+                            </span>
+                        </article>
+
+
+                        <article class="stat-card">
+                            <div class="stat-card-top">
+                                <span class="stat-label">
+                                    O‘QITUVCHILAR
+                                </span>
+
+                                <span class="stat-icon">
+                                    ◉
+                                </span>
+                            </div>
+
+                            <strong
+                                class="stat-value"
+                                id="statTeachers"
+                            >
+                                —
+                            </strong>
+
+                            <span class="stat-meta">
+                                Faol o‘qituvchilar
+                            </span>
+                        </article>
+
+
+                        <article class="stat-card">
+                            <div class="stat-card-top">
+                                <span class="stat-label">
+                                    KURSLAR
+                                </span>
+
+                                <span class="stat-icon">
+                                    ▣
+                                </span>
+                            </div>
+
+                            <strong
+                                class="stat-value"
+                                id="statCourses"
+                            >
+                                —
+                            </strong>
+
+                            <span class="stat-meta">
+                                Aktiv kurslar
+                            </span>
+                        </article>
+
+
+                        <article class="stat-card accent-card">
+                            <div class="stat-card-top">
+                                <span class="stat-label">
+                                    BUYURTMALAR
+                                </span>
+
+                                <span class="stat-icon">
+                                    ◇
+                                </span>
+                            </div>
+
+                            <strong
+                                class="stat-value"
+                                id="statOrders"
+                            >
+                                —
+                            </strong>
+
+                            <span class="stat-meta">
+                                Kutilayotgan buyurtmalar
+                            </span>
+                        </article>
+
+                    </div>
+
+
+                    <!-- SECOND ROW -->
+
+                    <div class="dashboard-grid">
+
+
+                        <!-- SHOP OVERVIEW -->
+
+                        <article class="panel-card">
+
+                            <div class="panel-header">
+
+                                <div>
+                                    <span class="panel-eyebrow">
+                                        REWARDS
+                                    </span>
+
+                                    <h3>
+                                        Mukofotlar tizimi
+                                    </h3>
+                                </div>
+
+                                <button
+                                    class="panel-link"
+                                    data-section="rewards"
+                                >
+                                    Boshqarish →
+                                </button>
+
+                            </div>
+
+
+                            <div class="reward-overview">
+
+                                <div class="overview-item">
+
+                                    <span
+                                        class="overview-value"
+                                        id="statProducts"
+                                    >
+                                        —
+                                    </span>
+
+                                    <span>
+                                        Jami mukofot
+                                    </span>
+
+                                </div>
+
+
+                                <div class="overview-item">
+
+                                    <span
+                                        class="overview-value"
+                                        id="statActiveProducts"
+                                    >
+                                        —
+                                    </span>
+
+                                    <span>
+                                        Aktiv
+                                    </span>
+
+                                </div>
+
+
+                                <div class="overview-item">
+
+                                    <span
+                                        class="overview-value"
+                                        id="statPendingOrders"
+                                    >
+                                        —
+                                    </span>
+
+                                    <span>
+                                        Kutilmoqda
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- QUICK ACTIONS -->
+
+                        <article class="panel-card">
+
+                            <div class="panel-header">
+
+                                <div>
+                                    <span class="panel-eyebrow">
+                                        QUICK ACTIONS
+                                    </span>
+
+                                    <h3>
+                                        Tezkor amallar
+                                    </h3>
+                                </div>
+
+                            </div>
+
+
+                            <div class="quick-actions">
+
+                                <button
+                                    class="quick-action"
+                                    data-section="students"
+                                >
+                                    <span class="quick-icon">
+                                        ◎
+                                    </span>
+
+                                    <span>
+                                        O‘quvchi
+                                        <small>
+                                            Profil boshqarish
+                                        </small>
+                                    </span>
+
+                                    <b>→</b>
+                                </button>
+
+
+                                <button
+                                    class="quick-action"
+                                    data-section="courses"
+                                >
+                                    <span class="quick-icon">
+                                        ▣
+                                    </span>
+
+                                    <span>
+                                        Kurs
+                                        <small>
+                                            Yangi kurs yaratish
+                                        </small>
+                                    </span>
+
+                                    <b>→</b>
+                                </button>
+
+
+                                <button
+                                    class="quick-action"
+                                    data-section="rewards"
+                                >
+                                    <span class="quick-icon">
+                                        ✦
+                                    </span>
+
+                                    <span>
+                                        Mukofot
+                                        <small>
+                                            Shop boshqarish
+                                        </small>
+                                    </span>
+
+                                    <b>→</b>
+                                </button>
+
+
+                                <button
+                                    class="quick-action"
+                                    data-section="leads"
+                                >
+                                    <span class="quick-icon">
+                                        ↗
+                                    </span>
+
+                                    <span>
+                                        Ariza
+                                        <small>
+                                            Leadlarni ko‘rish
+                                        </small>
+                                    </span>
+
+                                    <b>→</b>
+                                </button>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+
+                    <!-- SYSTEM INFORMATION -->
+
+                    <article class="panel-card system-panel">
+
+                        <div class="panel-header">
+
+                            <div>
+                                <span class="panel-eyebrow">
+                                    SYSTEM
+                                </span>
+
+                                <h3>
+                                    Tizim ma'lumotlari
+                                </h3>
+                            </div>
+
+                        </div>
+
+
+                        <div class="system-grid">
+
+                            <div class="system-item">
+                                <span>API</span>
+                                <strong>
+                                    Axsikent IT Backend
+                                </strong>
+                            </div>
+
+                            <div class="system-item">
+                                <span>Environment</span>
+                                <strong>
+                                    Production
+                                </strong>
+                            </div>
+
+                            <div class="system-item">
+                                <span>Authentication</span>
+                                <strong>
+                                    JWT / Admin
+                                </strong>
+                            </div>
+
+                            <div class="system-item">
+                                <span>Panel</span>
+                                <strong>
+                                    Command Center
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                </section>
+
+
+                <!-- =========================================
+                     PLACEHOLDER SECTIONS
+                ========================================== -->
+
+                <section
+                    class="page-section"
+                    id="section-students"
+                >
+                    <div class="empty-module">
+                        <span>◎</span>
+                        <h2>O‘quvchilar</h2>
+                        <p>
+                            O‘quvchilar boshqaruv moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+                <section
+                    class="page-section"
+                    id="section-teachers"
+                >
+                    <div class="empty-module">
+                        <span>◉</span>
+                        <h2>O‘qituvchilar</h2>
+                        <p>
+                            O‘qituvchilar boshqaruv moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+                <section
+                    class="page-section"
+                    id="section-courses"
+                >
+                    <div class="empty-module">
+                        <span>▣</span>
+                        <h2>Kurslar</h2>
+                        <p>
+                            Kurslar boshqaruv moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+                <section
+                    class="page-section"
+                    id="section-groups"
+                >
+                    <div class="empty-module">
+                        <span>◇</span>
+                        <h2>Guruhlar</h2>
+                        <p>
+                            Guruhlar boshqaruv moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+                <section
+                    class="page-section"
+                    id="section-homework"
+                >
+                    <div class="empty-module">
+                        <span>✓</span>
+                        <h2>Uy vazifalari</h2>
+                        <p>
+                            Uy vazifalari boshqaruv moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+                <section
+                    class="page-section"
+                    id="section-leads"
+                >
+                    <div class="empty-module">
+                        <span>↗</span>
+                        <h2>Arizalar</h2>
+                        <p>
+                            Arizalar boshqaruv moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+                <section
+                    class="page-section"
+                    id="section-rewards"
+                >
+                    <div class="empty-module">
+                        <span>✦</span>
+                        <h2>Mukofotlar</h2>
+                        <p>
+                            Rewards / Shop boshqaruv moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+                <section
+                    class="page-section"
+                    id="section-orders"
+                >
+                    <div class="empty-module">
+                        <span>◇</span>
+                        <h2>Buyurtmalar</h2>
+                        <p>
+                            Shop buyurtmalari boshqaruv moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+                <section
+                    class="page-section"
+                    id="section-books"
+                >
+                    <div class="empty-module">
+                        <span>▤</span>
+                        <h2>Kitoblar</h2>
+                        <p>
+                            Kitoblar boshqaruv moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+                <section
+                    class="page-section"
+                    id="section-ranking"
+                >
+                    <div class="empty-module">
+                        <span>△</span>
+                        <h2>Ranking</h2>
+                        <p>
+                            Ranking boshqaruv moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+                <section
+                    class="page-section"
+                    id="section-reports"
+                >
+                    <div class="empty-module">
+                        <span>▥</span>
+                        <h2>Hisobotlar</h2>
+                        <p>
+                            Hisobotlar moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+                <section
+                    class="page-section"
+                    id="section-settings"
+                >
+                    <div class="empty-module">
+                        <span>⚙</span>
+                        <h2>Sozlamalar</h2>
+                        <p>
+                            Tizim sozlamalari moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+            </div>
+
+        </main>
+
+    </div>
+
+
+    <!-- =====================================================
+         TOAST CONTAINER
+    ====================================================== -->
+
+    <div
+        id="toastContainer"
+        class="toast-container"
+    ></div>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="admin.js"></script>
+
+</body>
+                          </html>
