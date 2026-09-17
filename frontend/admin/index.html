@@ -836,17 +836,6 @@
         class="toast-container"
     ></div>
 
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".nav-item").forEach(item => {
-        item.addEventListener("click", () => {
-            if (item.dataset.section === "students") {
-                setTimeout(() => {
-                    loadStudents();
-                }, 100);
-            }
-        });
-    });
-});
 
     <!-- =====================================================
          JAVASCRIPT
