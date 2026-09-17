@@ -2453,3 +2453,20 @@ a {
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 760px) {
+    .mobile-menu-btn {
+        display: grid !important;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        margin-right: 12px;
+        flex-shrink: 0;
+        border: 1px solid rgba(255,255,255,.10);
+        border-radius: 12px;
+        background: rgba(255,255,255,.04);
+        color: #39e58c;
+        font-size: 22px;
+        cursor: pointer;
+    }
+}
