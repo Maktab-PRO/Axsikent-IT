@@ -232,9 +232,10 @@ function openSection(section) {
         loadStudents();
     }
    if (section === "homework") { 
-      loadHomeworkSubmissions();
+    loadHomeworkSubmissions();
 }
 
+}
 
 function initNavigation() {
 
