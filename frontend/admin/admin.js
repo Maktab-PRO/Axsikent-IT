@@ -526,9 +526,24 @@ function initMobileMenu() {
         "click",
         () => {
 
-            sidebar.classList.toggle(
-               "open"
-            );
+            const isOpen =
+                sidebar.classList.contains("open");
+
+            if (isOpen) {
+
+                sidebar.classList.remove("open");
+
+                sidebar.style.transform =
+                    "translateX(-100%)";
+
+            } else {
+
+                sidebar.classList.add("open");
+
+                sidebar.style.transform =
+                    "translateX(0)";
+
+            }
 
         }
     );
