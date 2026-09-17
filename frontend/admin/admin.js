@@ -777,3 +777,411 @@ document.addEventListener(
     "DOMContentLoaded",
     initAdminPanel
 );
+
+   // ============================================================
+// STUDENTS MODULE
+// ============================================================
+
+async function loadStudents() {
+    const container = document.getElementById("studentsContent");
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="module-loading">
+            <div class="module-spinner"></div>
+            <span>O‘quvchilar yuklanmoqda...</span>
+        </div>
+    `;
+
+    try {
+        const data = await apiRequest("/admin/students/");
+
+        const students = Array.isArray(data)
+            ? data
+            : (data.students || data.items || data.data || []);
+
+        renderStudents(students);
+
+    } catch (error) {
+        console.error("Students error:", error);
+
+        container.innerHTML = `
+            <div class="module-error">
+                <div class="module-error-icon">!</div>
+                <h3>O‘quvchilarni yuklab bo‘lmadi</h3>
+                <p>${escapeHtml(error.message || "Server xatosi")}</p>
+                <button class="module-retry" onclick="loadStudents()">
+                    Qayta urinish
+                </button>
+            </div>
+        `;
+    }
+}
+
+
+function renderStudents(students) {
+    const container = document.getElementById("studentsContent");
+    if (!container) return;
+
+    if (!students.length) {
+        container.innerHTML = `
+            <div class="module-empty">
+                <div class="module-empty-icon">◎</div>
+                <h3>Hozircha o‘quvchilar yo‘q</h3>
+                <p>Tizimda ro‘yxatdan o‘tgan o‘quvchilar ko‘rinadi.</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="students-toolbar">
+            <div class="students-search">
+                <span>⌕</span>
+                <input
+                    type="text"
+                    id="studentSearchInput"
+                    placeholder="Ism yoki telefon bo‘yicha qidirish..."
+                >
+            </div>
+
+            <div class="students-filter">
+                <select id="studentStatusFilter">
+                    <option value="all">Barcha holatlar</option>
+                    <option value="active">Faol</option>
+                    <option value="inactive">Nofaol</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="students-table-wrap">
+            <table class="students-table">
+                <thead>
+                    <tr>
+                        <th>O‘QUVCHI</th>
+                        <th>TELEFON</th>
+                        <th>ID</th>
+                        <th>HOLAT</th>
+                        <th>AMAL</th>
+                    </tr>
+                </thead>
+
+                <tbody id="studentsTableBody">
+                    ${students.map(student => studentRow(student)).join("")}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="students-footer">
+            <span>Jami: <strong>${students.length}</strong> ta o‘quvchi</span>
+        </div>
+    `;
+
+    const searchInput = document.getElementById("studentSearchInput");
+    const statusFilter = document.getElementById("studentStatusFilter");
+
+    if (searchInput) {
+        searchInput.addEventListener("input", () => {
+            filterStudents(students);
+        });
+    }
+
+    if (statusFilter) {
+        statusFilter.addEventListener("change", () => {
+            filterStudents(students);
+        });
+    }
+}
+
+
+function studentRow(student) {
+    const id = student.id ?? "-";
+    const name = student.full_name || student.name || "Noma’lum";
+    const phone = student.phone || "-";
+    const active = student.is_active !== false;
+
+    const initials = name
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(word => word.charAt(0).toUpperCase())
+        .join("");
+
+    return `
+        <tr
+            data-name="${escapeHtml(name.toLowerCase())}"
+            data-phone="${escapeHtml(phone.toLowerCase())}"
+            data-status="${active ? "active" : "inactive"}"
+        >
+            <td>
+                <div class="student-identity">
+                    <div class="student-avatar">
+                        ${escapeHtml(initials || "U")}
+                    </div>
+
+                    <div>
+                        <div class="student-name">
+                            ${escapeHtml(name)}
+                        </div>
+                        <div class="student-role">
+                            Student
+                        </div>
+                    </div>
+                </div>
+            </td>
+
+            <td>
+                <span class="student-phone">
+                    ${escapeHtml(phone)}
+                </span>
+            </td>
+
+            <td>
+                <span class="student-id">
+                    #${escapeHtml(id)}
+                </span>
+            </td>
+
+            <td>
+                <span class="status-badge ${active ? "status-active" : "status-inactive"}">
+                    <span></span>
+                    ${active ? "Faol" : "Nofaol"}
+                </span>
+            </td>
+
+            <td>
+                <div class="student-actions">
+                    <button
+                        class="student-action-btn"
+                        onclick="viewStudent(${Number(id)})"
+                        title="Profil"
+                    >
+                        Ko‘rish
+                    </button>
+
+                    <button
+                        class="student-action-btn ${active ? "danger" : "success"}"
+                        onclick="toggleStudentStatus(${Number(id)}, ${active})"
+                        title="${active ? "Deaktivatsiya" : "Aktivatsiya"}"
+                    >
+                        ${active ? "Bloklash" : "Faollashtirish"}
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `;
+}
+
+
+function filterStudents(students) {
+    const search =
+        (document.getElementById("studentSearchInput")?.value || "")
+            .trim()
+            .toLowerCase();
+
+    const status =
+        document.getElementById("studentStatusFilter")?.value || "all";
+
+    const filtered = students.filter(student => {
+        const name = (student.full_name || student.name || "").toLowerCase();
+        const phone = (student.phone || "").toLowerCase();
+        const active = student.is_active !== false;
+
+        const matchesSearch =
+            !search ||
+            name.includes(search) ||
+            phone.includes(search);
+
+        const matchesStatus =
+            status === "all" ||
+            (status === "active" && active) ||
+            (status === "inactive" && !active);
+
+        return matchesSearch && matchesStatus;
+    });
+
+    const tbody = document.getElementById("studentsTableBody");
+
+    if (!tbody) return;
+
+    tbody.innerHTML = filtered.length
+        ? filtered.map(student => studentRow(student)).join("")
+        : `
+            <tr>
+                <td colspan="5">
+                    <div class="table-empty">
+                        Hech narsa topilmadi.
+                    </div>
+                </td>
+            </tr>
+        `;
+}
+
+
+async function viewStudent(studentId) {
+    try {
+        const data = await apiRequest(`/admin/students/${studentId}`);
+
+        showStudentModal(data);
+
+    } catch (error) {
+        showToast(
+            error.message || "O‘quvchi ma’lumotlarini olishda xatolik",
+            "error"
+        );
+    }
+}
+
+
+function showStudentModal(student) {
+    const oldModal = document.getElementById("studentModal");
+
+    if (oldModal) oldModal.remove();
+
+    const name =
+        student.full_name ||
+        student.name ||
+        "Noma’lum o‘quvchi";
+
+    const phone = student.phone || "-";
+    const id = student.id ?? "-";
+    const active = student.is_active !== false;
+
+    const modal = document.createElement("div");
+
+    modal.id = "studentModal";
+    modal.className = "admin-modal-overlay";
+
+    modal.innerHTML = `
+        <div class="admin-modal">
+
+            <button
+                class="admin-modal-close"
+                onclick="closeStudentModal()"
+            >
+                ×
+            </button>
+
+            <div class="modal-profile">
+                <div class="modal-avatar">
+                    ${escapeHtml(
+                        name
+                            .split(" ")
+                            .filter(Boolean)
+                            .slice(0, 2)
+                            .map(x => x[0])
+                            .join("")
+                            .toUpperCase()
+                    )}
+                </div>
+
+                <div>
+                    <div class="modal-eyebrow">
+                        STUDENT PROFILE
+                    </div>
+
+                    <h2>
+                        ${escapeHtml(name)}
+                    </h2>
+
+                    <span class="status-badge ${active ? "status-active" : "status-inactive"}">
+                        <span></span>
+                        ${active ? "Faol" : "Nofaol"}
+                    </span>
+                </div>
+            </div>
+
+            <div class="modal-info-grid">
+
+                <div class="modal-info-card">
+                    <span>ID</span>
+                    <strong>#${escapeHtml(id)}</strong>
+                </div>
+
+                <div class="modal-info-card">
+                    <span>Telefon</span>
+                    <strong>${escapeHtml(phone)}</strong>
+                </div>
+
+                <div class="modal-info-card">
+                    <span>Rol</span>
+                    <strong>Student</strong>
+                </div>
+
+                <div class="modal-info-card">
+                    <span>Holat</span>
+                    <strong>${active ? "Faol" : "Nofaol"}</strong>
+                </div>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    class="modal-secondary-btn"
+                    onclick="closeStudentModal()"
+                >
+                    Yopish
+                </button>
+
+                <button
+                    class="modal-primary-btn"
+                    onclick="toggleStudentStatus(${Number(id)}, ${active}); closeStudentModal();"
+                >
+                    ${active ? "Bloklash" : "Faollashtirish"}
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    requestAnimationFrame(() => {
+        modal.classList.add("show");
+    });
+}
+
+
+function closeStudentModal() {
+    const modal = document.getElementById("studentModal");
+
+    if (!modal) return;
+
+    modal.classList.remove("show");
+
+    setTimeout(() => {
+        modal.remove();
+    }, 250);
+}
+
+
+async function toggleStudentStatus(studentId, currentlyActive) {
+    const action = currentlyActive ? "deactivate" : "activate";
+
+    try {
+        await apiRequest(
+            `/admin/students/${studentId}/${action}`,
+            {
+                method: "PATCH"
+            }
+        );
+
+        showToast(
+            currentlyActive
+                ? "O‘quvchi deaktiv qilindi"
+                : "O‘quvchi faollashtirildi",
+            "success"
+        );
+
+        await loadStudents();
+        await loadDashboard();
+
+    } catch (error) {
+        showToast(
+            error.message || "Holatni o‘zgartirishda xatolik",
+            "error"
+        );
+    }
+                          }
