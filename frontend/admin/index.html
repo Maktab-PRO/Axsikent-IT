@@ -707,18 +707,108 @@
                 </section>
 
 
-                <section
-                    class="page-section"
-                    id="section-homework"
+                <section class="page-section" id="section-homework">
+
+    <div class="section-header">
+        <div>
+            <div class="section-eyebrow">
+                TA’LIM / UY VAZIFALARI
+            </div>
+
+            <h2>Uy vazifalari</h2>
+
+            <p>
+                O‘quvchilar topshirgan vazifalar va javoblarni nazorat qiling.
+            </p>
+        </div>
+    </div>
+
+
+    <div class="admin-panel homework-panel">
+
+        <div class="panel-header">
+            <div>
+                <h3>Topshirilgan vazifalar</h3>
+
+                <p>
+                    O‘quvchilar bajargan vazifalar
+                </p>
+            </div>
+
+            <button
+                class="panel-link"
+                data-section="homework"
+                onclick="loadHomeworkSubmissions()"
+            >
+                ↻ Yangilash
+            </button>
+        </div>
+
+
+        <div class="homework-stats">
+
+            <div class="homework-stat-card">
+                <span>📝</span>
+                <div>
+                    <small>Jami topshiriqlar</small>
+                    <strong id="homeworkTotal">0</strong>
+                </div>
+            </div>
+
+            <div class="homework-stat-card">
+                <span>⏳</span>
+                <div>
+                    <small>Kutilmoqda</small>
+                    <strong id="homeworkPending">0</strong>
+                </div>
+            </div>
+
+            <div class="homework-stat-card">
+                <span>✅</span>
+                <div>
+                    <small>Tekshirilgan</small>
+                    <strong id="homeworkChecked">0</strong>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="students-toolbar">
+
+            <div class="students-search">
+
+                <span>⌕</span>
+
+                <input
+                    type="text"
+                    id="homeworkSearch"
+                    placeholder="O‘quvchi yoki vazifani qidirish..."
+                    oninput="filterHomeworkSubmissions()"
                 >
-                    <div class="empty-module">
-                        <span>✓</span>
-                        <h2>Uy vazifalari</h2>
-                        <p>
-                            Uy vazifalari boshqaruv moduli tayyorlanmoqda.
-                        </p>
-                    </div>
-                </section>
+
+            </div>
+
+        </div>
+
+
+        <div id="homeworkSubmissionsContent">
+
+            <div class="module-loading">
+
+                <div class="module-spinner"></div>
+
+                <span>
+                    Topshirilgan vazifalar yuklanmoqda...
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
 
 
                 <section
