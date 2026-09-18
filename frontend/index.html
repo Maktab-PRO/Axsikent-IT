@@ -286,6 +286,69 @@
             margin-bottom: 15px;
         }
 
+        .hero-course-icon {
+            width: 64px;
+            height: 64px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 18px;
+            background: linear-gradient(145deg, #f8faf9, #e7f5eb);
+            border: 1px solid #d8e9dc;
+            box-shadow: 0 12px 24px rgba(22,163,74,.14);
+        }
+
+        .hero-course-icon svg {
+            width: 42px;
+            height: 42px;
+        }
+
+        .hero-mini {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .hero-mini-icon {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            background: linear-gradient(145deg, #f8faf9, #e7f5eb);
+            border: 1px solid #d8e9dc;
+        }
+
+        .hero-mini-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .tab-modern-icon {
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        .tab-modern-icon svg {
+            width: 25px;
+            height: 25px;
+            display: block;
+        }
+
+        .course-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+
         .hero-card h3 {
             font-size: 28px;
             margin-bottom: 10px;
@@ -2554,7 +2617,11 @@
 
         <div class="hero-card">
 
-            <div class="hero-card-top">💻</div>
+            <div class="hero-card-top">
+                <span class="hero-course-icon hero-course-icon-main">
+                    <svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="13" width="44" height="31" rx="6" fill="#dff7e6"></rect><rect x="14" y="17" width="36" height="23" rx="3" fill="#fff"></rect><path d="M24 51h16M20 45h24" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path><path d="M22 24h20M22 30h13" stroke="#4ade80" stroke-width="3.5" stroke-linecap="round"></path></svg>
+                </span>
+            </div>
 
             <h3>AKHSIKENT IT</h3>
 
@@ -2565,19 +2632,23 @@
             <div class="hero-mini-grid">
 
                 <div class="hero-mini">
-                    🤖 AI
+                    <span class="hero-mini-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 9l5.5 12.5L50 27l-12.5 5.5L32 45l-5.5-12.5L14 27l12.5-5.5L32 9z" fill="#dff7e6"></path><circle cx="32" cy="27" r="6" fill="#4ade80"></circle><path d="M20 49c5-7 19-7 24 0" fill="none" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path></svg></span>
+                    <span>AI</span>
                 </div>
 
                 <div class="hero-mini">
-                    💻 IT
+                    <span class="hero-mini-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="13" width="44" height="31" rx="6" fill="#dff7e6"></rect><rect x="14" y="17" width="36" height="23" rx="3" fill="#fff"></rect><path d="M24 51h16M20 45h24" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path><path d="M22 24h20M22 30h13" stroke="#4ade80" stroke-width="3.5" stroke-linecap="round"></path></svg></span>
+                    <span>IT</span>
                 </div>
 
                 <div class="hero-mini">
-                    🇬🇧 English
+                    <span class="hero-mini-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 17h40v30H12z" fill="#dff7e6"></path><path d="M12 17l20 15 20-15" fill="#fff"></path><path d="M12 47l14-14M52 47L38 33" fill="none" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path><path d="M13 18l19 14 19-14" fill="none" stroke="#4ade80" stroke-width="3" stroke-linejoin="round"></path></svg></span>
+                    <span>English</span>
                 </div>
 
                 <div class="hero-mini">
-                    🧮 Mental
+                    <span class="hero-mini-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="8" width="40" height="48" rx="6" fill="#dff7e6"></rect><path d="M20 20h24M20 29h.1M32 29h.1M44 29h.1M20 38h.1M32 38h.1M44 38h.1M20 47h24" fill="none" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path></svg></span>
+                    <span>Mental</span>
                 </div>
 
             </div>
@@ -2624,14 +2695,15 @@
         <div class="course-tabs">
 
             <button class="course-tab active" data-filter="all">
+                <span class="tab-modern-icon tab-all-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="10" width="18" height="18" rx="4" fill="#dff7e6"></rect><rect x="36" y="10" width="18" height="18" rx="4" fill="#4ade80"></rect><rect x="10" y="36" width="18" height="18" rx="4" fill="#86efac"></rect><rect x="36" y="36" width="18" height="18" rx="4" fill="#15803d"></rect></svg></span>
                 <span data-i18n="tab_all">Barchasi</span>
             </button>
 
-            <button class="course-tab" data-filter="it"><span class="tab-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 20h8M6 17h12"></path></svg></span><span data-i18n="tab_it">IT</span></button>
+            <button class="course-tab" data-filter="it"><span class="tab-modern-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="13" width="44" height="31" rx="6" fill="#dff7e6"></rect><rect x="14" y="17" width="36" height="23" rx="3" fill="#fff"></rect><path d="M24 51h16M20 45h24" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path><path d="M22 24h20M22 30h13" stroke="#4ade80" stroke-width="3.5" stroke-linecap="round"></path></svg></span><span data-i18n="tab_it">IT</span></button>
 
-            <button class="course-tab" data-filter="mental"><span class="tab-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M7 7h10M7 11h.01M11 11h.01M15 11h.01M7 15h.01M11 15h.01M15 15h.01M7 19h10"></path></svg></span><span data-i18n="tab_mental">Mental</span></button>
+            <button class="course-tab" data-filter="mental"><span class="tab-modern-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="8" width="40" height="48" rx="6" fill="#dff7e6"></rect><path d="M20 20h24M20 29h.1M32 29h.1M44 29h.1M20 38h.1M32 38h.1M44 38h.1M20 47h24" fill="none" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path></svg></span><span data-i18n="tab_mental">Mental</span></button>
 
-            <button class="course-tab" data-filter="english"><span class="tab-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="M4 5l16 14M20 5L4 19"></path></svg></span><span data-i18n="tab_english">Ingliz tili</span></button>
+            <button class="course-tab" data-filter="english"><span class="tab-modern-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 17h40v30H12z" fill="#dff7e6"></path><path d="M12 17l20 15 20-15" fill="#fff"></path><path d="M12 47l14-14M52 47L38 33" fill="none" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path><path d="M13 18l19 14 19-14" fill="none" stroke="#4ade80" stroke-width="3" stroke-linejoin="round"></path></svg></span><span data-i18n="tab_english">Ingliz tili</span></button>
 
         </div>
 
