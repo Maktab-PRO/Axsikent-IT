@@ -1,0 +1,114 @@
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlalchemy.orm import Session
+from datetime import datetime
+
+from app.db import get_db
+from app.core.security import verify_token
+from app.models.student import Student
+from app.models.podcast import Podcast
+from app.models.training import Training, TrainingRegistration
+from app.models.exam import Exam, ExamRegistration
+
+router = APIRouter(prefix="/students", tags=["Student Content"])
+security = HTTPBearer()
+
+
+def student_id_from_token(credentials):
+    student_id = verify_token(credentials.credentials)
+    if not student_id:
+        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
+    student = db_student = None
+    return student_id
+
+
+@router.get("/podcasts")
+def get_podcasts(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
+    student_id = student_id_from_token(credentials)
+    return [
+        {"id": x.id, "title": x.title, "description": x.description, "audio_url": x.audio_url,
+         "duration_minutes": x.duration_minutes}
+        for x in db.query(Podcast).filter(Podcast.is_active == True).order_by(Podcast.id.desc()).all()
+    ]
+
+
+@router.get("/trainings")
+def get_trainings(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
+    student_id = student_id_from_token(credentials)
+    registrations = {
+        x.training_id: x.status
+        for x in db.query(TrainingRegistration).filter(TrainingRegistration.student_id == student_id).all()
+    }
+    return [
+        {"id": x.id, "title": x.title, "description": x.description, "start_at": x.start_at,
+         "end_at": x.end_at, "location": x.location, "capacity": x.capacity,
+         "registered": x.id in registrations, "registration_status": registrations.get(x.id)}
+        for x in db.query(Training).filter(Training.is_active == True).order_by(Training.start_at.asc()).all()
+    ]
+
+
+@router.post("/trainings/{training_id}/register")
+def register_training(training_id: int, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
+    student_id = student_id_from_token(credentials)
+    training = db.query(Training).filter(Training.id == training_id, Training.is_active == True).first()
+    if not training:
+        raise HTTPException(status_code=404, detail="Trening topilmadi")
+    existing = db.query(TrainingRegistration).filter(
+        TrainingRegistration.training_id == training_id,
+        TrainingRegistration.student_id == student_id
+    ).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Siz bu treningka allaqachon ro'yxatdan o'tgansiz")
+    if training.capacity is not None:
+        count = db.query(TrainingRegistration).filter(
+            TrainingRegistration.training_id == training_id,
+            TrainingRegistration.status == "registered"
+        ).count()
+        if count >= training.capacity:
+            raise HTTPException(status_code=400, detail="Trening uchun joy qolmagan")
+    item = TrainingRegistration(training_id=training_id, student_id=student_id)
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    return {"success": True, "message": "Treningka ro'yxatdan o'tildi", "registration_id": item.id}
+
+
+@router.get("/exams")
+def get_exams(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
+    student_id = student_id_from_token(credentials)
+    registrations = {
+        x.exam_id: x.status
+        for x in db.query(ExamRegistration).filter(ExamRegistration.student_id == student_id).all()
+    }
+    return [
+        {"id": x.id, "title": x.title, "description": x.description, "start_at": x.start_at,
+         "end_at": x.end_at, "location": x.location, "capacity": x.capacity,
+         "registered": x.id in registrations, "registration_status": registrations.get(x.id)}
+        for x in db.query(Exam).filter(Exam.is_active == True).order_by(Exam.start_at.asc()).all()
+    ]
+
+
+@router.post("/exams/{exam_id}/register")
+def register_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
+    student_id = student_id_from_token(credentials)
+    exam = db.query(Exam).filter(Exam.id == exam_id, Exam.is_active == True).first()
+    if not exam:
+        raise HTTPException(status_code=404, detail="Imtihon topilmadi")
+    existing = db.query(ExamRegistration).filter(
+        ExamRegistration.exam_id == exam_id,
+        ExamRegistration.student_id == student_id
+    ).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Siz bu imtihonga allaqachon ro'yxatdan o'tgansiz")
+    if exam.capacity is not None:
+        count = db.query(ExamRegistration).filter(
+            ExamRegistration.exam_id == exam_id,
+            ExamRegistration.status == "registered"
+        ).count()
+        if count >= exam.capacity:
+            raise HTTPException(status_code=400, detail="Imtihon uchun joy qolmagan")
+    item = ExamRegistration(exam_id=exam_id, student_id=student_id)
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    return {"success": True, "message": "Imtihonga ro'yxatdan o'tildi", "registration_id": item.id}
