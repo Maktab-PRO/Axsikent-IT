@@ -4973,28 +4973,6 @@ document
             document.getElementById("formMessage");
 
 
-        /* =========================================
-           CLOUDFLARE TURNSTILE TOKEN
-           ========================================= */
-
-        const turnstileToken =
-            document.querySelector(
-                'input[name="cf-turnstile-response"]'
-            )?.value;
-
-
-        if (!turnstileToken) {
-
-            message.textContent =
-                "Iltimos, robot emasligingizni tasdiqlang.";
-
-            message.style.color =
-                "#dc2626";
-
-            return;
-        }
-
-
         message.textContent =
             translations[currentLang].formMsgSending;
 
@@ -5029,10 +5007,6 @@ document
                 comment:
                     document.getElementById("comment").value,
 
-                /* CLOUDFLARE TOKEN */
-                cf_turnstile_response:
-                    turnstileToken
-
             });
 
 
@@ -5047,8 +5021,12 @@ document
                 );
 
 
+            const responseData = await response.json().catch(() => ({}));
+
             if (!response.ok) {
-                throw new Error("Server xatosi");
+                throw new Error(
+                    responseData.detail || "Server xatosi"
+                );
             }
 
 
@@ -5063,13 +5041,6 @@ document
                 .getElementById("applicationForm")
                 .reset();
 
-
-            /* Turnstile'ni ham qayta yuklash */
-            if (
-                typeof turnstile !== "undefined"
-            ) {
-                turnstile.reset();
-            }
 
 
         } catch (error) {
@@ -5238,8 +5209,8 @@ document
             submit_btn: "Ariza yuborish",
 
             formMsgSending: "⏳ Arizangiz yuborilmoqda...",
-            formMsgSuccess: "✅ Arizangiz muvaffaqiyatli yuborildi! Tez orada siz bilan bog‘lanamiz.",
-            formMsgError: "❌ Ariza yuborilmadi. Iltimos, telefon raqamingizni tekshiring yoki qayta urinib ko‘ring.",
+            formMsgSuccess: "✅ Arizangiz qabul qilindi! Administrator 15 daqiqa ichida arizangizni ko‘rib chiqadi. Tasdiqlangach, telefon raqam va parolingiz bilan Student panelga kirasiz.",
+            formMsgError: "❌ Ariza yuborilmadi. Iltimos, qayta urinib ko‘ring.",
 
             contact_title: "Biz bilan bog‘laning",
             contact_address_label: "Manzil",
