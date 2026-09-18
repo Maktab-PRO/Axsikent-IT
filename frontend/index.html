@@ -635,6 +635,29 @@
         .teacher-avatar {
             height: 180px;
             border-radius: 18px;
+            background: linear-gradient(135deg, #0b1510, #16a34a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+        }
+
+        .teacher-avatar svg {
+            width: 76px;
+            height: 76px;
+            fill: none;
+            stroke: #dff7e6;
+            stroke-width: 2.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,.25));
+        }
+
+        .teacher-avatar {
+            height: 180px;
+            border-radius: 18px;
             background: linear-gradient(135deg, #111, #16a34a);
             display: flex;
             align-items: center;
@@ -684,8 +707,26 @@
         }
 
         .opportunity-card .icon {
-            font-size: 35px;
+            width: 58px;
+            height: 58px;
             margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 17px;
+            background: linear-gradient(145deg, #17251c, #0b100d);
+            border: 1px solid rgba(74,222,128,.22);
+            box-shadow: 0 12px 28px rgba(0,0,0,.20);
+        }
+
+        .opportunity-card .icon svg {
+            width: 34px;
+            height: 34px;
+            fill: none;
+            stroke: #4ade80;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .opportunity-card p {
@@ -3169,9 +3210,7 @@
 
             <div class="teacher-card">
 
-                <div class="teacher-avatar">
-                    👨‍💻
-                </div>
+                <div class="teacher-avatar"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="13" width="46" height="32" rx="6"></rect><path d="M22 53h20M18 45h28M24 24l-7 8 7 8M40 24l7 8-7 8M37 21l-10 22"></path></svg></div>
 
                 <h3>IT Mentor</h3>
 
@@ -3184,9 +3223,7 @@
 
             <div class="teacher-card">
 
-                <div class="teacher-avatar">
-                    👩‍💻
-                </div>
+                <div class="teacher-avatar"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="17" y="18" width="30" height="28" rx="8"></rect><path d="M32 10v8M25 31h.1M39 31h.1M25 38h14M10 28v8M54 28v8"></path><path d="M14 50c5-6 31-6 36 0"></path></svg></div>
 
                 <h3>AI Mentor</h3>
 
@@ -3199,9 +3236,7 @@
 
             <div class="teacher-card">
 
-                <div class="teacher-avatar">
-                    👩‍🏫
-                </div>
+                <div class="teacher-avatar"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M11 18h42v28H11z"></path><path d="M18 25h28M18 32h20M18 39h12"></path><path d="M42 46v8M22 54h34"></path></svg></div>
 
                 <h3>Language Mentor</h3>
 
@@ -3251,7 +3286,7 @@
         <div class="opportunity-grid">
 
             <div class="opportunity-card">
-                <div class="icon modern-opportunity-icon" data-opportunity="book">✦</div>
+                <div class="icon modern-opportunity-icon" data-opportunity="book"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M13 10h27a11 11 0 0 1 11 11v33H24a11 11 0 0 0-11 0z"></path><path d="M24 54V21a11 11 0 0 1 11-11M22 27h20M22 36h17"></path></svg></div>
                 <h3 data-i18n="opp1_title">Qo‘shimcha kitoblar</h3>
                 <p data-i18n="opp1_desc">
                     O‘qish va mustaqil rivojlanish uchun materiallar.
@@ -3259,7 +3294,7 @@
             </div>
 
             <div class="opportunity-card">
-                <div class="icon modern-opportunity-icon" data-opportunity="podcast">✦</div>
+                <div class="icon modern-opportunity-icon" data-opportunity="podcast"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 12a16 16 0 0 0-16 16v8a16 16 0 0 0 32 0v-8A16 16 0 0 0 32 12z"></path><path d="M10 31v7a22 22 0 0 0 44 0v-7M32 54v-8M24 58h16"></path></svg></div>
                 <h3 data-i18n="opp2_title">Podkastlar</h3>
                 <p data-i18n="opp2_desc">
                     Yo‘lda yoki bo‘sh vaqtda bilim olish.
@@ -3267,7 +3302,7 @@
             </div>
 
             <div class="opportunity-card">
-                <div class="icon modern-opportunity-icon" data-opportunity="rank">✦</div>
+                <div class="icon modern-opportunity-icon" data-opportunity="rank"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M13 51V31h12v20M26 51V20h12v31M39 51V10h12v41"></path><path d="M9 55h46"></path></svg></div>
                 <h3 data-i18n="opp3_title">Reyting</h3>
                 <p data-i18n="opp3_desc">
                     O‘quvchilar natijalari asosida motivatsion reyting.
@@ -3275,7 +3310,7 @@
             </div>
 
             <div class="opportunity-card">
-                <div class="icon modern-opportunity-icon" data-opportunity="game">✦</div>
+                <div class="icon modern-opportunity-icon" data-opportunity="game"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 27h28a10 10 0 0 1 9 14l-4 9a7 7 0 0 1-12 1l-4-5H29l-4 5a7 7 0 0 1-12-1l-4-9a10 10 0 0 1 9-14z"></path><path d="M20 35v10M15 40h10M44 37h.1M49 42h.1"></path></svg></div>
                 <h3 data-i18n="opp4_title">Gamification</h3>
                 <p data-i18n="opp4_desc">
                     Ball, topshiriq va yutuqlar orqali motivatsiya.
@@ -3283,7 +3318,7 @@
             </div>
 
             <div class="opportunity-card">
-                <div class="icon modern-opportunity-icon" data-opportunity="homework">✦</div>
+                <div class="icon modern-opportunity-icon" data-opportunity="homework"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M16 9h32v46H16z"></path><path d="M23 20h18M23 29h18M23 38h12M23 47h8"></path><path d="M44 39l5 5 8-10"></path></svg></div>
                 <h3 data-i18n="opp5_title">Uy vazifalari</h3>
                 <p data-i18n="opp5_desc">
                     Topshiriqlarni platforma orqali bajarish.
@@ -3291,7 +3326,7 @@
             </div>
 
             <div class="opportunity-card">
-                <div class="icon modern-opportunity-icon" data-opportunity="training">✦</div>
+                <div class="icon modern-opportunity-icon" data-opportunity="training"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M12 18h40v30H12z"></path><path d="M20 26h24M20 34h14"></path><circle cx="46" cy="47" r="9"></circle><path d="M46 42v5l3 2"></path></svg></div>
                 <h3 data-i18n="opp6_title">Treninglar</h3>
                 <p data-i18n="opp6_desc">
                     Haftalik trening va oraliq imtihonlarga ro‘yxatdan o‘tish.
