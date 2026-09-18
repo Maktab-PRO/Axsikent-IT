@@ -25,3 +25,7 @@ from app.models.lesson import Lesson
 from app.models.lesson_progress import LessonProgress
 from app.models.lesson_quiz import LessonQuiz
 from app.models.book import Book, BookOrder
+
+from app.models.podcast import Podcast
+from app.models.training import Training, TrainingRegistration
+from app.models.exam import Exam, ExamRegistration
