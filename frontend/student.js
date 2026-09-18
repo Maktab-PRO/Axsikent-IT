@@ -2390,7 +2390,11 @@ showPremiumModal(
     const answer = textarea.value.trim();
 
     if (!answer) {
-        alert("Avval javobingizni yozing.");
+        showPremiumModal(
+            "Javob kerak",
+            "Avval uy vazifasiga javob yozing.",
+            "Tushundim"
+        );
         return;
     }
 
@@ -2415,7 +2419,11 @@ showPremiumModal(
             );
         }
 
-        alert("✅ Uy vazifasi muvaffaqiyatli topshirildi!");
+        showPremiumModal(
+            "Vazifa topshirildi",
+            "✅ Uy vazifasi muvaffaqiyatli topshirildi.",
+            "Ajoyib!"
+        );
 
         await loadStudentHomework();
         await loadStudentHomeworkResults();
@@ -2424,7 +2432,11 @@ showPremiumModal(
 
         console.error(error);
 
-        alert("❌ " + error.message);
+        showPremiumModal(
+            "Xatolik yuz berdi",
+            "❌ " + escapeHtml(error.message || "Uy vazifasini topshirishda xatolik"),
+            "Yopish"
+        );
     }
 }
 
