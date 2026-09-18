@@ -13,6 +13,11 @@ class Lead(Base):
 
     phone = Column(String(30), nullable=False)
 
+    password_hash = Column(
+        String(255),
+        nullable=True
+    )
+
     age = Column(Integer, nullable=True)
 
     interested_course = Column(String(200), nullable=True)
