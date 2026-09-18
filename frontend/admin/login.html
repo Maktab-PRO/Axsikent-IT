@@ -497,17 +497,14 @@
                 /* UZBEKISTAN PHONE CHECK */
 
                 if (
-                    !/^\+998\d{9}$/.test(
+                    !/^(?:\+998|998)\d{9}$/.test(
                         phone
                     )
                 ) {
-
                     showError(
-                        "Telefon raqamni +998901234567 ko‘rinishida kiriting."
+                        "Telefon raqamni +998901234567 yoki 998901234567 ko‘rinishida kiriting."
                     );
-
                     phoneInput.focus();
-
                     return;
                 }
 
