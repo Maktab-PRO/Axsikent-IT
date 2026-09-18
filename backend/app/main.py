@@ -29,6 +29,8 @@ from app.api.admin_teacher import router as admin_teacher_router
 from app.api.admin_group import router as admin_group_router
 from app.api.admin_lead import router as admin_lead_router
 from app.api.admin_homework import router as admin_homework_router
+from app.api.student_extra import router as student_extra_router
+from app.api.admin_extra import router as admin_extra_router
 
 
 from app.seed import seed_data
@@ -123,6 +125,8 @@ app.include_router(admin_teacher_router)
 app.include_router(admin_group_router)
 app.include_router(admin_lead_router)
 app.include_router(admin_homework_router)
+app.include_router(student_extra_router)
+app.include_router(admin_extra_router)
 
 # =========================
 
