@@ -7,11 +7,18 @@ from app.core.security import require_admin
 
 from app.models.admin import Admin
 from app.models.lead import Lead
+from app.models.student import Student
+from passlib.context import CryptContext
 
 
 router = APIRouter(
     prefix="/admin/leads",
     tags=["Admin Leads"]
+)
+
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
 )
 
 
@@ -225,6 +232,28 @@ def update_lead_status(
                 "new, contacted, enrolled, rejected."
             )
         )
+
+    if new_status == "enrolled":
+        if not lead.password_hash:
+            raise HTTPException(
+                status_code=400,
+                detail="Bu arizada o‘quvchi akkaunti uchun parol mavjud emas. O‘quvchini qayta ro‘yxatdan o‘tkazish kerak."
+            )
+
+        student = db.query(Student).filter(
+            Student.phone == lead.phone
+        ).first()
+
+        if not student:
+            student = Student(
+                full_name=lead.full_name,
+                phone=lead.phone,
+                password_hash=lead.password_hash,
+                is_active=True
+            )
+            db.add(student)
+        elif not student.is_active:
+            student.is_active = True
 
     lead.status = new_status
 
