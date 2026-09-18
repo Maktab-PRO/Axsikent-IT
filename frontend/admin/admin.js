@@ -1744,17 +1744,17 @@ async function viewStudent(studentId) {
 
         const data =
             await apiRequest(
-                `/admin/students/${studentId}`
+                `/admin/students/${studentId}/profile`
             );
 
 
-        showStudentModal(data);
+        showStudentFullProfile(data);
 
     } catch (error) {
 
         showToast(
             error.message ||
-            "O‘quvchi ma’lumotlarini olishda xatolik",
+            "O‘quvchi profilini olishda xatolik",
             "error"
         );
     }
@@ -2025,7 +2025,7 @@ async function toggleStudentStatus(
         await apiRequest(
             `/admin/students/${studentId}/${action}`,
             {
-                method: "PATCH"
+                method: "PUT"
             }
         );
 
