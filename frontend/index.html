@@ -1400,30 +1400,30 @@
         }
 
         .quiz-question-title {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 800;
-            margin-bottom: 22px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 9px;
         }
 
         .quiz-question-modern-icon {
-            width: 48px;
-            height: 48px;
-            min-width: 48px;
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: 14px;
+            border-radius: 12px;
             background: linear-gradient(145deg, #f5fff8, #dff7e6);
             border: 1px solid #ccebd5;
-            box-shadow: 0 8px 18px rgba(22,163,74,.10);
+            box-shadow: 0 7px 16px rgba(22,163,74,.10);
         }
 
         .quiz-question-modern-icon svg {
-            width: 30px;
-            height: 30px;
+            width: 24px;
+            height: 24px;
             fill: none;
             stroke: #15803d;
             stroke-width: 1.8;
@@ -1433,18 +1433,20 @@
 
         @media (max-width: 600px) {
             .quiz-question-title {
-                gap: 10px;
+                font-size: 18px;
+                gap: 8px;
             }
 
             .quiz-question-modern-icon {
-                width: 42px;
-                height: 42px;
-                min-width: 42px;
+                width: 36px;
+                height: 36px;
+                min-width: 36px;
+                border-radius: 11px;
             }
 
             .quiz-question-modern-icon svg {
-                width: 26px;
-                height: 26px;
+                width: 22px;
+                height: 22px;
             }
         }
 
@@ -2807,7 +2809,10 @@
 
 <section class="stats">
 
-  <!-- =========================
+</section>
+
+
+<!-- =========================
      COURSES
 ========================= -->
 
@@ -3206,9 +3211,9 @@
 
             <div class="quiz-question" id="quizQuestion1">
 
-                <div class="quiz-question-title" data-i18n="quiz_q1">
+                <div class="quiz-question-title">
                     <span class="quiz-question-modern-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H4z"></path><path d="M8 21h8M12 17v4M8 9h3M8 12h6M16 9h.01"></path></svg></span>
-                    <span>Nimalar sizni ko‘proq qiziqtiradi?</span>
+                    <span data-i18n="quiz_q1">Nimalar sizni ko‘proq qiziqtiradi?</span>
                 </div>
 
                 <div class="quiz-options">
@@ -3231,9 +3236,9 @@
 
             <div class="quiz-question hidden" id="quizQuestion2">
 
-                <div class="quiz-question-title" data-i18n="quiz_q2">
-                    <span class="quiz-question-modern-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l2.2 5.1L20 10l-5.8 1.9L12 17l-2.2-5.1L4 10l5.8-1.9z"></path><path d="M18 15l1 2.3L21 18l-2 0.7L18 21l-1-2.3-2-.7 2-.7z"></path></svg></span>
-                    <span>Qaysi natija sizga muhimroq?</span>
+                <div class="quiz-question-title">
+                    <span class="quiz-question-modern-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l2.2 5.1L20 10l-5.8 1.9L12 17l-2.2-5.1L4 10l5.8-1.9z"></path><path d="M18 15l1 2.3L21 18l-2 0.7 2-.7z"></path></svg></span>
+                    <span data-i18n="quiz_q2">Qaysi natija sizga muhimroq?</span>
                 </div>
 
                 <div class="quiz-options">
