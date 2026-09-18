@@ -1,11 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from passlib.context import CryptContext
 
 from app.db import get_db
 
-from app.core.security import create_access_token, require_admin
+from app.core.security import (
+    create_access_token,
+    require_admin,
+    require_superadmin
+)
 from app.models.admin import Admin
 from app.models.student import Student
 from app.models.teacher import Teacher
@@ -15,6 +20,23 @@ from app.models.lead import Lead
 from app.models.gamification import StudentGamification
 
 from app.schemas.admin import AdminLogin
+
+
+class AdminCreate(BaseModel):
+    full_name: str = Field(
+        min_length=2,
+        max_length=150
+    )
+
+    phone: str = Field(
+        min_length=9,
+        max_length=30
+    )
+
+    password: str = Field(
+        min_length=8,
+        max_length=128
+    )
 
 
 router = APIRouter(
@@ -84,6 +106,84 @@ def login_admin(
         "admin_id": user.id,
         "full_name": user.full_name,
         "role": user.role
+    }
+
+
+# =========================================================
+# CREATE ADMIN — SUPERADMIN ONLY
+# =========================================================
+
+@router.post("/create")
+def create_admin(
+    admin_data: AdminCreate,
+    admin: Admin = Depends(require_superadmin),
+    db: Session = Depends(get_db)
+):
+
+    phone = (
+        admin_data.phone
+        .strip()
+        .replace(" ", "")
+        .replace("-", "")
+        .replace("(", "")
+        .replace(")", "")
+    )
+
+    if phone.startswith("+"):
+        phone = phone[1:]
+
+    if not phone.isdigit():
+        raise HTTPException(
+            status_code=400,
+            detail="Telefon raqam noto'g'ri"
+        )
+
+    if len(phone) != 12 or not phone.startswith("998"):
+        raise HTTPException(
+            status_code=400,
+            detail="Telefon raqam 998XXXXXXXXX ko'rinishida bo'lishi kerak"
+        )
+
+    existing_admin = db.query(Admin).filter(
+        Admin.phone == phone
+    ).first()
+
+    if existing_admin:
+        raise HTTPException(
+            status_code=409,
+            detail="Bu telefon raqam bilan administrator allaqachon mavjud"
+        )
+
+    new_admin = Admin(
+        full_name=admin_data.full_name.strip(),
+        phone=phone,
+        password_hash=pwd_context.hash(
+            admin_data.password
+        ),
+        role="admin",
+        is_active=True,
+        is_superadmin=False
+    )
+
+    db.add(new_admin)
+    db.commit()
+    db.refresh(new_admin)
+
+    return {
+        "success": True,
+        "message": "Yangi administrator yaratildi",
+        "admin": {
+            "id": new_admin.id,
+            "full_name": new_admin.full_name,
+            "phone": new_admin.phone,
+            "role": new_admin.role,
+            "is_active": new_admin.is_active,
+            "is_superadmin": new_admin.is_superadmin
+        },
+        "created_by": {
+            "id": admin.id,
+            "full_name": admin.full_name
+        }
     }
 
 
