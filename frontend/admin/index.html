@@ -137,6 +137,23 @@
                 </div>
 
 
+                <div class="nav-section" id="administratorNavSection">
+
+                    <span class="nav-section-title">TIZIM BOSHQARUVI</span>
+
+                    <button
+                        class="nav-item"
+                        id="administratorNav"
+                        data-section="administrators"
+                        hidden
+                    >
+                        <span class="nav-icon">♙</span>
+                        <span>Administratorlar</span>
+                    </button>
+
+                </div>
+
+
                 <div class="nav-section">
 
                     <button class="nav-item" data-section="settings">
@@ -892,6 +909,140 @@
                             Hisobotlar moduli tayyorlanmoqda.
                         </p>
                     </div>
+                </section>
+
+
+                <section
+                    class="page-section"
+                    id="section-administrators"
+                >
+
+                    <div class="section-header">
+                        <div>
+                            <div class="section-eyebrow">
+                                TIZIM / ADMINISTRATORLAR
+                            </div>
+
+                            <h2>Administratorlar</h2>
+
+                            <p>
+                                Faqat bosh administrator yangi administrator tayinlay oladi.
+                            </p>
+                        </div>
+                    </div>
+
+
+                    <div class="administrator-layout">
+
+                        <div class="admin-panel administrator-hero">
+
+                            <div class="administrator-hero-icon">
+                                ♙
+                            </div>
+
+                            <div>
+                                <span class="panel-eyebrow">
+                                    BOSH ADMINISTRATOR
+                                </span>
+
+                                <h3>
+                                    Administrator boshqaruvi
+                                </h3>
+
+                                <p>
+                                    Yangi administrator yaratilganda u oddiy administrator sifatida ishlaydi.
+                                    U boshqa administrator yarata olmaydi.
+                                </p>
+                            </div>
+
+                        </div>
+
+
+                        <div class="admin-panel administrator-form-panel">
+
+                            <div class="panel-header">
+                                <div>
+                                    <span class="panel-eyebrow">
+                                        YANGI AKKAUNT
+                                    </span>
+
+                                    <h3>
+                                        Yangi administrator yaratish
+                                    </h3>
+
+                                    <p>
+                                        Kirish ma'lumotlarini kiriting.
+                                    </p>
+                                </div>
+                            </div>
+
+
+                            <form
+                                id="administratorCreateForm"
+                                class="administrator-form"
+                            >
+
+                                <label>
+                                    <span>To‘liq ism</span>
+
+                                    <input
+                                        type="text"
+                                        id="administratorFullName"
+                                        name="full_name"
+                                        minlength="2"
+                                        maxlength="150"
+                                        placeholder="Masalan: Ali Valiyev"
+                                        autocomplete="name"
+                                        required
+                                    >
+                                </label>
+
+
+                                <label>
+                                    <span>Telefon raqam</span>
+
+                                    <input
+                                        type="tel"
+                                        id="administratorPhone"
+                                        name="phone"
+                                        inputmode="tel"
+                                        placeholder="+998 90 123 45 67"
+                                        autocomplete="tel"
+                                        required
+                                    >
+                                </label>
+
+
+                                <label>
+                                    <span>Parol</span>
+
+                                    <input
+                                        type="password"
+                                        id="administratorPassword"
+                                        name="password"
+                                        minlength="8"
+                                        maxlength="128"
+                                        placeholder="Kamida 8 ta belgi"
+                                        autocomplete="new-password"
+                                        required
+                                    >
+                                </label>
+
+
+                                <button
+                                    type="submit"
+                                    class="administrator-submit"
+                                    id="administratorSubmit"
+                                >
+                                    Administrator yaratish
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
                 </section>
 
 
