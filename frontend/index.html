@@ -1429,6 +1429,42 @@
             background: #f3fbf5;
         }
 
+        .quiz-modern-icon {
+            width: 46px;
+            height: 46px;
+            min-width: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 14px;
+            border-radius: 14px;
+            background: linear-gradient(145deg, #f5fff8, #dff7e6);
+            border: 1px solid #ccebd5;
+            box-shadow: 0 8px 18px rgba(22,163,74,.10);
+            vertical-align: middle;
+        }
+
+        .quiz-modern-icon svg {
+            width: 29px;
+            height: 29px;
+            fill: none;
+            stroke: #15803d;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+        }
+
+        .quiz-option:hover .quiz-modern-icon {
+            transform: translateY(-1px) scale(1.04);
+            border-color: #86d69d;
+            box-shadow: 0 10px 22px rgba(22,163,74,.16);
+        }
+
         .quiz-result {
             display: none;
             text-align: center;
@@ -3113,16 +3149,16 @@
 
                 <div class="quiz-options">
                     <button class="quiz-option" data-quiz="1" data-course="frontend" data-i18n="quiz_q1_opt1">
-                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M4 12h16M12 4c2 2.2 3 4.8 3 8s-1 5.8-3 8c-2-2.2-3-4.8-3-8s1-5.8 3-8z"></path></svg></span><span data-i18n="quiz_q1_opt1">Sayt va ilovalar yaratish</span>
+                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="15" rx="3"></rect><path d="M3 9h18M8 14l-2 2 2 2M11 18h4"></path></svg></span><span data-i18n="quiz_q1_opt1">Sayt va ilovalar yaratish</span>
                     </button>
                     <button class="quiz-option" data-quiz="1" data-course="ai" data-i18n="quiz_q1_opt2">
-                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="7" width="14" height="12" rx="3"></rect><path d="M12 4v3M9 12h.01M15 12h.01M9 16h6"></path></svg></span><span data-i18n="quiz_q1_opt2">Sun’iy intellekt va robotlar</span>
+                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8a5 5 0 0 1 10 0v8a5 5 0 0 1-10 0z"></path><path d="M12 3v3M9 12h.01M15 12h.01M9 16h6M4 11v3M20 11v3"></path></svg></span><span data-i18n="quiz_q1_opt2">Sun’iy intellekt va robotlar</span>
                     </button>
                     <button class="quiz-option" data-quiz="1" data-course="mental" data-i18n="quiz_q1_opt3">
-                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M7 7h10M7 11h.01M11 11h.01M15 11h.01M7 15h.01M11 15h.01M15 15h.01M7 19h10"></path></svg></span><span data-i18n="quiz_q1_opt3">Tez va aniq hisoblash</span>
+                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"></rect><path d="M7 7h10M7 11h10M8 15h2M12 15h2M16 15h1M8 18h9"></path></svg></span><span data-i18n="quiz_q1_opt3">Tez va aniq hisoblash</span>
                     </button>
                     <button class="quiz-option" data-quiz="1" data-course="english" data-i18n="quiz_q1_opt4">
-                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="M4 5l16 14M20 5L4 19"></path></svg></span><span data-i18n="quiz_q1_opt4">Xorijiy til va muloqot</span>
+                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H4z"></path><path d="M8 20h8M12 16v4M7 9h5M7 12h8"></path></svg></span><span data-i18n="quiz_q1_opt4">Xorijiy til va muloqot</span>
                     </button>
                 </div>
 
@@ -3137,16 +3173,16 @@
 
                 <div class="quiz-options">
                     <button class="quiz-option" data-quiz="2" data-course="frontend" data-i18n="quiz_q2_opt1">
-                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 20h8M6 17h12"></path></svg></span><span data-i18n="quiz_q2_opt1">Zamonaviy kasb egallash</span>
+                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"></rect><path d="M8 7h8M8 11h5M8 15h3M16 15h.01"></path><path d="M16 5v3M14 7h4"></path></svg></span><span data-i18n="quiz_q2_opt1">Zamonaviy kasb egallash</span>
                     </button>
                     <button class="quiz-option" data-quiz="2" data-course="ai" data-i18n="quiz_q2_opt2">
-                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="7" width="14" height="12" rx="3"></rect><path d="M12 4v3M9 12h.01M15 12h.01M9 16h6"></path></svg></span><span data-i18n="quiz_q2_opt2">Kelajak texnologiyalarida ilg‘or bo‘lish</span>
+                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 4v16M4 12h16M7 7l10 10M17 7L7 17"></path><circle cx="12" cy="12" r="2"></circle></svg></span><span data-i18n="quiz_q2_opt2">Kelajak texnologiyalarida ilg‘or bo‘lish</span>
                     </button>
                     <button class="quiz-option" data-quiz="2" data-course="mental" data-i18n="quiz_q2_opt3">
-                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M7 7h10M7 11h.01M11 11h.01M15 11h.01M7 15h.01M11 15h.01M15 15h.01M7 19h10"></path></svg></span><span data-i18n="quiz_q2_opt3">Miya faoliyatini rivojlantirish</span>
+                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c-4.4 0-8 3.2-8 7.2 0 2.5 1.4 4.7 3.6 5.9L7 21l5-3 5 3-.6-4.1c2.2-1.2 3.6-3.4 3.6-5.9C20 6.2 16.4 3 12 3z"></path><path d="M8 10h.01M12 8v5M16 10h.01"></path></svg></span><span data-i18n="quiz_q2_opt3">Miya faoliyatini rivojlantirish</span>
                     </button>
                     <button class="quiz-option" data-quiz="2" data-course="english" data-i18n="quiz_q2_opt4">
-                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-5 9 5-9 5-9-5zM6 11v5c3 2 9 2 12 0v-5M21 10v6"></path></svg></span><span data-i18n="quiz_q2_opt4">Xalqaro sertifikat va til bilimi</span>
+                        <span class="quiz-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18H5z"></path><path d="M8 7h8M8 11h5M8 16l2 2 5-5"></path><circle cx="17" cy="16" r="3"></circle></svg></span><span data-i18n="quiz_q2_opt4">Xalqaro sertifikat va til bilimi</span>
                     </button>
                 </div>
 
