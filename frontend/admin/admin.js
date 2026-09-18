@@ -2051,168 +2051,566 @@ async function toggleStudentStatus(
    EDUCATION + REWARDS MODULES
    ============================================================ */
 
+
 function moduleLoading(textValue) {
-    return `<div class="module-loading"><div class="module-spinner"></div><span>${escapeHtml(textValue)}</span></div>`;
+    return '<div class="module-loading"><div class="module-spinner"></div><span>' +
+        escapeHtml(textValue || "Yuklanmoqda...") +
+        '</span></div>';
 }
 
 function moduleTable(headers, rows) {
-    return `<div class="admin-data-table-wrap"><table class="admin-data-table"><thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
+    return '<div class="module-table-wrap"><table class="module-table"><thead><tr>' +
+        headers.map(h => '<th>' + escapeHtml(h) + '</th>').join("") +
+        '</tr></thead><tbody>' + rows.join("") + '</tbody></table></div>';
 }
 
 function actionButton(label, action, cls = "") {
-    return `<button class="module-action-btn ${cls}" onclick="${action}">${label}</button>`;
+    return '<button type="button" class="module-action-btn ' + escapeHtml(cls) +
+        '" onclick="' + escapeHtml(action) + '">' + escapeHtml(label) + '</button>';
 }
 
 function showInfoModal(title, body) {
     document.getElementById("moduleInfoModal")?.remove();
-    const modal=document.createElement("div");
-    modal.id="moduleInfoModal";
-    modal.className="admin-modal-overlay show";
-    modal.innerHTML=`<div class="admin-modal module-info-modal"><button class="admin-modal-close" onclick="document.getElementById('moduleInfoModal')?.remove()">×</button><div class="modal-eyebrow">AXSIKENT IT</div><h2>${escapeHtml(title)}</h2><div class="module-info-body">${body}</div><div class="modal-actions"><button class="modal-secondary-btn" onclick="document.getElementById('moduleInfoModal')?.remove()">Yopish</button></div></div>`;
+    const modal = document.createElement("div");
+    modal.id = "moduleInfoModal";
+    modal.className = "admin-modal";
+    modal.innerHTML =
+        '<div class="admin-detail-card">' +
+        '<button type="button" class="admin-detail-close" aria-label="Yopish">×</button>' +
+        '<h2>' + escapeHtml(title) + '</h2>' +
+        '<div class="admin-detail-body">' + body + '</div>' +
+        '</div>';
     document.body.appendChild(modal);
+    modal.querySelector(".admin-detail-close")?.addEventListener("click", () => modal.remove());
+    modal.addEventListener("click", event => {
+        if (event.target === modal) modal.remove();
+    });
+}
+
+function asArray(data, keys = []) {
+    if (Array.isArray(data)) return data;
+    for (const key of keys) {
+        if (Array.isArray(data?.[key])) return data[key];
+    }
+    return [];
 }
 
 async function loadTeachers() {
-    const box=document.getElementById("teachersContent"); if(!box)return;
-    box.innerHTML=moduleLoading("O‘qituvchilar yuklanmoqda...");
-    try{
-        const d=await apiRequest("/admin/teachers/");
-        const items=d?.teachers||[];
-        box.innerHTML=items.length?moduleTable(["O‘QITUVCHI","FAN","GURUHLAR","HOLAT","AMAL"],items.map(t=>`<tr data-teacher-search="${escapeHtml((t.full_name+" "+t.phone+" "+t.subject).toLowerCase())}"><td><strong>${escapeHtml(t.full_name)}</strong><small>${escapeHtml(t.phone)}</small></td><td>${escapeHtml(t.subject||"—")}</td><td>${t.groups_count??0}</td><td><span class="status-badge ${t.is_active?"status-active":"status-inactive"}"><span></span>${t.is_active?"Faol":"Nofaol"}</span></td><td>${actionButton("Ko‘rish",`viewTeacher(${Number(t.id)})`)} ${actionButton(t.is_active?"Bloklash":"Faollashtirish",`toggleTeacher(${Number(t.id)},${!!t.is_active})`,t.is_active?"danger":"success")}</td></tr>`).join(""):`<div class="module-empty"><h3>O‘qituvchilar yo‘q</h3><p>Tizimda hozircha o‘qituvchi topilmadi.</p></div>`;
-    }catch(e){box.innerHTML=`<div class="module-empty"><h3>Xatolik</h3><p>${escapeHtml(e.message)}</p></div>`;}
+    const box = document.getElementById("teachersContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("O‘qituvchilar yuklanmoqda...");
+    try {
+        const data = await apiRequest("/admin/teachers/");
+        const items = asArray(data, ["teachers", "items", "data"]);
+        box.innerHTML = items.length
+            ? moduleTable(
+                ["O‘QITUVCHI", "FAN", "GURUHLAR", "HOLAT", "AMAL"],
+                items.map(t => {
+                    const search = [t.full_name, t.phone, t.subject].filter(Boolean).join(" ").toLowerCase();
+                    return '<tr data-teacher-search="' + escapeHtml(search) + '">' +
+                        '<td><strong>' + escapeHtml(t.full_name || "—") + '</strong><small>' + escapeHtml(t.phone || "") + '</small></td>' +
+                        '<td>' + escapeHtml(t.subject || "—") + '</td>' +
+                        '<td>' + String(t.groups_count ?? 0) + '</td>' +
+                        '<td><span class="status-badge ' + (t.is_active ? "status-active" : "status-inactive") + '"><span></span>' + (t.is_active ? "Faol" : "Nofaol") + '</span></td>' +
+                        '<td>' +
+                        actionButton("Ko‘rish", "viewTeacher(" + Number(t.id) + ")") + " " +
+                        actionButton(t.is_active ? "Bloklash" : "Faollashtirish", "toggleTeacher(" + Number(t.id) + "," + Boolean(t.is_active) + ")", t.is_active ? "danger" : "success") +
+                        '</td></tr>';
+                })
+            )
+            : '<div class="module-empty"><h3>O‘qituvchilar yo‘q</h3><p>Tizimda hozircha o‘qituvchi topilmadi.</p></div>';
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' +
+            escapeHtml(error.message) + '</p></div>';
+    }
 }
 
-function filterTeachers(){
-    const q=(document.getElementById("teacherSearch")?.value||"").toLowerCase();
-    document.querySelectorAll("[data-teacher-search]").forEach(row=>row.style.display=!q||row.dataset.teacherSearch.includes(q)?"":"none");
+function filterTeachers() {
+    const q = (document.getElementById("teacherSearch")?.value || "").trim().toLowerCase();
+    document.querySelectorAll("[data-teacher-search]").forEach(row => {
+        row.style.display = !q || row.dataset.teacherSearch.includes(q) ? "" : "none";
+    });
 }
 
-async function viewTeacher(id){
-    try{const d=await apiRequest(`/admin/teachers/${id}`);const t=d.teacher||{};showInfoModal("O‘qituvchi profili",`<div class="module-detail-grid"><div><small>Ism</small><strong>${escapeHtml(t.full_name)}</strong></div><div><small>Telefon</small><strong>${escapeHtml(t.phone)}</strong></div><div><small>Fan</small><strong>${escapeHtml(t.subject||"—")}</strong></div><div><small>Guruhlar</small><strong>${(d.groups||[]).length}</strong></div></div>`);}catch(e){showToast(e.message,"error");}
+async function viewTeacher(id) {
+    try {
+        const data = await apiRequest("/admin/teachers/" + Number(id));
+        const teacher = data?.teacher || {};
+        const groups = asArray(data, ["groups"]);
+        showInfoModal(
+            "O‘qituvchi profili",
+            '<div class="admin-detail-grid">' +
+            '<div><small>Ism</small><strong>' + escapeHtml(teacher.full_name || "—") + '</strong></div>' +
+            '<div><small>Telefon</small><strong>' + escapeHtml(teacher.phone || "—") + '</strong></div>' +
+            '<div><small>Fan</small><strong>' + escapeHtml(teacher.subject || "—") + '</strong></div>' +
+            '<div><small>Guruhlar</small><strong>' + groups.length + '</strong></div>' +
+            '</div>'
+        );
+    } catch (error) {
+        showToast(error.message, "error");
+    }
 }
 
-async function toggleTeacher(id,active){
-    try{await apiRequest(`/admin/teachers/${id}/${active?"deactivate":"activate"}`,{method:"PUT"});showToast(active?"O‘qituvchi deaktiv qilindi":"O‘qituvchi faollashtirildi");await loadTeachers();}catch(e){showToast(e.message,"error");}
+async function toggleTeacher(id, active) {
+    try {
+        await apiRequest("/admin/teachers/" + Number(id) + "/" + (active ? "deactivate" : "activate"), { method: "PUT" });
+        showToast(active ? "O‘qituvchi deaktiv qilindi" : "O‘qituvchi faollashtirildi");
+        await loadTeachers();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
 }
 
-async function loadCourses(){
-    const box=document.getElementById("coursesContent");if(!box)return;
-    box.innerHTML=moduleLoading("Kurslar yuklanmoqda...");
-    try{
-        const [d,c]=await Promise.all([apiRequest("/admin/courses/"),apiRequest("/admin/courses/categories")]);
-        const items=Array.isArray(d)?d:(d?.courses||[]);
-        window.adminCategories=Array.isArray(c)?c:(c?.categories||[]);
-        box.innerHTML=items.length?moduleTable(["KURS","KATEGORIYA","YOSH","DARS","NARX","HOLAT","AMAL"],items.map(x=>`<tr><td><strong>${escapeHtml(x.name)}</strong><small>#${x.id}</small></td><td>${escapeHtml(x.category?.name||x.category_name||"—")}</td><td>${x.age_min??"—"}–${x.age_max??"—"}</td><td>${x.lesson_minutes??"—"} daq.</td><td>${x.price_min??0}–${x.price_max??0}</td><td><span class="status-badge ${x.is_active?"status-active":"status-inactive"}"><span></span>${x.is_active?"Faol":"Nofaol"}</span></td><td>${actionButton("Ko‘rish",`viewCourse(${Number(x.id)})`)} ${actionButton(x.is_active?"Deaktiv":"Aktiv",`toggleCourse(${Number(x.id)},${!!x.is_active})`,x.is_active?"danger":"success")}</td></tr>`).join(""):`<div class="module-empty"><h3>Kurslar yo‘q</h3><p>Yangi kurs yarating.</p></div>`;
-    }catch(e){box.innerHTML=`<div class="module-empty"><h3>Xatolik</h3><p>${escapeHtml(e.message)}</p></div>`;}
+async function loadCourses() {
+    const box = document.getElementById("coursesContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("Kurslar yuklanmoqda...");
+    try {
+        const data = await apiRequest("/admin/courses/");
+        const catData = await apiRequest("/admin/courses/categories");
+        const items = asArray(data, ["courses", "items", "data"]);
+        window.adminCategories = asArray(catData, ["categories", "items", "data"]);
+        box.innerHTML = items.length
+            ? moduleTable(
+                ["KURS", "KATEGORIYA", "YOSH", "DARS", "NARX", "HOLAT", "AMAL"],
+                items.map(course =>
+                    '<tr><td><strong>' + escapeHtml(course.name || "—") + '</strong><small>#' + Number(course.id) + '</small></td>' +
+                    '<td>' + escapeHtml(course.category?.name || "—") + '</td>' +
+                    '<td>' + (course.age_min ?? "—") + "–" + (course.age_max ?? "—") + '</td>' +
+                    '<td>' + (course.lesson_minutes ?? "—") + ' daq.</td>' +
+                    '<td>' + (course.price_min ?? 0) + "–" + (course.price_max ?? 0) + '</td>' +
+                    '<td><span class="status-badge ' + (course.is_active ? "status-active" : "status-inactive") + '"><span></span>' + (course.is_active ? "Faol" : "Nofaol") + '</span></td>' +
+                    '<td>' +
+                    actionButton("Ko‘rish", "viewCourse(" + Number(course.id) + ")") + " " +
+                    actionButton(course.is_active ? "Deaktiv" : "Aktiv", "toggleCourse(" + Number(course.id) + "," + Boolean(course.is_active) + ")", course.is_active ? "danger" : "success") +
+                    '</td></tr>'
+                )
+            )
+            : '<div class="module-empty"><h3>Kurslar yo‘q</h3><p>Yangi kurs yarating.</p></div>';
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+    }
 }
 
-async function viewCourse(id){
-    try{const d=await apiRequest(`/admin/courses/${id}`);showInfoModal("Kurs tafsilotlari",`<div class="module-detail-grid"><div><small>Nomi</small><strong>${escapeHtml(d.name)}</strong></div><div><small>Kategoriya</small><strong>${escapeHtml(d.category?.name||"—")}</strong></div><div><small>Yosh</small><strong>${d.age_min??"—"}–${d.age_max??"—"}</strong></div><div><small>Dars</small><strong>${d.lesson_minutes??"—"} daq.</strong></div></div><div class="module-detail-list">${(d.modules||[]).map(m=>`<div><strong>${escapeHtml(m.title)}</strong><span>${(m.lessons||[]).length} ta dars</span></div>`).join("")||"<p>Modullar yo‘q.</p>"}</div>`);}catch(e){showToast(e.message,"error");}
-}
-async function toggleCourse(id,active){try{await apiRequest(`/admin/courses/${id}/${active?"deactivate":"activate"}`,{method:"PUT"});showToast(active?"Kurs deaktiv qilindi":"Kurs faollashtirildi");await loadCourses();await loadDashboard();}catch(e){showToast(e.message,"error");}}
-async function openCourseCreate(){await loadCourses();const cats=window.adminCategories||[];const category=prompt("Kategoriya ID:\n"+cats.map(x=>`${x.id} — ${x.name}`).join("\n"));if(category===null)return;const name=prompt("Kurs nomi:");if(!name)return;try{await apiRequest("/admin/courses/",{method:"POST",body:JSON.stringify({category_id:Number(category),name:name.trim(),description:""})});showToast("Kurs yaratildi");await loadCourses();}catch(e){showToast(e.message,"error");}}
-
-async function loadGroups(){
-    const box=document.getElementById("groupsContent");if(!box)return;
-    box.innerHTML=moduleLoading("Guruhlar yuklanmoqda...");
-    try{const d=await apiRequest("/admin/groups/");const items=d?.groups||d||[];box.innerHTML=items.length?moduleTable(["GURUH","KURS","O‘QITUVCHI","O‘QUVCHILAR","HOLAT","AMAL"],items.map(g=>`<tr><td><strong>${escapeHtml(g.name)}</strong><small>#${g.id}</small></td><td>${escapeHtml(g.course?.name||"—")}</td><td>${escapeHtml(g.teacher?.full_name||"—")}</td><td>${g.students_count??0}/${g.capacity??0}</td><td><span class="status-badge ${g.is_active?"status-active":"status-inactive"}"><span></span>${g.is_active?"Faol":"Nofaol"}</span></td><td>${actionButton("Ko‘rish",`viewGroup(${Number(g.id)})`)} ${actionButton(g.is_active?"Deaktiv":"Aktiv",`toggleGroup(${Number(g.id)},${!!g.is_active})`,g.is_active?"danger":"success")}</td></tr>`).join(""):`<div class="module-empty"><h3>Guruhlar yo‘q</h3><p>Yangi guruh yarating.</p></div>`;}catch(e){box.innerHTML=`<div class="module-empty"><h3>Xatolik</h3><p>${escapeHtml(e.message)}</p></div>`;}
-}
-async function viewGroup(id){try{const d=await apiRequest(`/admin/groups/${id}`);showInfoModal("Guruh tafsilotlari",`<div class="module-detail-grid"><div><small>Guruh</small><strong>${escapeHtml(d.name)}</strong></div><div><small>Kurs</small><strong>${escapeHtml(d.course?.name||"—")}</strong></div><div><small>O‘qituvchi</small><strong>${escapeHtml(d.teacher?.full_name||"—")}</strong></div><div><small>O‘quvchilar</small><strong>${d.students_count??0}/${d.capacity??0}</strong></div></div>`);}catch(e){showToast(e.message,"error");}}
-async function toggleGroup(id,active){try{await apiRequest(`/admin/groups/${id}/${active?"deactivate":"activate"}`,{method:"PUT"});showToast(active?"Guruh deaktiv qilindi":"Guruh faollashtirildi");await loadGroups();}catch(e){showToast(e.message,"error");}}
-async function openGroupCreate(){const name=prompt("Guruh nomi:");if(!name)return;const course=prompt("Kurs ID:");if(course===null)return;const teacher=prompt("O‘qituvchi ID:");if(teacher===null)return;try{await apiRequest("/admin/groups/",{method:"POST",body:JSON.stringify({name:name.trim(),course_id:Number(course),teacher_id:Number(teacher),capacity:15,status:"active"})});showToast("Guruh yaratildi");await loadGroups();}catch(e){showToast(e.message,"error");}}
-
-async function loadRewards(){
-    const box=document.getElementById("rewardsContent");if(!box)return;box.innerHTML=moduleLoading("Mukofotlar yuklanmoqda...");
-    try{const [p,r]=await Promise.all([apiRequest("/admin/shop/products"),apiRequest("/admin/shop/rules")]);window.adminRules=r||[];box.innerHTML=p.length?moduleTable(["MUKOFOT","COIN","CRYSTAL","STOCK","HOLAT","AMAL"],p.map(x=>`<tr><td><strong>${escapeHtml(x.name)}</strong><small>#${x.id}</small></td><td>${x.coin_price}</td><td>${x.crystal_price}</td><td>${x.stock}</td><td><span class="status-badge ${x.is_active?"status-active":"status-inactive"}"><span></span>${x.is_active?"Faol":"Nofaol"}</span></td><td>${actionButton("Ko‘rish",`viewProduct(${Number(x.id)})`)} ${actionButton(x.is_active?"Deaktiv":"Aktiv",`toggleProduct(${Number(x.id)},${!!x.is_active})`,x.is_active?"danger":"success")} ${actionButton("O‘chirish",`deleteProduct(${Number(x.id)})`,"danger")}</td></tr>`).join(""):`<div class="module-empty"><h3>Mukofotlar yo‘q</h3><p>Yangi mukofot yarating.</p></div>`;}catch(e){box.innerHTML=`<div class="module-empty"><h3>Xatolik</h3><p>${escapeHtml(e.message)}</p></div>`;}
-}
-async function viewProduct(id){try{const d=await apiRequest(`/admin/shop/products/${id}`);showInfoModal("Mukofot tafsilotlari",`<div class="module-detail-grid"><div><small>Nomi</small><strong>${escapeHtml(d.name)}</strong></div><div><small>Coin</small><strong>${d.coin_price}</strong></div><div><small>Crystal</small><strong>${d.crystal_price}</strong></div><div><small>Stock</small><strong>${d.stock}</strong></div></div><p>${escapeHtml(d.description||"Tavsif yo‘q.")}</p>`);}catch(e){showToast(e.message,"error");}}
-async function toggleProduct(id,active){try{await apiRequest(`/admin/shop/products/${id}/${active?"deactivate":"activate"}`,{method:"PUT"});showToast(active?"Mukofot deaktiv qilindi":"Mukofot faollashtirildi");await loadRewards();await loadShopStats();}catch(e){showToast(e.message,"error");}}
-async function deleteProduct(id){if(!confirm("Bu mukofotni o‘chirishni tasdiqlaysizmi?"))return;try{await apiRequest(`/admin/shop/products/${id}`,{method:"DELETE"});showToast("Mukofot o‘chirildi");await loadRewards();await loadShopStats();}catch(e){showToast(e.message,"error");}}
-async function openProductCreate(){const name=prompt("Mukofot nomi:");if(!name)return;const coin=prompt("Coin narxi:","0");if(coin===null)return;const crystal=prompt("Crystal narxi:","0");if(crystal===null)return;const stock=prompt("Stock:","0");if(stock===null)return;try{await apiRequest("/admin/shop/products",{method:"POST",body:JSON.stringify({name:name.trim(),description:"",image_url:"",coin_price:Number(coin),crystal_price:Number(crystal),stock:Number(stock)})});showToast("Mukofot qo‘shildi");await loadRewards();await loadShopStats();}catch(e){showToast(e.message,"error");}}
-
-async function loadOrders(){
-    const box=document.getElementById("ordersContent");if(!box)return;box.innerHTML=moduleLoading("Buyurtmalar yuklanmoqda...");
-    try{const items=await apiRequest("/admin/shop/orders");box.innerHTML=items.length?moduleTable(["ID","O‘QUVCHI","MAHSULOT","SARF","STATUS","AMAL"],items.map(o=>`<tr><td>#${o.id}</td><td>#${o.student_id}</td><td>${escapeHtml(o.product_name||"—")}</td><td>${o.coin_spent} coin / ${o.crystal_spent} crystal</td><td>${escapeHtml(o.status)}</td><td><select class="module-status-select" onchange="updateOrderStatus(${Number(o.id)},this.value)"><option value="">Status</option><option value="pending">pending</option><option value="processing">processing</option><option value="completed">completed</option><option value="cancelled">cancelled</option></select> ${actionButton("Ko‘rish",`viewOrder(${Number(o.id)})`)}</td></tr>`).join(""):`<div class="module-empty"><h3>Buyurtmalar yo‘q</h3><p>Hozircha buyurtma mavjud emas.</p></div>`;}catch(e){box.innerHTML=`<div class="module-empty"><h3>Xatolik</h3><p>${escapeHtml(e.message)}</p></div>`;}
-}
-async function updateOrderStatus(id,status){if(!status)return;try{await apiRequest(`/admin/shop/orders/${id}/status`,{method:"PUT",body:JSON.stringify({status})});showToast("Buyurtma statusi yangilandi");await loadOrders();await loadShopStats();}catch(e){showToast(e.message,"error");}}
-async function viewOrder(id){try{const d=await apiRequest(`/admin/shop/orders/${id}`);showInfoModal("Buyurtma",`<div class="module-detail-grid"><div><small>ID</small><strong>#${d.id}</strong></div><div><small>O‘quvchi</small><strong>#${d.student_id}</strong></div><div><small>Mahsulot</small><strong>${escapeHtml(d.product_name||"—")}</strong></div><div><small>Miqdor</small><strong>${d.quantity}</strong></div></div>`);}catch(e){showToast(e.message,"error");}}
-
-async function loadBooks(){
-    const box=document.getElementById("booksContent");if(!box)return;box.innerHTML=moduleLoading("Kitoblar yuklanmoqda...");
-    try{const items=await apiRequest("/admin/books");box.innerHTML=items.length?moduleTable(["KITOB","NARX","COIN","STOCK","HOLAT"],items.map(b=>`<tr><td><strong>${escapeHtml(b.title)}</strong><small>#${b.id}</small></td><td>${b.price}</td><td>${b.coin_price}</td><td>${b.stock}</td><td>${b.is_active?"Faol":"Nofaol"}</td></tr>`).join("")):`<div class="module-empty"><h3>Kitoblar yo‘q</h3><p>Yangi kitob qo‘shishingiz mumkin.</p></div>`;}catch(e){box.innerHTML=`<div class="module-empty"><h3>Xatolik</h3><p>${escapeHtml(e.message)}</p></div>`;}
-}
-async function openBookCreate(){const title=prompt("Kitob nomi:");if(!title)return;const price=prompt("Narxi:","0");if(price===null)return;const coin=prompt("Coin narxi:","0");if(coin===null)return;const stock=prompt("Stock:","0");if(stock===null)return;try{await apiRequest("/admin/books",{method:"POST",body:JSON.stringify({title:title.trim(),description:"",image_url:"",price:Number(price),coin_price:Number(coin),stock:Number(stock)})});showToast("Kitob qo‘shildi");await loadBooks();}catch(e){showToast(e.message,"error");}}
-
-async function loadRanking(){
-    const box=document.getElementById("rankingContent");if(!box)return;box.innerHTML=moduleLoading("Reyting yuklanmoqda...");
-    try{const d=await apiRequest("/students/ranking");const items=Array.isArray(d)?d:(d?.ranking||d?.students||[]);box.innerHTML=items.length?moduleTable(["#","O‘QUVCHI","BALL"],items.map((x,i)=>`<tr><td>${i+1}</td><td><strong>${escapeHtml(x.full_name||x.name||"—")}</strong></td><td>${x.points??x.score??x.total_points??0}</td></tr>`).join(""):`<div class="module-empty"><h3>Reyting ma’lumoti yo‘q</h3><p>Hozircha ma’lumot mavjud emas.</p></div>`;}catch(e){box.innerHTML=`<div class="module-empty"><h3>Xatolik</h3><p>${escapeHtml(e.message)}</p></div>`;}
+async function viewCourse(id) {
+    try {
+        const data = await apiRequest("/admin/courses/" + Number(id));
+        const course = data?.course || data || {};
+        const modules = asArray(data, ["modules"]);
+        showInfoModal(
+            "Kurs tafsilotlari",
+            '<div class="admin-detail-grid">' +
+            '<div><small>Nomi</small><strong>' + escapeHtml(course.name || "—") + '</strong></div>' +
+            '<div><small>Kategoriya</small><strong>' + escapeHtml(course.category?.name || "—") + '</strong></div>' +
+            '<div><small>Yosh</small><strong>' + (course.age_min ?? "—") + "–" + (course.age_max ?? "—") + '</strong></div>' +
+            '<div><small>Dars</small><strong>' + (course.lesson_minutes ?? "—") + ' daq.</strong></div>' +
+            '</div>' +
+            '<div class="module-detail-list">' +
+            (modules.map(m => '<div><strong>' + escapeHtml(m.title || "—") + '</strong><span>' + asArray(m, ["lessons"]).length + ' ta dars</span></div>').join("") || "<p>Modullar yo‘q.</p>") +
+            '</div>'
+        );
+    } catch (error) {
+        showToast(error.message, "error");
+    }
 }
 
-/* ============================================================
-   INITIALIZE
-   ============================================================ */
+async function toggleCourse(id, active) {
+    try {
+        await apiRequest("/admin/courses/" + Number(id) + "/" + (active ? "deactivate" : "activate"), { method: "PUT" });
+        showToast(active ? "Kurs deaktiv qilindi" : "Kurs faollashtirildi");
+        await loadCourses();
+        await loadDashboard();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
 
-async function initAdminPanel() {
-
-    if (!requireAdminAuth()) {
+async function openCourseCreate() {
+    const categories = window.adminCategories || [];
+    const category = window.prompt("Kategoriya ID:\n" + categories.map(c => c.id + " — " + c.name).join("\n"));
+    if (category === null) return;
+    const name = window.prompt("Kurs nomi:");
+    if (!name?.trim()) return;
+    const categoryId = Number(category);
+    if (!Number.isInteger(categoryId) || categoryId <= 0) {
+        showToast("Kategoriya ID noto‘g‘ri.", "error");
         return;
     }
-
-
-    console.log(
-        "Axsikent IT Command Center ishga tushdi."
-    );
-
-
-    initNavigation();
-
-    initMobileMenu();
-
-    initNotifications();
-
-    initAdministratorManagement();
-
-
-    const logoutButton =
-        $("#logoutBtn");
-
-
-    if (logoutButton) {
-
-        logoutButton.addEventListener(
-            "click",
-            logout
-        );
-
+    try {
+        await apiRequest("/admin/courses/", {
+            method: "POST",
+            body: JSON.stringify({ category_id: categoryId, name: name.trim(), description: "" })
+        });
+        showToast("Kurs yaratildi");
+        await loadCourses();
+    } catch (error) {
+        showToast(error.message, "error");
     }
-
-
-    const refreshButton =
-        $("#refreshBtn");
-
-
-    if (refreshButton) {
-
-        refreshButton.addEventListener(
-            "click",
-            refreshDashboard
-        );
-
-    }
-
-
-    await loadAdminProfile();
-
-    await refreshDashboard();
-
-
-    console.log(
-        "Command Center tayyor."
-    );
 }
 
+async function loadGroups() {
+    const box = document.getElementById("groupsContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("Guruhlar yuklanmoqda...");
+    try {
+        const data = await apiRequest("/admin/groups/");
+        const items = asArray(data, ["groups", "items", "data"]);
+        box.innerHTML = items.length
+            ? moduleTable(
+                ["GURUH", "KURS", "O‘QITUVCHI", "O‘QUVCHILAR", "HOLAT", "AMAL"],
+                items.map(group =>
+                    '<tr><td><strong>' + escapeHtml(group.name || "—") + '</strong><small>#' + Number(group.id) + '</small></td>' +
+                    '<td>' + escapeHtml(group.course?.name || "—") + '</td>' +
+                    '<td>' + escapeHtml(group.teacher?.full_name || "—") + '</td>' +
+                    '<td>' + (group.students_count ?? 0) + "/" + (group.capacity ?? 0) + '</td>' +
+                    '<td><span class="status-badge ' + (group.is_active ? "status-active" : "status-inactive") + '"><span></span>' + (group.is_active ? "Faol" : "Nofaol") + '</span></td>' +
+                    '<td>' +
+                    actionButton("Ko‘rish", "viewGroup(" + Number(group.id) + ")") + " " +
+                    actionButton(group.is_active ? "Deaktiv" : "Aktiv", "toggleGroup(" + Number(group.id) + "," + Boolean(group.is_active) + ")", group.is_active ? "danger" : "success") +
+                    '</td></tr>'
+                )
+            )
+            : '<div class="module-empty"><h3>Guruhlar yo‘q</h3><p>Yangi guruh yarating.</p></div>';
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+    }
+}
 
-document.addEventListener(
-    "DOMContentLoaded",
-    initAdminPanel
-);
+async function viewGroup(id) {
+    try {
+        const data = await apiRequest("/admin/groups/" + Number(id));
+        const group = data?.group || data || {};
+        const students = asArray(data, ["students"]);
+        showInfoModal(
+            "Guruh tafsilotlari",
+            '<div class="admin-detail-grid">' +
+            '<div><small>Guruh</small><strong>' + escapeHtml(group.name || "—") + '</strong></div>' +
+            '<div><small>Kurs</small><strong>' + escapeHtml(group.course?.name || "—") + '</strong></div>' +
+            '<div><small>O‘qituvchi</small><strong>' + escapeHtml(group.teacher?.full_name || "—") + '</strong></div>' +
+            '<div><small>O‘quvchilar</small><strong>' + (group.students_count ?? students.length) + "/" + (group.capacity ?? 0) + '</strong></div>' +
+            '</div>'
+        );
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function toggleGroup(id, active) {
+    try {
+        await apiRequest("/admin/groups/" + Number(id) + "/" + (active ? "deactivate" : "activate"), { method: "PUT" });
+        showToast(active ? "Guruh deaktiv qilindi" : "Guruh faollashtirildi");
+        await loadGroups();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function openGroupCreate() {
+    const name = window.prompt("Guruh nomi:");
+    if (!name?.trim()) return;
+    const course = window.prompt("Kurs ID:");
+    if (course === null) return;
+    const teacher = window.prompt("O‘qituvchi ID:");
+    if (teacher === null) return;
+    const courseId = Number(course);
+    const teacherId = Number(teacher);
+    if (!Number.isInteger(courseId) || !Number.isInteger(teacherId) || courseId <= 0 || teacherId <= 0) {
+        showToast("Kurs yoki o‘qituvchi ID noto‘g‘ri.", "error");
+        return;
+    }
+    try {
+        await apiRequest("/admin/groups/", {
+            method: "POST",
+            body: JSON.stringify({
+                name: name.trim(),
+                course_id: courseId,
+                teacher_id: teacherId,
+                capacity: 15,
+                status: "active"
+            })
+        });
+        showToast("Guruh yaratildi");
+        await loadGroups();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function loadRewards() {
+    const box = document.getElementById("rewardsContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("Mukofotlar yuklanmoqda...");
+    try {
+        const data = await apiRequest("/admin/shop/products");
+        const ruleData = await apiRequest("/admin/shop/rules");
+        const products = asArray(data, ["products", "items", "data"]);
+        window.adminRules = asArray(ruleData, ["rules", "items", "data"]);
+        box.innerHTML = products.length
+            ? moduleTable(
+                ["MUKOFOT", "COIN", "CRYSTAL", "STOCK", "HOLAT", "AMAL"],
+                products.map(product =>
+                    '<tr><td><strong>' + escapeHtml(product.name || "—") + '</strong><small>#' + Number(product.id) + '</small></td>' +
+                    '<td>' + (product.coin_price ?? 0) + '</td>' +
+                    '<td>' + (product.crystal_price ?? 0) + '</td>' +
+                    '<td>' + (product.stock ?? 0) + '</td>' +
+                    '<td><span class="status-badge ' + (product.is_active ? "status-active" : "status-inactive") + '"><span></span>' + (product.is_active ? "Faol" : "Nofaol") + '</span></td>' +
+                    '<td>' +
+                    actionButton("Ko‘rish", "viewProduct(" + Number(product.id) + ")") + " " +
+                    actionButton(product.is_active ? "Deaktiv" : "Aktiv", "toggleProduct(" + Number(product.id) + "," + Boolean(product.is_active) + ")", product.is_active ? "danger" : "success") + " " +
+                    actionButton("O‘chirish", "deleteProduct(" + Number(product.id) + ")", "danger") +
+                    '</td></tr>'
+                )
+            )
+            : '<div class="module-empty"><h3>Mukofotlar yo‘q</h3><p>Yangi mukofot yarating.</p></div>';
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+    }
+}
+
+async function viewProduct(id) {
+    try {
+        const data = await apiRequest("/admin/shop/products/" + Number(id));
+        const product = data?.product || data || {};
+        showInfoModal(
+            "Mukofot tafsilotlari",
+            '<div class="admin-detail-grid">' +
+            '<div><small>Nomi</small><strong>' + escapeHtml(product.name || "—") + '</strong></div>' +
+            '<div><small>Coin</small><strong>' + (product.coin_price ?? 0) + '</strong></div>' +
+            '<div><small>Crystal</small><strong>' + (product.crystal_price ?? 0) + '</strong></div>' +
+            '<div><small>Stock</small><strong>' + (product.stock ?? 0) + '</strong></div>' +
+            '</div><p>' + escapeHtml(product.description || "Tavsif yo‘q.") + '</p>'
+        );
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function toggleProduct(id, active) {
+    try {
+        await apiRequest("/admin/shop/products/" + Number(id) + "/" + (active ? "deactivate" : "activate"), { method: "PUT" });
+        showToast(active ? "Mukofot deaktiv qilindi" : "Mukofot faollashtirildi");
+        await loadRewards();
+        await loadShopStats();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function deleteProduct(id) {
+    if (!window.confirm("Bu mukofotni o‘chirishni tasdiqlaysizmi?")) return;
+    try {
+        await apiRequest("/admin/shop/products/" + Number(id), { method: "DELETE" });
+        showToast("Mukofot o‘chirildi");
+        await loadRewards();
+        await loadShopStats();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function openProductCreate() {
+    const name = window.prompt("Mukofot nomi:");
+    if (!name?.trim()) return;
+    const coin = window.prompt("Coin narxi:", "0");
+    if (coin === null) return;
+    const crystal = window.prompt("Crystal narxi:", "0");
+    if (crystal === null) return;
+    const stock = window.prompt("Stock:", "0");
+    if (stock === null) return;
+    try {
+        await apiRequest("/admin/shop/products", {
+            method: "POST",
+            body: JSON.stringify({
+                name: name.trim(),
+                description: "",
+                image_url: "",
+                coin_price: Number(coin),
+                crystal_price: Number(crystal),
+                stock: Number(stock)
+            })
+        });
+        showToast("Mukofot qo‘shildi");
+        await loadRewards();
+        await loadShopStats();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function loadOrders() {
+    const box = document.getElementById("ordersContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("Buyurtmalar yuklanmoqda...");
+    try {
+        const data = await apiRequest("/admin/shop/orders");
+        const items = asArray(data, ["orders", "items", "data"]);
+        box.innerHTML = items.length
+            ? moduleTable(
+                ["ID", "O‘QUVCHI", "MAHSULOT", "SARF", "STATUS", "AMAL"],
+                items.map(order =>
+                    '<tr><td>#' + Number(order.id) + '</td>' +
+                    '<td>#' + Number(order.student_id) + '</td>' +
+                    '<td>' + escapeHtml(order.product_name || "—") + '</td>' +
+                    '<td>' + (order.coin_spent ?? 0) + ' coin / ' + (order.crystal_spent ?? 0) + ' crystal</td>' +
+                    '<td>' + escapeHtml(order.status || "—") + '</td>' +
+                    '<td><select class="module-status-select" onchange="updateOrderStatus(' + Number(order.id) + ',this.value)"><option value="">Status</option><option value="pending">pending</option><option value="processing">processing</option><option value="completed">completed</option><option value="cancelled">cancelled</option></select> ' +
+                    actionButton("Ko‘rish", "viewOrder(" + Number(order.id) + ")") +
+                    '</td></tr>'
+                )
+            )
+            : '<div class="module-empty"><h3>Buyurtmalar yo‘q</h3><p>Hozircha buyurtma mavjud emas.</p></div>';
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+    }
+}
+
+async function updateOrderStatus(id, status) {
+    if (!status) return;
+    try {
+        await apiRequest("/admin/shop/orders/" + Number(id) + "/status", {
+            method: "PUT",
+            body: JSON.stringify({ status })
+        });
+        showToast("Buyurtma statusi yangilandi");
+        await loadOrders();
+        await loadShopStats();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function viewOrder(id) {
+    try {
+        const data = await apiRequest("/admin/shop/orders/" + Number(id));
+        const order = data?.order || data || {};
+        showInfoModal(
+            "Buyurtma",
+            '<div class="admin-detail-grid">' +
+            '<div><small>ID</small><strong>#' + Number(order.id) + '</strong></div>' +
+            '<div><small>O‘quvchi</small><strong>#' + Number(order.student_id) + '</strong></div>' +
+            '<div><small>Mahsulot</small><strong>' + escapeHtml(order.product_name || "—") + '</strong></div>' +
+            '<div><small>Miqdor</small><strong>' + (order.quantity ?? 0) + '</strong></div>' +
+            '</div>'
+        );
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function loadBooks() {
+    const box = document.getElementById("booksContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("Kitoblar yuklanmoqda...");
+    try {
+        const data = await apiRequest("/admin/books");
+        const items = asArray(data, ["books", "items", "data"]);
+        box.innerHTML = items.length
+            ? moduleTable(
+                ["KITOB", "NARX", "COIN", "STOCK", "HOLAT"],
+                items.map(book =>
+                    '<tr><td><strong>' + escapeHtml(book.title || "—") + '</strong><small>#' + Number(book.id) + '</small></td>' +
+                    '<td>' + (book.price ?? 0) + '</td>' +
+                    '<td>' + (book.coin_price ?? 0) + '</td>' +
+                    '<td>' + (book.stock ?? 0) + '</td>' +
+                    '<td>' + (book.is_active ? "Faol" : "Nofaol") + '</td></tr>'
+                )
+            )
+            : '<div class="module-empty"><h3>Kitoblar yo‘q</h3><p>Yangi kitob qo‘shishingiz mumkin.</p></div>';
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+    }
+}
+
+async function openBookCreate() {
+    const title = window.prompt("Kitob nomi:");
+    if (!title?.trim()) return;
+    const price = window.prompt("Narxi:", "0");
+    if (price === null) return;
+    const coin = window.prompt("Coin narxi:", "0");
+    if (coin === null) return;
+    const stock = window.prompt("Stock:", "0");
+    if (stock === null) return;
+    try {
+        await apiRequest("/admin/books", {
+            method: "POST",
+            body: JSON.stringify({
+                title: title.trim(),
+                description: "",
+                image_url: "",
+                price: Number(price),
+                coin_price: Number(coin),
+                stock: Number(stock)
+            })
+        });
+        showToast("Kitob qo‘shildi");
+        await loadBooks();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function loadRanking() {
+    const box = document.getElementById("rankingContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("Reyting yuklanmoqda...");
+    try {
+        const data = await apiRequest("/students/ranking");
+        const items = asArray(data, ["ranking", "students", "items", "data"]);
+        box.innerHTML = items.length
+            ? moduleTable(
+                ["#", "O‘QUVCHI", "BALL"],
+                items.map((item, index) =>
+                    '<tr><td>' + (index + 1) + '</td><td><strong>' +
+                    escapeHtml(item.full_name || item.name || "—") +
+                    '</strong></td><td>' +
+                    (item.points ?? item.score ?? item.total_points ?? 0) +
+                    '</td></tr>'
+                )
+            )
+            : '<div class="module-empty"><h3>Reyting ma’lumoti yo‘q</h3><p>Hozircha ma’lumot mavjud emas.</p></div>';
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+    }
+}
+
+function initMobileMenu() {
+    const button = document.getElementById("mobileMenuBtn");
+    const sidebar = document.getElementById("sidebar");
+    if (!button || !sidebar) return;
+
+    button.setAttribute("aria-expanded", "false");
+
+    button.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        const open = sidebar.classList.toggle("open");
+        button.setAttribute("aria-expanded", String(open));
+    });
+
+    document.addEventListener("click", event => {
+        if (!sidebar.classList.contains("open")) return;
+        if (sidebar.contains(event.target) || button.contains(event.target)) return;
+        sidebar.classList.remove("open");
+        button.setAttribute("aria-expanded", "false");
+    });
+}
+
+async function initAdminPanel() {
+    if (!requireAdminAuth()) return;
+
+    initNavigation();
+    initMobileMenu();
+    initNotifications();
+    initAdministratorManagement();
+
+    const logoutButton = document.getElementById("logoutBtn");
+    if (logoutButton) logoutButton.addEventListener("click", logout);
+
+    const refreshButton = document.getElementById("refreshBtn");
+    if (refreshButton) refreshButton.addEventListener("click", refreshDashboard);
+
+    await loadAdminProfile();
+    await refreshDashboard();
+}
+
+document.addEventListener("DOMContentLoaded", initAdminPanel);
