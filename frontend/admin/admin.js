@@ -189,7 +189,11 @@ const sectionTitles = {
 function openSection(section) {
     if (!section) return;
 
-    $$(".nav-item").forEach(item => {
+    const previousSection = window.__axsikentCurrentSection || "dashboard";
+    window.__axsikentPreviousSection = previousSection !== section ? previousSection : "dashboard";
+    window.__axsikentCurrentSection = section;
+
+    $(".nav-item").forEach(item => {
         item.classList.toggle(
             "active",
             item.dataset.section === section
@@ -234,12 +238,11 @@ function openSection(section) {
      * O‘quvchilar bo‘limi ochilganda
      * backenddan real ma'lumot olinadi.
      */
-    if (section === "students") {
-        loadStudents();
-    }
-   if (section === "homework") { 
-    loadHomeworkSubmissions();
-}
+    if (section === "students") loadStudents();
+    if (section === "homework") loadHomeworkSubmissions();
+    if (section === "leads") loadLeads();
+    if (section === "reports") loadReports();
+    if (section === "settings") loadSettings();
 
     if (section === "teachers") loadTeachers();
     if (section === "courses") loadCourses();
@@ -252,20 +255,24 @@ function openSection(section) {
     if (section === "trainings") loadTrainings();
     if (section === "exams") loadExams();
 
+    const backButton = document.getElementById("sectionBackBtn");
+    if (backButton) backButton.hidden = section === "dashboard";
+}
+
+function goBackSection() {
+    openSection(window.__axsikentPreviousSection || "dashboard");
 }
 
 function initNavigation() {
+    if (window.__axsikentNavigationReady) return;
+    window.__axsikentNavigationReady = true;
 
-    $$(".nav-item").forEach(item => {
-
-        item.addEventListener("click", () => {
-
-            openSection(
-                item.dataset.section
-            );
-
-        });
-
+    document.addEventListener("click", event => {
+        const target = event.target.closest("[data-section]");
+        if (!target) return;
+        if (!target.closest(".nav-item,.quick-action,.panel-link,.stat-card")) return;
+        event.preventDefault();
+        openSection(target.dataset.section);
     });
 
 
@@ -1586,7 +1593,7 @@ function studentRow(student) {
 
                     <button
                         class="student-action-btn"
-                        onclick="viewStudent(${Number(id)})"
+                        data-student-action="view" data-student-id="${Number(id)}"
                     >
                         Ko‘rish
                     </button>
@@ -1599,10 +1606,7 @@ function studentRow(student) {
                                 : "success"
                         }"
 
-                        onclick="toggleStudentStatus(
-                            ${Number(id)},
-                            ${active}
-                        )"
+                        data-student-action="toggle" data-student-id="${Number(id)}" data-student-active="${active}"
                     >
 
                         ${
@@ -1737,6 +1741,30 @@ function filterStudents(students) {
 /* ============================================================
    STUDENT PROFILE
    ============================================================ */
+
+function initStudentActions() {
+    if (window.__axsikentStudentActionsReady) return;
+    window.__axsikentStudentActionsReady = true;
+
+    document.addEventListener("click", event => {
+        const button = event.target.closest("[data-student-action]");
+        if (!button) return;
+        event.preventDefault();
+        event.stopPropagation();
+
+        const id = Number(button.dataset.studentId);
+        if (!Number.isInteger(id) || id <= 0) {
+            showToast("O‘quvchi ID noto‘g‘ri.", "error");
+            return;
+        }
+
+        if (button.dataset.studentAction === "view") {
+            viewStudent(id);
+        } else if (button.dataset.studentAction === "toggle") {
+            toggleStudentStatus(id, button.dataset.studentActive === "true");
+        }
+    });
+}
 
 async function viewStudent(studentId) {
 
@@ -3692,6 +3720,133 @@ async function openExamCreate() {
 }
 
 /* ============================================================
+   REPORTS / SETTINGS
+   ============================================================ */
+
+async function loadReports() {
+    const box = document.getElementById("reportsContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("Hisobotlar tayyorlanmoqda...");
+    try {
+        const [dashboard, shop] = await Promise.all([
+            apiRequest("/admins/dashboard"),
+            apiRequest("/admin/shop/stats/summary")
+        ]);
+        const overview = dashboard?.overview || {};
+        const products = shop?.products || {};
+        const orders = shop?.orders || {};
+        box.innerHTML =
+            '<div class="report-grid">' +
+            '<article class="report-card"><span>O‘quvchilar</span><strong>' + (overview.students?.active ?? 0) + '</strong><small>Faol</small></article>' +
+            '<article class="report-card"><span>O‘qituvchilar</span><strong>' + (overview.teachers?.active ?? 0) + '</strong><small>Faol</small></article>' +
+            '<article class="report-card"><span>Kurslar</span><strong>' + (overview.courses?.active ?? 0) + '</strong><small>Aktiv</small></article>' +
+            '<article class="report-card"><span>Arizalar</span><strong>' + (overview.leads?.total ?? 0) + '</strong><small>Jami</small></article>' +
+            '<article class="report-card"><span>Mukofotlar</span><strong>' + (products.total ?? 0) + '</strong><small>Jami</small></article>' +
+            '<article class="report-card"><span>Buyurtmalar</span><strong>' + (orders.total ?? 0) + '</strong><small>Jami</small></article>' +
+            '</div>' +
+            '<div class="report-summary">' +
+            '<div><small>Yangi arizalar</small><strong>' + (overview.leads?.new ?? 0) + '</strong></div>' +
+            '<div><small>Kutilayotgan buyurtmalar</small><strong>' + (orders.pending ?? 0) + '</strong></div>' +
+            '<div><small>Aktiv mukofotlar</small><strong>' + (products.active ?? 0) + '</strong></div>' +
+            '</div>';
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Hisobotni yuklab bo‘lmadi</h3><p>' + escapeHtml(error.message) + '</p></div>';
+    }
+}
+
+function loadSettings() {
+    const box = document.getElementById("settingsContent");
+    if (!box) return;
+    const compact = localStorage.getItem("axsikent_admin_compact") === "1";
+    const autoRefresh = localStorage.getItem("axsikent_admin_auto_refresh") !== "0";
+    const notifications = localStorage.getItem("axsikent_admin_notifications") !== "0";
+    box.innerHTML =
+        '<div class="settings-grid">' +
+        '<div class="settings-card"><div><strong>Ixcham ko‘rinish</strong><small>Jadvallarni zichroq ko‘rsatish</small></div><button type="button" class="settings-toggle ' + (compact ? "active" : "") + '" data-setting="compact" aria-pressed="' + compact + '"><span></span></button></div>' +
+        '<div class="settings-card"><div><strong>Avto yangilash</strong><small>Dashboardni avtomatik yangilash</small></div><button type="button" class="settings-toggle ' + (autoRefresh ? "active" : "") + '" data-setting="auto-refresh" aria-pressed="' + autoRefresh + '"><span></span></button></div>' +
+        '<div class="settings-card"><div><strong>Bildirishnomalar</strong><small>Admin panel xabarlarini ko‘rsatish</small></div><button type="button" class="settings-toggle ' + (notifications ? "active" : "") + '" data-setting="notifications" aria-pressed="' + notifications + '"><span></span></button></div>' +
+        '</div>' +
+        '<div class="settings-actions"><button type="button" class="panel-link" id="settingsRefreshBtn">↻ Dashboardni yangilash</button><button type="button" class="panel-link" id="settingsSiteBtn">↗ Asosiy sayt</button><button type="button" class="panel-link danger" id="settingsLogoutBtn">⤴ Chiqish</button></div>';
+    box.querySelectorAll("[data-setting]").forEach(button => {
+        button.addEventListener("click", () => {
+            const key = button.dataset.setting;
+            const next = button.getAttribute("aria-pressed") !== "true";
+            button.setAttribute("aria-pressed", String(next));
+            button.classList.toggle("active", next);
+            if (key === "compact") {
+                document.body.classList.toggle("admin-compact", next);
+                localStorage.setItem("axsikent_admin_compact", next ? "1" : "0");
+            }
+            if (key === "auto-refresh") localStorage.setItem("axsikent_admin_auto_refresh", next ? "1" : "0");
+            if (key === "notifications") localStorage.setItem("axsikent_admin_notifications", next ? "1" : "0");
+        });
+    });
+    box.querySelector("#settingsRefreshBtn")?.addEventListener("click", refreshDashboard);
+    box.querySelector("#settingsSiteBtn")?.addEventListener("click", () => { window.location.href = "../index.html"; });
+    box.querySelector("#settingsLogoutBtn")?.addEventListener("click", logout);
+    document.body.classList.toggle("admin-compact", compact);
+}
+
+let adminAutoRefreshTimer = null;
+function initAdminAutoRefresh() {
+    if (adminAutoRefreshTimer) clearInterval(adminAutoRefreshTimer);
+    if (localStorage.getItem("axsikent_admin_auto_refresh") === "0") return;
+    adminAutoRefreshTimer = setInterval(() => {
+        if (!document.hidden) refreshDashboard();
+    }, 60000);
+}
+
+/* ============================================================
+   TRAININGS / EXAMS
+   ============================================================ */
+
+async function loadTrainings() {
+    const box = document.getElementById("trainingsContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("Treninglar yuklanmoqda...");
+    try {
+        const items = await apiRequest("/admin/content/trainings");
+        box.innerHTML = items.length ? moduleTable(
+            ["ID","NOMI","BOSHLANISH","MANZIL","SIG‘IM","RO‘YXAT","HOLAT","AMAL"],
+            items.map(x => '<tr><td>#' + Number(x.id) + '</td><td><strong>' + escapeHtml(x.title) + '</strong><small>' + escapeHtml(x.description || "") + '</small></td><td>' + escapeHtml(formatDate(x.start_at)) + '</td><td>' + escapeHtml(x.location || "—") + '</td><td>' + (x.capacity ?? "—") + '</td><td>' + Number(x.registrations || 0) + '</td><td>' + (x.is_active ? "Faol" : "Nofaol") + '</td><td><button type="button" class="module-action" onclick="toggleTraining(' + Number(x.id) + ')">' + (x.is_active ? "Deaktiv" : "Aktivlashtirish") + '</button></td></tr>')
+        ) : '<div class="module-empty"><h3>Treninglar yo‘q</h3><p>Studentlar uchun trening yarating.</p></div>';
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+    }
+}
+
+async function loadExams() {
+    const box = document.getElementById("examsContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("Imtihonlar yuklanmoqda...");
+    try {
+        const items = await apiRequest("/admin/content/exams");
+        box.innerHTML = items.length ? moduleTable(
+            ["ID","NOMI","BOSHLANISH","MANZIL","SIG‘IM","RO‘YXAT","HOLAT","AMAL"],
+            items.map(x => '<tr><td>#' + Number(x.id) + '</td><td><strong>' + escapeHtml(x.title) + '</strong><small>' + escapeHtml(x.description || "") + '</small></td><td>' + escapeHtml(formatDate(x.start_at)) + '</td><td>' + escapeHtml(x.location || "—") + '</td><td>' + (x.capacity ?? "—") + '</td><td>' + Number(x.registrations || 0) + '</td><td>' + (x.is_active ? "Faol" : "Nofaol") + '</td><td><button type="button" class="module-action" onclick="toggleExam(' + Number(x.id) + ')">' + (x.is_active ? "Deaktiv" : "Aktivlashtirish") + '</button></td></tr>')
+        ) : '<div class="module-empty"><h3>Imtihonlar yo‘q</h3><p>Studentlar uchun imtihon yarating.</p></div>';
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+    }
+}
+
+async function toggleTraining(id) {
+    try {
+        await apiRequest("/admin/content/trainings/" + Number(id) + "/toggle", {method:"PUT"});
+        showToast("Trening holati yangilandi");
+        await loadTrainings();
+    } catch (error) { showToast(error.message, "error"); }
+}
+
+async function toggleExam(id) {
+    try {
+        await apiRequest("/admin/content/exams/" + Number(id) + "/toggle", {method:"PUT"});
+        showToast("Imtihon holati yangilandi");
+        await loadExams();
+    } catch (error) { showToast(error.message, "error"); }
+}
+
+/* ============================================================
    MOBILE / INIT
    ============================================================ */
 
@@ -3730,6 +3885,8 @@ async function initAdminPanel() {
     initMobileMenu();
     initNotifications();
     initAdministratorManagement();
+    initStudentActions();
+    initAdminAutoRefresh();
 
     const logoutButton = document.getElementById("logoutBtn");
     if (logoutButton) {
