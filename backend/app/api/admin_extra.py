@@ -9,6 +9,7 @@ from app.models.admin import Admin
 from app.models.podcast import Podcast
 from app.models.training import Training, TrainingRegistration
 from app.models.exam import Exam, ExamRegistration
+from app.services.notifications import notify_all_students
 
 router = APIRouter(prefix="/admin/content", tags=["Admin Content"])
 
@@ -42,6 +43,12 @@ def admin_podcasts(db: Session = Depends(get_db), admin: Admin = Depends(require
 def create_podcast(data: PodcastData, db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
     x = Podcast(**data.model_dump())
     db.add(x); db.commit(); db.refresh(x)
+    notify_all_students(
+        db,
+        "Yangi podcast qo‘shildi",
+        "“" + x.title + "” podcasti Student kabinetida mavjud.",
+        "podcast",
+    )
     return {"success": True, "podcast": {"id": x.id, "title": x.title}}
 
 @router.put("/podcasts/{podcast_id}/toggle")
@@ -64,6 +71,12 @@ def create_training(data: EventData, db: Session = Depends(get_db), admin: Admin
     x = Training(title=data.title, description=data.description, start_at=dt(data.start_at),
                  end_at=dt(data.end_at) if data.end_at else None, location=data.location, capacity=data.capacity)
     db.add(x); db.commit(); db.refresh(x)
+    notify_all_students(
+        db,
+        "Yangi trening qo‘shildi",
+        "“" + x.title + "” treningi Student kabinetida mavjud.",
+        "training",
+    )
     return {"success": True, "training": {"id": x.id, "title": x.title}}
 
 @router.put("/trainings/{training_id}/toggle")
@@ -91,6 +104,12 @@ def create_exam(data: EventData, db: Session = Depends(get_db), admin: Admin = D
     x = Exam(title=data.title, description=data.description, start_at=dt(data.start_at),
              end_at=dt(data.end_at) if data.end_at else None, location=data.location, capacity=data.capacity)
     db.add(x); db.commit(); db.refresh(x)
+    notify_all_students(
+        db,
+        "Yangi imtihon qo‘shildi",
+        "“" + x.title + "” imtihoni Student kabinetida mavjud.",
+        "exam",
+    )
     return {"success": True, "exam": {"id": x.id, "title": x.title}}
 
 @router.put("/exams/{exam_id}/toggle")
