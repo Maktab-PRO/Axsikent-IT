@@ -1626,191 +1626,83 @@ function confirmLogoutStudent() {
 }
 
     async function openStudentRewardsMenu(element) {
-
-    selectMenu(element);
-
-    const container = document.getElementById("studentRewards");
-
-    if (!container) {
-        return;
+        selectMenu(element);
+        const container = document.getElementById("studentRewards");
+        if (!container) return;
+        container.scrollIntoView({behavior:"smooth", block:"center"});
+        await loadStudentRewards();
     }
-
-    container.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-    });
-
-    await loadStudentRewards();
-}
 
     async function loadStudentRewards() {
+        const container = document.getElementById("studentRewardsContent");
+        if (!container) return;
 
-    const container = document.getElementById("studentRewardsContent");
-
-    if (!container) {
-        return;
-    }
-
-    const token = localStorage.getItem("access_token");
-
-    if (!token) {
-        container.innerHTML =
-            '<div style="text-align:center;padding:30px;color:#ef4444;">' +
-            'Avval tizimga kiring.' +
-            '</div>';
-        return;
-    }
-
-    container.innerHTML =
-        '<div style="text-align:center;padding:25px;color:#7b8496;">' +
-        'Mukofotlar yuklanmoqda...' +
-        '</div>';
-
-    try {
-
-        const response = await fetch(
-            API_URL + "/students/rewards",
-            {
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error("Mukofotlarni yuklab bo‘lmadi");
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            container.innerHTML = '<div style="text-align:center;padding:30px;color:#ef4444;">Avval tizimga kiring.</div>';
+            return;
         }
 
-        const data = await response.json();
-        const student = data.student || {};
-        const rewards = data.rewards || [];
+        container.innerHTML = '<div style="text-align:center;padding:25px;color:#7b8496;">Mukofotlar yuklanmoqda...</div>';
 
-        const rewardHtml = rewards.map(function(reward) {
+        try {
+            const response = await fetch(API_URL + "/students/rewards", {
+                method: "GET",
+                headers: {"Authorization":"Bearer " + token}
+            });
 
-            const crystalHtml =
-                Number(reward.crystal_price || 0) > 0
-                    ? '<div style="color:#C4B5FD;font-size:16px;font-weight:800;margin-top:7px;">' +
-                      '💎 ' + reward.crystal_price + ' Crystal' +
-                      '</div>'
-                    : "";
+            let data = {};
+            try { data = await response.json(); } catch (_) {}
 
-            return (
-                '<div style="' +
-                    'position:relative;overflow:hidden;' +
-                    'border:1px solid rgba(139,92,246,0.28);' +
-                    'border-radius:20px;padding:22px;margin-bottom:16px;' +
-                    'background:radial-gradient(circle at top right,rgba(139,92,246,0.16),transparent 42%),' +
-                    'linear-gradient(145deg,rgba(20,18,30,0.96),rgba(10,10,15,0.98));' +
-                    'box-shadow:0 12px 35px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.04);' +
-                '">' +
+            if (response.status === 401) {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user_role");
+                window.location.href = "index.html";
+                return;
+            }
 
-                    '<div style="position:absolute;width:120px;height:120px;right:-45px;top:-45px;border-radius:50%;' +
-                        'background:rgba(139,92,246,0.13);filter:blur(35px);pointer-events:none;">' +
-                    '</div>' +
+            if (!response.ok) {
+                throw new Error(data.detail || ("Server xatosi: " + response.status));
+            }
 
+            const student = data.student || {};
+            const rewards = Array.isArray(data.rewards) ? data.rewards : [];
+
+            let rewardHtml = rewards.map(function(reward) {
+                return '<div style="position:relative;overflow:hidden;border:1px solid rgba(139,92,246,.28);border-radius:20px;padding:22px;margin-bottom:16px;background:linear-gradient(145deg,rgba(20,18,30,.96),rgba(10,10,15,.98));box-shadow:0 12px 35px rgba(0,0,0,.28);">' +
                     '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">' +
-
-                        '<div style="width:52px;height:52px;flex-shrink:0;border-radius:16px;display:flex;' +
-                            'align-items:center;justify-content:center;font-size:25px;' +
-                            'background:linear-gradient(135deg,#8B5CF6,#6D28D9);' +
-                            'box-shadow:0 8px 22px rgba(139,92,246,0.25);">' +
-                            '🎁' +
-                        '</div>' +
-
-                        '<div style="min-width:0;">' +
-                            '<h3 style="margin:0;color:#FFFFFF;font-size:18px;font-weight:800;line-height:1.35;">' +
-                                escapeHtml(reward.name || "Mukofot") +
-                            '</h3>' +
-                        '</div>' +
-
+                        '<div style="width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;background:linear-gradient(135deg,#8B5CF6,#6D28D9);">🎁</div>' +
+                        '<h3 style="margin:0;color:#fff;font-size:18px;">' + escapeHtml(reward.name || "Mukofot") + '</h3>' +
                     '</div>' +
-
-                    '<p style="color:#AAA5B8;margin:0 0 18px;line-height:1.6;font-size:14px;">' +
-                        escapeHtml(reward.description || "Mukofot tavsifi mavjud emas") +
-                    '</p>' +
-
-                    '<div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:17px;"></div>' +
-
+                    '<p style="color:#aaa5b8;margin:0 0 18px;line-height:1.6;font-size:14px;">' + escapeHtml(reward.description || "Mukofot tavsifi mavjud emas") + '</p>' +
                     '<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:15px;flex-wrap:wrap;">' +
-
-                        '<div>' +
-                            '<div style="color:#817C8F;font-size:12px;margin-bottom:5px;">Mukofot narxi</div>' +
-
-                            '<div style="color:#C4B5FD;font-size:16px;font-weight:800;">' +
-                                '🪙 ' + Number(reward.coin_price || 0) + ' Coin' +
-                            '</div>' +
-
-                            crystalHtml +
+                        '<div><div style="color:#817c8f;font-size:12px;margin-bottom:5px;">Mukofot narxi</div>' +
+                        '<div style="color:#c4b5fd;font-size:16px;font-weight:800;">🪙 ' + Number(reward.coin_price || 0) + ' Coin</div>' +
+                        (Number(reward.crystal_price || 0) > 0 ? '<div style="color:#c4b5fd;font-size:16px;font-weight:800;margin-top:7px;">💎 ' + Number(reward.crystal_price) + ' Crystal</div>' : '') +
                         '</div>' +
-
-                        '<button' +
-                            ' onclick="buyStudentReward(' + Number(reward.id) + ')"' +
-                            ' style="border:none;border-radius:13px;padding:12px 20px;' +
-                                'background:linear-gradient(135deg,#8B5CF6,#6D28D9);' +
-                                'color:#FFFFFF;font-size:14px;font-weight:800;cursor:pointer;' +
-                                'box-shadow:0 8px 24px rgba(139,92,246,0.25);"' +
-                        '>' +
-                            'Sotib olish' +
-                        '</button>' +
-
+                        '<button onclick="buyStudentReward(' + Number(reward.id) + ')" style="border:none;border-radius:13px;padding:12px 20px;background:linear-gradient(135deg,#8B5CF6,#6D28D9);color:#fff;font-weight:800;cursor:pointer;">Sotib olish</button>' +
                     '</div>' +
+                    '<div style="margin-top:16px;color:#777285;font-size:12px;">Mavjud: ' + Number(reward.stock || 0) + ' dona</div>' +
+                '</div>';
+            }).join("");
 
-                    '<div style="margin-top:16px;color:#777285;font-size:12px;">' +
-                        'Mavjud: ' + Number(reward.stock || 0) + ' dona' +
-                    '</div>' +
+            if (!rewardHtml) {
+                rewardHtml = '<div style="text-align:center;padding:35px;color:#7b8496;"><div style="font-size:42px;margin-bottom:10px;">🎁</div><strong style="display:block;color:#fff;margin-bottom:7px;">Hozircha mukofot mavjud emas</strong><span>Administrator mukofot qo‘shganda shu yerda ko‘rinadi.</span></div>';
+            }
 
-                '</div>'
-            );
-
-        }).join("");
-
-        container.innerHTML =
-            '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;">' +
-
-                '<div style="padding:16px;border-radius:16px;background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.18);">' +
-                    '<div style="font-size:22px;">🪙</div>' +
-                    '<div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' +
-                        Number(student.coins || 0) +
-                    '</div>' +
-                    '<div style="color:#9ca3af;font-size:12px;">Coin</div>' +
-                '</div>' +
-
-                '<div style="padding:16px;border-radius:16px;background:rgba(168,85,247,.10);border:1px solid rgba(168,85,247,.18);">' +
-                    '<div style="font-size:22px;">💎</div>' +
-                    '<div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' +
-                        Number(student.crystals || 0) +
-                    '</div>' +
-                    '<div style="color:#9ca3af;font-size:12px;">Crystal</div>' +
-                '</div>' +
-
-                '<div style="padding:16px;border-radius:16px;background:rgba(59,130,246,.10);border:1px solid rgba(59,130,246,.18);">' +
-                    '<div style="font-size:22px;">⭐</div>' +
-                    '<div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' +
-                        Number(student.xp || 0) +
-                    '</div>' +
-                    '<div style="color:#9ca3af;font-size:12px;">XP · Level ' +
-                        Number(student.level || 1) +
-                    '</div>' +
-                '</div>' +
-
-            '</div>' +
-
-            '<h3 style="color:#fff;margin:0 0 14px;font-size:17px;">' +
-                '🎁 Mavjud mukofotlar' +
-            '</h3>' +
-
-            rewardHtml;
-
-    } catch (error) {
-
-        console.error(error);
-
-        container.innerHTML =
-            '<div style="text-align:center;padding:30px;color:#ef4444;">' +
-            'Mukofotlarni yuklashda xatolik yuz berdi.' +
-            '</div>';
+            container.innerHTML =
+                '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;">' +
+                    '<div style="padding:16px;border-radius:16px;background:rgba(52,211,153,.10);"><div>🪙</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.coins || 0) + '</div><div style="color:#9ca3af;font-size:12px;">Coin</div></div>' +
+                    '<div style="padding:16px;border-radius:16px;background:rgba(168,85,247,.10);"><div>💎</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.crystals || 0) + '</div><div style="color:#9ca3af;font-size:12px;">Crystal</div></div>' +
+                    '<div style="padding:16px;border-radius:16px;background:rgba(59,130,246,.10);"><div>⭐</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.xp || 0) + '</div><div style="color:#9ca3af;font-size:12px;">XP · Level ' + Number(student.level || 1) + '</div></div>' +
+                '</div><h3 style="color:#fff;margin:0 0 14px;font-size:17px;">🎁 Mavjud mukofotlar</h3>' + rewardHtml;
+        } catch (error) {
+            console.error("Rewards load error:", error);
+            container.innerHTML = '<div style="text-align:center;padding:30px;color:#ef4444;">' +
+                '<strong>Mukofotlarni yuklashda xatolik yuz berdi.</strong><br><span style="display:block;margin-top:8px;color:#9ca3af;">' +
+                escapeHtml(error.message || "Noma’lum xatolik") + '</span></div>';
+        }
     }
-}
 
     async function buyStudentReward(productId) {
 
@@ -2597,43 +2489,85 @@ showPremiumModal(
         }
     }
 
+
+    async function loadStudentPodcasts() {
+        const token = localStorage.getItem("access_token");
+        if (!token) return;
+        try {
+            const response = await fetch(API_URL + "/students/podcasts", {headers:{"Authorization":"Bearer "+token}});
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || "Podcastlarni yuklab bo‘lmadi");
+            const content = data.length ? data.map(function(item){
+                return '<div style="padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.04);margin-top:12px;"><strong style="color:#fff;">🎧 '+escapeHtml(item.title)+'</strong><p style="margin:7px 0;color:#94a3b8;">'+escapeHtml(item.description||"")+'</p>'+(item.audio_url?'<audio controls style="width:100%;margin-top:8px;" src="'+escapeHtml(item.audio_url)+'"></audio>':'<small>Audio fayl hali qo‘shilmagan.</small>')+'</div>';
+            }).join("") : '<div style="padding:25px;text-align:center;">Hozircha podcast mavjud emas.</div>';
+            openStudentFeatureModal("Podcastlar","🎧",content);
+        } catch(e){ openStudentFeatureModal("Podcastlar","⚠️",'<span style="color:#f87171;">'+escapeHtml(e.message)+'</span>'); }
+    }
+
     function openStudentPodcasts() {
         selectMenu(getStudentMenuButton("studentPodcastsMenu"));
-        openStudentFeatureModal(
-            "Podcastlar",
-            "🎧",
-            '<div style="text-align:center;padding:12px 0;">' +
-                '<div style="font-size:44px;margin-bottom:12px;">🎙️</div>' +
-                '<div style="color:#fff;font-size:17px;font-weight:800;">Audio darslar</div>' +
-                '<div style="margin-top:8px;">Sizga hozircha podcast biriktirilmagan. Yangi audio materiallar administrator tomonidan qo‘shilganda shu bo‘limda ko‘rinadi.</div>' +
-            '</div>'
-        );
+        openStudentFeatureModal("Podcastlar","🎧",'<div>Podcastlar yuklanmoqda...</div>');
+        loadStudentPodcasts();
     }
 
+    async function loadStudentTrainings() {
+        const token=localStorage.getItem("access_token");
+        if(!token) return;
+        try {
+            const response=await fetch(API_URL+"/students/trainings",{headers:{"Authorization":"Bearer "+token}});
+            const data=await response.json();
+            if(!response.ok) throw new Error(data.detail||"Treninglarni yuklab bo‘lmadi");
+            const content=data.length?data.map(function(item){
+                const button=item.registered?'<button disabled style="border:0;border-radius:10px;padding:10px 14px;background:#14532d;color:#86efac;font-weight:800;">✓ Ro‘yxatdan o‘tilgan</button>':'<button onclick="registerStudentTraining('+Number(item.id)+')" style="border:0;border-radius:10px;padding:10px 14px;background:#22c55e;color:#052e16;font-weight:800;">Ro‘yxatdan o‘tish</button>';
+                return '<div style="padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.04);margin-top:12px;"><strong style="color:#fff;">🎓 '+escapeHtml(item.title)+'</strong><p style="color:#94a3b8;">'+escapeHtml(item.description||"")+'</p><div style="color:#cbd5e1;font-size:13px;">📅 '+escapeHtml(String(item.start_at||""))+(item.location?"<br>📍 "+escapeHtml(item.location):"")+'</div><div style="margin-top:12px;">'+button+'</div></div>';
+            }).join(""):'<div style="padding:25px;text-align:center;">Hozircha trening mavjud emas.</div>';
+            openStudentFeatureModal("Treninglar","🎓",content);
+        } catch(e){openStudentFeatureModal("Treninglar","⚠️",'<span style="color:#f87171;">'+escapeHtml(e.message)+'</span>');}
+    }
     function openStudentTrainings() {
         selectMenu(getStudentMenuButton("studentTrainingsMenu"));
-        openStudentFeatureModal(
-            "Treninglar",
-            "📅",
-            '<div style="text-align:center;padding:12px 0;">' +
-                '<div style="font-size:44px;margin-bottom:12px;">🎓</div>' +
-                '<div style="color:#fff;font-size:17px;font-weight:800;">Haftalik treninglar</div>' +
-                '<div style="margin-top:8px;">Sizga hozircha trening biriktirilmagan. Administrator trening ochganda ma’lumotlar shu yerda ko‘rinadi.</div>' +
-            '</div>'
-        );
+        openStudentFeatureModal("Treninglar","🎓",'<div>Treninglar yuklanmoqda...</div>');
+        loadStudentTrainings();
+    }
+    async function registerStudentTraining(id) {
+        const token=localStorage.getItem("access_token");
+        try {
+            const r=await fetch(API_URL+"/students/trainings/"+Number(id)+"/register",{method:"POST",headers:{"Authorization":"Bearer "+token}});
+            const d=await r.json();
+            if(!r.ok) throw new Error(d.detail||"Ro‘yxatdan o‘tishda xatolik");
+            showPremiumModal("Treningga ro‘yxatdan o‘tildi","🎓 "+d.message,"Ajoyib!");
+            await loadStudentTrainings();
+        } catch(e){showPremiumModal("Xatolik yuz berdi",escapeHtml(e.message),"Yopish");}
     }
 
+    async function loadStudentExams() {
+        const token=localStorage.getItem("access_token");
+        if(!token) return;
+        try {
+            const response=await fetch(API_URL+"/students/exams",{headers:{"Authorization":"Bearer "+token}});
+            const data=await response.json();
+            if(!response.ok) throw new Error(data.detail||"Imtihonlarni yuklab bo‘lmadi");
+            const content=data.length?data.map(function(item){
+                const button=item.registered?'<button disabled style="border:0;border-radius:10px;padding:10px 14px;background:#14532d;color:#86efac;font-weight:800;">✓ Ro‘yxatdan o‘tilgan</button>':'<button onclick="registerStudentExam('+Number(item.id)+')" style="border:0;border-radius:10px;padding:10px 14px;background:#22c55e;color:#052e16;font-weight:800;">Imtihonga yozilish</button>';
+                return '<div style="padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.04);margin-top:12px;"><strong style="color:#fff;">🧪 '+escapeHtml(item.title)+'</strong><p style="color:#94a3b8;">'+escapeHtml(item.description||"")+'</p><div style="color:#cbd5e1;font-size:13px;">📅 '+escapeHtml(String(item.start_at||""))+(item.location?"<br>📍 "+escapeHtml(item.location):"")+'</div><div style="margin-top:12px;">'+button+'</div></div>';
+            }).join(""):'<div style="padding:25px;text-align:center;">Hozircha imtihon mavjud emas.</div>';
+            openStudentFeatureModal("Imtihonlar","🧪",content);
+        } catch(e){openStudentFeatureModal("Imtihonlar","⚠️",'<span style="color:#f87171;">'+escapeHtml(e.message)+'</span>');}
+    }
     function openStudentExams() {
         selectMenu(getStudentMenuButton("studentExamsMenu"));
-        openStudentFeatureModal(
-            "Imtihonlar",
-            "🧪",
-            '<div style="text-align:center;padding:12px 0;">' +
-                '<div style="font-size:44px;margin-bottom:12px;">📝</div>' +
-                '<div style="color:#fff;font-size:17px;font-weight:800;">Imtihonlar</div>' +
-                '<div style="margin-top:8px;">Sizga hozircha imtihon biriktirilmagan. Imtihon ochilganda sana, vaqt va ro‘yxatdan o‘tish ma’lumotlari shu bo‘limda ko‘rinadi.</div>' +
-            '</div>'
-        );
+        openStudentFeatureModal("Imtihonlar","🧪",'<div>Imtihonlar yuklanmoqda...</div>');
+        loadStudentExams();
+    }
+    async function registerStudentExam(id) {
+        const token=localStorage.getItem("access_token");
+        try {
+            const r=await fetch(API_URL+"/students/exams/"+Number(id)+"/register",{method:"POST",headers:{"Authorization":"Bearer "+token}});
+            const d=await r.json();
+            if(!r.ok) throw new Error(d.detail||"Ro‘yxatdan o‘tishda xatolik");
+            showPremiumModal("Imtihonga ro‘yxatdan o‘tildi","🧪 "+d.message,"Ajoyib!");
+            await loadStudentExams();
+        } catch(e){showPremiumModal("Xatolik yuz berdi",escapeHtml(e.message),"Yopish");}
     }
 
     async function loadStudentStats() {
