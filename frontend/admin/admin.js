@@ -172,7 +172,8 @@ const sectionTitles = {
     books: "Kitoblar",
     ranking: "Ranking",
     reports: "Hisobotlar",
-    settings: "Sozlamalar"
+    settings: "Sozlamalar",
+    administrators: "Administratorlar"
 };
 
 
@@ -452,6 +453,8 @@ async function loadAdminProfile() {
 
         saveAdmin(data);
 
+        updateAdministratorAccess(data);
+
     } catch (error) {
 
         console.error(
@@ -460,6 +463,165 @@ async function loadAdminProfile() {
         );
 
     }
+}
+
+
+/* ============================================================
+   ADMINISTRATOR MANAGEMENT
+   ============================================================ */
+
+function updateAdministratorAccess(admin) {
+
+    const nav = document.getElementById(
+        "administratorNav"
+    );
+
+    const navSection = document.getElementById(
+        "administratorNavSection"
+    );
+
+    const isSuperadmin =
+        admin?.is_superadmin === true;
+
+    if (nav) {
+        nav.hidden = !isSuperadmin;
+    }
+
+    if (navSection) {
+        navSection.hidden = !isSuperadmin;
+    }
+
+    if (
+        !isSuperadmin &&
+        window.location.hash === "#administrators"
+    ) {
+        openSection("dashboard");
+    }
+}
+
+
+function initAdministratorManagement() {
+
+    const form = document.getElementById(
+        "administratorCreateForm"
+    );
+
+    const phoneInput = document.getElementById(
+        "administratorPhone"
+    );
+
+    const passwordInput = document.getElementById(
+        "administratorPassword"
+    );
+
+    if (!form) return;
+
+    form.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+            const fullName =
+                document.getElementById(
+                    "administratorFullName"
+                )?.value
+                .trim();
+
+            let phone =
+                phoneInput?.value
+                .trim()
+                .replace(/[\s()-]/g, "");
+
+            const password =
+                passwordInput?.value || "";
+
+            if (!fullName || fullName.length < 2) {
+                showToast(
+                    "To‘liq ismni to‘g‘ri kiriting.",
+                    "error"
+                );
+                return;
+            }
+
+            if (phone.startsWith("+")) {
+                phone = phone.slice(1);
+            }
+
+            if (
+                !/^998\d{9}$/.test(phone)
+            ) {
+                showToast(
+                    "Telefon raqamni +998901234567 yoki 998901234567 ko‘rinishida kiriting.",
+                    "error"
+                );
+                phoneInput?.focus();
+                return;
+            }
+
+            if (
+                password.length < 8
+            ) {
+                showToast(
+                    "Parol kamida 8 ta belgidan iborat bo‘lishi kerak.",
+                    "error"
+                );
+                passwordInput?.focus();
+                return;
+            }
+
+            const button =
+                document.getElementById(
+                    "administratorSubmit"
+                );
+
+            if (button) {
+                button.disabled = true;
+                button.textContent =
+                    "Yaratilmoqda...";
+            }
+
+            try {
+
+                const data =
+                    await apiRequest(
+                        "/admins/create",
+                        {
+                            method: "POST",
+                            body: JSON.stringify({
+                                full_name: fullName,
+                                phone,
+                                password
+                            })
+                        }
+                    );
+
+                showToast(
+                    data?.message ||
+                    "Yangi administrator yaratildi.",
+                    "success"
+                );
+
+                form.reset();
+
+            } catch (error) {
+
+                showToast(
+                    error.message ||
+                    "Administrator yaratishda xatolik yuz berdi.",
+                    "error"
+                );
+
+            } finally {
+
+                if (button) {
+                    button.disabled = false;
+                    button.textContent =
+                        "Administrator yaratish";
+                }
+            }
+        }
+    );
 }
 
 
@@ -1908,6 +2070,8 @@ async function initAdminPanel() {
     initMobileMenu();
 
     initNotifications();
+
+    initAdministratorManagement();
 
 
     const logoutButton =
