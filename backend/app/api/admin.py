@@ -200,7 +200,8 @@ def get_admin_profile(
         "full_name": admin.full_name,
         "phone": admin.phone,
         "role": admin.role,
-        "is_active": admin.is_active
+        "is_active": admin.is_active,
+        "is_superadmin": admin.is_superadmin
     }
 
 
