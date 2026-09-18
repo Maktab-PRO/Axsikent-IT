@@ -1,6 +1,4 @@
-    alert("STUDENT JS ISHLADI");
-
-    const API_URL = "https://axsikent-it-4.onrender.com";
+const API_URL = "https://axsikent-it-4.onrender.com";
     /* =========================
    LOAD STUDENT COURSES
 ========================= */
