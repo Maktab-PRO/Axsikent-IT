@@ -33,3 +33,9 @@ class Admin(Base):
         Boolean,
         default=True
     )
+
+    is_superadmin = Column(
+        Boolean,
+        default=False,
+        nullable=False
+    )
