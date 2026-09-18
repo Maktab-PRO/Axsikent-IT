@@ -2224,6 +2224,149 @@ function showStudentFullProfile(data) {
 }
 
 /* ============================================================
+   LEADS / ARIZALAR
+   ============================================================ */
+
+async function loadLeads() {
+    const box = document.getElementById("leadsContent");
+    if (!box) return;
+
+    box.innerHTML = moduleLoading("Arizalar yuklanmoqda...");
+
+    try {
+        const stats = await apiRequest("/admin/leads/stats/summary");
+        const data = await apiRequest("/admin/leads/");
+        const leads = asArray(data, ["leads", "items", "data"]);
+
+        let html =
+            '<div class="homework-stats">' +
+            '<div class="homework-stat-card"><span>📋</span><div><small>Jami</small><strong>' + (stats?.total ?? leads.length) + '</strong></div></div>' +
+            '<div class="homework-stat-card"><span>🆕</span><div><small>Yangi</small><strong>' + (stats?.new ?? 0) + '</strong></div></div>' +
+            '<div class="homework-stat-card"><span>📞</span><div><small>Bog‘langan</small><strong>' + (stats?.contacted ?? 0) + '</strong></div></div>' +
+            '<div class="homework-stat-card"><span>✅</span><div><small>Qabul qilingan</small><strong>' + (stats?.enrolled ?? 0) + '</strong></div></div>' +
+            '</div>';
+
+        if (!leads.length) {
+            html += '<div class="module-empty"><h3>Arizalar yo‘q</h3><p>Hozircha yangi ariza mavjud emas.</p></div>';
+            box.innerHTML = html;
+            return;
+        }
+
+        html += moduleTable(
+            ["ISM", "TELEFON", "KURS", "YOSH", "VAQT", "STATUS", "AMAL"],
+            leads.map(lead =>
+                '<tr>' +
+                '<td><strong>' + escapeHtml(lead.full_name || "—") + '</strong><small>#' + Number(lead.id) + ' · ' + escapeHtml(formatDate(lead.created_at)) + '</small></td>' +
+                '<td>' + escapeHtml(lead.phone || "—") + '</td>' +
+                '<td>' + escapeHtml(lead.interested_course || "—") + '</td>' +
+                '<td>' + (lead.age ?? "—") + '</td>' +
+                '<td>' + escapeHtml(lead.preferred_time || "—") + '</td>' +
+                '<td><select class="module-status-select" onchange="updateLeadStatus(' + Number(lead.id) + ',this.value)">' +
+                '<option value="new"' + (lead.status === "new" ? " selected" : "") + '>Yangi</option>' +
+                '<option value="contacted"' + (lead.status === "contacted" ? " selected" : "") + '>Bog‘langan</option>' +
+                '<option value="enrolled"' + (lead.status === "enrolled" ? " selected" : "") + '>Qabul qilingan</option>' +
+                '<option value="rejected"' + (lead.status === "rejected" ? " selected" : "") + '>Rad etilgan</option>' +
+                '</select></td>' +
+                '<td>' +
+                actionButton("Ko‘rish", "viewLead(" + Number(lead.id) + ")") + " " +
+                actionButton("O‘chirish", "deleteLead(" + Number(lead.id) + ")", "danger") +
+                '</td></tr>'
+            )
+        );
+
+        box.innerHTML = html;
+    } catch (error) {
+        box.innerHTML =
+            '<div class="module-empty"><h3>Xatolik</h3><p>' +
+            escapeHtml(error.message) + '</p></div>';
+    }
+}
+
+async function viewLead(id) {
+    try {
+        const lead = await apiRequest("/admin/leads/" + Number(id));
+
+        showInfoModal(
+            "Ariza tafsilotlari",
+            '<div class="admin-detail-grid">' +
+            '<div><small>Ism</small><strong>' + escapeHtml(lead.full_name || "—") + '</strong></div>' +
+            '<div><small>Telefon</small><strong>' + escapeHtml(lead.phone || "—") + '</strong></div>' +
+            '<div><small>Yosh</small><strong>' + (lead.age ?? "—") + '</strong></div>' +
+            '<div><small>Kurs</small><strong>' + escapeHtml(lead.interested_course || "—") + '</strong></div>' +
+            '<div><small>Qulay vaqt</small><strong>' + escapeHtml(lead.preferred_time || "—") + '</strong></div>' +
+            '<div><small>Manba</small><strong>' + escapeHtml(lead.source || "—") + '</strong></div>' +
+            '<div><small>Status</small><strong>' + escapeHtml(lead.status || "—") + '</strong></div>' +
+            '<div><small>Oldingi IT kursi</small><strong>' + escapeHtml(lead.previous_it_course || "—") + '</strong></div>' +
+            '</div>' +
+            '<div class="admin-detail-block"><h3>Izoh</h3><p>' +
+            escapeHtml(lead.comment || "Izoh qoldirilmagan.") + '</p></div>' +
+            '<div class="modal-actions">' +
+            actionButton("Izohni o‘zgartirish", "editLeadComment(" + Number(lead.id) + ")") +
+            '</div>'
+        );
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function updateLeadStatus(id, status) {
+    if (!status) return;
+
+    try {
+        await apiRequest("/admin/leads/" + Number(id) + "/status", {
+            method: "PUT",
+            body: JSON.stringify({ status: status })
+        });
+
+        showToast("Ariza statusi yangilandi");
+        await loadLeads();
+        await loadDashboard();
+    } catch (error) {
+        showToast(error.message, "error");
+        await loadLeads();
+    }
+}
+
+async function editLeadComment(id) {
+    try {
+        const lead = await apiRequest("/admin/leads/" + Number(id));
+        const comment = window.prompt(
+            "Ariza izohi:",
+            lead.comment || ""
+        );
+
+        if (comment === null) return;
+
+        await apiRequest("/admin/leads/" + Number(id) + "/comment", {
+            method: "PUT",
+            body: JSON.stringify({ comment: comment })
+        });
+
+        showToast("Ariza izohi yangilandi");
+        document.getElementById("moduleInfoModal")?.remove();
+        await loadLeads();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function deleteLead(id) {
+    if (!window.confirm("Bu arizani o‘chirishni tasdiqlaysizmi?")) return;
+
+    try {
+        await apiRequest("/admin/leads/" + Number(id), {
+            method: "DELETE"
+        });
+
+        showToast("Ariza o‘chirildi");
+        await loadLeads();
+        await loadDashboard();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+/* ============================================================
    TEACHERS
    ============================================================ */
 
