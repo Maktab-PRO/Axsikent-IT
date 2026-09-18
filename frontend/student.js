@@ -2693,12 +2693,22 @@ showPremiumModal(
                     Number(rewardData.student.streak_days || 0) + " kun";
             }
 
+            let completedHomework = 0;
+
             if (homeworkEl && Array.isArray(submissions)) {
-                const completed = submissions.filter(
+                completedHomework = submissions.filter(
                     item => item.status === "checked"
                 ).length;
 
-                homeworkEl.textContent = String(completed);
+                homeworkEl.textContent = String(completedHomework);
+            }
+
+            if (rewardData && rewardData.student) {
+                renderStudentActivity(
+                    rewardData.student.streak_days,
+                    rewardData.student.xp,
+                    completedHomework
+                );
             }
 
             if (rankEl && Array.isArray(ranking) && me && me.id) {
@@ -2714,6 +2724,106 @@ showPremiumModal(
         } catch (error) {
             console.error("Student stats error:", error);
         }
+    }
+
+
+    async function loadStudentDashboardTasks() {
+        const token = localStorage.getItem("access_token");
+        const container = document.getElementById("studentRecentTasks");
+
+        if (!token || !container) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                API_URL + "/homework/student",
+                {
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                }
+            );
+
+            const homeworks = await response.json();
+
+            if (!response.ok) {
+                throw new Error(homeworks.detail || "Vazifalarni yuklab bo‘lmadi");
+            }
+
+            if (!homeworks.length) {
+                container.innerHTML =
+                    '<div class="task" onclick="openStudentHomeworkFromHome()" style="cursor:pointer;">' +
+                        '<div class="task-check">✅</div>' +
+                        '<div>' +
+                            '<div class="task-name">Hozircha yangi vazifa yo‘q</div>' +
+                            '<div class="task-date">Uy vazifalari bo‘limini ochish uchun bosing</div>' +
+                        '</div>' +
+                    '</div>';
+                return;
+            }
+
+            const latest = homeworks.slice(0, 2);
+
+            container.innerHTML = latest.map(function(homework) {
+                return (
+                    '<div class="task" onclick="openStudentHomeworkFromHome()" style="cursor:pointer;">' +
+                        '<div class="task-check">📝</div>' +
+                        '<div>' +
+                            '<div class="task-name">' +
+                                escapeHtml(homework.title || "Uy vazifasi") +
+                            '</div>' +
+                            '<div class="task-date">' +
+                                (homework.deadline
+                                    ? "⏰ " + escapeHtml(homework.deadline)
+                                    : "Topshirish uchun bosing") +
+                            '</div>' +
+                        '</div>' +
+                    '</div>'
+                );
+            }).join("");
+        } catch (error) {
+            console.error("Dashboard tasks error:", error);
+            container.innerHTML =
+                '<div class="task">' +
+                    '<div class="task-check">⚠️</div>' +
+                    '<div>' +
+                        '<div class="task-name">Vazifalarni yuklab bo‘lmadi</div>' +
+                        '<div class="task-date">Uy vazifalari bo‘limidan qayta urinib ko‘ring</div>' +
+                    '</div>' +
+                '</div>';
+        }
+    }
+
+    function renderStudentActivity(streakDays, xp, completedHomework) {
+        const container = document.getElementById("studentActivityContent");
+
+        if (!container) {
+            return;
+        }
+
+        const streak = Number(streakDays || 0);
+        const totalXp = Number(xp || 0);
+        const completed = Number(completedHomework || 0);
+
+        container.innerHTML =
+            '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;">' +
+                '<div style="text-align:center;padding:18px 10px;border-radius:16px;background:#f8fafc;border:1px solid #e7ebf2;">' +
+                    '<div style="font-size:28px;">🔥</div>' +
+                    '<strong style="display:block;margin-top:6px;font-size:20px;">' + streak + '</strong>' +
+                    '<span style="font-size:12px;color:#7b8496;">kunlik streak</span>' +
+                '</div>' +
+                '<div style="text-align:center;padding:18px 10px;border-radius:16px;background:#f8fafc;border:1px solid #e7ebf2;">' +
+                    '<div style="font-size:28px;">⭐</div>' +
+                    '<strong style="display:block;margin-top:6px;font-size:20px;">' + totalXp.toLocaleString() + '</strong>' +
+                    '<span style="font-size:12px;color:#7b8496;">XP</span>' +
+                '</div>' +
+                '<div style="text-align:center;padding:18px 10px;border-radius:16px;background:#f8fafc;border:1px solid #e7ebf2;">' +
+                    '<div style="font-size:28px;">📝</div>' +
+                    '<strong style="display:block;margin-top:6px;font-size:20px;">' + completed + '</strong>' +
+                    '<span style="font-size:12px;color:#7b8496;">tekshirilgan vazifa</span>' +
+                '</div>' +
+            '</div>';
     }
 
     /* =========================
@@ -2937,6 +3047,7 @@ loadStudentHomeworkResults();
 loadStudentCourses();
 loadStudentRanking();
 loadStudentStats();
+loadStudentDashboardTasks();
 
     function openStudentBooksMenu(element) {
     selectMenu(element);
