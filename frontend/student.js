@@ -2429,6 +2429,294 @@ showPremiumModal(
 }
 
     /* =========================
+       STUDENT HOME QUICK ACTIONS
+    ========================= */
+
+    function getStudentMenuButton(id) {
+        return document.getElementById(id);
+    }
+
+    function openStudentCoursesFromHome() {
+        const button = getStudentMenuButton("studentCoursesMenu");
+        if (button) {
+            openStudentCoursesMenu(button);
+        }
+    }
+
+    function openStudentHomeworkFromHome() {
+        const button = getStudentMenuButton("studentHomeworkMenu");
+        if (button) {
+            openStudentHomeworkMenu(button);
+        }
+    }
+
+    function openStudentRankingFromHome() {
+        const button = getStudentMenuButton("studentRankingMenu");
+        if (button) {
+            openStudentRankingMenu(button);
+        }
+    }
+
+    function openStudentRewardsFromHome() {
+        const button = getStudentMenuButton("studentRewardsMenu");
+        if (button) {
+            openStudentRewardsMenu(button);
+        }
+    }
+
+    function openStudentBooksFromHome() {
+        const button = getStudentMenuButton("studentBooksMenu");
+        if (button) {
+            openStudentBooksMenu(button);
+        }
+    }
+
+    function closeStudentFeatureModal() {
+        const modal = document.getElementById("studentFeatureModal");
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    function openStudentFeatureModal(title, icon, content) {
+        closeStudentFeatureModal();
+
+        const modal = document.createElement("div");
+        modal.id = "studentFeatureModal";
+
+        modal.innerHTML =
+            '<div style="position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.78);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px;">' +
+                '<div style="position:relative;width:min(560px,100%);max-height:85vh;overflow:auto;background:linear-gradient(145deg,#111827,#080d16);border:1px solid rgba(52,211,153,.22);border-radius:24px;padding:26px;box-shadow:0 30px 90px rgba(0,0,0,.65);color:#f8fafc;">' +
+                    '<button type="button" onclick="closeStudentFeatureModal()" aria-label="Yopish" style="position:absolute;top:14px;right:14px;width:36px;height:36px;border:1px solid rgba(255,255,255,.10);border-radius:11px;background:rgba(255,255,255,.05);color:#cbd5e1;font-size:18px;cursor:pointer;">×</button>' +
+                    '<div style="width:58px;height:58px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(135deg,#064e3b,#22c55e);box-shadow:0 10px 28px rgba(34,197,94,.18);margin-bottom:17px;">' +
+                        icon +
+                    '</div>' +
+                    '<h2 style="margin:0 45px 10px 0;color:#fff;font-size:22px;">' +
+                        escapeHtml(title) +
+                    '</h2>' +
+                    '<div style="color:#94a3b8;font-size:14px;line-height:1.7;">' +
+                        content +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+
+        modal.firstElementChild.addEventListener("click", function(event) {
+            if (event.target === this) {
+                closeStudentFeatureModal();
+            }
+        });
+
+        document.body.appendChild(modal);
+    }
+
+    async function openStudentProfile() {
+        const token = localStorage.getItem("access_token");
+
+        if (!token) {
+            window.location.href = "index.html";
+            return;
+        }
+
+        openStudentFeatureModal(
+            "Profilim",
+            "👤",
+            '<div style="text-align:center;padding:10px;">Profil ma’lumotlari yuklanmoqda...</div>'
+        );
+
+        try {
+            const response = await fetch(
+                API_URL + "/students/me",
+                {
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            if (response.status === 401) {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user_role");
+                window.location.href = "index.html";
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(data.detail || "Profilni yuklashda xatolik");
+            }
+
+            const status = data.is_active
+                ? '<span style="color:#4ade80;">● Faol</span>'
+                : '<span style="color:#f87171;">● Faol emas</span>';
+
+            openStudentFeatureModal(
+                "Profilim",
+                "👤",
+                '<div style="display:grid;gap:12px;">' +
+                    '<div style="padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.04);">' +
+                        '<div style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:1px;">F.I.Sh.</div>' +
+                        '<div style="margin-top:6px;color:#fff;font-size:17px;font-weight:800;">' +
+                            escapeHtml(data.full_name || "O‘quvchi") +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.04);">' +
+                        '<div style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Telefon</div>' +
+                        '<div style="margin-top:6px;color:#fff;font-size:16px;font-weight:700;">' +
+                            escapeHtml(data.phone || "—") +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.04);">' +
+                        '<div style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Holat</div>' +
+                        '<div style="margin-top:6px;font-size:15px;font-weight:800;">' +
+                            status +
+                        '</div>' +
+                    '</div>' +
+                '</div>'
+            );
+        } catch (error) {
+            openStudentFeatureModal(
+                "Profil",
+                "⚠️",
+                '<div style="color:#f87171;">' +
+                    escapeHtml(error.message || "Profilni yuklashda xatolik") +
+                '</div>'
+            );
+        }
+    }
+
+    function openStudentPodcasts() {
+        selectMenu(getStudentMenuButton("studentPodcastsMenu"));
+        openStudentFeatureModal(
+            "Podcastlar",
+            "🎧",
+            '<div style="text-align:center;padding:12px 0;">' +
+                '<div style="font-size:44px;margin-bottom:12px;">🎙️</div>' +
+                '<div style="color:#fff;font-size:17px;font-weight:800;">Audio darslar</div>' +
+                '<div style="margin-top:8px;">Sizga hozircha podcast biriktirilmagan. Yangi audio materiallar administrator tomonidan qo‘shilganda shu bo‘limda ko‘rinadi.</div>' +
+            '</div>'
+        );
+    }
+
+    function openStudentTrainings() {
+        selectMenu(getStudentMenuButton("studentTrainingsMenu"));
+        openStudentFeatureModal(
+            "Treninglar",
+            "📅",
+            '<div style="text-align:center;padding:12px 0;">' +
+                '<div style="font-size:44px;margin-bottom:12px;">🎓</div>' +
+                '<div style="color:#fff;font-size:17px;font-weight:800;">Haftalik treninglar</div>' +
+                '<div style="margin-top:8px;">Sizga hozircha trening biriktirilmagan. Administrator trening ochganda ma’lumotlar shu yerda ko‘rinadi.</div>' +
+            '</div>'
+        );
+    }
+
+    function openStudentExams() {
+        selectMenu(getStudentMenuButton("studentExamsMenu"));
+        openStudentFeatureModal(
+            "Imtihonlar",
+            "🧪",
+            '<div style="text-align:center;padding:12px 0;">' +
+                '<div style="font-size:44px;margin-bottom:12px;">📝</div>' +
+                '<div style="color:#fff;font-size:17px;font-weight:800;">Imtihonlar</div>' +
+                '<div style="margin-top:8px;">Sizga hozircha imtihon biriktirilmagan. Imtihon ochilganda sana, vaqt va ro‘yxatdan o‘tish ma’lumotlari shu bo‘limda ko‘rinadi.</div>' +
+            '</div>'
+        );
+    }
+
+    async function loadStudentStats() {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            return;
+        }
+
+        const xpEl = document.getElementById("statTotalXp");
+        const rankEl = document.getElementById("statRank");
+        const homeworkEl = document.getElementById("statHomeworkDone");
+        const streakEl = document.getElementById("statStreak");
+
+        try {
+            const meResponse = await fetch(
+                API_URL + "/students/me",
+                {
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                }
+            );
+
+            const me = await meResponse.json();
+
+            if (meResponse.status === 401) {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user_role");
+                window.location.href = "index.html";
+                return;
+            }
+
+            const results = await Promise.allSettled([
+                fetch(API_URL + "/students/rewards", {
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                }).then(response => response.json()),
+                fetch(API_URL + "/students/ranking").then(response => response.json()),
+                fetch(API_URL + "/homework/student/submissions", {
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                }).then(response => response.json())
+            ]);
+
+            const rewardData =
+                results[0].status === "fulfilled"
+                    ? results[0].value
+                    : null;
+
+            const ranking =
+                results[1].status === "fulfilled"
+                    ? results[1].value
+                    : [];
+
+            const submissions =
+                results[2].status === "fulfilled"
+                    ? results[2].value
+                    : [];
+
+            if (xpEl && rewardData && rewardData.student) {
+                xpEl.textContent =
+                    Number(rewardData.student.xp || 0).toLocaleString();
+            }
+
+            if (streakEl && rewardData && rewardData.student) {
+                streakEl.textContent =
+                    Number(rewardData.student.streak_days || 0) + " kun";
+            }
+
+            if (homeworkEl && Array.isArray(submissions)) {
+                const completed = submissions.filter(
+                    item => item.status === "checked"
+                ).length;
+
+                homeworkEl.textContent = String(completed);
+            }
+
+            if (rankEl && Array.isArray(ranking) && me && me.id) {
+                const current = ranking.find(
+                    item => Number(item.student_id) === Number(me.id)
+                );
+
+                rankEl.textContent =
+                    current && current.rank
+                        ? "#" + current.rank
+                        : "—";
+            }
+        } catch (error) {
+            console.error("Student stats error:", error);
+        }
+    }
+
+    /* =========================
        MESSAGE
     ========================= */
 
@@ -2648,6 +2936,7 @@ loadStudent();
 loadStudentHomeworkResults();
 loadStudentCourses();
 loadStudentRanking();
+loadStudentStats();
 
     function openStudentBooksMenu(element) {
     selectMenu(element);
@@ -3153,4 +3442,3 @@ confirmButton.onclick = async () => {
 };
 
 }
-
