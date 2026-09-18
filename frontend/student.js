@@ -1646,10 +1646,14 @@ function confirmLogoutStudent() {
         container.innerHTML = '<div style="text-align:center;padding:25px;color:#7b8496;">Mukofotlar yuklanmoqda...</div>';
 
         try {
-            const response = await fetch(API_URL + "/students/rewards", {
+            const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+        const response = await fetch(API_URL + "/students/rewards?ts=" + Date.now(), {
                 method: "GET",
-                headers: {"Authorization":"Bearer " + token}
-            });
+                cache: "no-store",
+                headers: {"Authorization":"Bearer " + token},
+                signal: controller.signal
+            }).finally(() => clearTimeout(timeout));
 
             let data = {};
             try { data = await response.json(); } catch (_) {}
@@ -3199,14 +3203,18 @@ async function loadStudentBooks() {
     `;
 
     try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
         const response = await fetch(
-            `${API_URL}/students/books`,
+            `${API_URL}/students/books?ts=${Date.now()}`,
             {
+                cache: "no-store",
                 headers: {
                     "Authorization": `Bearer ${token}`
-                }
+                },
+                signal: controller.signal
             }
-        );
+        ).finally(() => clearTimeout(timeout));
 
         if (!response.ok) {
             throw new Error("Kitoblarni yuklashda xatolik");
