@@ -76,6 +76,11 @@ with engine.connect() as connection:
     """)
 
     connection.exec_driver_sql("""
+        ALTER TABLE leads
+        ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255)
+    """)
+
+    connection.exec_driver_sql("""
         ALTER TABLE admins
         ADD COLUMN IF NOT EXISTS is_superadmin BOOLEAN NOT NULL DEFAULT FALSE
     """)
