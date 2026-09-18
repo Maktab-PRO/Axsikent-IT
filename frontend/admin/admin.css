@@ -2470,3 +2470,183 @@ a {
         cursor: pointer;
     }
 }
+
+
+/* =========================================================
+   ADMINISTRATOR MANAGEMENT
+========================================================= */
+
+.administrator-layout {
+    display: grid;
+    grid-template-columns: minmax(0, .72fr) minmax(360px, 1.28fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.administrator-hero,
+.administrator-form-panel {
+    min-width: 0;
+}
+
+.administrator-hero {
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+    padding: 28px;
+    border: 1px solid rgba(57, 229, 140, 0.10);
+    border-radius: var(--radius-lg);
+    background:
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(57, 229, 140, 0.08),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(18, 23, 20, 0.98),
+            rgba(8, 11, 9, 0.98)
+        );
+    box-shadow: var(--shadow);
+}
+
+.administrator-hero-icon {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(57, 229, 140, 0.16);
+    border-radius: 16px;
+    background: rgba(57, 229, 140, 0.07);
+    color: var(--accent);
+    font-size: 25px;
+    box-shadow: 0 0 35px rgba(57, 229, 140, 0.08);
+}
+
+.administrator-hero h3 {
+    margin-top: 6px;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+}
+
+.administrator-hero p {
+    max-width: 620px;
+    margin-top: 9px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.administrator-form-panel {
+    padding: 24px;
+    border-color: rgba(255, 255, 255, 0.09);
+}
+
+.administrator-form {
+    display: grid;
+    gap: 14px;
+}
+
+.administrator-form label {
+    display: grid;
+    gap: 7px;
+}
+
+.administrator-form label > span {
+    color: #b8c1bc;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+}
+
+.administrator-form input {
+    width: 100%;
+    min-height: 45px;
+    padding: 0 13px;
+    border: 1px solid rgba(255, 255, 255, 0.075);
+    border-radius: 11px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.025);
+    color: var(--text-main);
+    font: inherit;
+    font-size: 11px;
+    transition:
+        border-color var(--transition),
+        background var(--transition),
+        box-shadow var(--transition);
+}
+
+.administrator-form input::placeholder {
+    color: #59625d;
+}
+
+.administrator-form input:focus {
+    border-color: rgba(57, 229, 140, 0.38);
+    background: rgba(57, 229, 140, 0.025);
+    box-shadow: 0 0 0 3px rgba(57, 229, 140, 0.06);
+}
+
+.administrator-submit {
+    min-height: 46px;
+    margin-top: 4px;
+    border: 1px solid rgba(57, 229, 140, 0.18);
+    border-radius: 11px;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(57, 229, 140, 0.18),
+            rgba(32, 201, 117, 0.08)
+        );
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+    transition:
+        transform var(--transition),
+        border-color var(--transition),
+        background var(--transition);
+}
+
+.administrator-submit:hover {
+    transform: translateY(-1px);
+    border-color: rgba(57, 229, 140, 0.34);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(57, 229, 140, 0.23),
+            rgba(32, 201, 117, 0.11)
+        );
+}
+
+.administrator-submit:disabled {
+    opacity: .55;
+    cursor: wait;
+    transform: none;
+}
+
+@media (max-width: 900px) {
+    .administrator-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .administrator-hero {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 760px) {
+    .administrator-layout {
+        gap: 10px;
+    }
+
+    .administrator-hero,
+    .administrator-form-panel {
+        padding: 18px;
+    }
+
+    .administrator-hero h3 {
+        font-size: 17px;
+    }
+}
