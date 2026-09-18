@@ -10,6 +10,7 @@ from app.models.admin import Admin
 from app.models.shop import ShopProduct, ShopOrder
 from app.models.reward_rule import RewardRule
 from app.models.reward_transaction import RewardTransaction
+from app.services.notifications import notify_all_students
 
 
 router = APIRouter(
@@ -251,6 +252,13 @@ def create_product(
     db.add(product)
     db.commit()
     db.refresh(product)
+
+    notify_all_students(
+        db,
+        "Yangi mukofot qo‘shildi",
+        "“" + product.name + "” mukofoti Student kabinetida mavjud.",
+        "reward",
+    )
 
     return {
         "success": True,
