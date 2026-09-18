@@ -985,10 +985,52 @@
             font-size: 20px;
         }
 
-        .modal-content h2 {
-            font-size: 34px;
+        .modal-course-heading {
+            display: flex;
+            align-items: center;
+            gap: 16px;
             padding-right: 45px;
             margin-bottom: 10px;
+        }
+
+        .modal-course-icon {
+            width: 76px;
+            height: 76px;
+            min-width: 76px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, #f8faf9 0%, #e7f5eb 100%);
+            border: 1px solid #d8e9dc;
+            box-shadow: 0 12px 25px rgba(22, 163, 74, .10), inset 0 1px 0 rgba(255,255,255,.95);
+            color: #15803d;
+        }
+
+        .modal-course-icon::after {
+            content: "";
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            right: -18px;
+            bottom: -20px;
+            border-radius: 50%;
+            background: rgba(22,163,74,.10);
+        }
+
+        .modal-course-icon svg {
+            width: 46px;
+            height: 46px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .modal-content h2 {
+            font-size: 34px;
+            line-height: 1.1;
+            margin: 0;
         }
 
         .modal-price {
@@ -4085,9 +4127,12 @@
             ×
         </button>
 
-        <h2 id="modalTitle">
-            Kurs
-        </h2>
+        <div class="modal-course-heading">
+            <div class="modal-course-icon" id="modalCourseIcon"></div>
+            <h2 id="modalTitle">
+                Kurs
+            </h2>
+        </div>
 
         <div
             class="modal-price"
@@ -4766,8 +4811,26 @@ function goToRegistration() {
 
         selectedCourseKey = courseKey;
 
+        const modalIcons = {
+            computer: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="13" width="44" height="31" rx="6" fill="#dff7e6"></rect><rect x="14" y="17" width="36" height="23" rx="3" fill="#fff"></rect><path d="M24 51h16M20 45h24" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path><path d="M22 24h20M22 30h13" stroke="#4ade80" stroke-width="3.5" stroke-linecap="round"></path></svg>',
+            frontend: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M25 18L12 32l13 14M39 18l13 14-13 14M36 12L28 52" fill="none" stroke="#15803d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="14" cy="32" r="3" fill="#4ade80"></circle></svg>',
+            backend: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="12" width="40" height="40" rx="8" fill="#dff7e6"></rect><rect x="19" y="19" width="26" height="7" rx="3" fill="#15803d"></rect><rect x="19" y="29" width="26" height="7" rx="3" fill="#4ade80"></rect><rect x="19" y="39" width="18" height="7" rx="3" fill="#86efac"></rect></svg>',
+            python: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M17 42l5-18 20-9 7 7-9 20-18 5z" fill="#dff7e6"></path><path d="M25 26l13 13M39 23l5 5" fill="none" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path><circle cx="22" cy="43" r="3" fill="#4ade80"></circle></svg>',
+            design: '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="21" fill="#dff7e6"></circle><path d="M20 39l22-18M23 22h.1M41 42h.1" stroke="#15803d" stroke-width="5" stroke-linecap="round"></path><path d="M25 45c7 3 16 1 21-5" fill="none" stroke="#4ade80" stroke-width="4" stroke-linecap="round"></path></svg>',
+            ai: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 10l6 14 15 2-11 10 3 15-13-7-13 7 3-15-11-10 15-2z" fill="#dff7e6" stroke="#15803d" stroke-width="3" stroke-linejoin="round"></path><circle cx="32" cy="31" r="5" fill="#4ade80"></circle></svg>',
+            robot: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="19" width="40" height="31" rx="9" fill="#dff7e6" stroke="#15803d" stroke-width="3"></rect><path d="M32 12v7M24 31h.1M40 31h.1M24 40h16" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path><circle cx="32" cy="9" r="3" fill="#4ade80"></circle></svg>',
+            "3d": '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 9l22 13v24L32 55 10 46V22z" fill="#dff7e6" stroke="#15803d" stroke-width="3" stroke-linejoin="round"></path><path d="M10 22l22 13 22-13M32 35v20" fill="none" stroke="#4ade80" stroke-width="3"></path></svg>',
+            printer: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M15 12h34v40H15z" fill="#dff7e6" stroke="#15803d" stroke-width="3" stroke-linejoin="round"></path><path d="M22 22h20M22 30h13M22 38h20" stroke="#4ade80" stroke-width="4" stroke-linecap="round"></path><path d="M28 46h8" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path></svg>',
+            mental: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="13" y="8" width="38" height="48" rx="8" fill="#dff7e6" stroke="#15803d" stroke-width="3"></rect><path d="M22 19h20M22 29h.1M32 29h.1M42 29h.1M22 39h.1M32 39h.1M42 39h.1M22 49h20" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path></svg>',
+            english: '<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="11" y="15" width="42" height="34" rx="6" fill="#dff7e6" stroke="#15803d" stroke-width="3"></rect><path d="M11 16l21 18 21-18M15 46l14-13M49 46L35 33" fill="none" stroke="#4ade80" stroke-width="3"></path></svg>',
+            ielts: '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8l23 12v24L32 56 9 44V20z" fill="#dff7e6" stroke="#15803d" stroke-width="3" stroke-linejoin="round"></path><path d="M22 28h20M22 37h13" stroke="#4ade80" stroke-width="4" stroke-linecap="round"></path></svg>'
+        };
+
+        document.getElementById("modalCourseIcon").innerHTML =
+            modalIcons[courseKey] || "";
+
         document.getElementById("modalTitle").textContent =
-            course.title;
+            course.title.replace(/^[^A-Za-zА-Яа-яЁё0-9]+\s*/u, "");
 
         document.getElementById("modalPrice").textContent =
             course.price;
