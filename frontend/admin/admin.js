@@ -175,7 +175,10 @@ const sectionTitles = {
     ranking: "Ranking",
     reports: "Hisobotlar",
     settings: "Sozlamalar",
-    administrators: "Administratorlar"
+    administrators: "Administratorlar",
+    podcasts: "Podcastlar",
+    trainings: "Treninglar",
+    exams: "Imtihonlar"
 };
 
 
@@ -245,6 +248,9 @@ function openSection(section) {
     if (section === "orders") loadOrders();
     if (section === "books") loadBooks();
     if (section === "ranking") loadRanking();
+    if (section === "podcasts") loadPodcasts();
+    if (section === "trainings") loadTrainings();
+    if (section === "exams") loadExams();
 
 }
 
@@ -3463,6 +3469,96 @@ async function loadRanking() {
             escapeHtml(error.message) + '</p></div>';
     }
 }
+
+
+/* ============================================================
+   STUDENT CONTENT — PODCASTS / TRAININGS / EXAMS
+   ============================================================ */
+
+async function loadPodcasts() {
+    const box = document.getElementById("podcastsContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("Podcastlar yuklanmoqda...");
+    try {
+        const items = await apiRequest("/admin/content/podcasts");
+        box.innerHTML = items.length
+            ? moduleTable(
+                ["ID","NOMI","DAVOMI","HOLAT","AMAL"],
+                items.map(x =>
+                    '<tr><td>#'+Number(x.id)+'</td><td><strong>'+escapeHtml(x.title)+'</strong><small>'+escapeHtml(x.description||"")+'</small></td><td>'+((x.duration_minutes??"—"))+' min</td><td>'+ (x.is_active?"Faol":"Nofaol") +'</td><td><button class="module-action" onclick="togglePodcast('+Number(x.id)+')">'+(x.is_active?"Deaktiv":"Aktivlashtirish")+'</button></td></tr>'
+                )
+              )
+            : '<div class="module-empty"><h3>Podcastlar yo‘q</h3><p>Student panelga audio material qo‘shing.</p></div>';
+    } catch(e) {
+        box.innerHTML='<div class="module-empty"><h3>Xatolik</h3><p>'+escapeHtml(e.message)+'</p></div>';
+    }
+}
+
+async function openPodcastCreate() {
+    const title=window.prompt("Podcast nomi:");
+    if(!title?.trim()) return;
+    const description=window.prompt("Tavsif:","") ?? "";
+    const audio=window.prompt("Audio URL:","") ?? "";
+    const duration=window.prompt("Davomiyligi (minut):","0");
+    if(duration===null) return;
+    try {
+        await apiRequest("/admin/content/podcasts",{method:"POST",body:JSON.stringify({title:title.trim(),description,audio_url:audio,duration_minutes:Number(duration)})});
+        showToast("Podcast qo‘shildi");
+        await loadPodcasts();
+    } catch(e){showToast(e.message,"error");}
+}
+
+async function togglePodcast(id) {
+    try { await apiRequest("/admin/content/podcasts/"+Number(id)+"/toggle",{method:"PUT"}); await loadPodcasts(); showToast("Podcast holati yangilandi"); }
+    catch(e){showToast(e.message,"error");}
+}
+
+async function loadTrainings() {
+    const box=document.getElementById("trainingsContent"); if(!box)return;
+    box.innerHTML=moduleLoading("Treninglar yuklanmoqda...");
+    try {
+        const items=await apiRequest("/admin/content/trainings");
+        const regs=await apiRequest("/admin/content/trainings/registrations");
+        let html=items.length?moduleTable(["ID","TRENING","BOSHLANISH","JOY","RO‘YXAT","HOLAT","AMAL"],items.map(x=>'<tr><td>#'+Number(x.id)+'</td><td><strong>'+escapeHtml(x.title)+'</strong></td><td>'+escapeHtml(formatDate(x.start_at))+'</td><td>'+escapeHtml(x.location||"—")+'</td><td>'+Number(x.registrations||0)+(x.capacity?" / "+Number(x.capacity):"")+'</td><td>'+ (x.is_active?"Faol":"Nofaol")+'</td><td><button class="module-action" onclick="toggleTraining('+Number(x.id)+')">'+(x.is_active?"Deaktiv":"Aktivlashtirish")+'</button></td></tr>')):'<div class="module-empty"><h3>Treninglar yo‘q</h3><p>Studentlar uchun trening yarating.</p></div>';
+        html += '<div class="admin-detail-block"><h3>Student ro‘yxatlari</h3>' + (regs.length?moduleTable(["ID","TRENING ID","O‘QUVCHI","STATUS","SANA"],regs.slice(0,30).map(x=>'<tr><td>#'+Number(x.id)+'</td><td>#'+Number(x.training_id)+'</td><td>#'+Number(x.student_id)+'</td><td>'+escapeHtml(x.status)+'</td><td>'+escapeHtml(formatDate(x.registered_at))+'</td></tr>')):'<div class="module-empty"><p>Hozircha ro‘yxatdan o‘tgan student yo‘q.</p></div>') + '</div>';
+        box.innerHTML=html;
+    }catch(e){box.innerHTML='<div class="module-empty"><h3>Xatolik</h3><p>'+escapeHtml(e.message)+'</p></div>';}
+}
+
+async function openTrainingCreate() {
+    const title=window.prompt("Trening nomi:"); if(!title?.trim())return;
+    const description=window.prompt("Tavsif:","")??"";
+    const start=window.prompt("Boshlanish vaqti (2026-09-20T18:00:00):"); if(!start?.trim())return;
+    const end=window.prompt("Tugash vaqti (ixtiyoriy):","")??"";
+    const location=window.prompt("Manzil:","")??"";
+    const cap=window.prompt("Sig‘im (ixtiyoriy):","")??"";
+    try{await apiRequest("/admin/content/trainings",{method:"POST",body:JSON.stringify({title:title.trim(),description,start_at:start,end_at:end||null,location,capacity:cap?Number(cap):null})});showToast("Trening qo‘shildi");await loadTrainings();}
+    catch(e){showToast(e.message,"error");}
+}
+async function toggleTraining(id){try{await apiRequest("/admin/content/trainings/"+Number(id)+"/toggle",{method:"PUT"});await loadTrainings();showToast("Trening holati yangilandi");}catch(e){showToast(e.message,"error");}}
+
+async function loadExams() {
+    const box=document.getElementById("examsContent"); if(!box)return;
+    box.innerHTML=moduleLoading("Imtihonlar yuklanmoqda...");
+    try {
+        const items=await apiRequest("/admin/content/exams");
+        const regs=await apiRequest("/admin/content/exams/registrations");
+        let html=items.length?moduleTable(["ID","IMTIHON","BOSHLANISH","JOY","RO‘YXAT","HOLAT","AMAL"],items.map(x=>'<tr><td>#'+Number(x.id)+'</td><td><strong>'+escapeHtml(x.title)+'</strong></td><td>'+escapeHtml(formatDate(x.start_at))+'</td><td>'+escapeHtml(x.location||"—")+'</td><td>'+Number(x.registrations||0)+(x.capacity?" / "+Number(x.capacity):"")+'</td><td>'+ (x.is_active?"Faol":"Nofaol")+'</td><td><button class="module-action" onclick="toggleExam('+Number(x.id)+')">'+(x.is_active?"Deaktiv":"Aktivlashtirish")+'</button></td></tr>')):'<div class="module-empty"><h3>Imtihonlar yo‘q</h3><p>Studentlar uchun imtihon yarating.</p></div>';
+        html += '<div class="admin-detail-block"><h3>Student ro‘yxatlari</h3>' + (regs.length?moduleTable(["ID","IMTIHON ID","O‘QUVCHI","STATUS","SANA"],regs.slice(0,30).map(x=>'<tr><td>#'+Number(x.id)+'</td><td>#'+Number(x.exam_id)+'</td><td>#'+Number(x.student_id)+'</td><td>'+escapeHtml(x.status)+'</td><td>'+escapeHtml(formatDate(x.registered_at))+'</td></tr>')):'<div class="module-empty"><p>Hozircha ro‘yxatdan o‘tgan student yo‘q.</p></div>') + '</div>';
+        box.innerHTML=html;
+    }catch(e){box.innerHTML='<div class="module-empty"><h3>Xatolik</h3><p>'+escapeHtml(e.message)+'</p></div>';}
+}
+async function openExamCreate() {
+    const title=window.prompt("Imtihon nomi:"); if(!title?.trim())return;
+    const description=window.prompt("Tavsif:","")??"";
+    const start=window.prompt("Boshlanish vaqti (2026-09-20T10:00:00):"); if(!start?.trim())return;
+    const end=window.prompt("Tugash vaqti (ixtiyoriy):","")??"";
+    const location=window.prompt("Manzil:","")??"";
+    const cap=window.prompt("Sig‘im (ixtiyoriy):","")??"";
+    try{await apiRequest("/admin/content/exams",{method:"POST",body:JSON.stringify({title:title.trim(),description,start_at:start,end_at:end||null,location,capacity:cap?Number(cap):null})});showToast("Imtihon qo‘shildi");await loadExams();}
+    catch(e){showToast(e.message,"error");}
+}
+async function toggleExam(id){try{await apiRequest("/admin/content/exams/"+Number(id)+"/toggle",{method:"PUT"});await loadExams();showToast("Imtihon holati yangilandi");}catch(e){showToast(e.message,"error");}}
 
 /* ============================================================
    MOBILE / INIT
