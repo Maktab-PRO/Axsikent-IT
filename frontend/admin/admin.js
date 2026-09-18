@@ -745,9 +745,9 @@ function initNotifications() {
 function logout() {
 
     clearAuth();
+    sessionStorage.removeItem(SESSION_KEY);
 
-    window.location.href =
-        "login.html";
+    window.location.replace("login.html");
 }
 
 
