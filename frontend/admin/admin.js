@@ -216,9 +216,8 @@ function openSection(section) {
     const sidebar = $("#sidebar");
 
     if (sidebar) {
-    sidebar.classList.remove("open");
-    sidebar.style.transform = "translateX(-100%)";
-}
+        sidebar.classList.remove("open");
+    }
 
     window.scrollTo({
         top: 0,
