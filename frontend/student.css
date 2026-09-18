@@ -1305,3 +1305,176 @@ textarea::placeholder {
 }
     
     
+
+/* ============================================================
+   STUDENT NOTIFICATIONS / PREMIUM UI
+   ============================================================ */
+
+.notification{
+    position:relative;
+}
+.notification-bell{
+    width:46px;
+    height:46px;
+    border:1px solid rgba(52,211,153,.20);
+    border-radius:15px;
+    background:linear-gradient(145deg,rgba(16,24,21,.96),rgba(7,12,10,.98));
+    color:#d1fae5;
+    display:grid;
+    place-items:center;
+    cursor:pointer;
+    box-shadow:0 10px 28px rgba(0,0,0,.20), inset 0 0 18px rgba(52,211,153,.04);
+    transition:.22s ease;
+}
+.notification-bell:hover{
+    transform:translateY(-2px);
+    border-color:rgba(52,211,153,.55);
+    box-shadow:0 14px 34px rgba(16,185,129,.16);
+}
+.notification-bell-icon{
+    width:24px;
+    height:24px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    font-size:24px;
+    line-height:1;
+}
+.notification-badge{
+    position:absolute;
+    top:-5px;
+    right:-5px;
+    min-width:20px;
+    height:20px;
+    padding:0 5px;
+    border-radius:999px;
+    background:linear-gradient(135deg,#8b5cf6,#ec4899);
+    color:#fff;
+    font-size:10px;
+    font-weight:900;
+    display:grid;
+    place-items:center;
+    border:2px solid #0b100e;
+}
+.welcome-premium-icon{
+    display:inline-grid;
+    place-items:center;
+    width:30px;
+    height:30px;
+    margin-left:5px;
+    border-radius:10px;
+    background:linear-gradient(135deg,#34d399,#8b5cf6);
+    color:#fff;
+    box-shadow:0 8px 24px rgba(139,92,246,.20);
+    font-size:16px;
+    vertical-align:middle;
+}
+.student-premium-overlay{
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    background:rgba(2,6,23,.72);
+    backdrop-filter:blur(12px);
+}
+.student-premium-modal{
+    width:min(620px,100%);
+    max-height:88vh;
+    overflow:auto;
+    position:relative;
+    padding:28px;
+    border:1px solid rgba(196,181,253,.20);
+    border-radius:26px;
+    background:
+        radial-gradient(circle at top right,rgba(139,92,246,.18),transparent 38%),
+        linear-gradient(145deg,#0f1018,#080a0d);
+    color:#fff;
+    box-shadow:0 30px 80px rgba(0,0,0,.55);
+}
+.student-premium-close{
+    position:absolute;
+    top:14px;
+    right:14px;
+    width:38px;
+    height:38px;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:12px;
+    background:rgba(255,255,255,.05);
+    color:#ddd6fe;
+    font-size:24px;
+    cursor:pointer;
+}
+.student-premium-kicker{
+    color:#a78bfa;
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:.16em;
+    margin-bottom:8px;
+}
+.student-premium-modal h2{
+    margin:0 0 18px;
+    background:linear-gradient(135deg,#fff,#c4b5fd,#6ee7b7);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+.student-notification-list{
+    display:grid;
+    gap:10px;
+}
+.student-notification-item{
+    width:100%;
+    display:grid;
+    grid-template-columns:42px 1fr;
+    gap:12px;
+    align-items:start;
+    text-align:left;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:17px;
+    padding:14px;
+    background:rgba(255,255,255,.035);
+    color:#fff;
+    cursor:pointer;
+    transition:.2s ease;
+}
+.student-notification-item:hover{
+    transform:translateY(-2px);
+    border-color:rgba(167,139,250,.35);
+}
+.student-notification-item.unread{
+    border-color:rgba(52,211,153,.25);
+    background:linear-gradient(145deg,rgba(16,185,129,.09),rgba(139,92,246,.07));
+}
+.student-notification-icon{
+    width:42px;
+    height:42px;
+    border-radius:13px;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(135deg,#8b5cf6,#34d399);
+}
+.student-notification-item strong,
+.student-notification-item small,
+.student-notification-item em{
+    display:block;
+}
+.student-notification-item strong{font-size:14px;margin-bottom:4px}
+.student-notification-item small{color:#b7b1c6;line-height:1.5}
+.student-notification-item em{margin-top:7px;color:#6f6a78;font-size:10px;font-style:normal}
+.student-notification-empty{
+    padding:34px 18px;
+    text-align:center;
+    border:1px dashed rgba(196,181,253,.18);
+    border-radius:18px;
+    color:#9ca3af;
+}
+.student-notification-empty span{display:block;font-size:30px;color:#a78bfa;margin-bottom:8px}
+.student-notification-empty strong{display:block;color:#fff;margin-bottom:5px}
+.student-notification-empty small{color:#8f8b98}
+@media(max-width:600px){
+    .notification-bell{width:42px;height:42px}
+    .student-premium-modal{padding:24px 16px;border-radius:22px}
+}
