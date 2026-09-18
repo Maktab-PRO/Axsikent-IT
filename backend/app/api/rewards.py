@@ -22,6 +22,12 @@ def get_student_rewards(
 ):
     student_id = verify_token(credentials.credentials)
 
+    if not student_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token noto'g'ri yoki muddati tugagan"
+        )
+
     gamification = db.query(StudentGamification).filter(
         StudentGamification.student_id == student_id
     ).first()
