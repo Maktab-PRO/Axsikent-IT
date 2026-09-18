@@ -1656,325 +1656,161 @@ function confirmLogoutStudent() {
     const token = localStorage.getItem("access_token");
 
     if (!token) {
-        container.innerHTML = `
-            <div style="
-                text-align:center;
-                padding:30px;
-                color:#ef4444;
-            ">
-                Avval tizimga kiring.
-            </div>
-        `;
+        container.innerHTML =
+            '<div style="text-align:center;padding:30px;color:#ef4444;">' +
+            'Avval tizimga kiring.' +
+            '</div>';
         return;
     }
 
-    container.innerHTML = `
-        <div style="
-            text-align:center;
-            padding:25px;
-            color:#7b8496;
-        ">
-            Mukofotlar yuklanmoqda...
-        </div>
-    `;
+    container.innerHTML =
+        '<div style="text-align:center;padding:25px;color:#7b8496;">' +
+        'Mukofotlar yuklanmoqda...' +
+        '</div>';
 
     try {
 
         const response = await fetch(
-            `${API_URL}/students/rewards`,
+            API_URL + "/students/rewards",
             {
                 headers: {
-                    "Authorization": `Bearer ${token}`
+                    "Authorization": "Bearer " + token
                 }
             }
         );
 
         if (!response.ok) {
-            throw new Error("Mukofotlarni yuklab bo'lmadi");
+            throw new Error("Mukofotlarni yuklab bo‘lmadi");
         }
 
         const data = await response.json();
-
-        const student = data.student;
+        const student = data.student || {};
         const rewards = data.rewards || [];
 
-        container.innerHTML = `
+        const rewardHtml = rewards.map(function(reward) {
 
-            <div style="
-                display:grid;
-                grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
-                gap:12px;
-                margin-bottom:20px;
-            ">
+            const crystalHtml =
+                Number(reward.crystal_price || 0) > 0
+                    ? '<div style="color:#C4B5FD;font-size:16px;font-weight:800;margin-top:7px;">' +
+                      '💎 ' + reward.crystal_price + ' Crystal' +
+                      '</div>'
+                    : "";
 
-                <div style="
-                    padding:16px;
-                    border-radius:16px;
-                    background:rgba(52,211,153,.10);
-                    border:1px solid rgba(52,211,153,.18);
-                ">
-                    <div style="font-size:22px;">🪙</div>
-                    <div style="
-                        color:#fff;
-                        font-size:20px;
-                        font-weight:800;
-                        margin-top:5px;
-                    ">
-                        ${student.coins}
-                    </div>
-                    <div style="
-                        color:#9ca3af;
-                        font-size:12px;
-                    ">
-                        Coin
-                    </div>
-                </div>
+            return (
+                '<div style="' +
+                    'position:relative;overflow:hidden;' +
+                    'border:1px solid rgba(139,92,246,0.28);' +
+                    'border-radius:20px;padding:22px;margin-bottom:16px;' +
+                    'background:radial-gradient(circle at top right,rgba(139,92,246,0.16),transparent 42%),' +
+                    'linear-gradient(145deg,rgba(20,18,30,0.96),rgba(10,10,15,0.98));' +
+                    'box-shadow:0 12px 35px rgba(0,0,0,0.28),inset 0 1px 0 rgba(255,255,255,0.04);' +
+                '">' +
 
-                <div style="
-                    padding:16px;
-                    border-radius:16px;
-                    background:rgba(168,85,247,.10);
-                    border:1px solid rgba(168,85,247,.18);
-                ">
-                    <div style="font-size:22px;">💎</div>
-                    <div style="
-                        color:#fff;
-                        font-size:20px;
-                        font-weight:800;
-                        margin-top:5px;
-                    ">
-                        ${student.crystals}
-                    </div>
-                    <div style="
-                        color:#9ca3af;
-                        font-size:12px;
-                    ">
-                        Crystal
-                    </div>
-                </div>
+                    '<div style="position:absolute;width:120px;height:120px;right:-45px;top:-45px;border-radius:50%;' +
+                        'background:rgba(139,92,246,0.13);filter:blur(35px);pointer-events:none;">' +
+                    '</div>' +
 
-                <div style="
-                    padding:16px;
-                    border-radius:16px;
-                    background:rgba(59,130,246,.10);
-                    border:1px solid rgba(59,130,246,.18);
-                ">
-                    <div style="font-size:22px;">⭐</div>
-                    <div style="
-                        color:#fff;
-                        font-size:20px;
-                        font-weight:800;
-                        margin-top:5px;
-                    ">
-                        ${student.xp}
-                    </div>
-                    <div style="
-                        color:#9ca3af;
-                        font-size:12px;
-                    ">
-                        XP · Level ${student.level}
-                    </div>
-                </div>
+                    '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">' +
 
-            </div>
+                        '<div style="width:52px;height:52px;flex-shrink:0;border-radius:16px;display:flex;' +
+                            'align-items:center;justify-content:center;font-size:25px;' +
+                            'background:linear-gradient(135deg,#8B5CF6,#6D28D9);' +
+                            'box-shadow:0 8px 22px rgba(139,92,246,0.25);">' +
+                            '🎁' +
+                        '</div>' +
 
-            <h3 style="
-                color:#fff;
-                margin:0 0 14px;
-                font-size:17px;
-            ">
-                🎁 Mavjud mukofotlar
-            </h3>
+                        '<div style="min-width:0;">' +
+                            '<h3 style="margin:0;color:#FFFFFF;font-size:18px;font-weight:800;line-height:1.35;">' +
+                                escapeHtml(reward.name || "Mukofot") +
+                            '</h3>' +
+                        '</div>' +
 
-            ${
-  rewards.map(reward => `
-    <div style="
-        position:relative;
-        overflow:hidden;
-        border:1px solid rgba(139,92,246,0.28);
-        border-radius:20px;
-        padding:22px;
-        margin-bottom:16px;
-        background:
-            radial-gradient(
-                circle at top right,
-                rgba(139,92,246,0.16),
-                transparent 42%
-            ),
-            linear-gradient(
-                145deg,
-                rgba(20,18,30,0.96),
-                rgba(10,10,15,0.98)
+                    '</div>' +
+
+                    '<p style="color:#AAA5B8;margin:0 0 18px;line-height:1.6;font-size:14px;">' +
+                        escapeHtml(reward.description || "Mukofot tavsifi mavjud emas") +
+                    '</p>' +
+
+                    '<div style="height:1px;background:rgba(255,255,255,0.07);margin-bottom:17px;"></div>' +
+
+                    '<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:15px;flex-wrap:wrap;">' +
+
+                        '<div>' +
+                            '<div style="color:#817C8F;font-size:12px;margin-bottom:5px;">Mukofot narxi</div>' +
+
+                            '<div style="color:#C4B5FD;font-size:16px;font-weight:800;">' +
+                                '🪙 ' + Number(reward.coin_price || 0) + ' Coin' +
+                            '</div>' +
+
+                            crystalHtml +
+                        '</div>' +
+
+                        '<button' +
+                            ' onclick="buyStudentReward(' + Number(reward.id) + ')"' +
+                            ' style="border:none;border-radius:13px;padding:12px 20px;' +
+                                'background:linear-gradient(135deg,#8B5CF6,#6D28D9);' +
+                                'color:#FFFFFF;font-size:14px;font-weight:800;cursor:pointer;' +
+                                'box-shadow:0 8px 24px rgba(139,92,246,0.25);"' +
+                        '>' +
+                            'Sotib olish' +
+                        '</button>' +
+
+                    '</div>' +
+
+                    '<div style="margin-top:16px;color:#777285;font-size:12px;">' +
+                        'Mavjud: ' + Number(reward.stock || 0) + ' dona' +
+                    '</div>' +
+
+                '</div>'
             );
-        box-shadow:
-            0 12px 35px rgba(0,0,0,0.28),
-            inset 0 1px 0 rgba(255,255,255,0.04);
-     ">
 
-        <div style="
-            position:absolute;
-            width:120px;
-            height:120px;
-            right:-45px;
-            top:-45px;
-            border-radius:50%;
-            background:rgba(139,92,246,0.13);
-            filter:blur(35px);
-            pointer-events:none;
-        "> </div>
+        }).join("");
 
-        <div style="
-            display:flex;
-            align-items:center;
-            gap:14px;
-            margin-bottom:14px;
-        ">
+        container.innerHTML =
+            '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;">' +
 
-            <div style="
-                width:52px;
-                height:52px;
-                flex-shrink:0;
-                border-radius:16px;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                font-size:25px;
-                background:linear-gradient(
-                    135deg,
-                    #8B5CF6,
-                    #6D28D9
-                );
-                box-shadow:
-                    0 8px 22px rgba(139,92,246,0.25);
-            ">
-                🎁
-            </div>
+                '<div style="padding:16px;border-radius:16px;background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.18);">' +
+                    '<div style="font-size:22px;">🪙</div>' +
+                    '<div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' +
+                        Number(student.coins || 0) +
+                    '</div>' +
+                    '<div style="color:#9ca3af;font-size:12px;">Coin</div>' +
+                '</div>' +
 
-            <div style="
-                min-width:0;
-            ">
+                '<div style="padding:16px;border-radius:16px;background:rgba(168,85,247,.10);border:1px solid rgba(168,85,247,.18);">' +
+                    '<div style="font-size:22px;">💎</div>' +
+                    '<div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' +
+                        Number(student.crystals || 0) +
+                    '</div>' +
+                    '<div style="color:#9ca3af;font-size:12px;">Crystal</div>' +
+                '</div>' +
 
-                <h3 style="
-                    margin:0;
-                    color:#FFFFFF;
-                    font-size:18px;
-                    font-weight:800;
-                    line-height:1.35;
-                ">
-                    ${reward.name}
-                </h3>
+                '<div style="padding:16px;border-radius:16px;background:rgba(59,130,246,.10);border:1px solid rgba(59,130,246,.18);">' +
+                    '<div style="font-size:22px;">⭐</div>' +
+                    '<div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' +
+                        Number(student.xp || 0) +
+                    '</div>' +
+                    '<div style="color:#9ca3af;font-size:12px;">XP · Level ' +
+                        Number(student.level || 1) +
+                    '</div>' +
+                '</div>' +
 
-            </div>
+            '</div>' +
 
-        </div>
+            '<h3 style="color:#fff;margin:0 0 14px;font-size:17px;">' +
+                '🎁 Mavjud mukofotlar' +
+            '</h3>' +
 
-        <p style="
-            color:#AAA5B8;
-            margin:0 0 18px;
-            line-height:1.6;
-            font-size:14px;
-        ">
-            ${reward.description || "Mukofot tavsifi mavjud emas"}
-        </p>
-
-        <div style="
-            height:1px;
-            background:rgba(255,255,255,0.07);
-            margin-bottom:17px;
-        "></div>
-
-        <div style="
-            display:flex;
-            justify-content:space-between;
-            align-items:flex-end;
-            gap:15px;
-            flex-wrap:wrap;
-        ">
-
-            <div>
-
-                <div style="
-                    color:#817C8F;
-                    font-size:12px;
-                    margin-bottom:5px;
-                ">
-                    Mukofot narxi
-                </div>
-
-                <div style="
-                    color:#C4B5FD;
-                    font-size:16px;
-                    font-weight:800;
-                ">
-                    🪙 ${reward.coin_price} Coin
-                </div>
-
-                ${
-    reward.crystal_price > 0
-        ? `
-            <div style="
-                color:#C4B5FD;
-                font-size:16px;
-                font-weight:800;
-                margin-top:7px;
-            ">
-                💎 ${reward.crystal_price} Crystal
-            </div>
-        `
-        : ""
-}
-
-            </div>
-
-            <button
-                onclick="buyStudentReward(${reward.id})"
-                style="
-                    border:none;
-                    border-radius:13px;
-                    padding:12px 20px;
-                    background:linear-gradient(
-                        135deg,
-                        #8B5CF6,
-                        #6D28D9
-                    );
-                    color:#FFFFFF;
-                    font-size:14px;
-                    font-weight:800;
-                    cursor:pointer;
-                    box-shadow:
-                        0 8px 24px rgba(139,92,246,0.25);
-                "
-            >
-                Sotib olish
-            </button>
-
-        </div>
-
-        <div style="
-            margin-top:16px;
-            color:#777285;
-            font-size:12px;
-        ">
-            Mavjud: ${reward.stock} dona
-        </div>
-
-    </div>
-`).join("")
-        `;
+            rewardHtml;
 
     } catch (error) {
 
         console.error(error);
 
-        container.innerHTML = `
-            <div style="
-                text-align:center;
-                padding:30px;
-                color:#ef4444;
-            ">
-                Mukofotlarni yuklashda xatolik yuz berdi.
-            </div>
-        `;
+        container.innerHTML =
+            '<div style="text-align:center;padding:30px;color:#ef4444;">' +
+            'Mukofotlarni yuklashda xatolik yuz berdi.' +
+            '</div>';
     }
 }
 
