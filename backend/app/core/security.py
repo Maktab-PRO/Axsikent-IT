@@ -139,3 +139,19 @@ def require_admin(
     """
 
     return admin
+
+    
+def require_superadmin(
+    admin: Admin = Depends(get_current_admin)
+):
+    """
+    Faqat bosh administrator uchun.
+    """
+
+    if not admin.is_superadmin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Bu amal faqat bosh administrator uchun ruxsat etilgan"
+        )
+
+    return admin
