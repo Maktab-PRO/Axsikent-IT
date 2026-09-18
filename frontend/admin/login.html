@@ -2,7 +2,10 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Axsikent IT — Administrator Login</title>
 
@@ -32,7 +35,7 @@
 
                 <div class="brand-info">
                     <strong>AXSIKENT</strong>
-                   <small>IT BOSHQARUV MARKAZI</small>
+                    <small>IT BOSHQARUV MARKAZI</small>
                 </div>
 
             </div>
@@ -43,7 +46,7 @@
                 <span class="eyebrow">
                     XAVFSIZ KIRISH
                 </span>
-                
+
                 <h1>
                     Administrator
                     <br>
@@ -51,8 +54,8 @@
                 </h1>
 
                 <p>
-                    BOSHQARUV MARKAZI boshqaruv paneliga
-                    kirish uchun ma'lumotlaringizni kiriting.
+                    Administrator boshqaruv paneliga kirish uchun
+                    ma'lumotlaringizni kiriting.
                 </p>
 
             </div>
@@ -68,8 +71,22 @@
 
                     <div class="login-input-wrap">
 
-                        <span class="input-icon">
-                            ◉
+                        <span
+                            class="input-icon"
+                            aria-hidden="true"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                width="20"
+                                height="20"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"/>
+                            </svg>
                         </span>
 
                         <input
@@ -78,6 +95,7 @@
                             name="phone"
                             placeholder="+998901234567"
                             autocomplete="username"
+                            inputmode="tel"
                             required
                         >
 
@@ -94,8 +112,29 @@
 
                     <div class="login-input-wrap">
 
-                        <span class="input-icon">
-                            ◈
+                        <span
+                            class="input-icon"
+                            aria-hidden="true"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                width="20"
+                                height="20"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <rect
+                                    x="3"
+                                    y="11"
+                                    width="18"
+                                    height="10"
+                                    rx="2"
+                                />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
                         </span>
 
                         <input
@@ -113,7 +152,24 @@
                             id="passwordToggle"
                             aria-label="Parolni ko‘rsatish"
                         >
-                            ◉
+                            <svg
+                                viewBox="0 0 24 24"
+                                width="20"
+                                height="20"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                            >
+                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/>
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="3"
+                                />
+                            </svg>
                         </button>
 
                     </div>
@@ -124,6 +180,8 @@
                 <div
                     class="login-error"
                     id="loginError"
+                    role="alert"
+                    aria-live="polite"
                 ></div>
 
 
@@ -134,11 +192,11 @@
                 >
 
                     <span class="login-submit-text">
-                        BOSHQARUV MARKAZI'ga kirish
+                        Tizimga kirish
                     </span>
 
                     <span class="login-submit-loader">
-                        Kirilmoqda...
+                        Tekshirilmoqda...
                     </span>
 
                     <span class="login-submit-arrow">
@@ -152,13 +210,12 @@
 
             <div class="login-security">
 
-                <span class="security-icon">
+                <span
+                    class="security-icon"
+                    aria-hidden="true"
+                >
                     ◆
                 </span>
-
-               <span>
-                   Xavfsiz JWT autentifikatsiyasi
-               </span>
 
             </div>
 
@@ -225,18 +282,80 @@
 
 
         /* =================================================
-           AGAR OLD SESSION BOR BO'LSA
+           OLD SESSIONNI BACKEND ORQALI TEKSHIRISH
         ================================================= */
 
-        const existingToken =
-            localStorage.getItem(
-                TOKEN_KEY
-            );
+        async function checkExistingSession() {
 
-        if (existingToken) {
+            const existingToken =
+                localStorage.getItem(
+                    TOKEN_KEY
+                );
 
-            window.location.href =
-                "index.html";
+            if (!existingToken) {
+                return;
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        `${API_BASE}/admins/me`,
+                        {
+                            method: "GET",
+
+                            headers: {
+                                "Authorization":
+                                    `Bearer ${existingToken}`
+                            }
+                        }
+                    );
+
+
+                if (response.ok) {
+
+                    window.location.replace(
+                        "index.html"
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    response.status === 401 ||
+                    response.status === 403
+                ) {
+
+                    localStorage.removeItem(
+                        TOKEN_KEY
+                    );
+
+                    localStorage.removeItem(
+                        ADMIN_KEY
+                    );
+
+                    return;
+                }
+
+
+                showError(
+                    "Sessiyani tekshirishda server xatosi yuz berdi."
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Session check error:",
+                    error
+                );
+
+                showError(
+                    "Server bilan bog‘lanib bo‘lmadi. Internet aloqangizni tekshiring."
+                );
+
+            }
 
         }
 
@@ -249,18 +368,64 @@
             "click",
             () => {
 
-                const isPassword =
+                const willShow =
                     passwordInput.type === "password";
 
+
                 passwordInput.type =
-                    isPassword
+                    willShow
                         ? "text"
                         : "password";
 
-                passwordToggle.textContent =
-                    isPassword
-                        ? "◎"
-                        : "◉";
+
+                passwordToggle.innerHTML =
+                    willShow
+                        ? `
+                            <svg
+                                viewBox="0 0 24 24"
+                                width="20"
+                                height="20"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                            >
+                                <path d="M3 3l18 18"/>
+                                <path d="M10.58 10.58a2 2 0 0 0 2.83 2.83"/>
+                                <path d="M9.88 4.24A9.9 9.9 0 0 1 12 4c5 0 8.5 4 10 8a16.4 16.4 0 0 1-3.17 4.73"/>
+                                <path d="M6.61 6.61C4.72 7.83 3.35 9.68 2 12c1.5 4 5 8 10 8 1.1 0 2.15-.18 3.12-.51"/>
+                            </svg>
+                        `
+                        : `
+                            <svg
+                                viewBox="0 0 24 24"
+                                width="20"
+                                height="20"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                            >
+                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/>
+                                <circle
+                                    cx="12"
+                                    cy="12"
+                                    r="3"
+                                />
+                            </svg>
+                        `;
+
+
+                passwordToggle.setAttribute(
+                    "aria-label",
+                    willShow
+                        ? "Parolni yashirish"
+                        : "Parolni ko‘rsatish"
+                );
 
             }
         );
@@ -284,7 +449,8 @@
 
         function clearError() {
 
-            errorBox.textContent = "";
+            errorBox.textContent =
+                "";
 
             errorBox.classList.remove(
                 "show"
@@ -307,11 +473,16 @@
 
 
                 const phone =
-                    phoneInput.value.trim();
+                    phoneInput.value
+                        .trim()
+                        .replace(/[\s()-]/g, "");
+
 
                 const password =
                     passwordInput.value;
 
+
+                /* EMPTY CHECK */
 
                 if (!phone || !password) {
 
@@ -322,6 +493,26 @@
                     return;
                 }
 
+
+                /* UZBEKISTAN PHONE CHECK */
+
+                if (
+                    !/^\+998\d{9}$/.test(
+                        phone
+                    )
+                ) {
+
+                    showError(
+                        "Telefon raqamni +998901234567 ko‘rinishida kiriting."
+                    );
+
+                    phoneInput.focus();
+
+                    return;
+                }
+
+
+                /* LOADING */
 
                 submitButton.classList.add(
                     "loading"
@@ -352,7 +543,9 @@
                         );
 
 
-                    let data = null;
+                    let data =
+                        null;
+
 
                     try {
 
@@ -361,7 +554,8 @@
 
                     } catch {
 
-                        data = null;
+                        data =
+                            null;
 
                     }
 
@@ -376,7 +570,9 @@
                     }
 
 
-                    if (!data?.access_token) {
+                    if (
+                        !data?.access_token
+                    ) {
 
                         throw new Error(
                             "Server token qaytarmadi."
@@ -417,12 +613,16 @@
                     );
 
 
-                    setTimeout(() => {
+                    setTimeout(
+                        () => {
 
-                        window.location.href =
-                            "index.html";
+                            window.location.replace(
+                                "index.html"
+                            );
 
-                    }, 500);
+                        },
+                        500
+                    );
 
 
                 } catch (error) {
@@ -431,6 +631,7 @@
                         "Admin login error:",
                         error
                     );
+
 
                     showError(
                         error.message ||
@@ -449,6 +650,13 @@
 
             }
         );
+
+
+        /* =================================================
+           START SESSION CHECK
+        ================================================= */
+
+        checkExistingSession();
 
     </script>
 
