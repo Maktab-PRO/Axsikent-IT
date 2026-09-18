@@ -3,6 +3,7 @@
 const API_BASE = "https://axsikent-it-4.onrender.com";
 const TOKEN_KEY = "axsikent_admin_token";
 const ADMIN_KEY = "axsikent_admin";
+const SESSION_KEY = "axsikent_admin_session";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
@@ -36,8 +37,9 @@ function clearAuth() {
 
 function requireAdminAuth() {
     const token = getToken();
+    const session = sessionStorage.getItem(SESSION_KEY);
 
-    if (!token) {
+    if (!token || session !== "active") {
         window.location.replace("login.html");
         return false;
     }
@@ -697,23 +699,12 @@ function initMobileMenu() {
         () => {
 
             const isOpen =
-                sidebar.classList.contains("open");
+                sidebar.classList.toggle("open");
 
-            if (isOpen) {
-
-                sidebar.classList.remove("open");
-
-                sidebar.style.transform =
-                    "translateX(-100%)";
-
-            } else {
-
-                sidebar.classList.add("open");
-
-                sidebar.style.transform =
-                    "translateX(0)";
-
-            }
+            button.setAttribute(
+                "aria-expanded",
+                String(isOpen)
+            );
 
         }
     );
