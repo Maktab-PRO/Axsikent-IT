@@ -2275,12 +2275,12 @@ async function loadLeads() {
                 '</select></td>' +
                 '<td>' +
                 '<div class="lead-action-group">' +
-                '<button type="button" class="lead-view-btn" onclick="viewLead(' + Number(lead.id) + ')">' +
+                '<button type="button" class="lead-view-btn" data-lead-action="view" data-lead-id="' + Number(lead.id) + '">' +
                 '<span class="lead-view-icon">⌕</span> Ko‘rish</button>' +
                 (lead.status === "new" || lead.status === "contacted"
-                    ? '<button type="button" class="lead-approve-btn" onclick="approveLead(' + Number(lead.id) + ')">✓ Tasdiqlash</button>'
+                    ? '<button type="button" class="lead-approve-btn" data-lead-action="approve" data-lead-id="' + Number(lead.id) + '">✓ Tasdiqlash</button>'
                     : '') +
-                '<button type="button" class="lead-delete-btn" onclick="deleteLead(' + Number(lead.id) + ')">O‘chirish</button>' +
+                '<button type="button" class="lead-delete-btn" data-lead-action="delete" data-lead-id="' + Number(lead.id) + '">O‘chirish</button>' +
                 '</div>' +
                 '</td></tr>'
             )
@@ -2292,6 +2292,31 @@ async function loadLeads() {
             '<div class="module-empty"><h3>Xatolik</h3><p>' +
             escapeHtml(error.message) + '</p></div>';
     }
+}
+
+function initLeadActions() {
+    if (window.__axsikentLeadActionsReady) return;
+    window.__axsikentLeadActionsReady = true;
+
+    document.addEventListener("click", event => {
+        const button = event.target.closest("[data-lead-action]");
+        if (!button) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const id = Number(button.dataset.leadId);
+        const action = button.dataset.leadAction;
+
+        if (!Number.isInteger(id) || id <= 0) {
+            showToast("Ariza ID noto‘g‘ri.", "error");
+            return;
+        }
+
+        if (action === "view") viewLead(id);
+        if (action === "approve") approveLead(id);
+        if (action === "delete") deleteLead(id);
+    });
 }
 
 async function viewLead(id) {
@@ -3701,6 +3726,7 @@ async function initAdminPanel() {
     if (!requireAdminAuth()) return;
 
     initNavigation();
+    initLeadActions();
     initMobileMenu();
     initNotifications();
     initAdministratorManagement();
