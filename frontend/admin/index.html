@@ -265,25 +265,560 @@
                      DASHBOARD
                 ========================================== -->
 
-                                                                                                                                <section class="page-section" id="section-ranking">
+                <section
+                    class="page-section active"
+                    id="section-dashboard"
+                >
 
-                    <div class="section-header">
+                    <div class="section-intro">
+
                         <div>
-                            <div class="section-eyebrow">MUKOFOTLAR / REYTING</div>
-                            <h2>Reyting</h2>
-                            <p>O‘quvchilar reytingini real tizimdan ko‘ring.</p>
+                            <span class="eyebrow">
+                                ADMINISTRATOR
+                            </span>
+
+                            <h2>
+                                Tizim holati
+                            </h2>
+
+                            <p>
+                                Axsikent IT platformasining asosiy
+                                boshqaruv markazi.
+                            </p>
                         </div>
+
+                        <div class="system-status">
+                            <span class="status-pulse"></span>
+                           <span>Tizim faol</span>
+                        </div>
+
                     </div>
 
-                    <div class="admin-panel">
-                        <div class="panel-header">
-                            <div><h3>O‘quvchilar reytingi</h3><p>Ranking ma’lumotlari</p></div>
-                            <button class="panel-link" onclick="loadRanking()">↻ Yangilash</button>
-                        </div>
-                        <div id="rankingContent"><div class="module-loading"><div class="module-spinner"></div><span>Reyting yuklanmoqda...</span></div></div>
+
+                    <!-- STAT CARDS -->
+
+                    <div class="stats-grid">
+
+                        <article class="stat-card">
+                            <div class="stat-card-top">
+                                <span class="stat-label">
+                                    O‘QUVCHILAR
+                                </span>
+
+                                <span class="stat-icon">
+                                    ◎
+                                </span>
+                            </div>
+
+                            <strong
+                                class="stat-value"
+                                id="statStudents"
+                            >
+                                —
+                            </strong>
+
+                            <span class="stat-meta">
+                                Faol o‘quvchilar
+                            </span>
+                        </article>
+
+
+                        <article class="stat-card">
+                            <div class="stat-card-top">
+                                <span class="stat-label">
+                                    O‘QITUVCHILAR
+                                </span>
+
+                                <span class="stat-icon">
+                                    ◉
+                                </span>
+                            </div>
+
+                            <strong
+                                class="stat-value"
+                                id="statTeachers"
+                            >
+                                —
+                            </strong>
+
+                            <span class="stat-meta">
+                                Faol o‘qituvchilar
+                            </span>
+                        </article>
+
+
+                        <article class="stat-card">
+                            <div class="stat-card-top">
+                                <span class="stat-label">
+                                    KURSLAR
+                                </span>
+
+                                <span class="stat-icon">
+                                    ▣
+                                </span>
+                            </div>
+
+                            <strong
+                                class="stat-value"
+                                id="statCourses"
+                            >
+                                —
+                            </strong>
+
+                            <span class="stat-meta">
+                                Aktiv kurslar
+                            </span>
+                        </article>
+
+
+                        <article class="stat-card accent-card">
+                            <div class="stat-card-top">
+                                <span class="stat-label">
+                                    BUYURTMALAR
+                                </span>
+
+                                <span class="stat-icon">
+                                    ◇
+                                </span>
+                            </div>
+
+                            <strong
+                                class="stat-value"
+                                id="statOrders"
+                            >
+                                —
+                            </strong>
+
+                            <span class="stat-meta">
+                                Kutilayotgan buyurtmalar
+                            </span>
+                        </article>
+
                     </div>
+
+
+                    <!-- SECOND ROW -->
+
+                    <div class="dashboard-grid">
+
+
+                        <!-- SHOP OVERVIEW -->
+
+                        <article class="panel-card">
+
+                            <div class="panel-header">
+
+                                <div>
+                                    <span class="panel-eyebrow">
+                                        MUKOFOTLAR
+                                    </span>
+
+                                    <h3>
+                                        Mukofotlar tizimi
+                                    </h3>
+                                </div>
+
+                                <button
+                                    class="panel-link"
+                                    data-section="rewards"
+                                >
+                                    Boshqarish →
+                                </button>
+
+                            </div>
+
+
+                            <div class="reward-overview">
+
+                                <div class="overview-item">
+
+                                    <span
+                                        class="overview-value"
+                                        id="statProducts"
+                                    >
+                                        —
+                                    </span>
+
+                                    <span>
+                                        Jami mukofot
+                                    </span>
+
+                                </div>
+
+
+                                <div class="overview-item">
+
+                                    <span
+                                        class="overview-value"
+                                        id="statActiveProducts"
+                                    >
+                                        —
+                                    </span>
+
+                                    <span>
+                                        Aktiv
+                                    </span>
+
+                                </div>
+
+
+                                <div class="overview-item">
+
+                                    <span
+                                        class="overview-value"
+                                        id="statPendingOrders"
+                                    >
+                                        —
+                                    </span>
+
+                                    <span>
+                                        Kutilmoqda
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+
+                        <!-- QUICK ACTIONS -->
+
+                        <article class="panel-card">
+
+                            <div class="panel-header">
+
+                                <div>
+                                    <span class="panel-eyebrow">
+                                        TEZKOR AMALLAR
+                                    </span>
+                                    <h3>
+                                        Tezkor amallar
+                                    </h3>
+                                </div>
+
+                            </div>
+
+
+                            <div class="quick-actions">
+
+                                <button
+                                    class="quick-action"
+                                    data-section="students"
+                                >
+                                    <span class="quick-icon">
+                                        ◎
+                                    </span>
+
+                                    <span>
+                                        O‘quvchi
+                                        <small>
+                                            Profil boshqarish
+                                        </small>
+                                    </span>
+
+                                    <b>→</b>
+                                </button>
+
+
+                                <button
+                                    class="quick-action"
+                                    data-section="courses"
+                                >
+                                    <span class="quick-icon">
+                                        ▣
+                                    </span>
+
+                                    <span>
+                                        Kurs
+                                        <small>
+                                            Yangi kurs yaratish
+                                        </small>
+                                    </span>
+
+                                    <b>→</b>
+                                </button>
+
+
+                                <button
+                                    class="quick-action"
+                                    data-section="rewards"
+                                >
+                                    <span class="quick-icon">
+                                        ✦
+                                    </span>
+
+                                    <span>
+                                        Mukofot
+                                        <small>
+                                            Shop boshqarish
+                                        </small>
+                                    </span>
+
+                                    <b>→</b>
+                                </button>
+
+
+                                <button
+                                    class="quick-action"
+                                    data-section="leads"
+                                >
+                                    <span class="quick-icon">
+                                        ↗
+                                    </span>
+
+                                    <span>
+                                        Ariza
+                                        <small>
+                                            Leadlarni ko‘rish
+                                        </small>
+                                    </span>
+
+                                    <b>→</b>
+                                </button>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+
+                    <!-- SYSTEM INFORMATION -->
+
+                    <article class="panel-card system-panel">
+
+                        <div class="panel-header">
+
+                            <div>
+                                <span class="panel-eyebrow">
+                                    TIZIM
+                                </span>
+
+                                <h3>
+                                    Tizim ma'lumotlari
+                                </h3>
+                            </div>
+
+                        </div>
+
+
+                        <div class="system-grid">
+
+                            <div class="system-item">
+                                <span>API</span>
+                                <strong>
+                                    Axsikent IT Backend
+                                </strong>
+                            </div>
+
+                            <div class="system-item">
+                               <span>Muhit</span>
+                                <strong>
+                                    Ishlab chiqarish
+                                </strong>
+                            </div>
+
+                            <div class="system-item">
+                                <span>Autentifikatsiya</span>
+                                <strong>
+                                    JWT / Administrator
+                                </strong>
+                            </div>
+
+                           <div class="system-item">
+                               <span>Panel</span>
+                               <strong>
+                                   Boshqaruv markazi
+                               </strong>
+                           </div>
+
+                        </div>
+
+                    </article>
 
                 </section>
+
+
+                <!-- =========================================
+                     PLACEHOLDER SECTIONS
+                ========================================== -->
+
+                <section class="page-section" id="section-students">
+
+    <div class="section-header">
+        <div>
+            <div class="section-eyebrow">TA’LIM / O‘QUVCHILAR</div>
+            <h2>O‘quvchilar</h2>
+            <p>Platformadagi barcha o‘quvchilarni boshqaring.</p>
+        </div>
+    </div>
+
+    <div class="admin-panel students-panel">
+
+        <div class="panel-header">
+            <div>
+                <h3>O‘quvchilar ro‘yxati</h3>
+                <p>O‘quvchilar ro‘yxati va akkaunt holati</p>
+            </div>
+
+            <button
+                class="panel-link"
+                data-section="students"
+                onclick="loadStudents()"
+            >
+                ↻ Yangilash
+            </button>
+        </div>
+
+        <div id="studentsContent">
+            <div class="module-loading">
+                <div class="module-spinner"></div>
+                <span>O‘quvchilar yuklanmoqda...</span>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+                <section class="page-section" id="section-teachers"><div class="section-header"><div><div class="section-eyebrow">TA’LIM / O‘QITUVCHILAR</div><h2>O‘qituvchilar</h2><p>O‘qituvchilarni boshqaring va holatini nazorat qiling.</p></div><div class="module-actions"><input id="teacherSearch" class="students-search" type="search" placeholder="O‘qituvchi qidirish..." oninput="filterTeachers()"><button class="panel-link" onclick="loadTeachers()">↻ Yangilash</button></div></div><div class="admin-panel"><div class="panel-header"><div><h3>O‘qituvchilar ro‘yxati</h3><p>Faol va nofaol o‘qituvchilar</p></div></div><div id="teachersContent"><div class="module-loading"><div class="module-spinner"></div><span>O‘qituvchilar yuklanmoqda...</span></div></div></div></section>
+
+
+                <section class="page-section" id="section-courses"><div class="section-header"><div><div class="section-eyebrow">TA’LIM / KURSLAR</div><h2>Kurslar</h2><p>Kurslar, kategoriyalar va faollik holatini boshqaring.</p></div><div class="module-actions"><button class="panel-link" onclick="openCourseCreate()">＋ Kurs yaratish</button><button class="panel-link" onclick="loadCourses()">↻ Yangilash</button></div></div><div class="admin-panel"><div class="panel-header"><div><h3>Kurslar ro‘yxati</h3><p>Platformadagi ta’lim kurslari</p></div></div><div id="coursesContent"><div class="module-loading"><div class="module-spinner"></div><span>Kurslar yuklanmoqda...</span></div></div></div></section>
+
+
+                <section class="page-section" id="section-groups"><div class="section-header"><div><div class="section-eyebrow">TA’LIM / GURUHLAR</div><h2>Guruhlar</h2><p>Kurs guruhlari va o‘quvchilar sig‘imini boshqaring.</p></div><div class="module-actions"><button class="panel-link" onclick="openGroupCreate()">＋ Guruh yaratish</button><button class="panel-link" onclick="loadGroups()">↻ Yangilash</button></div></div><div class="admin-panel"><div class="panel-header"><div><h3>Guruhlar ro‘yxati</h3><p>Kurs, o‘qituvchi va o‘quvchilar</p></div></div><div id="groupsContent"><div class="module-loading"><div class="module-spinner"></div><span>Guruhlar yuklanmoqda...</span></div></div></div></section>
+
+
+                <section class="page-section" id="section-homework">
+
+    <div class="section-header">
+        <div>
+            <div class="section-eyebrow">
+                TA’LIM / UY VAZIFALARI
+            </div>
+
+            <h2>Uy vazifalari</h2>
+
+            <p>
+                O‘quvchilar topshirgan vazifalar va javoblarni nazorat qiling.
+            </p>
+        </div>
+    </div>
+
+
+    <div class="admin-panel homework-panel">
+
+        <div class="panel-header">
+            <div>
+                <h3>Topshirilgan vazifalar</h3>
+
+                <p>
+                    O‘quvchilar bajargan vazifalar
+                </p>
+            </div>
+
+            <button
+                class="panel-link"
+                data-section="homework"
+                onclick="loadHomeworkSubmissions()"
+            >
+                ↻ Yangilash
+            </button>
+        </div>
+
+
+        <div class="homework-stats">
+
+            <div class="homework-stat-card">
+                <span>📝</span>
+                <div>
+                    <small>Jami topshiriqlar</small>
+                    <strong id="homeworkTotal">0</strong>
+                </div>
+            </div>
+
+            <div class="homework-stat-card">
+                <span>⏳</span>
+                <div>
+                    <small>Kutilmoqda</small>
+                    <strong id="homeworkPending">0</strong>
+                </div>
+            </div>
+
+            <div class="homework-stat-card">
+                <span>✅</span>
+                <div>
+                    <small>Tekshirilgan</small>
+                    <strong id="homeworkChecked">0</strong>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="students-toolbar">
+
+            <div class="students-search">
+
+                <span>⌕</span>
+
+                <input
+                    type="text"
+                    id="homeworkSearch"
+                    placeholder="O‘quvchi yoki vazifani qidirish..."
+                    oninput="filterHomeworkSubmissions()"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div id="homeworkSubmissionsContent">
+
+            <div class="module-loading">
+
+                <div class="module-spinner"></div>
+
+                <span>
+                    Topshirilgan vazifalar yuklanmoqda...
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+                <section
+                    class="page-section"
+                    id="section-leads"
+                >
+                    <div class="empty-module">
+                        <span>↗</span>
+                        <h2>Arizalar</h2>
+                        <p>
+                            Arizalar boshqaruv moduli tayyorlanmoqda.
+                        </p>
+                    </div>
+                </section>
+
+
+                <section class="page-section" id="section-rewards"><div class="section-header"><div><div class="section-eyebrow">MUKOFOTLAR / SHOP</div><h2>Mukofotlar</h2><p>Coin, Crystal va mukofot mahsulotlarini boshqaring.</p></div><div class="module-actions"><button class="panel-link" onclick="openProductCreate()">＋ Mukofot qo‘shish</button><button class="panel-link" onclick="loadRewards()">↻ Yangilash</button></div></div><div class="admin-panel"><div class="panel-header"><div><h3>Mukofotlar ro‘yxati</h3><p>Shop mahsulotlari</p></div></div><div id="rewardsContent"><div class="module-loading"><div class="module-spinner"></div><span>Mukofotlar yuklanmoqda...</span></div></div></div></section>
+
+
+                <section class="page-section" id="section-orders"><div class="section-header"><div><div class="section-eyebrow">MUKOFOTLAR / BUYURTMALAR</div><h2>Buyurtmalar</h2><p>O‘quvchilar buyurtmalarini nazorat qiling.</p></div><button class="panel-link" onclick="loadOrders()">↻ Yangilash</button></div><div class="admin-panel"><div class="panel-header"><div><h3>Buyurtmalar ro‘yxati</h3><p>Shop buyurtmalari va statuslari</p></div></div><div id="ordersContent"><div class="module-loading"><div class="module-spinner"></div><span>Buyurtmalar yuklanmoqda...</span></div></div></div></section>
+
+
+                <section class="page-section" id="section-books"><div class="section-header"><div><div class="section-eyebrow">MUKOFOTLAR / KITOBLAR</div><h2>Kitoblar</h2><p>Kitoblar katalogini boshqaring.</p></div><div class="module-actions"><button class="panel-link" onclick="openBookCreate()">＋ Kitob qo‘shish</button><button class="panel-link" onclick="loadBooks()">↻ Yangilash</button></div></div><div class="admin-panel"><div class="panel-header"><div><h3>Kitoblar ro‘yxati</h3><p>Kitob katalogi</p></div></div><div id="booksContent"><div class="module-loading"><div class="module-spinner"></div><span>Kitoblar yuklanmoqda...</span></div></div></div></section>
+
+
+                <section class="page-section" id="section-ranking"><div class="section-header"><div><div class="section-eyebrow">MUKOFOTLAR / REYTING</div><h2>Reyting</h2><p>O‘quvchilar reytingini real tizimdan ko‘ring.</p></div><button class="panel-link" onclick="loadRanking()">↻ Yangilash</button></div><div class="admin-panel"><div class="panel-header"><div><h3>O‘quvchilar reytingi</h3><p>Ranking ma’lumotlari</p></div></div><div id="rankingContent"><div class="module-loading"><div class="module-spinner"></div><span>Reyting yuklanmoqda...</span></div></div></div></section>
 
 
                 <section
