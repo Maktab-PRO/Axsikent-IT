@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Axsikent IT — Student Cabinet</title>
+    <title>Axsikent IT — O‘quvchi kabineti</title>
 
         <link rel="stylesheet" href="student.css">
 </head>
@@ -35,8 +35,9 @@
 
     <div class="topbar-right">
 
-        <button class="notification" onclick="showMessage('Hozircha yangi bildirishnoma yo‘q 🔔')">
-            🔔
+        <button class="notification notification-bell" type="button" onclick="openStudentNotifications()" aria-label="Bildirishnomalar" title="Bildirishnomalar">
+            <span class="notification-bell-icon">⌁</span>
+            <span class="notification-badge" id="studentNotificationBadge" hidden>0</span>
         </button>
 
         <div class="profile-mini">
@@ -141,7 +142,7 @@
 
         <div class="welcome-badge">
             <span class="welcome-badge-dot"></span>
-            🎓 AXSIKENT IT STUDENT CABINET
+            ✦ AXSIKENT IT O‘QUVCHI KABINETI
         </div>
 
         <h1 id="welcomeName">
@@ -150,7 +151,7 @@
 
         <p>
             Bugun ham yangi bilimlar va yangi natijalar
-            sari bir qadam oldinga! 🚀
+            sari bir qadam oldinga! <span class="welcome-premium-icon">✦</span>
         </p>
 
         <div class="welcome-tags">
