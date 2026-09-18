@@ -799,12 +799,29 @@
                     class="page-section"
                     id="section-leads"
                 >
-                    <div class="empty-module">
-                        <span>↗</span>
-                        <h2>Arizalar</h2>
-                        <p>
-                            Arizalar boshqaruv moduli tayyorlanmoqda.
-                        </p>
+                    <div class="section-header">
+                        <div>
+                            <div class="section-eyebrow">ALOQA / ARIZALAR</div>
+                            <h2>Arizalar</h2>
+                            <p>Saytdan kelgan arizalarni boshqaring.</p>
+                        </div>
+                        <button class="panel-link" data-section="leads" onclick="loadLeads()">↻ Yangilash</button>
+                    </div>
+
+                    <div class="admin-panel">
+                        <div class="panel-header">
+                            <div>
+                                <h3>Arizalar ro‘yxati</h3>
+                                <p>Yangi mijozlar va kursga qiziqishlar</p>
+                            </div>
+                        </div>
+
+                        <div id="leadsContent">
+                            <div class="module-loading">
+                                <div class="module-spinner"></div>
+                                <span>Arizalar yuklanmoqda...</span>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
