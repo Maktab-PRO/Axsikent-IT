@@ -2157,9 +2157,63 @@
     async
     defer
 ></script>
+<style>
+#studentApprovalBanner{
+    position:relative;
+    z-index:1000;
+    width:100%;
+    background:linear-gradient(135deg,#07140d,#0b2417);
+    border-bottom:1px solid rgba(54,211,116,.28);
+    box-shadow:0 12px 30px rgba(0,0,0,.18);
+}
+.student-approval-inner{
+    max-width:1180px;
+    margin:0 auto;
+    min-height:72px;
+    padding:12px 20px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+.student-approval-icon{
+    width:42px;height:42px;border-radius:50%;
+    display:grid;place-items:center;
+    background:#16a34a;color:#fff;font-weight:900;font-size:22px;
+    flex:0 0 auto;
+}
+.student-approval-text{display:flex;flex-direction:column;gap:3px;flex:1;color:#dffbe9}
+.student-approval-text strong{font-size:17px;color:#86efac}
+.student-approval-text span{font-size:14px;color:#d1fae5}
+#studentApprovalLoginBtn{
+    border:0;border-radius:12px;padding:11px 16px;
+    background:#16a34a;color:#fff;font-weight:800;cursor:pointer;
+    box-shadow:0 8px 20px rgba(22,163,74,.25);
+}
+#studentApprovalCloseBtn{
+    border:0;background:transparent;color:#9ca3af;
+    font-size:25px;cursor:pointer;padding:6px 9px;
+}
+@media(max-width:700px){
+    .student-approval-inner{align-items:flex-start;flex-wrap:wrap;padding:12px 14px}
+    .student-approval-text{min-width:calc(100% - 58px)}
+    #studentApprovalLoginBtn{width:100%}
+}
+</style>
 </head>
 
 <body>
+
+<div id="studentApprovalBanner" style="display:none;" role="status" aria-live="polite">
+    <div class="student-approval-inner">
+        <div class="student-approval-icon">✓</div>
+        <div class="student-approval-text">
+            <strong>🎉 Tabriklaymiz!</strong>
+            <span id="studentApprovalMessage">Sizning arizangiz tasdiqlandi. Endi Student panelga kirishingiz mumkin.</span>
+        </div>
+        <button type="button" id="studentApprovalLoginBtn">🔐 Student panelga kirish</button>
+        <button type="button" id="studentApprovalCloseBtn" aria-label="Yopish">×</button>
+    </div>
+</div>
 
 <!-- =========================
      NAVBAR
@@ -5037,6 +5091,15 @@ document
                 "#16a34a";
 
 
+            localStorage.setItem(
+                "axsikent_lead_id",
+                String(responseData.lead_id || "")
+            );
+            localStorage.setItem(
+                "axsikent_lead_phone",
+                document.getElementById("phone").value.trim()
+            );
+
             document
                 .getElementById("applicationForm")
                 .reset();
@@ -6154,7 +6217,52 @@ document
 
     })();
 
-    function openLoginModal() {
+    function initStudentApprovalNotice() {
+        const banner = document.getElementById("studentApprovalBanner");
+        const loginButton = document.getElementById("studentApprovalLoginBtn");
+        const closeButton = document.getElementById("studentApprovalCloseBtn");
+        const leadId = localStorage.getItem("axsikent_lead_id");
+        const phone = localStorage.getItem("axsikent_lead_phone");
+
+        if (!banner || !leadId || !phone) return;
+
+        const API = "https://axsikent-it-4.onrender.com";
+
+        const check = async () => {
+            try {
+                const response = await fetch(
+                    API + "/leads/status/" + encodeURIComponent(leadId) +
+                    "?phone=" + encodeURIComponent(phone)
+                );
+                if (!response.ok) return;
+
+                const data = await response.json();
+
+                if (data.status === "enrolled") {
+                    banner.style.display = "block";
+                    document.body.classList.add("has-student-approval");
+                }
+            } catch (error) {
+                console.debug("Approval status check:", error);
+            }
+        };
+
+        loginButton?.addEventListener("click", () => {
+            openLoginModal();
+        });
+
+        closeButton?.addEventListener("click", () => {
+            banner.style.display = "none";
+            document.body.classList.remove("has-student-approval");
+        });
+
+        check();
+        window.setInterval(check, 15000);
+    }
+
+    initStudentApprovalNotice();
+
+        function openLoginModal() {
     document.getElementById("loginModal").classList.add("active");
 }
 
