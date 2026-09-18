@@ -2865,3 +2865,264 @@ footer,
         display: none;
     }
 }
+
+
+/* =========================================================
+   AKHSIKENT IT — PREMIUM VISUAL POLISH
+   ========================================================= */
+
+.hero-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+}
+.hero-badge-icon{
+    width:30px;
+    height:30px;
+    display:grid;
+    place-items:center;
+    border-radius:10px;
+    color:#fff;
+    background:linear-gradient(135deg,#16a34a,#7c3aed);
+    box-shadow:0 8px 24px rgba(124,58,237,.20);
+    font-weight:900;
+}
+.hero-title{
+    line-height:1.05;
+}
+.hero-title-brand{
+    display:inline-block;
+    background:linear-gradient(90deg,#16a34a,#06b6d4,#7c3aed,#ec4899);
+    background-size:220% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:akhsikentGradient 6s ease infinite;
+}
+.about-title-gradient,
+.history-gradient-title{
+    background:linear-gradient(90deg,#16a34a,#06b6d4,#7c3aed,#ec4899);
+    background-size:220% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:akhsikentGradient 7s ease infinite;
+}
+.premium-gradient-blog{
+    position:relative;
+    overflow:hidden;
+    border:1px solid rgba(99,102,241,.12);
+    border-radius:28px;
+    padding:28px;
+    background:
+        radial-gradient(circle at 15% 15%,rgba(34,197,94,.10),transparent 32%),
+        radial-gradient(circle at 85% 20%,rgba(124,58,237,.14),transparent 34%),
+        linear-gradient(135deg,#ffffff,#f8fafc 48%,#f5f3ff);
+    box-shadow:0 20px 55px rgba(15,23,42,.08);
+}
+.premium-gradient-blog > *:not(.about-aura){
+    position:relative;
+    z-index:2;
+}
+.premium-gradient-blog .section-text{
+    color:#475569;
+}
+.about-gradient-blog{
+    min-height:180px;
+}
+.about-aura{
+    position:absolute;
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    filter:blur(8px);
+    opacity:.55;
+    pointer-events:none;
+    animation:auraFloat 9s ease-in-out infinite;
+}
+.aura-one{top:-55px;right:8%;background:rgba(34,197,94,.20)}
+.aura-two{bottom:-70px;left:24%;background:rgba(124,58,237,.16);animation-delay:-3s}
+.aura-three{top:30%;right:-55px;background:rgba(6,182,212,.14);animation-delay:-6s}
+.about-gradient-blog .check-list{
+    position:relative;
+    z-index:3;
+    margin-top:18px;
+}
+.tab-modern-icon,
+.quiz-modern-icon{
+    width:27px;
+    height:27px;
+    display:inline-grid;
+    place-items:center;
+    vertical-align:middle;
+}
+.tab-modern-icon svg,
+.quiz-modern-icon svg{
+    width:22px;
+    height:22px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+.course-icon svg{
+    width:31px;
+    height:31px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.7;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+.course-icon{
+    color:#4f46e5;
+}
+.course-tab{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+}
+.quiz-option{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+.quiz-modern-icon{
+    flex:0 0 28px;
+    color:#4f46e5;
+}
+.modern-opportunity-icon{
+    position:relative;
+    color:#fff;
+    background:linear-gradient(135deg,#16a34a,#7c3aed) !important;
+    box-shadow:0 10px 28px rgba(124,58,237,.18);
+}
+.modern-opportunity-icon::after{
+    content:"";
+    position:absolute;
+    inset:-4px;
+    border:1px solid rgba(124,58,237,.18);
+    border-radius:18px;
+    animation:iconPulse 2.8s ease-in-out infinite;
+}
+.certificate-mockup{
+    position:relative;
+    overflow:hidden;
+    border:1px solid rgba(167,139,250,.30) !important;
+    background:
+        radial-gradient(circle at 15% 20%,rgba(34,197,94,.18),transparent 28%),
+        radial-gradient(circle at 85% 80%,rgba(124,58,237,.22),transparent 30%),
+        linear-gradient(135deg,#0f172a,#111827 55%,#1e1b4b) !important;
+    box-shadow:0 28px 70px rgba(15,23,42,.28) !important;
+    transform:rotate(-1deg);
+}
+.certificate-mockup::before{
+    content:"✦";
+    position:absolute;
+    top:18px;
+    right:22px;
+    width:44px;
+    height:44px;
+    display:grid;
+    place-items:center;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:50%;
+    color:#f5d0fe;
+    background:rgba(255,255,255,.06);
+}
+.certificate-mockup::after{
+    content:"AKHSIKENT IT • VERIFIED";
+    position:absolute;
+    bottom:16px;
+    right:18px;
+    color:rgba(255,255,255,.45);
+    font-size:9px;
+    letter-spacing:.16em;
+}
+.history-gradient-blog{
+    padding:18px 22px;
+    border-radius:24px;
+    background:linear-gradient(135deg,rgba(15,23,42,.98),rgba(30,27,75,.96),rgba(6,78,59,.95));
+    box-shadow:0 22px 60px rgba(15,23,42,.16);
+}
+.history-gradient-blog .section-label,
+.history-gradient-blog .history-gradient-title{
+    color:#fff;
+}
+.history-gradient-title{
+    background:linear-gradient(90deg,#fff,#a7f3d0,#c4b5fd,#f9a8d4);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+.language{
+    appearance:none;
+    -webkit-appearance:none;
+    min-width:76px;
+    padding:10px 32px 10px 14px;
+    border:1px solid rgba(71,85,105,.18);
+    border-radius:14px;
+    background:
+        linear-gradient(45deg,transparent 50%,#64748b 50%) calc(100% - 16px) 50%/5px 5px no-repeat,
+        linear-gradient(135deg,#64748b 50%,transparent 50%) calc(100% - 12px) 50%/5px 5px no-repeat,
+        rgba(255,255,255,.92);
+    color:#0f172a;
+    font-weight:800;
+    box-shadow:0 8px 24px rgba(15,23,42,.06);
+    outline:none;
+}
+.language:focus{
+    border-color:rgba(124,58,237,.45);
+    box-shadow:0 0 0 4px rgba(124,58,237,.10);
+}
+.footer-developer{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-top:18px;
+    color:#64748b;
+    font-size:10px;
+}
+.footer-developer-links{
+    display:flex;
+    gap:7px;
+}
+.footer-developer-links a{
+    width:25px;
+    height:25px;
+    display:grid;
+    place-items:center;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:8px;
+    background:rgba(255,255,255,.035);
+    transition:.2s ease;
+}
+.footer-developer-links a:hover{
+    transform:translateY(-2px);
+    border-color:rgba(74,222,128,.35);
+}
+.footer-developer-links svg{
+    width:13px;
+    height:13px;
+    fill:#94a3b8;
+}
+@keyframes akhsikentGradient{
+    0%,100%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+}
+@keyframes auraFloat{
+    0%,100%{transform:translate3d(0,0,0) scale(1)}
+    50%{transform:translate3d(24px,-16px,0) scale(1.08)}
+}
+@keyframes iconPulse{
+    0%,100%{opacity:.25;transform:scale(1)}
+    50%{opacity:.65;transform:scale(1.08)}
+}
+@media(max-width:700px){
+    .premium-gradient-blog{padding:22px 17px;border-radius:22px}
+    .hero-title-brand{display:inline}
+    .history-gradient-blog{padding:16px}
+    .language{min-width:70px}
+}
