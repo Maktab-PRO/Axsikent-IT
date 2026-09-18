@@ -2048,9 +2048,8 @@ async function toggleStudentStatus(
 
 
 /* ============================================================
-   EDUCATION + REWARDS MODULES
+   ADMIN MODULES — EDUCATION / REWARDS
    ============================================================ */
-
 
 function moduleLoading(textValue) {
     return '<div class="module-loading"><div class="module-spinner"></div><span>' +
@@ -2064,87 +2063,267 @@ function moduleTable(headers, rows) {
         '</tr></thead><tbody>' + rows.join("") + '</tbody></table></div>';
 }
 
-function actionButton(label, action, cls = "") {
-    return '<button type="button" class="module-action-btn ' + escapeHtml(cls) +
-        '" onclick="' + escapeHtml(action) + '">' + escapeHtml(label) + '</button>';
+function actionButton(label, action, cls) {
+    return '<button type="button" class="module-action-btn ' +
+        escapeHtml(cls || "") + '" onclick="' +
+        escapeHtml(action) + '">' + escapeHtml(label) + '</button>';
 }
 
 function showInfoModal(title, body) {
     document.getElementById("moduleInfoModal")?.remove();
+
     const modal = document.createElement("div");
     modal.id = "moduleInfoModal";
-    modal.className = "admin-modal";
+    modal.className = "admin-modal-overlay";
+
     modal.innerHTML =
-        '<div class="admin-detail-card">' +
-        '<button type="button" class="admin-detail-close" aria-label="Yopish">×</button>' +
+        '<div class="admin-modal">' +
+        '<button type="button" class="admin-modal-close" aria-label="Yopish">×</button>' +
+        '<div class="modal-eyebrow">AXSIKENT IT / ADMIN</div>' +
         '<h2>' + escapeHtml(title) + '</h2>' +
         '<div class="admin-detail-body">' + body + '</div>' +
         '</div>';
+
     document.body.appendChild(modal);
-    modal.querySelector(".admin-detail-close")?.addEventListener("click", () => modal.remove());
+
+    modal.querySelector(".admin-modal-close")?.addEventListener(
+        "click",
+        () => modal.remove()
+    );
+
     modal.addEventListener("click", event => {
         if (event.target === modal) modal.remove();
     });
 }
 
-function asArray(data, keys = []) {
+function asArray(data, keys) {
     if (Array.isArray(data)) return data;
-    for (const key of keys) {
+
+    for (const key of (keys || [])) {
         if (Array.isArray(data?.[key])) return data[key];
     }
+
     return [];
 }
+
+function formatDate(value) {
+    if (!value) return "—";
+
+    try {
+        return new Date(value).toLocaleString("uz-UZ");
+    } catch {
+        return String(value);
+    }
+}
+
+/* ============================================================
+   STUDENTS — FULL PROFILE
+   ============================================================ */
+
+async function viewStudent(id) {
+    try {
+        const data = await apiRequest(
+            "/admin/students/" + Number(id) + "/profile"
+        );
+
+        showStudentFullProfile(data);
+    } catch (error) {
+        showToast(error.message || "O‘quvchi profili yuklanmadi", "error");
+    }
+}
+
+function showStudentFullProfile(data) {
+    const student = data?.student || {};
+    const courses = asArray(data, ["courses"]);
+    const groups = asArray(data, ["groups"]);
+    const grades = asArray(data, ["grades"]);
+    const homework = asArray(data, ["homework"]);
+    const attendance = data?.attendance || {};
+    const game = data?.gamification || {};
+
+    const active = student.is_active !== false;
+
+    let courseHtml = courses.length
+        ? courses.map(item =>
+            '<div class="admin-detail-list-item">' +
+            '<strong>' + escapeHtml(item.name || "—") + '</strong>' +
+            '<span>' + (item.progress ?? 0) + '%</span>' +
+            '</div>'
+        ).join("")
+        : '<p>Biriktirilgan kurs yo‘q.</p>';
+
+    let groupHtml = groups.length
+        ? groups.map(item =>
+            '<div class="admin-detail-list-item">' +
+            '<strong>' + escapeHtml(item.name || "—") + '</strong>' +
+            '<span>' + escapeHtml(item.course || "—") + '</span>' +
+            '</div>'
+        ).join("")
+        : '<p>Guruh mavjud emas.</p>';
+
+    let gradeHtml = grades.length
+        ? grades.slice(0, 10).map(item =>
+            '<div class="admin-detail-list-item">' +
+            '<strong>' + escapeHtml(item.title || "Baholash") + '</strong>' +
+            '<span>' + (item.score ?? 0) + '/' + (item.max_score ?? 0) + '</span>' +
+            '</div>'
+        ).join("")
+        : '<p>Baholar yo‘q.</p>';
+
+    let homeworkHtml = homework.length
+        ? homework.slice(0, 10).map(item =>
+            '<div class="admin-detail-list-item">' +
+            '<strong>' + escapeHtml(item.title || "Uy vazifasi") + '</strong>' +
+            '<span>' + escapeHtml(item.status || "—") +
+            (item.score !== null && item.score !== undefined
+                ? " · " + item.score + " ball"
+                : "") +
+            '</span></div>'
+        ).join("")
+        : '<p>Uy vazifalari yo‘q.</p>';
+
+    showInfoModal(
+        student.full_name || "O‘quvchi profili",
+        '<div class="admin-detail-grid">' +
+        '<div><small>ID</small><strong>#' + (student.id ?? "—") + '</strong></div>' +
+        '<div><small>Telefon</small><strong>' + escapeHtml(student.phone || "—") + '</strong></div>' +
+        '<div><small>Holat</small><strong>' + (active ? "Faol" : "Nofaol") + '</strong></div>' +
+        '<div><small>Daraja</small><strong>' + (game.level ?? 1) + '</strong></div>' +
+        '<div><small>Coin</small><strong>' + (game.coins ?? 0) + '</strong></div>' +
+        '<div><small>Crystal</small><strong>' + (game.crystals ?? 0) + '</strong></div>' +
+        '<div><small>XP</small><strong>' + (game.xp ?? 0) + '</strong></div>' +
+        '<div><small>Davomat</small><strong>' + (attendance.rate ?? 0) + '%</strong></div>' +
+        '</div>' +
+
+        '<div class="admin-detail-block"><h3>Kurslar</h3>' +
+        courseHtml + '</div>' +
+
+        '<div class="admin-detail-block"><h3>Guruhlar</h3>' +
+        groupHtml + '</div>' +
+
+        '<div class="admin-detail-block"><h3>Davomat</h3>' +
+        '<p>Jami: ' + (attendance.total ?? 0) +
+        ' · Kelgan: ' + (attendance.present ?? 0) +
+        ' · Kelmagan: ' + (attendance.absent ?? 0) +
+        ' · Kechikkan: ' + (attendance.late ?? 0) + '</p></div>' +
+
+        '<div class="admin-detail-block"><h3>Baholar</h3>' +
+        gradeHtml + '</div>' +
+
+        '<div class="admin-detail-block"><h3>Uy vazifalari</h3>' +
+        homeworkHtml + '</div>' +
+
+        '<div class="modal-actions">' +
+        actionButton(
+            active ? "Bloklash" : "Faollashtirish",
+            "toggleStudentStatus(" + Number(student.id) + "," + active + ");document.getElementById('moduleInfoModal')?.remove()",
+            active ? "danger" : "success"
+        ) +
+        '</div>'
+    );
+}
+
+/* ============================================================
+   TEACHERS
+   ============================================================ */
 
 async function loadTeachers() {
     const box = document.getElementById("teachersContent");
     if (!box) return;
+
     box.innerHTML = moduleLoading("O‘qituvchilar yuklanmoqda...");
+
     try {
         const data = await apiRequest("/admin/teachers/");
         const items = asArray(data, ["teachers", "items", "data"]);
+
         box.innerHTML = items.length
             ? moduleTable(
                 ["O‘QITUVCHI", "FAN", "GURUHLAR", "HOLAT", "AMAL"],
                 items.map(t => {
-                    const search = [t.full_name, t.phone, t.subject].filter(Boolean).join(" ").toLowerCase();
-                    return '<tr data-teacher-search="' + escapeHtml(search) + '">' +
-                        '<td><strong>' + escapeHtml(t.full_name || "—") + '</strong><small>' + escapeHtml(t.phone || "") + '</small></td>' +
+                    const search = [
+                        t.full_name,
+                        t.phone,
+                        t.subject
+                    ].filter(Boolean).join(" ").toLowerCase();
+
+                    return '<tr data-teacher-search="' +
+                        escapeHtml(search) + '">' +
+                        '<td><strong>' + escapeHtml(t.full_name || "—") +
+                        '</strong><small>' + escapeHtml(t.phone || "") +
+                        '</small></td>' +
                         '<td>' + escapeHtml(t.subject || "—") + '</td>' +
-                        '<td>' + String(t.groups_count ?? 0) + '</td>' +
-                        '<td><span class="status-badge ' + (t.is_active ? "status-active" : "status-inactive") + '"><span></span>' + (t.is_active ? "Faol" : "Nofaol") + '</span></td>' +
+                        '<td>' + (t.groups_count ?? 0) + '</td>' +
+                        '<td><span class="status-badge ' +
+                        (t.is_active ? "status-active" : "status-inactive") +
+                        '"><span></span>' +
+                        (t.is_active ? "Faol" : "Nofaol") +
+                        '</span></td>' +
                         '<td>' +
-                        actionButton("Ko‘rish", "viewTeacher(" + Number(t.id) + ")") + " " +
-                        actionButton(t.is_active ? "Bloklash" : "Faollashtirish", "toggleTeacher(" + Number(t.id) + "," + Boolean(t.is_active) + ")", t.is_active ? "danger" : "success") +
+                        actionButton("Ko‘rish", "viewTeacher(" + Number(t.id) + ")") +
+                        " " +
+                        actionButton(
+                            t.is_active ? "Bloklash" : "Faollashtirish",
+                            "toggleTeacher(" + Number(t.id) + "," +
+                            Boolean(t.is_active) + ")",
+                            t.is_active ? "danger" : "success"
+                        ) +
                         '</td></tr>';
                 })
             )
-            : '<div class="module-empty"><h3>O‘qituvchilar yo‘q</h3><p>Tizimda hozircha o‘qituvchi topilmadi.</p></div>';
+            : '<div class="module-empty"><h3>O‘qituvchilar yo‘q</h3>' +
+              '<p>Tizimda hozircha o‘qituvchi topilmadi.</p></div>';
     } catch (error) {
-        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' +
+        box.innerHTML =
+            '<div class="module-empty"><h3>Xatolik</h3><p>' +
             escapeHtml(error.message) + '</p></div>';
     }
 }
 
 function filterTeachers() {
-    const q = (document.getElementById("teacherSearch")?.value || "").trim().toLowerCase();
+    const q = (
+        document.getElementById("teacherSearch")?.value || ""
+    ).trim().toLowerCase();
+
     document.querySelectorAll("[data-teacher-search]").forEach(row => {
-        row.style.display = !q || row.dataset.teacherSearch.includes(q) ? "" : "none";
+        row.style.display =
+            !q || row.dataset.teacherSearch.includes(q) ? "" : "none";
     });
 }
 
 async function viewTeacher(id) {
     try {
-        const data = await apiRequest("/admin/teachers/" + Number(id));
+        const data = await apiRequest(
+            "/admin/teachers/" + Number(id)
+        );
+
         const teacher = data?.teacher || {};
         const groups = asArray(data, ["groups"]);
+
+        const groupHtml = groups.length
+            ? groups.map(group =>
+                '<div class="admin-detail-list-item">' +
+                '<strong>' + escapeHtml(group.name || "—") + '</strong>' +
+                '<span>' + escapeHtml(group.course?.name || "—") +
+                ' · ' + (group.students_count ?? 0) + ' o‘quvchi</span>' +
+                '</div>'
+            ).join("")
+            : "<p>Guruhlar yo‘q.</p>";
+
         showInfoModal(
             "O‘qituvchi profili",
             '<div class="admin-detail-grid">' +
-            '<div><small>Ism</small><strong>' + escapeHtml(teacher.full_name || "—") + '</strong></div>' +
-            '<div><small>Telefon</small><strong>' + escapeHtml(teacher.phone || "—") + '</strong></div>' +
-            '<div><small>Fan</small><strong>' + escapeHtml(teacher.subject || "—") + '</strong></div>' +
-            '<div><small>Guruhlar</small><strong>' + groups.length + '</strong></div>' +
-            '</div>'
+            '<div><small>Ism</small><strong>' +
+            escapeHtml(teacher.full_name || "—") + '</strong></div>' +
+            '<div><small>Telefon</small><strong>' +
+            escapeHtml(teacher.phone || "—") + '</strong></div>' +
+            '<div><small>Fan</small><strong>' +
+            escapeHtml(teacher.subject || "—") + '</strong></div>' +
+            '<div><small>Holat</small><strong>' +
+            (teacher.is_active ? "Faol" : "Nofaol") + '</strong></div>' +
+            '</div>' +
+            '<div class="admin-detail-block"><h3>Guruhlar</h3>' +
+            groupHtml + '</div>'
         );
     } catch (error) {
         showToast(error.message, "error");
@@ -2153,61 +2332,120 @@ async function viewTeacher(id) {
 
 async function toggleTeacher(id, active) {
     try {
-        await apiRequest("/admin/teachers/" + Number(id) + "/" + (active ? "deactivate" : "activate"), { method: "PUT" });
-        showToast(active ? "O‘qituvchi deaktiv qilindi" : "O‘qituvchi faollashtirildi");
+        await apiRequest(
+            "/admin/teachers/" + Number(id) + "/" +
+            (active ? "deactivate" : "activate"),
+            { method: "PUT" }
+        );
+
+        showToast(
+            active ? "O‘qituvchi deaktiv qilindi" :
+            "O‘qituvchi faollashtirildi"
+        );
+
         await loadTeachers();
     } catch (error) {
         showToast(error.message, "error");
     }
 }
 
+/* ============================================================
+   COURSES
+   ============================================================ */
+
 async function loadCourses() {
     const box = document.getElementById("coursesContent");
     if (!box) return;
+
     box.innerHTML = moduleLoading("Kurslar yuklanmoqda...");
+
     try {
         const data = await apiRequest("/admin/courses/");
         const catData = await apiRequest("/admin/courses/categories");
+
         const items = asArray(data, ["courses", "items", "data"]);
-        window.adminCategories = asArray(catData, ["categories", "items", "data"]);
+        window.adminCategories = asArray(
+            catData,
+            ["categories", "items", "data"]
+        );
+
         box.innerHTML = items.length
             ? moduleTable(
                 ["KURS", "KATEGORIYA", "YOSH", "DARS", "NARX", "HOLAT", "AMAL"],
                 items.map(course =>
-                    '<tr><td><strong>' + escapeHtml(course.name || "—") + '</strong><small>#' + Number(course.id) + '</small></td>' +
+                    '<tr>' +
+                    '<td><strong>' + escapeHtml(course.name || "—") +
+                    '</strong><small>#' + Number(course.id) + '</small></td>' +
                     '<td>' + escapeHtml(course.category?.name || "—") + '</td>' +
-                    '<td>' + (course.age_min ?? "—") + "–" + (course.age_max ?? "—") + '</td>' +
+                    '<td>' + (course.age_min ?? "—") + "–" +
+                    (course.age_max ?? "—") + '</td>' +
                     '<td>' + (course.lesson_minutes ?? "—") + ' daq.</td>' +
-                    '<td>' + (course.price_min ?? 0) + "–" + (course.price_max ?? 0) + '</td>' +
-                    '<td><span class="status-badge ' + (course.is_active ? "status-active" : "status-inactive") + '"><span></span>' + (course.is_active ? "Faol" : "Nofaol") + '</span></td>' +
+                    '<td>' + (course.price_min ?? 0) + "–" +
+                    (course.price_max ?? 0) + '</td>' +
+                    '<td><span class="status-badge ' +
+                    (course.is_active ? "status-active" : "status-inactive") +
+                    '"><span></span>' +
+                    (course.is_active ? "Faol" : "Nofaol") +
+                    '</span></td>' +
                     '<td>' +
-                    actionButton("Ko‘rish", "viewCourse(" + Number(course.id) + ")") + " " +
-                    actionButton(course.is_active ? "Deaktiv" : "Aktiv", "toggleCourse(" + Number(course.id) + "," + Boolean(course.is_active) + ")", course.is_active ? "danger" : "success") +
+                    actionButton("Ko‘rish", "viewCourse(" + Number(course.id) + ")") +
+                    " " +
+                    actionButton(
+                        course.is_active ? "Deaktiv" : "Aktiv",
+                        "toggleCourse(" + Number(course.id) + "," +
+                        Boolean(course.is_active) + ")",
+                        course.is_active ? "danger" : "success"
+                    ) +
                     '</td></tr>'
                 )
             )
-            : '<div class="module-empty"><h3>Kurslar yo‘q</h3><p>Yangi kurs yarating.</p></div>';
+            : '<div class="module-empty"><h3>Kurslar yo‘q</h3>' +
+              '<p>Yangi kurs yarating.</p></div>';
     } catch (error) {
-        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+        box.innerHTML =
+            '<div class="module-empty"><h3>Xatolik</h3><p>' +
+            escapeHtml(error.message) + '</p></div>';
     }
 }
 
 async function viewCourse(id) {
     try {
-        const data = await apiRequest("/admin/courses/" + Number(id));
-        const course = data?.course || data || {};
+        const data = await apiRequest(
+            "/admin/courses/" + Number(id)
+        );
+
+        const course = data?.course || {};
         const modules = asArray(data, ["modules"]);
+
+        const modulesHtml = modules.length
+            ? modules.map(module =>
+                '<div class="admin-detail-list-item">' +
+                '<strong>' + escapeHtml(module.title || "—") + '</strong>' +
+                '<span>' + (module.lessons_count ??
+                asArray(module, ["lessons"]).length) + ' ta dars</span>' +
+                '</div>'
+            ).join("")
+            : "<p>Modullar yo‘q.</p>";
+
         showInfoModal(
             "Kurs tafsilotlari",
             '<div class="admin-detail-grid">' +
-            '<div><small>Nomi</small><strong>' + escapeHtml(course.name || "—") + '</strong></div>' +
-            '<div><small>Kategoriya</small><strong>' + escapeHtml(course.category?.name || "—") + '</strong></div>' +
-            '<div><small>Yosh</small><strong>' + (course.age_min ?? "—") + "–" + (course.age_max ?? "—") + '</strong></div>' +
-            '<div><small>Dars</small><strong>' + (course.lesson_minutes ?? "—") + ' daq.</strong></div>' +
+            '<div><small>Nomi</small><strong>' +
+            escapeHtml(course.name || "—") + '</strong></div>' +
+            '<div><small>Kategoriya</small><strong>' +
+            escapeHtml(course.category?.name || "—") + '</strong></div>' +
+            '<div><small>Yosh</small><strong>' +
+            (course.age_min ?? "—") + "–" + (course.age_max ?? "—") +
+            '</strong></div>' +
+            '<div><small>Dars</small><strong>' +
+            (course.lesson_minutes ?? "—") + ' daq.</strong></div>' +
+            '<div><small>O‘quvchilar</small><strong>' +
+            (data?.statistics?.students_count ?? 0) + '</strong></div>' +
+            '<div><small>Modullar</small><strong>' +
+            (data?.statistics?.modules_count ?? modules.length) + '</strong></div>' +
             '</div>' +
-            '<div class="module-detail-list">' +
-            (modules.map(m => '<div><strong>' + escapeHtml(m.title || "—") + '</strong><span>' + asArray(m, ["lessons"]).length + ' ta dars</span></div>').join("") || "<p>Modullar yo‘q.</p>") +
-            '</div>'
+            '<div class="admin-detail-block"><h3>Modullar</h3>' +
+            modulesHtml + '</div>'
         );
     } catch (error) {
         showToast(error.message, "error");
@@ -2216,8 +2454,17 @@ async function viewCourse(id) {
 
 async function toggleCourse(id, active) {
     try {
-        await apiRequest("/admin/courses/" + Number(id) + "/" + (active ? "deactivate" : "activate"), { method: "PUT" });
-        showToast(active ? "Kurs deaktiv qilindi" : "Kurs faollashtirildi");
+        await apiRequest(
+            "/admin/courses/" + Number(id) + "/" +
+            (active ? "deactivate" : "activate"),
+            { method: "PUT" }
+        );
+
+        showToast(
+            active ? "Kurs deaktiv qilindi" :
+            "Kurs faollashtirildi"
+        );
+
         await loadCourses();
         await loadDashboard();
     } catch (error) {
@@ -2227,67 +2474,137 @@ async function toggleCourse(id, active) {
 
 async function openCourseCreate() {
     const categories = window.adminCategories || [];
-    const category = window.prompt("Kategoriya ID:\n" + categories.map(c => c.id + " — " + c.name).join("\n"));
+
+    const categoryText = categories.length
+        ? categories.map(c => c.id + " — " + c.name).join("\n")
+        : "Kategoriya ma’lumoti topilmadi.";
+
+    const category = window.prompt(
+        "Kategoriya ID:\n" + categoryText
+    );
+
     if (category === null) return;
+
     const name = window.prompt("Kurs nomi:");
     if (!name?.trim()) return;
+
     const categoryId = Number(category);
+
     if (!Number.isInteger(categoryId) || categoryId <= 0) {
         showToast("Kategoriya ID noto‘g‘ri.", "error");
         return;
     }
+
     try {
         await apiRequest("/admin/courses/", {
             method: "POST",
-            body: JSON.stringify({ category_id: categoryId, name: name.trim(), description: "" })
+            body: JSON.stringify({
+                category_id: categoryId,
+                name: name.trim(),
+                description: ""
+            })
         });
+
         showToast("Kurs yaratildi");
         await loadCourses();
+        await loadDashboard();
     } catch (error) {
         showToast(error.message, "error");
     }
 }
 
+/* ============================================================
+   GROUPS
+   ============================================================ */
+
 async function loadGroups() {
     const box = document.getElementById("groupsContent");
     if (!box) return;
+
     box.innerHTML = moduleLoading("Guruhlar yuklanmoqda...");
+
     try {
         const data = await apiRequest("/admin/groups/");
         const items = asArray(data, ["groups", "items", "data"]);
+
         box.innerHTML = items.length
             ? moduleTable(
                 ["GURUH", "KURS", "O‘QITUVCHI", "O‘QUVCHILAR", "HOLAT", "AMAL"],
                 items.map(group =>
-                    '<tr><td><strong>' + escapeHtml(group.name || "—") + '</strong><small>#' + Number(group.id) + '</small></td>' +
+                    '<tr>' +
+                    '<td><strong>' + escapeHtml(group.name || "—") +
+                    '</strong><small>#' + Number(group.id) + '</small></td>' +
                     '<td>' + escapeHtml(group.course?.name || "—") + '</td>' +
                     '<td>' + escapeHtml(group.teacher?.full_name || "—") + '</td>' +
-                    '<td>' + (group.students_count ?? 0) + "/" + (group.capacity ?? 0) + '</td>' +
-                    '<td><span class="status-badge ' + (group.is_active ? "status-active" : "status-inactive") + '"><span></span>' + (group.is_active ? "Faol" : "Nofaol") + '</span></td>' +
+                    '<td>' + (group.students_count ?? 0) + "/" +
+                    (group.capacity ?? 0) + '</td>' +
+                    '<td><span class="status-badge ' +
+                    (group.is_active ? "status-active" : "status-inactive") +
+                    '"><span></span>' +
+                    (group.is_active ? "Faol" : "Nofaol") +
+                    '</span></td>' +
                     '<td>' +
-                    actionButton("Ko‘rish", "viewGroup(" + Number(group.id) + ")") + " " +
-                    actionButton(group.is_active ? "Deaktiv" : "Aktiv", "toggleGroup(" + Number(group.id) + "," + Boolean(group.is_active) + ")", group.is_active ? "danger" : "success") +
+                    actionButton("Ko‘rish", "viewGroup(" + Number(group.id) + ")") +
+                    " " +
+                    actionButton(
+                        group.is_active ? "Deaktiv" : "Aktiv",
+                        "toggleGroup(" + Number(group.id) + "," +
+                        Boolean(group.is_active) + ")",
+                        group.is_active ? "danger" : "success"
+                    ) +
                     '</td></tr>'
                 )
             )
-            : '<div class="module-empty"><h3>Guruhlar yo‘q</h3><p>Yangi guruh yarating.</p></div>';
+            : '<div class="module-empty"><h3>Guruhlar yo‘q</h3>' +
+              '<p>Yangi guruh yarating.</p></div>';
     } catch (error) {
-        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+        box.innerHTML =
+            '<div class="module-empty"><h3>Xatolik</h3><p>' +
+            escapeHtml(error.message) + '</p></div>';
     }
 }
 
 async function viewGroup(id) {
     try {
-        const data = await apiRequest("/admin/groups/" + Number(id));
-        const group = data?.group || data || {};
+        const data = await apiRequest(
+            "/admin/groups/" + Number(id)
+        );
+
+        const group = data?.group || {};
         const students = asArray(data, ["students"]);
+
+        const studentsHtml = students.length
+            ? students.map(student =>
+                '<div class="admin-detail-list-item">' +
+                '<strong>' + escapeHtml(student.full_name || "—") + '</strong>' +
+                '<span>#' + Number(student.id) + ' · ' +
+                escapeHtml(student.phone || "—") + '</span>' +
+                '</div>'
+            ).join("")
+            : "<p>Guruhda o‘quvchi yo‘q.</p>";
+
         showInfoModal(
             "Guruh tafsilotlari",
             '<div class="admin-detail-grid">' +
-            '<div><small>Guruh</small><strong>' + escapeHtml(group.name || "—") + '</strong></div>' +
-            '<div><small>Kurs</small><strong>' + escapeHtml(group.course?.name || "—") + '</strong></div>' +
-            '<div><small>O‘qituvchi</small><strong>' + escapeHtml(group.teacher?.full_name || "—") + '</strong></div>' +
-            '<div><small>O‘quvchilar</small><strong>' + (group.students_count ?? students.length) + "/" + (group.capacity ?? 0) + '</strong></div>' +
+            '<div><small>Guruh</small><strong>' +
+            escapeHtml(group.name || "—") + '</strong></div>' +
+            '<div><small>Kurs</small><strong>' +
+            escapeHtml(data?.course?.name || "—") + '</strong></div>' +
+            '<div><small>O‘qituvchi</small><strong>' +
+            escapeHtml(data?.teacher?.full_name || "—") + '</strong></div>' +
+            '<div><small>Xona</small><strong>' +
+            escapeHtml(group.room || "—") + '</strong></div>' +
+            '<div><small>Sig‘im</small><strong>' +
+            (data?.statistics?.students_count ?? students.length) + "/" +
+            (group.capacity ?? 0) + '</strong></div>' +
+            '</div>' +
+            '<div class="admin-detail-block"><h3>O‘quvchilar</h3>' +
+            studentsHtml + '</div>' +
+            '<div class="modal-actions">' +
+            actionButton(
+                "O‘quvchi qo‘shish",
+                "addStudentToGroupPrompt(" + Number(group.id) + ")"
+            ) +
             '</div>'
         );
     } catch (error) {
@@ -2295,10 +2612,45 @@ async function viewGroup(id) {
     }
 }
 
+async function addStudentToGroupPrompt(groupId) {
+    const value = window.prompt("O‘quvchi ID:");
+    if (value === null) return;
+
+    const studentId = Number(value);
+
+    if (!Number.isInteger(studentId) || studentId <= 0) {
+        showToast("O‘quvchi ID noto‘g‘ri.", "error");
+        return;
+    }
+
+    try {
+        await apiRequest(
+            "/admin/groups/" + Number(groupId) +
+            "/students/" + studentId,
+            { method: "POST" }
+        );
+
+        showToast("O‘quvchi guruhga qo‘shildi");
+        document.getElementById("moduleInfoModal")?.remove();
+        await loadGroups();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
 async function toggleGroup(id, active) {
     try {
-        await apiRequest("/admin/groups/" + Number(id) + "/" + (active ? "deactivate" : "activate"), { method: "PUT" });
-        showToast(active ? "Guruh deaktiv qilindi" : "Guruh faollashtirildi");
+        await apiRequest(
+            "/admin/groups/" + Number(id) + "/" +
+            (active ? "deactivate" : "activate"),
+            { method: "PUT" }
+        );
+
+        showToast(
+            active ? "Guruh deaktiv qilindi" :
+            "Guruh faollashtirildi"
+        );
+
         await loadGroups();
     } catch (error) {
         showToast(error.message, "error");
@@ -2308,16 +2660,26 @@ async function toggleGroup(id, active) {
 async function openGroupCreate() {
     const name = window.prompt("Guruh nomi:");
     if (!name?.trim()) return;
+
     const course = window.prompt("Kurs ID:");
     if (course === null) return;
+
     const teacher = window.prompt("O‘qituvchi ID:");
     if (teacher === null) return;
+
     const courseId = Number(course);
     const teacherId = Number(teacher);
-    if (!Number.isInteger(courseId) || !Number.isInteger(teacherId) || courseId <= 0 || teacherId <= 0) {
+
+    if (
+        !Number.isInteger(courseId) ||
+        !Number.isInteger(teacherId) ||
+        courseId <= 0 ||
+        teacherId <= 0
+    ) {
         showToast("Kurs yoki o‘qituvchi ID noto‘g‘ri.", "error");
         return;
     }
+
     try {
         await apiRequest("/admin/groups/", {
             method: "POST",
@@ -2329,6 +2691,7 @@ async function openGroupCreate() {
                 status: "active"
             })
         });
+
         showToast("Guruh yaratildi");
         await loadGroups();
     } catch (error) {
@@ -2336,50 +2699,223 @@ async function openGroupCreate() {
     }
 }
 
+/* ============================================================
+   REWARDS — PRODUCTS / RULES / TRANSACTIONS
+   ============================================================ */
+
 async function loadRewards() {
     const box = document.getElementById("rewardsContent");
     if (!box) return;
+
     box.innerHTML = moduleLoading("Mukofotlar yuklanmoqda...");
+
     try {
-        const data = await apiRequest("/admin/shop/products");
+        const productData = await apiRequest("/admin/shop/products");
         const ruleData = await apiRequest("/admin/shop/rules");
-        const products = asArray(data, ["products", "items", "data"]);
-        window.adminRules = asArray(ruleData, ["rules", "items", "data"]);
-        box.innerHTML = products.length
-            ? moduleTable(
+        const transactionData = await apiRequest("/admin/shop/transactions");
+
+        const products = asArray(productData, ["products", "items", "data"]);
+        const rules = asArray(ruleData, ["rules", "items", "data"]);
+        const transactions = asArray(
+            transactionData,
+            ["transactions", "items", "data"]
+        );
+
+        window.adminRules = rules;
+
+        let html = "";
+
+        html += '<div class="admin-detail-block"><h3>Mukofot mahsulotlari</h3>';
+
+        if (products.length) {
+            html += moduleTable(
                 ["MUKOFOT", "COIN", "CRYSTAL", "STOCK", "HOLAT", "AMAL"],
                 products.map(product =>
-                    '<tr><td><strong>' + escapeHtml(product.name || "—") + '</strong><small>#' + Number(product.id) + '</small></td>' +
+                    '<tr>' +
+                    '<td><strong>' + escapeHtml(product.name || "—") +
+                    '</strong><small>#' + Number(product.id) + '</small></td>' +
                     '<td>' + (product.coin_price ?? 0) + '</td>' +
                     '<td>' + (product.crystal_price ?? 0) + '</td>' +
                     '<td>' + (product.stock ?? 0) + '</td>' +
-                    '<td><span class="status-badge ' + (product.is_active ? "status-active" : "status-inactive") + '"><span></span>' + (product.is_active ? "Faol" : "Nofaol") + '</span></td>' +
+                    '<td><span class="status-badge ' +
+                    (product.is_active ? "status-active" : "status-inactive") +
+                    '"><span></span>' +
+                    (product.is_active ? "Faol" : "Nofaol") +
+                    '</span></td>' +
                     '<td>' +
-                    actionButton("Ko‘rish", "viewProduct(" + Number(product.id) + ")") + " " +
-                    actionButton(product.is_active ? "Deaktiv" : "Aktiv", "toggleProduct(" + Number(product.id) + "," + Boolean(product.is_active) + ")", product.is_active ? "danger" : "success") + " " +
-                    actionButton("O‘chirish", "deleteProduct(" + Number(product.id) + ")", "danger") +
+                    actionButton("Ko‘rish", "viewProduct(" + Number(product.id) + ")") +
+                    " " +
+                    actionButton(
+                        "Tahrirlash",
+                        "editProduct(" + Number(product.id) + ")"
+                    ) +
+                    " " +
+                    actionButton(
+                        product.is_active ? "Deaktiv" : "Aktiv",
+                        "toggleProduct(" + Number(product.id) + "," +
+                        Boolean(product.is_active) + ")",
+                        product.is_active ? "danger" : "success"
+                    ) +
+                    " " +
+                    actionButton(
+                        "O‘chirish",
+                        "deleteProduct(" + Number(product.id) + ")",
+                        "danger"
+                    ) +
                     '</td></tr>'
                 )
-            )
-            : '<div class="module-empty"><h3>Mukofotlar yo‘q</h3><p>Yangi mukofot yarating.</p></div>';
+            );
+        } else {
+            html += '<div class="module-empty"><h3>Mukofotlar yo‘q</h3>' +
+                '<p>Yangi mukofot yarating.</p></div>';
+        }
+
+        html += '</div>';
+
+        html += '<div class="admin-detail-block"><h3>Reward qoidalari</h3>';
+
+        if (rules.length) {
+            html += moduleTable(
+                ["QOIDA", "HARAKAT", "MUKOFOT", "MIQDOR", "HOLAT", "AMAL"],
+                rules.map(rule =>
+                    '<tr>' +
+                    '<td><strong>' + escapeHtml(rule.name || "—") +
+                    '</strong><small>#' + Number(rule.id) + '</small></td>' +
+                    '<td>' + escapeHtml(rule.action_type || "—") + '</td>' +
+                    '<td>' + escapeHtml(rule.reward_type || "—") + '</td>' +
+                    '<td>' + (rule.reward_amount ?? 0) + '</td>' +
+                    '<td>' + (rule.is_active ? "Faol" : "Nofaol") + '</td>' +
+                    '<td>' +
+                    actionButton(
+                        rule.is_active ? "Deaktiv" : "Aktiv",
+                        "toggleRule(" + Number(rule.id) + "," +
+                        Boolean(rule.is_active) + ")",
+                        rule.is_active ? "danger" : "success"
+                    ) +
+                    " " +
+                    actionButton(
+                        "O‘chirish",
+                        "deleteRule(" + Number(rule.id) + ")",
+                        "danger"
+                    ) +
+                    '</td></tr>'
+                )
+            );
+        } else {
+            html += '<div class="module-empty"><p>Reward qoidalari yo‘q.</p></div>';
+        }
+
+        html += '<div class="modal-actions">' +
+            actionButton("＋ Qoida qo‘shish", "openRuleCreate()") +
+            '</div></div>';
+
+        html += '<div class="admin-detail-block"><h3>Reward tranzaksiyalari</h3>';
+
+        if (transactions.length) {
+            html += moduleTable(
+                ["ID", "O‘QUVCHI", "TURI", "MIQDOR", "SABAB", "SANA"],
+                transactions.slice(0, 30).map(item =>
+                    '<tr>' +
+                    '<td>#' + Number(item.id) + '</td>' +
+                    '<td>#' + Number(item.student_id) + '</td>' +
+                    '<td>' + escapeHtml(item.reward_type || "—") + '</td>' +
+                    '<td>' + (item.amount ?? 0) + '</td>' +
+                    '<td>' + escapeHtml(item.reason || "—") + '</td>' +
+                    '<td>' + escapeHtml(formatDate(item.created_at)) + '</td>' +
+                    '</tr>'
+                )
+            );
+        } else {
+            html += '<div class="module-empty"><p>Tranzaksiyalar yo‘q.</p></div>';
+        }
+
+        html += '</div>';
+
+        box.innerHTML = html;
     } catch (error) {
-        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+        box.innerHTML =
+            '<div class="module-empty"><h3>Xatolik</h3><p>' +
+            escapeHtml(error.message) + '</p></div>';
     }
 }
 
 async function viewProduct(id) {
     try {
-        const data = await apiRequest("/admin/shop/products/" + Number(id));
-        const product = data?.product || data || {};
+        const product = await apiRequest(
+            "/admin/shop/products/" + Number(id)
+        );
+
         showInfoModal(
             "Mukofot tafsilotlari",
             '<div class="admin-detail-grid">' +
-            '<div><small>Nomi</small><strong>' + escapeHtml(product.name || "—") + '</strong></div>' +
-            '<div><small>Coin</small><strong>' + (product.coin_price ?? 0) + '</strong></div>' +
-            '<div><small>Crystal</small><strong>' + (product.crystal_price ?? 0) + '</strong></div>' +
-            '<div><small>Stock</small><strong>' + (product.stock ?? 0) + '</strong></div>' +
-            '</div><p>' + escapeHtml(product.description || "Tavsif yo‘q.") + '</p>'
+            '<div><small>Nomi</small><strong>' +
+            escapeHtml(product.name || "—") + '</strong></div>' +
+            '<div><small>Coin</small><strong>' +
+            (product.coin_price ?? 0) + '</strong></div>' +
+            '<div><small>Crystal</small><strong>' +
+            (product.crystal_price ?? 0) + '</strong></div>' +
+            '<div><small>Stock</small><strong>' +
+            (product.stock ?? 0) + '</strong></div>' +
+            '<div><small>Holat</small><strong>' +
+            (product.is_active ? "Faol" : "Nofaol") + '</strong></div>' +
+            '</div>' +
+            '<div class="admin-detail-block"><h3>Tavsif</h3><p>' +
+            escapeHtml(product.description || "Tavsif yo‘q.") +
+            '</p></div>'
         );
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function editProduct(id) {
+    try {
+        const product = await apiRequest(
+            "/admin/shop/products/" + Number(id)
+        );
+
+        const name = window.prompt(
+            "Mukofot nomi:",
+            product.name || ""
+        );
+        if (name === null) return;
+
+        const coin = window.prompt(
+            "Coin narxi:",
+            String(product.coin_price ?? 0)
+        );
+        if (coin === null) return;
+
+        const crystal = window.prompt(
+            "Crystal narxi:",
+            String(product.crystal_price ?? 0)
+        );
+        if (crystal === null) return;
+
+        const stock = window.prompt(
+            "Stock:",
+            String(product.stock ?? 0)
+        );
+        if (stock === null) return;
+
+        await apiRequest(
+            "/admin/shop/products/" + Number(id),
+            {
+                method: "PUT",
+                body: JSON.stringify({
+                    name: name.trim(),
+                    description: product.description || "",
+                    image_url: product.image_url || "",
+                    coin_price: Number(coin),
+                    crystal_price: Number(crystal),
+                    stock: Number(stock)
+                })
+            }
+        );
+
+        showToast("Mukofot yangilandi");
+        await loadRewards();
+        await loadShopStats();
     } catch (error) {
         showToast(error.message, "error");
     }
@@ -2387,8 +2923,17 @@ async function viewProduct(id) {
 
 async function toggleProduct(id, active) {
     try {
-        await apiRequest("/admin/shop/products/" + Number(id) + "/" + (active ? "deactivate" : "activate"), { method: "PUT" });
-        showToast(active ? "Mukofot deaktiv qilindi" : "Mukofot faollashtirildi");
+        await apiRequest(
+            "/admin/shop/products/" + Number(id) + "/" +
+            (active ? "deactivate" : "activate"),
+            { method: "PUT" }
+        );
+
+        showToast(
+            active ? "Mukofot deaktiv qilindi" :
+            "Mukofot faollashtirildi"
+        );
+
         await loadRewards();
         await loadShopStats();
     } catch (error) {
@@ -2397,9 +2942,16 @@ async function toggleProduct(id, active) {
 }
 
 async function deleteProduct(id) {
-    if (!window.confirm("Bu mukofotni o‘chirishni tasdiqlaysizmi?")) return;
+    if (!window.confirm("Bu mukofotni o‘chirishni tasdiqlaysizmi?")) {
+        return;
+    }
+
     try {
-        await apiRequest("/admin/shop/products/" + Number(id), { method: "DELETE" });
+        await apiRequest(
+            "/admin/shop/products/" + Number(id),
+            { method: "DELETE" }
+        );
+
         showToast("Mukofot o‘chirildi");
         await loadRewards();
         await loadShopStats();
@@ -2411,12 +2963,29 @@ async function deleteProduct(id) {
 async function openProductCreate() {
     const name = window.prompt("Mukofot nomi:");
     if (!name?.trim()) return;
+
     const coin = window.prompt("Coin narxi:", "0");
     if (coin === null) return;
+
     const crystal = window.prompt("Crystal narxi:", "0");
     if (crystal === null) return;
+
     const stock = window.prompt("Stock:", "0");
     if (stock === null) return;
+
+    const coinValue = Number(coin);
+    const crystalValue = Number(crystal);
+    const stockValue = Number(stock);
+
+    if (
+        !Number.isInteger(coinValue) || coinValue < 0 ||
+        !Number.isInteger(crystalValue) || crystalValue < 0 ||
+        !Number.isInteger(stockValue) || stockValue < 0
+    ) {
+        showToast("Narx yoki stock noto‘g‘ri.", "error");
+        return;
+    }
+
     try {
         await apiRequest("/admin/shop/products", {
             method: "POST",
@@ -2424,11 +2993,12 @@ async function openProductCreate() {
                 name: name.trim(),
                 description: "",
                 image_url: "",
-                coin_price: Number(coin),
-                crystal_price: Number(crystal),
-                stock: Number(stock)
+                coin_price: coinValue,
+                crystal_price: crystalValue,
+                stock: stockValue
             })
         });
+
         showToast("Mukofot qo‘shildi");
         await loadRewards();
         await loadShopStats();
@@ -2437,40 +3007,157 @@ async function openProductCreate() {
     }
 }
 
+async function openRuleCreate() {
+    const name = window.prompt("Qoida nomi:");
+    if (!name?.trim()) return;
+
+    const actionType = window.prompt(
+        "Action type:",
+        "homework_completed"
+    );
+    if (!actionType?.trim()) return;
+
+    const rewardType = window.prompt(
+        "Reward type: coin yoki crystal",
+        "coin"
+    );
+    if (!rewardType?.trim()) return;
+
+    const amount = window.prompt(
+        "Mukofot miqdori:",
+        "10"
+    );
+    if (amount === null) return;
+
+    const amountValue = Number(amount);
+
+    if (
+        !Number.isInteger(amountValue) ||
+        amountValue < 0 ||
+        !["coin", "crystal"].includes(
+            rewardType.trim().toLowerCase()
+        )
+    ) {
+        showToast("Reward qoidasi ma’lumotlari noto‘g‘ri.", "error");
+        return;
+    }
+
+    try {
+        await apiRequest("/admin/shop/rules", {
+            method: "POST",
+            body: JSON.stringify({
+                name: name.trim(),
+                description: "",
+                action_type: actionType.trim(),
+                reward_type: rewardType.trim().toLowerCase(),
+                reward_amount: amountValue
+            })
+        });
+
+        showToast("Reward qoidasi yaratildi");
+        await loadRewards();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function toggleRule(id, active) {
+    try {
+        await apiRequest(
+            "/admin/shop/rules/" + Number(id) + "/" +
+            (active ? "deactivate" : "activate"),
+            { method: "PUT" }
+        );
+
+        showToast(
+            active ? "Reward qoidasi deaktiv qilindi" :
+            "Reward qoidasi faollashtirildi"
+        );
+
+        await loadRewards();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function deleteRule(id) {
+    if (!window.confirm("Bu reward qoidasini o‘chirishni tasdiqlaysizmi?")) {
+        return;
+    }
+
+    try {
+        await apiRequest(
+            "/admin/shop/rules/" + Number(id),
+            { method: "DELETE" }
+        );
+
+        showToast("Reward qoidasi o‘chirildi");
+        await loadRewards();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+/* ============================================================
+   ORDERS
+   ============================================================ */
+
 async function loadOrders() {
     const box = document.getElementById("ordersContent");
     if (!box) return;
+
     box.innerHTML = moduleLoading("Buyurtmalar yuklanmoqda...");
+
     try {
         const data = await apiRequest("/admin/shop/orders");
         const items = asArray(data, ["orders", "items", "data"]);
+
         box.innerHTML = items.length
             ? moduleTable(
-                ["ID", "O‘QUVCHI", "MAHSULOT", "SARF", "STATUS", "AMAL"],
+                ["ID", "O‘QUVCHI", "MAHSULOT", "MIQDOR", "SARF", "STATUS", "AMAL"],
                 items.map(order =>
-                    '<tr><td>#' + Number(order.id) + '</td>' +
+                    '<tr>' +
+                    '<td>#' + Number(order.id) + '</td>' +
                     '<td>#' + Number(order.student_id) + '</td>' +
                     '<td>' + escapeHtml(order.product_name || "—") + '</td>' +
-                    '<td>' + (order.coin_spent ?? 0) + ' coin / ' + (order.crystal_spent ?? 0) + ' crystal</td>' +
+                    '<td>' + (order.quantity ?? 0) + '</td>' +
+                    '<td>' + (order.coin_spent ?? 0) +
+                    ' coin / ' + (order.crystal_spent ?? 0) + ' crystal</td>' +
                     '<td>' + escapeHtml(order.status || "—") + '</td>' +
-                    '<td><select class="module-status-select" onchange="updateOrderStatus(' + Number(order.id) + ',this.value)"><option value="">Status</option><option value="pending">pending</option><option value="processing">processing</option><option value="completed">completed</option><option value="cancelled">cancelled</option></select> ' +
+                    '<td>' +
+                    '<select class="module-status-select" onchange="updateOrderStatus(' +
+                    Number(order.id) + ',this.value)">' +
+                    '<option value="">Status</option>' +
+                    '<option value="pending">pending</option>' +
+                    '<option value="processing">processing</option>' +
+                    '<option value="completed">completed</option>' +
+                    '<option value="cancelled">cancelled</option>' +
+                    '</select> ' +
                     actionButton("Ko‘rish", "viewOrder(" + Number(order.id) + ")") +
                     '</td></tr>'
                 )
             )
-            : '<div class="module-empty"><h3>Buyurtmalar yo‘q</h3><p>Hozircha buyurtma mavjud emas.</p></div>';
+            : '<div class="module-empty"><h3>Buyurtmalar yo‘q</h3>' +
+              '<p>Hozircha buyurtma mavjud emas.</p></div>';
     } catch (error) {
-        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+        box.innerHTML =
+            '<div class="module-empty"><h3>Xatolik</h3><p>' +
+            escapeHtml(error.message) + '</p></div>';
     }
 }
 
 async function updateOrderStatus(id, status) {
     if (!status) return;
+
     try {
-        await apiRequest("/admin/shop/orders/" + Number(id) + "/status", {
-            method: "PUT",
-            body: JSON.stringify({ status })
-        });
+        await apiRequest(
+            "/admin/shop/orders/" + Number(id) + "/status",
+            {
+                method: "PUT",
+                body: JSON.stringify({ status })
+            }
+        );
+
         showToast("Buyurtma statusi yangilandi");
         await loadOrders();
         await loadShopStats();
@@ -2481,15 +3168,27 @@ async function updateOrderStatus(id, status) {
 
 async function viewOrder(id) {
     try {
-        const data = await apiRequest("/admin/shop/orders/" + Number(id));
-        const order = data?.order || data || {};
+        const order = await apiRequest(
+            "/admin/shop/orders/" + Number(id)
+        );
+
         showInfoModal(
-            "Buyurtma",
+            "Buyurtma tafsilotlari",
             '<div class="admin-detail-grid">' +
-            '<div><small>ID</small><strong>#' + Number(order.id) + '</strong></div>' +
-            '<div><small>O‘quvchi</small><strong>#' + Number(order.student_id) + '</strong></div>' +
-            '<div><small>Mahsulot</small><strong>' + escapeHtml(order.product_name || "—") + '</strong></div>' +
-            '<div><small>Miqdor</small><strong>' + (order.quantity ?? 0) + '</strong></div>' +
+            '<div><small>ID</small><strong>#' +
+            Number(order.id) + '</strong></div>' +
+            '<div><small>O‘quvchi</small><strong>#' +
+            Number(order.student_id) + '</strong></div>' +
+            '<div><small>Mahsulot</small><strong>' +
+            escapeHtml(order.product_name || "—") + '</strong></div>' +
+            '<div><small>Miqdor</small><strong>' +
+            (order.quantity ?? 0) + '</strong></div>' +
+            '<div><small>Coin</small><strong>' +
+            (order.coin_spent ?? 0) + '</strong></div>' +
+            '<div><small>Crystal</small><strong>' +
+            (order.crystal_spent ?? 0) + '</strong></div>' +
+            '<div><small>Status</small><strong>' +
+            escapeHtml(order.status || "—") + '</strong></div>' +
             '</div>'
         );
     } catch (error) {
@@ -2497,39 +3196,69 @@ async function viewOrder(id) {
     }
 }
 
+/* ============================================================
+   BOOKS
+   ============================================================ */
+
 async function loadBooks() {
     const box = document.getElementById("booksContent");
     if (!box) return;
+
     box.innerHTML = moduleLoading("Kitoblar yuklanmoqda...");
+
     try {
         const data = await apiRequest("/admin/books");
         const items = asArray(data, ["books", "items", "data"]);
+
         box.innerHTML = items.length
             ? moduleTable(
                 ["KITOB", "NARX", "COIN", "STOCK", "HOLAT"],
                 items.map(book =>
-                    '<tr><td><strong>' + escapeHtml(book.title || "—") + '</strong><small>#' + Number(book.id) + '</small></td>' +
+                    '<tr>' +
+                    '<td><strong>' + escapeHtml(book.title || "—") +
+                    '</strong><small>#' + Number(book.id) + '</small></td>' +
                     '<td>' + (book.price ?? 0) + '</td>' +
                     '<td>' + (book.coin_price ?? 0) + '</td>' +
                     '<td>' + (book.stock ?? 0) + '</td>' +
-                    '<td>' + (book.is_active ? "Faol" : "Nofaol") + '</td></tr>'
+                    '<td>' + (book.is_active ? "Faol" : "Nofaol") + '</td>' +
+                    '</tr>'
                 )
             )
-            : '<div class="module-empty"><h3>Kitoblar yo‘q</h3><p>Yangi kitob qo‘shishingiz mumkin.</p></div>';
+            : '<div class="module-empty"><h3>Kitoblar yo‘q</h3>' +
+              '<p>Yangi kitob qo‘shishingiz mumkin.</p></div>';
     } catch (error) {
-        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+        box.innerHTML =
+            '<div class="module-empty"><h3>Xatolik</h3><p>' +
+            escapeHtml(error.message) + '</p></div>';
     }
 }
 
 async function openBookCreate() {
     const title = window.prompt("Kitob nomi:");
     if (!title?.trim()) return;
+
     const price = window.prompt("Narxi:", "0");
     if (price === null) return;
+
     const coin = window.prompt("Coin narxi:", "0");
     if (coin === null) return;
+
     const stock = window.prompt("Stock:", "0");
     if (stock === null) return;
+
+    const priceValue = Number(price);
+    const coinValue = Number(coin);
+    const stockValue = Number(stock);
+
+    if (
+        !Number.isFinite(priceValue) || priceValue < 0 ||
+        !Number.isInteger(coinValue) || coinValue < 0 ||
+        !Number.isInteger(stockValue) || stockValue < 0
+    ) {
+        showToast("Kitob narxi yoki stock noto‘g‘ri.", "error");
+        return;
+    }
+
     try {
         await apiRequest("/admin/books", {
             method: "POST",
@@ -2537,11 +3266,12 @@ async function openBookCreate() {
                 title: title.trim(),
                 description: "",
                 image_url: "",
-                price: Number(price),
-                coin_price: Number(coin),
-                stock: Number(stock)
+                price: priceValue,
+                coin_price: coinValue,
+                stock: stockValue
             })
         });
+
         showToast("Kitob qo‘shildi");
         await loadBooks();
     } catch (error) {
@@ -2549,33 +3279,56 @@ async function openBookCreate() {
     }
 }
 
+/* ============================================================
+   RANKING
+   ============================================================ */
+
 async function loadRanking() {
     const box = document.getElementById("rankingContent");
     if (!box) return;
+
     box.innerHTML = moduleLoading("Reyting yuklanmoqda...");
+
     try {
         const data = await apiRequest("/students/ranking");
-        const items = asArray(data, ["ranking", "students", "items", "data"]);
+        const items = asArray(
+            data,
+            ["ranking", "students", "items", "data"]
+        );
+
         box.innerHTML = items.length
             ? moduleTable(
                 ["#", "O‘QUVCHI", "BALL"],
                 items.map((item, index) =>
-                    '<tr><td>' + (index + 1) + '</td><td><strong>' +
+                    '<tr>' +
+                    '<td>' + (index + 1) + '</td>' +
+                    '<td><strong>' +
                     escapeHtml(item.full_name || item.name || "—") +
-                    '</strong></td><td>' +
-                    (item.points ?? item.score ?? item.total_points ?? 0) +
-                    '</td></tr>'
+                    '</strong></td>' +
+                    '<td>' +
+                    (item.points ?? item.score ??
+                    item.total_points ?? 0) +
+                    '</td>' +
+                    '</tr>'
                 )
             )
-            : '<div class="module-empty"><h3>Reyting ma’lumoti yo‘q</h3><p>Hozircha ma’lumot mavjud emas.</p></div>';
+            : '<div class="module-empty"><h3>Reyting ma’lumoti yo‘q</h3>' +
+              '<p>Hozircha ma’lumot mavjud emas.</p></div>';
     } catch (error) {
-        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message) + '</p></div>';
+        box.innerHTML =
+            '<div class="module-empty"><h3>Xatolik</h3><p>' +
+            escapeHtml(error.message) + '</p></div>';
     }
 }
+
+/* ============================================================
+   MOBILE / INIT
+   ============================================================ */
 
 function initMobileMenu() {
     const button = document.getElementById("mobileMenuBtn");
     const sidebar = document.getElementById("sidebar");
+
     if (!button || !sidebar) return;
 
     button.setAttribute("aria-expanded", "false");
@@ -2583,13 +3336,17 @@ function initMobileMenu() {
     button.addEventListener("click", event => {
         event.preventDefault();
         event.stopPropagation();
+
         const open = sidebar.classList.toggle("open");
         button.setAttribute("aria-expanded", String(open));
     });
 
     document.addEventListener("click", event => {
         if (!sidebar.classList.contains("open")) return;
-        if (sidebar.contains(event.target) || button.contains(event.target)) return;
+        if (sidebar.contains(event.target) || button.contains(event.target)) {
+            return;
+        }
+
         sidebar.classList.remove("open");
         button.setAttribute("aria-expanded", "false");
     });
@@ -2604,10 +3361,14 @@ async function initAdminPanel() {
     initAdministratorManagement();
 
     const logoutButton = document.getElementById("logoutBtn");
-    if (logoutButton) logoutButton.addEventListener("click", logout);
+    if (logoutButton) {
+        logoutButton.addEventListener("click", logout);
+    }
 
     const refreshButton = document.getElementById("refreshBtn");
-    if (refreshButton) refreshButton.addEventListener("click", refreshDashboard);
+    if (refreshButton) {
+        refreshButton.addEventListener("click", refreshDashboard);
+    }
 
     await loadAdminProfile();
     await refreshDashboard();
