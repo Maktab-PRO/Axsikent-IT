@@ -69,12 +69,12 @@
             Bosh sahifa
         </button>
 
-        <button class="menu-item" onclick="openStudentCoursesMenu(this)">
+        <button id="studentCoursesMenu" class="menu-item" onclick="openStudentCoursesMenu(this)">
             <span class="menu-icon">📚</span>
             Mening kurslarim
         </button>
 
-        <button class="menu-item" onclick="openStudentHomeworkMenu(this)">
+        <button id="studentHomeworkMenu" class="menu-item" onclick="openStudentHomeworkMenu(this)">
             <span class="menu-icon">📝</span>
             Uy vazifalarim
         </button>
@@ -83,12 +83,12 @@
             Natijalar
         </div>
 
-        <button class="menu-item" onclick="openStudentRankingMenu(this)">
+        <button id="studentRankingMenu" class="menu-item" onclick="openStudentRankingMenu(this)">
             <span class="menu-icon">🏆</span>
             Reyting
         </button>
 
-        <button class="menu-item" onclick="openStudentRewardsMenu(this)">
+        <button id="studentRewardsMenu" class="menu-item" onclick="openStudentRewardsMenu(this)">
             <span class="menu-icon">🎁</span>
             Mukofotlar
         </button>
@@ -97,22 +97,22 @@
             Resurslar
         </div>
 
-        <button class="menu-item" onclick="openStudentBooksMenu(this)">
+        <button id="studentBooksMenu" class="menu-item" onclick="openStudentBooksMenu(this)">
             <span class="menu-icon">📖</span>
             Kitoblar
         </button>
 
-        <button class="menu-item" onclick="showMessage('Podcastlar bo‘limi tez orada ishga tushadi 🎧')">
+        <button id="studentPodcastsMenu" class="menu-item" onclick="openStudentPodcasts()">
             <span class="menu-icon">🎧</span>
             Podcastlar
         </button>
 
-        <button class="menu-item" onclick="showMessage('Treninglar bo‘limi tez orada ishga tushadi 📅')">
+        <button id="studentTrainingsMenu" class="menu-item" onclick="openStudentTrainings()">
             <span class="menu-icon">📅</span>
             Treninglar
         </button>
 
-        <button class="menu-item" onclick="showMessage('Imtihonlar bo‘limi tez orada ishga tushadi 🧪')">
+        <button id="studentExamsMenu" class="menu-item" onclick="openStudentExams()">
             <span class="menu-icon">🧪</span>
             Imtihonlar
         </button>
@@ -202,10 +202,10 @@
 
                 <div>
                     <div class="stat-label">
-                        Umumiy ball
+                        Umumiy XP
                     </div>
 
-                    <div class="stat-value">
+                    <div class="stat-value" id="statTotalXp">
                         0
                     </div>
                 </div>
@@ -224,7 +224,7 @@
                         Reytingdagi o‘rin
                     </div>
 
-                    <div class="stat-value">
+                    <div class="stat-value" id="statRank">
                         —
                     </div>
                 </div>
@@ -243,7 +243,7 @@
                         Bajarilgan vazifa
                     </div>
 
-                    <div class="stat-value">
+                    <div class="stat-value" id="statHomeworkDone">
                         0
                     </div>
                 </div>
@@ -262,7 +262,7 @@
                         Faollik
                     </div>
 
-                    <div class="stat-value">
+                    <div class="stat-value" id="statStreak">
                         0 kun
                     </div>
                 </div>
@@ -287,7 +287,7 @@
 
                     <span
                         class="view-all"
-                        onclick="showMessage('Kurslar bo‘limi tez orada ishga tushadi')">
+                        onclick="openStudentCoursesFromHome()">
                         Barchasi →
                     </span>
 
@@ -337,7 +337,7 @@
                 </div>
 
 
-                <div class="course">
+                <div class="course" onclick="openStudentHomeworkFromHome()" style="cursor:pointer;">
 
                     <div class="course-top">
 
@@ -394,7 +394,7 @@
 
         <button
             class="quick premium-quick"
-            onclick="showMessage('Profil bo‘limi tez orada ishga tushadi 👤')"
+            onclick="openStudentProfile()"
         >
             <div class="quick-icon premium-icon">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -410,7 +410,7 @@
 
         <button
             class="quick premium-quick"
-            onclick="showMessage('Uy vazifalarim bo‘limi tez orada ishga tushadi 📝')"
+            onclick="openStudentHomeworkFromHome()"
         >
             <div class="quick-icon premium-icon">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -428,7 +428,7 @@
 
         <button
             class="quick premium-quick"
-            onclick="showMessage('Reyting tizimi tez orada ishga tushadi 🏆')"
+            onclick="openStudentRankingFromHome()"
         >
             <div class="quick-icon premium-icon">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -448,7 +448,7 @@
 
         <button
             class="quick premium-quick"
-            onclick="showMessage('Mukofotlar tizimi tez orada ishga tushadi 🎁')"
+            onclick="openStudentRewardsFromHome()"
         >
             <div class="quick-icon premium-icon">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -467,7 +467,7 @@
 
         <button
             class="quick premium-quick"
-            onclick="showMessage('Elektron kitoblar tez orada qo‘shiladi 📖')"
+            onclick="openStudentBooksFromHome()"
         >
             <div class="quick-icon premium-icon">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -485,7 +485,7 @@
 
         <button
             class="quick premium-quick"
-            onclick="showMessage('Podcastlar tez orada qo‘shiladi 🎧')"
+            onclick="openStudentPodcasts()"
         >
             <div class="quick-icon premium-icon">
                 <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -586,7 +586,7 @@
 
                     <h2>📝 So‘nggi vazifalar</h2>
 
-                    <span class="view-all">
+                    <span class="view-all" onclick="openStudentHomeworkFromHome()">
                         Barchasi →
                     </span>
 
