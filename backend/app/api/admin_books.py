@@ -5,6 +5,7 @@ from app.db import get_db
 from app.core.security import require_admin
 from app.models.admin import Admin
 from app.models.book import Book
+from app.services.notifications import notify_all_students
 
 
 router = APIRouter(
@@ -47,6 +48,13 @@ def create_book(
     db.add(book)
     db.commit()
     db.refresh(book)
+
+    notify_all_students(
+        db,
+        "Yangi kitob qo‘shildi",
+        "“" + book.title + "” kitobi Student kabinetida mavjud.",
+        "book",
+    )
 
     return {
         "success": True,
