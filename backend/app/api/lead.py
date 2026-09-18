@@ -78,16 +78,6 @@ def create_lead(
 ):
 
     # =========================================
-    # CLOUDFLARE TURNSTILE TEKSHIRUVI
-    # =========================================
-
-    if not verify_turnstile(cf_turnstile_response or ""):
-        raise HTTPException(
-            status_code=403,
-            detail="Robot tekshiruvidan o‘ting."
-        )
-
-    # =========================================
     # LEAD YARATISH
     # =========================================
 
