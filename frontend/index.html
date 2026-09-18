@@ -3557,6 +3557,7 @@
 
             <div class="application-form-subtitle" data-i18n="form_subtitle">
                 Ma’lumotlaringizni qoldiring — biz siz bilan bog‘lanamiz.
+                Arizangiz administrator tomonidan tasdiqlangandan keyin o‘quvchi akkauntingiz faollashadi.
             </div>
 
             <div class="form-grid">
@@ -3588,6 +3589,23 @@
                         type="tel"
                         id="phone"
                         placeholder="+998901234567"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Parol *
+                    </label>
+
+                    <input
+                        type="password"
+                        id="registration_password"
+                        placeholder="Kamida 6 ta belgi"
+                        minlength="6"
                         required
                     >
 
@@ -4992,6 +5010,9 @@ document
 
                 phone:
                     document.getElementById("phone").value,
+
+                password:
+                    document.getElementById("registration_password").value,
 
                 age:
                     document.getElementById("age").value,
