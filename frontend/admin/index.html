@@ -219,6 +219,8 @@
                 </button>
 
 
+                <button type="button" class="section-back-btn" id="sectionBackBtn" hidden aria-label="Orqaga"><span>←</span></button>
+
                 <div class="page-heading">
 
                     <div class="breadcrumb">
@@ -303,7 +305,7 @@
 
                     <div class="stats-grid">
 
-                        <article class="stat-card">
+                        <article class="stat-card" data-section="students" role="button" tabindex="0">
                             <div class="stat-card-top">
                                 <span class="stat-label">
                                     O‘QUVCHILAR
@@ -327,7 +329,7 @@
                         </article>
 
 
-                        <article class="stat-card">
+                        <article class="stat-card" data-section="teachers" role="button" tabindex="0">
                             <div class="stat-card-top">
                                 <span class="stat-label">
                                     O‘QITUVCHILAR
@@ -351,7 +353,7 @@
                         </article>
 
 
-                        <article class="stat-card">
+                        <article class="stat-card" data-section="courses" role="button" tabindex="0">
                             <div class="stat-card-top">
                                 <span class="stat-label">
                                     KURSLAR
@@ -375,7 +377,7 @@
                         </article>
 
 
-                        <article class="stat-card accent-card">
+                        <article class="stat-card accent-card" data-section="orders" role="button" tabindex="0">
                             <div class="stat-card-top">
                                 <span class="stat-label">
                                     BUYURTMALAR
@@ -588,59 +590,6 @@
                     </div>
 
 
-                    <!-- SYSTEM INFORMATION -->
-
-                    <article class="panel-card system-panel">
-
-                        <div class="panel-header">
-
-                            <div>
-                                <span class="panel-eyebrow">
-                                    TIZIM
-                                </span>
-
-                                <h3>
-                                    Tizim ma'lumotlari
-                                </h3>
-                            </div>
-
-                        </div>
-
-
-                        <div class="system-grid">
-
-                            <div class="system-item">
-                                <span>API</span>
-                                <strong>
-                                    Axsikent IT Backend
-                                </strong>
-                            </div>
-
-                            <div class="system-item">
-                               <span>Muhit</span>
-                                <strong>
-                                    Ishlab chiqarish
-                                </strong>
-                            </div>
-
-                            <div class="system-item">
-                                <span>Autentifikatsiya</span>
-                                <strong>
-                                    JWT / Administrator
-                                </strong>
-                            </div>
-
-                           <div class="system-item">
-                               <span>Panel</span>
-                               <strong>
-                                   Boshqaruv markazi
-                               </strong>
-                           </div>
-
-                        </div>
-
-                    </article>
-
                 </section>
 
 
@@ -848,18 +797,14 @@
                 <section class="page-section" id="section-ranking"><div class="section-header"><div><div class="section-eyebrow">MUKOFOTLAR / REYTING</div><h2>Reyting</h2><p>O‘quvchilar reytingini real tizimdan ko‘ring.</p></div><button class="panel-link" onclick="loadRanking()">↻ Yangilash</button></div><div class="admin-panel"><div class="panel-header"><div><h3>O‘quvchilar reytingi</h3><p>Ranking ma’lumotlari</p></div></div><div id="rankingContent"><div class="module-loading"><div class="module-spinner"></div><span>Reyting yuklanmoqda...</span></div></div></div></section>
 
 
-                <section
-                    class="page-section"
-                    id="section-reports"
-                >
-                    <div class="empty-module">
-                        <span>▥</span>
-                        <h2>Hisobotlar</h2>
-                        <p>
-                            Hisobotlar moduli tayyorlanmoqda.
-                        </p>
+                <section class="page-section" id="section-reports">
+                    <div class="section-header">
+                        <div><div class="section-eyebrow">TAHLIL / HISOBOT</div><h2>Hisobotlar</h2><p>Platformadagi asosiy ko‘rsatkichlarni bir joyda ko‘ring.</p></div>
+                        <button type="button" class="panel-link" onclick="loadReports()">↻ Yangilash</button>
                     </div>
-                </section>
+                    <div class="admin-panel">
+                        <div id="reportsContent"><div class="module-loading"><div class="module-spinner"></div><span>Hisobotlar tayyorlanmoqda...</span></div></div>
+                    </div>                </section>
 
 
                 <section
@@ -996,18 +941,13 @@
                 </section>
 
 
-                <section
-                    class="page-section"
-                    id="section-settings"
-                >
-                    <div class="empty-module">
-                        <span>⚙</span>
-                        <h2>Sozlamalar</h2>
-                        <p>
-                            Tizim sozlamalari moduli tayyorlanmoqda.
-                        </p>
+                <section class="page-section" id="section-settings">
+                    <div class="section-header">
+                        <div><div class="section-eyebrow">TIZIM / SOZLAMALAR</div><h2>Sozlamalar</h2><p>Admin panelning ishlashini shu yerdan boshqaring.</p></div>
                     </div>
-                </section>
+                    <div class="admin-panel">
+                        <div id="settingsContent"><div class="module-loading"><div class="module-spinner"></div><span>Sozlamalar tayyorlanmoqda...</span></div></div>
+                    </div>                </section>
 
 
             </div>
