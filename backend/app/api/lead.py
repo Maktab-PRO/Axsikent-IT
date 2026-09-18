@@ -5,6 +5,7 @@ import urllib.request
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
 
 from app.db import get_db
 from app.models.lead import Lead
@@ -13,6 +14,11 @@ from app.models.lead import Lead
 router = APIRouter(
     prefix="/leads",
     tags=["Leads"]
+)
+
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
 )
 
 
@@ -61,6 +67,7 @@ def verify_turnstile(token: str) -> bool:
 def create_lead(
     full_name: str,
     phone: str,
+    password: str,
     age: int | None = None,
     interested_course: str | None = None,
     preferred_time: str | None = None,
@@ -84,9 +91,16 @@ def create_lead(
     # LEAD YARATISH
     # =========================================
 
+    if len(password) < 6:
+        raise HTTPException(
+            status_code=400,
+            detail="Parol kamida 6 ta belgidan iborat bo‘lishi kerak."
+        )
+
     lead = Lead(
         full_name=full_name,
         phone=phone,
+        password_hash=pwd_context.hash(password),
         age=age,
         interested_course=interested_course,
         preferred_time=preferred_time,
