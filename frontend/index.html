@@ -1495,7 +1495,8 @@
         .quiz-modern-icon svg {
             width: 30px !important;
             height: 30px !important;
-            display: block;            fill: none;
+            display: block;
+            fill: none;
             stroke: #15803d;
             stroke-width: 1.8;
             stroke-linecap: round;
@@ -1796,8 +1797,7 @@
             border-radius: 50%;
             filter: blur(50px);
             opacity: .35;
-            pointer-events: none;
-            animation: orbDrift 14s ease-in-out infinite;
+            pointer-events: none;            animation: orbDrift 14s ease-in-out infinite;
         }
 
         .application-orb.o1 {
@@ -2994,7 +2994,8 @@
                 </p>
 
                 <div class="course-price">
-                    <span data-i18n="price_contact">Ma’lumot uchun murojaat qiling</span>                </div>
+                    <span data-i18n="price_contact">Ma’lumot uchun murojaat qiling</span>
+                </div>
 
                 <button
                     class="btn btn-primary"
@@ -3204,9 +3205,9 @@
 
             <div class="quiz-question" id="quizQuestion1">
 
-                <div class="quiz-question-title">
+                <div class="quiz-question-title" data-i18n="quiz_q1">
                     <span class="quiz-question-modern-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v12H4z"></path><path d="M8 21h8M12 17v4M8 9h3M8 12h6M16 9h.01"></path></svg></span>
-                    <span data-i18n="quiz_q1">Nimalar sizni ko‘proq qiziqtiradi?</span>
+                    <span>Nimalar sizni ko‘proq qiziqtiradi?</span>
                 </div>
 
                 <div class="quiz-options">
@@ -3229,9 +3230,9 @@
 
             <div class="quiz-question hidden" id="quizQuestion2">
 
-                <div class="quiz-question-title">
+                <div class="quiz-question-title" data-i18n="quiz_q2">
                     <span class="quiz-question-modern-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l2.2 5.1L20 10l-5.8 1.9L12 17l-2.2-5.1L4 10l5.8-1.9z"></path><path d="M18 15l1 2.3L21 18l-2 0.7L18 21l-1-2.3-2-.7 2-.7z"></path></svg></span>
-                    <span data-i18n="quiz_q2">Qaysi natija sizga muhimroq?</span>
+                    <span>Qaysi natija sizga muhimroq?</span>
                 </div>
 
                 <div class="quiz-options">
@@ -3595,8 +3596,7 @@
                 </div>
 
                 <h2 class="section-title" data-i18n="certificate_title">
-                    Kursni tugatib, sertifikat oling
-                </h2>
+                    Kursni tugatib, sertifikat oling                </h2>
 
                 <p class="section-text" data-i18n="certificate_text">
                     Har bir kursni muvaffaqiyatli tugatgan o‘quvchi rasmiy sertifikat bilan taqdirlanadi — bu portfolio va rezyumeingizga qo‘shimcha kuch bag‘ishlaydi.
@@ -4493,7 +4493,8 @@ function goToRegistration() {
                         <li>Computer basics</li>
                         <li>Working with Windows</li>
                         <li>Using the internet</li>
-                        <li>Microsoft Office</li>                        <li>Practical assignments</li>
+                        <li>Microsoft Office</li>
+                        <li>Practical assignments</li>
                     </ul>
                 `
             }
@@ -5394,8 +5395,7 @@ document
                 "axsikent_lead_id",
                 String(responseData.lead_id || "")
             );
-            localStorage.setItem(
-                "axsikent_lead_phone",
+            localStorage.setItem(                "axsikent_lead_phone",
                 document.getElementById("phone").value.trim()
             );
 
@@ -5992,7 +5992,8 @@ document
             faq_title: "Frequently asked questions",
             faq1_q: "How can I enroll in a course?",
             faq1_a: "Fill out the application form. An administrator will contact you.",
-            faq2_q: "Are the courses suitable for beginners?",            faq2_a: "Yes. Many programs start from a beginner level.",
+            faq2_q: "Are the courses suitable for beginners?",
+            faq2_a: "Yes. Many programs start from a beginner level.",
             faq3_q: "How long is the AI course?",
             faq3_a: "The AI course lasts 3 months. 3 classes a week, 90 minutes each.",
             faq4_q: "How much does the AI course cost?",
