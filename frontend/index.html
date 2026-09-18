@@ -2291,15 +2291,7 @@
                 <option value="en">EN</option>
             </select>
 
-            <button
-                type="button"
-                class="btn btn-primary desktop-login-btn"
-                onclick="openLoginModal()"
-            >
-                🔐 Kirish
-            </button>
 
-           
             <button class="mobile-menu" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Menyu">
                 ☰
             </button>
@@ -2341,14 +2333,15 @@
 
         <div>
 
-            <div class="hero-badge" data-i18n="hero_badge">
-                🚀 Kelajak kasblari shu yerdan boshlanadi
+            <div class="hero-badge">
+                <span class="hero-badge-icon">✦</span>
+                <span data-i18n="hero_badge">Kelajak kasblari shu yerdan boshlanadi</span>
             </div>
 
-            <h1 data-i18n="hero_title">
-                Kelajagingizni
-                <span>AKHSIKENT IT</span>
-                bilan quring
+            <h1 class="hero-title">
+                <span data-i18n="hero_title_prefix">Kelajagingizni</span>
+                <span class="hero-title-brand" data-i18n="hero_title_brand">AKHSIKENT IT</span>
+                <span data-i18n="hero_title_suffix">bilan quring</span>
             </h1>
 
             <p data-i18n="hero_text">
@@ -2384,7 +2377,7 @@
             <div class="hero-mini-grid">
 
                 <div class="hero-mini">
-                    🤖 AI
+                    <span class="quiz-modern-icon" data-quiz-icon="ai">✦</span>AI
                 </div>
 
                 <div class="hero-mini">
@@ -2392,11 +2385,11 @@
                 </div>
 
                 <div class="hero-mini">
-                    🇬🇧 English
+                    <span class="quiz-modern-icon" data-quiz-icon="english">✦</span>English
                 </div>
 
                 <div class="hero-mini">
-                    🧮 Mental
+                    <span class="quiz-modern-icon" data-quiz-icon="mental">✦</span>Mental
                 </div>
 
             </div>
@@ -2455,38 +2448,27 @@
                 Biz haqimizda
             </div>
 
-            <h2 class="section-title" data-i18n="about_title">
+            <h2 class="section-title about-title-gradient" data-i18n="about_title">
                 Oddiy kurs emas.
                 Kelajak uchun muhit.
             </h2>
 
-            <p class="section-text" data-i18n="about_text">
-                AKHSIKENT IT o‘quvchilarga zamonaviy texnologiyalarni
-                o‘rganish, amalda qo‘llash va o‘z loyihalarini yaratish
-                imkoniyatini beruvchi ta’lim platformasidir.
-            </p>
-
-            <br>
-
-            <ul class="check-list">
-
-                <li data-i18n="about_check1">
-                    Amaliy mashg‘ulotlar
-                </li>
-
-                <li data-i18n="about_check2">
-                    Zamonaviy texnologiyalar
-                </li>
-
-                <li data-i18n="about_check3">
-                    Individual yondashuv
-                </li>
-
-                <li data-i18n="about_check4">
-                    O‘quvchi natijasiga e’tibor
-                </li>
-
-            </ul>
+            <div class="premium-gradient-blog about-gradient-blog">
+                <div class="about-aura aura-one"></div>
+                <div class="about-aura aura-two"></div>
+                <div class="about-aura aura-three"></div>
+                <p class="section-text" data-i18n="about_text">
+                    AKHSIKENT IT o‘quvchilarga zamonaviy texnologiyalarni
+                    o‘rganish, amalda qo‘llash va o‘z loyihalarini yaratish
+                    imkoniyatini beruvchi ta’lim platformasidir.
+                </p>
+                <ul class="check-list">
+                    <li data-i18n="about_check1">Amaliy mashg‘ulotlar</li>
+                    <li data-i18n="about_check2">Zamonaviy texnologiyalar</li>
+                    <li data-i18n="about_check3">Individual yondashuv</li>
+                    <li data-i18n="about_check4">O‘quvchi natijasiga e’tibor</li>
+                </ul>
+            </div>
 
         </div>
 
@@ -2529,7 +2511,7 @@
 
     <div class="container">
 
-        <div class="section-head">
+        <div class="section-head premium-gradient-blog">
 
             <div class="section-label">
                 AKHSIKENT IT
@@ -2554,15 +2536,15 @@
             </button>
 
             <button class="course-tab" data-filter="it">
-                💻 <span data-i18n="tab_it">IT</span>
+                <span class="tab-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 20h8M6 17h12"></path></svg></span><span data-i18n="tab_it">IT</span>
             </button>
 
             <button class="course-tab" data-filter="mental">
-                🧮 <span data-i18n="tab_mental">Mental</span>
+                <span class="tab-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M7 7h10M7 11h.01M11 11h.01M15 11h.01M7 15h.01M11 15h.01M15 15h.01M7 19h10"></path></svg></span><span data-i18n="tab_mental">Mental</span>
             </button>
 
             <button class="course-tab" data-filter="english">
-                🇬🇧 <span data-i18n="tab_english">Ingliz tili</span>
+                <span class="tab-modern-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="M4 5l16 14M20 5L4 19"></path></svg></span><span data-i18n="tab_english">Ingliz tili</span>
             </button>
 
         </div>
@@ -2575,7 +2557,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon">💻</div>
+                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 20h8M6 17h12"></path></svg></div>
 
                 <h3><span data-i18n="course_computer_title">Kompyuter savodxonligi</span></h3>
 
@@ -2601,7 +2583,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon">🌐</div>
+                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M4 12h16M12 4c2 2.2 3 4.8 3 8s-1 5.8-3 8c-2-2.2-3-4.8-3-8s1-5.8 3-8z"></path></svg></div>
 
                 <h3><span data-i18n="course_frontend_title">Frontend / Web</span></h3>
 
@@ -2627,7 +2609,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon">⚙️</div>
+                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"></path><path d="M4 13v-2l2-.5a7 7 0 0 1 .8-1.9L5.7 7l1.4-1.4 1.6 1.1a7 7 0 0 1 1.9-.8L11 4h2l.5 2a7 7 0 0 1 1.9.8L17 5.7 18.4 7l-1.1 1.6a7 7 0 0 1 .8 1.9l2 .5v2l-2 .5a7 7 0 0 1-.8 1.9l1.1 1.6-1.4 1.4-1.6-1.1a7 7 0 0 1-1.9.8L13 20h-2l-.5-2a7 7 0 0 1-1.9-.8L7 18.3 5.6 17l1.1-1.6a7 7 0 0 1-.8-1.9L4 13z"></path></svg></div>
 
                 <h3><span data-i18n="course_backend_title">Backend</span></h3>
 
@@ -2653,7 +2635,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon">🐍</div>
+                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c-4 0-4 2-4 4v2h5v2H7c-3 0-4 2-4 5s2 5 5 5h2v-3H8c-1 0-1-1-1-2s1-2 2-2h6c3 0 4-2 4-5s-2-6-7-6z"></path><circle cx="10" cy="6" r="1"></circle></svg></div>
 
                 <h3><span data-i18n="course_python_title">Python</span></h3>
 
@@ -2679,7 +2661,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon">🎨</div>
+                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 0 0 0 16h2a2 2 0 0 0 0-4h-1a2 2 0 0 1 0-4h3a4 4 0 0 0 4-4 8 8 0 0 0-8-4z"></path><circle cx="7.5" cy="10" r="1"></circle><circle cx="10" cy="7.5" r="1"></circle><circle cx="14" cy="7.5" r="1"></circle></svg></div>
 
                 <h3><span data-i18n="course_design_title">Grafik dizayn</span></h3>
 
@@ -2705,7 +2687,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon">🤖</div>
+                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="7" width="14" height="12" rx="3"></rect><path d="M12 4v3M9 12h.01M15 12h.01M9 16h6"></path></svg></div>
 
                 <h3><span data-i18n="course_ai_title">Sun’iy intellekt</span></h3>
 
@@ -2731,7 +2713,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon">🤖</div>
+                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="7" width="14" height="12" rx="3"></rect><path d="M12 4v3M9 12h.01M15 12h.01M9 16h6"></path></svg></div>
 
                 <h3><span data-i18n="course_robot_title">Robototexnika</span></h3>
 
@@ -2757,7 +2739,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon">🧊</div>
+                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 4v10l-7 4-7-4V7l7-4zM5 7l7 4 7-4M12 11v10"></path></svg></div>
 
                 <h3><span data-i18n="course_3d_title">3D Modellashtirish</span></h3>
 
@@ -2783,7 +2765,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon">🖨️</div>
+                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V4h12v5M6 17H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M6 14h12v7H6z"></path></svg></div>
 
                 <h3><span data-i18n="course_printer_title">3D Printer</span></h3>
 
@@ -2809,7 +2791,7 @@
 
             <article class="course-card" data-category="mental">
 
-                <div class="course-icon">🧮</div>
+                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M7 7h10M7 11h.01M11 11h.01M15 11h.01M7 15h.01M11 15h.01M15 15h.01M7 19h10"></path></svg></div>
 
                 <h3><span data-i18n="course_mental_title">Mental arifmetika</span></h3>
 
@@ -2835,7 +2817,7 @@
 
             <article class="course-card" data-category="english">
 
-                <div class="course-icon">🇬🇧</div>
+                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="M4 5l16 14M20 5L4 19"></path></svg></div>
 
                 <h3><span data-i18n="course_english_title">Ingliz tili</span></h3>
 
@@ -2861,7 +2843,7 @@
 
             <article class="course-card" data-category="english">
 
-                <div class="course-icon">🎓</div>
+                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-5 9 5-9 5-9-5zM6 11v5c3 2 9 2 12 0v-5"></path><path d="M21 10v6"></path></svg></div>
 
                 <h3><span data-i18n="course_ielts_title">IELTS</span></h3>
 
@@ -2898,7 +2880,7 @@
 
     <div class="container">
 
-        <div class="section-head" style="margin: 0 auto 45px; text-align: center;">
+        <div class="section-head premium-gradient-blog" style="margin: 0 auto 45px; text-align: center;">
 
             <div class="section-label" data-i18n="quiz_label" style="justify-content:center;">
                 Test
@@ -2931,16 +2913,16 @@
 
                 <div class="quiz-options">
                     <button class="quiz-option" data-quiz="1" data-course="frontend" data-i18n="quiz_q1_opt1">
-                        🌐 Sayt va ilovalar yaratish
+                        <span class="quiz-modern-icon" data-quiz-icon="web">✦</span>Sayt va ilovalar yaratish
                     </button>
                     <button class="quiz-option" data-quiz="1" data-course="ai" data-i18n="quiz_q1_opt2">
-                        🤖 Sun’iy intellekt va robotlar
+                        <span class="quiz-modern-icon" data-quiz-icon="ai">✦</span>Sun’iy intellekt va robotlar
                     </button>
                     <button class="quiz-option" data-quiz="1" data-course="mental" data-i18n="quiz_q1_opt3">
-                        🧮 Tez va aniq hisoblash
+                        <span class="quiz-modern-icon" data-quiz-icon="mental">✦</span>Tez va aniq hisoblash
                     </button>
                     <button class="quiz-option" data-quiz="1" data-course="english" data-i18n="quiz_q1_opt4">
-                        🇬🇧 Xorijiy til va muloqot
+                        <span class="quiz-modern-icon" data-quiz-icon="english">✦</span>Xorijiy til va muloqot
                     </button>
                 </div>
 
@@ -2955,16 +2937,16 @@
 
                 <div class="quiz-options">
                     <button class="quiz-option" data-quiz="2" data-course="frontend" data-i18n="quiz_q2_opt1">
-                        💼 Zamonaviy kasb egallash
+                        <span class="quiz-modern-icon" data-quiz-icon="career">✦</span>Zamonaviy kasb egallash
                     </button>
                     <button class="quiz-option" data-quiz="2" data-course="ai" data-i18n="quiz_q2_opt2">
-                        🚀 Kelajak texnologiyalarida ilg‘or bo‘lish
+                        <span class="quiz-modern-icon" data-quiz-icon="future">✦</span>Kelajak texnologiyalarida ilg‘or bo‘lish
                     </button>
                     <button class="quiz-option" data-quiz="2" data-course="mental" data-i18n="quiz_q2_opt3">
-                        🧠 Miya faoliyatini rivojlantirish
+                        <span class="quiz-modern-icon" data-quiz-icon="mind">✦</span>Miya faoliyatini rivojlantirish
                     </button>
                     <button class="quiz-option" data-quiz="2" data-course="english" data-i18n="quiz_q2_opt4">
-                        🎓 Xalqaro sertifikat va til bilimi
+                        <span class="quiz-modern-icon" data-quiz-icon="certificate">✦</span>Xalqaro sertifikat va til bilimi
                     </button>
                 </div>
 
@@ -3089,7 +3071,7 @@
 
     <div class="container">
 
-        <div class="section-head">
+        <div class="section-head premium-gradient-blog">
 
             <div class="section-label" data-i18n="opp_label">
                 Imkoniyatlar
@@ -3110,7 +3092,7 @@
         <div class="opportunity-grid">
 
             <div class="opportunity-card">
-                <div class="icon">📚</div>
+                <div class="icon modern-opportunity-icon" data-opportunity="book">✦</div>
                 <h3 data-i18n="opp1_title">Qo‘shimcha kitoblar</h3>
                 <p data-i18n="opp1_desc">
                     O‘qish va mustaqil rivojlanish uchun materiallar.
@@ -3118,7 +3100,7 @@
             </div>
 
             <div class="opportunity-card">
-                <div class="icon">🎧</div>
+                <div class="icon modern-opportunity-icon" data-opportunity="podcast">✦</div>
                 <h3 data-i18n="opp2_title">Podkastlar</h3>
                 <p data-i18n="opp2_desc">
                     Yo‘lda yoki bo‘sh vaqtda bilim olish.
@@ -3126,7 +3108,7 @@
             </div>
 
             <div class="opportunity-card">
-                <div class="icon">🏆</div>
+                <div class="icon modern-opportunity-icon" data-opportunity="rank">✦</div>
                 <h3 data-i18n="opp3_title">Reyting</h3>
                 <p data-i18n="opp3_desc">
                     O‘quvchilar natijalari asosida motivatsion reyting.
@@ -3134,7 +3116,7 @@
             </div>
 
             <div class="opportunity-card">
-                <div class="icon">🎮</div>
+                <div class="icon modern-opportunity-icon" data-opportunity="game">✦</div>
                 <h3 data-i18n="opp4_title">Gamification</h3>
                 <p data-i18n="opp4_desc">
                     Ball, topshiriq va yutuqlar orqali motivatsiya.
@@ -3142,7 +3124,7 @@
             </div>
 
             <div class="opportunity-card">
-                <div class="icon">📝</div>
+                <div class="icon modern-opportunity-icon" data-opportunity="homework">✦</div>
                 <h3 data-i18n="opp5_title">Uy vazifalari</h3>
                 <p data-i18n="opp5_desc">
                     Topshiriqlarni platforma orqali bajarish.
@@ -3150,7 +3132,7 @@
             </div>
 
             <div class="opportunity-card">
-                <div class="icon">📅</div>
+                <div class="icon modern-opportunity-icon" data-opportunity="training">✦</div>
                 <h3 data-i18n="opp6_title">Treninglar</h3>
                 <p data-i18n="opp6_desc">
                     Haftalik trening va oraliq imtihonlarga ro‘yxatdan o‘tish.
@@ -3250,7 +3232,7 @@
         <div class="portfolio-scroll">
 
             <div class="portfolio-card">
-                <div class="portfolio-thumb" style="background:linear-gradient(135deg,#16a34a,#4ade80);">🌐</div>
+                <div class="portfolio-thumb" style="background:linear-gradient(135deg,#16a34a,#4ade80);"><span class="quiz-modern-icon" data-quiz-icon="web">✦</span></div>
                 <div class="portfolio-info">
                     <strong data-i18n="portfolio1_title">Veb-sayt loyihasi</strong>
                     <span data-i18n="portfolio1_desc">Frontend kursi o‘quvchisi ishi</span>
@@ -3258,7 +3240,7 @@
             </div>
 
             <div class="portfolio-card">
-                <div class="portfolio-thumb" style="background:linear-gradient(135deg,#111,#333);">🤖</div>
+                <div class="portfolio-thumb" style="background:linear-gradient(135deg,#111,#333);"><span class="quiz-modern-icon" data-quiz-icon="ai">✦</span></div>
                 <div class="portfolio-info">
                     <strong data-i18n="portfolio2_title">AI chatbot</strong>
                     <span data-i18n="portfolio2_desc">Sun’iy intellekt kursi o‘quvchisi ishi</span>
@@ -3351,13 +3333,13 @@
 
     <div class="container">
 
-        <div class="section-head">
+        <div class="section-head history-gradient-blog">
 
             <div class="section-label" data-i18n="history_label">
                 Bizning yo‘l
             </div>
 
-            <h2 class="section-title" data-i18n="history_title">
+            <h2 class="section-title history-gradient-title" data-i18n="history_title">
                 AKHSIKENT IT qanday rivojlanadi?
             </h2>
 
@@ -3960,7 +3942,7 @@
 
         <div class="social-icons" style="justify-content:center; margin-top:14px;">
 
-            <a href="https://t.me/akhsikent_it" target="_blank" rel="noopener" class="social-icon" aria-label="Telegram">
+            <a href="https://t.me/akhsikent_it_edu" target="_blank" rel="noopener" class="social-icon" aria-label="Telegram">
                 <svg viewBox="0 0 24 24"><path d="M21.9 3.6c.3-1.1-.7-2-1.8-1.6L1.6 9.6c-1.1.4-1.1 1.9 0 2.3l4.8 1.6 1.9 5.9c.3.9 1.5 1.1 2.1.4l2.6-2.9 4.9 3.6c.9.6 2.1.1 2.3-1L21.9 3.6zM8.6 13.8l9.1-6.9c.3-.2.6.2.4.4l-7.6 7.2-.3 3-1.6-3.7z"/></svg>
             </a>
 
@@ -4073,6 +4055,18 @@
         </div>
 
 
+        <div class="footer-developer">
+            <span>Dastur yaratuvchisi</span>
+            <div class="footer-developer-links">
+                <a href="https://t.me/mister_a_01" target="_blank" rel="noopener" aria-label="Telegram">
+                    <svg viewBox="0 0 24 24"><path d="M21.9 3.6c.3-1.1-.7-2-1.8-1.6L1.6 9.6c-1.1.4-1.1 1.9 0 2.3l4.8 1.6 1.9 5.9c.3.9 1.5 1.1 2.1.4l2.6-2.9 4.9 3.6c.9.6 2.1.1 2.3-1L21.9 3.6z"/></svg>
+                </a>
+                <a href="https://www.instagram.com/adiiik_01?stkn=eGxrbDF0amhxc3Fz" target="_blank" rel="noopener" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5.5A4.5 4.5 0 1 0 12 16.5 4.5 4.5 0 0 0 12 7.5zm5.2-1.2a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z"/></svg>
+                </a>
+            </div>
+        </div>
+
         <div class="footer-bottom">
 
             © 2026 AKHSIKENT IT. <span data-i18n="footer_rights">Barcha huquqlar himoyalangan.</span>
@@ -4088,7 +4082,7 @@
      COURSE MODAL
 ========================= -->
 
-<a href="https://t.me/akhsikent_it" target="_blank" rel="noopener" class="floating-tg-btn" aria-label="Telegram">
+<a href="https://t.me/akhsikent_it_edu" target="_blank" rel="noopener" class="floating-tg-btn" aria-label="Telegram">
     <svg viewBox="0 0 24 24"><path d="M21.9 3.6c.3-1.1-.7-2-1.8-1.6L1.6 9.6c-1.1.4-1.1 1.9 0 2.3l4.8 1.6 1.9 5.9c.3.9 1.5 1.1 2.1.4l2.6-2.9 4.9 3.6c.9.6 2.1.1 2.3-1L21.9 3.6zM8.6 13.8l9.1-6.9c.3-.2.6.2.4.4l-7.6 7.2-.3 3-1.6-3.7z"/></svg>
 </a>
 
@@ -4218,7 +4212,7 @@ function goToRegistration() {
 
         frontend: {
             uz: {
-                title: "🌐 Frontend / Web",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="web">✦</span>Frontend / Web",
                 price: "Ma’lumot uchun murojaat qiling",
                 content: `
                     <p>Zamonaviy web-saytlar yaratish uchun frontend dasturlash.</p>
@@ -4232,7 +4226,7 @@ function goToRegistration() {
                 `
             },
             ru: {
-                title: "🌐 Frontend / Web",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="web">✦</span>Frontend / Web",
                 price: "Цена по запросу",
                 content: `
                     <p>Frontend-разработка для создания современных веб-сайтов.</p>
@@ -4246,7 +4240,7 @@ function goToRegistration() {
                 `
             },
             en: {
-                title: "🌐 Frontend / Web",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="web">✦</span>Frontend / Web",
                 price: "Contact for pricing",
                 content: `
                     <p>Frontend development for building modern websites.</p>
@@ -4405,7 +4399,7 @@ function goToRegistration() {
 
         ai: {
             uz: {
-                title: "🤖 Sun’iy intellekt",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="ai">✦</span>Sun’iy intellekt",
                 price: "Ma’lumot uchun murojaat qiling",
                 content: `
                     <div class="course-info-grid">
@@ -4425,7 +4419,7 @@ function goToRegistration() {
                             <small>Bir dars</small>
                         </div>
                     </div>
-                    <h3>🚀 AI STARTER</h3>
+                    <h3><span class="quiz-modern-icon" data-quiz-icon="future">✦</span>AI STARTER</h3>
                     <p><b>1-oy: AI Fundamentals</b></p>
                     <h3>🎨 AI CREATOR</h3>
                     <p><b>2-oy: Creative AI</b></p>
@@ -4434,7 +4428,7 @@ function goToRegistration() {
                 `
             },
             ru: {
-                title: "🤖 Искусственный интеллект",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="ai">✦</span>Искусственный интеллект",
                 price: "Цена по запросу",
                 content: `
                     <div class="course-info-grid">
@@ -4454,7 +4448,7 @@ function goToRegistration() {
                             <small>1 занятие</small>
                         </div>
                     </div>
-                    <h3>🚀 AI STARTER</h3>
+                    <h3><span class="quiz-modern-icon" data-quiz-icon="future">✦</span>AI STARTER</h3>
                     <p><b>1-й месяц: Основы ИИ</b></p>
                     <h3>🎨 AI CREATOR</h3>
                     <p><b>2-й месяц: Креативный ИИ</b></p>
@@ -4463,7 +4457,7 @@ function goToRegistration() {
                 `
             },
             en: {
-                title: "🤖 Artificial Intelligence",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="ai">✦</span>Artificial Intelligence",
                 price: "Contact for pricing",
                 content: `
                     <div class="course-info-grid">
@@ -4483,7 +4477,7 @@ function goToRegistration() {
                             <small>Per class</small>
                         </div>
                     </div>
-                    <h3>🚀 AI STARTER</h3>
+                    <h3><span class="quiz-modern-icon" data-quiz-icon="future">✦</span>AI STARTER</h3>
                     <p><b>Month 1: AI Fundamentals</b></p>
                     <h3>🎨 AI CREATOR</h3>
                     <p><b>Month 2: Creative AI</b></p>
@@ -4495,7 +4489,7 @@ function goToRegistration() {
 
         robot: {
             uz: {
-                title: "🤖 Robototexnika",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="ai">✦</span>Robototexnika",
                 price: "Ma’lumot uchun murojaat qiling",
                 content: `
                     <p>Robotlar va elektronika bilan ishlash.</p>
@@ -4509,7 +4503,7 @@ function goToRegistration() {
                 `
             },
             ru: {
-                title: "🤖 Робототехника",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="ai">✦</span>Робототехника",
                 price: "Цена по запросу",
                 content: `
                     <p>Работа с роботами и электроникой.</p>
@@ -4523,7 +4517,7 @@ function goToRegistration() {
                 `
             },
             en: {
-                title: "🤖 Robotics",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="ai">✦</span>Robotics",
                 price: "Contact for pricing",
                 content: `
                     <p>Working with robots and electronics.</p>
@@ -4630,7 +4624,7 @@ function goToRegistration() {
 
         mental: {
             uz: {
-                title: "🧮 Mental arifmetika",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="mental">✦</span>Mental arifmetika",
                 price: "Ma’lumot uchun murojaat qiling",
                 content: `
                     <p>Bolalarning hisoblash tezligi va mantiqiy fikrlashini rivojlantirish.</p>
@@ -4644,7 +4638,7 @@ function goToRegistration() {
                 `
             },
             ru: {
-                title: "🧮 Ментальная арифметика",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="mental">✦</span>Ментальная арифметика",
                 price: "Цена по запросу",
                 content: `
                     <p>Развитие скорости счёта и логического мышления у детей.</p>
@@ -4658,7 +4652,7 @@ function goToRegistration() {
                 `
             },
             en: {
-                title: "🧮 Mental Arithmetic",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="mental">✦</span>Mental Arithmetic",
                 price: "Contact for pricing",
                 content: `
                     <p>Developing children's calculation speed and logical thinking.</p>
@@ -4675,7 +4669,7 @@ function goToRegistration() {
 
         english: {
             uz: {
-                title: "🇬🇧 Ingliz tili",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="english">✦</span>Ingliz tili",
                 price: "Ma’lumot uchun murojaat qiling",
                 content: `
                     <p>Bosqichma-bosqich ingliz tili o‘rganish.</p>
@@ -4689,7 +4683,7 @@ function goToRegistration() {
                 `
             },
             ru: {
-                title: "🇬🇧 Английский язык",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="english">✦</span>Английский язык",
                 price: "Цена по запросу",
                 content: `
                     <p>Постепенное изучение английского языка.</p>
@@ -4703,7 +4697,7 @@ function goToRegistration() {
                 `
             },
             en: {
-                title: "🇬🇧 English",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="english">✦</span>English",
                 price: "Contact for pricing",
                 content: `
                     <p>Step-by-step English learning.</p>
@@ -4720,7 +4714,7 @@ function goToRegistration() {
 
         ielts: {
             uz: {
-                title: "🎓 IELTS",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="certificate">✦</span>IELTS",
                 price: "Ma’lumot uchun murojaat qiling",
                 content: `
                     <p>IELTS imtihoniga maqsadli tayyorgarlik.</p>
@@ -4734,7 +4728,7 @@ function goToRegistration() {
                 `
             },
             ru: {
-                title: "🎓 IELTS",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="certificate">✦</span>IELTS",
                 price: "Цена по запросу",
                 content: `
                     <p>Целевая подготовка к экзамену IELTS.</p>
@@ -4748,7 +4742,7 @@ function goToRegistration() {
                 `
             },
             en: {
-                title: "🎓 IELTS",
+                title: "<span class="quiz-modern-icon" data-quiz-icon="certificate">✦</span>IELTS",
                 price: "Contact for pricing",
                 content: `
                     <p>Targeted preparation for the IELTS exam.</p>
@@ -5136,8 +5130,11 @@ document
             apply: "Ariza qoldirish",
             login: "Kirish",
 
-            hero_badge: "🚀 Kelajak kasblari shu yerdan boshlanadi",
+            hero_badge: "<span class="quiz-modern-icon" data-quiz-icon="future">✦</span>Kelajak kasblari shu yerdan boshlanadi",
             hero_title: "Kelajagingizni AKHSIKENT IT bilan quring",
+            hero_title_prefix: "Kelajagingizni",
+            hero_title_brand: "AKHSIKENT IT",
+            hero_title_suffix: "bilan quring",
             hero_text: "Zamonaviy IT, sun’iy intellekt, ingliz tili va mental arifmetika bo‘yicha amaliy bilim beruvchi zamonaviy ta’lim markazi.",
             view_courses: "Kurslarni ko‘rish",
             free_consult: "Bepul konsultatsiya",
@@ -5290,15 +5287,15 @@ document
             quiz_title: "Qaysi kurs senga mos?",
             quiz_subtitle: "2 ta savolga javob bering — sizga mos yo‘nalishni taklif qilamiz.",
             quiz_q1: "Nimalar sizni ko‘proq qiziqtiradi?",
-            quiz_q1_opt1: "🌐 Sayt va ilovalar yaratish",
-            quiz_q1_opt2: "🤖 Sun’iy intellekt va robotlar",
-            quiz_q1_opt3: "🧮 Tez va aniq hisoblash",
-            quiz_q1_opt4: "🇬🇧 Xorijiy til va muloqot",
+            quiz_q1_opt1: "<span class="quiz-modern-icon" data-quiz-icon="web">✦</span>Sayt va ilovalar yaratish",
+            quiz_q1_opt2: "<span class="quiz-modern-icon" data-quiz-icon="ai">✦</span>Sun’iy intellekt va robotlar",
+            quiz_q1_opt3: "<span class="quiz-modern-icon" data-quiz-icon="mental">✦</span>Tez va aniq hisoblash",
+            quiz_q1_opt4: "<span class="quiz-modern-icon" data-quiz-icon="english">✦</span>Xorijiy til va muloqot",
             quiz_q2: "Qaysi natija sizga muhimroq?",
-            quiz_q2_opt1: "💼 Zamonaviy kasb egallash",
-            quiz_q2_opt2: "🚀 Kelajak texnologiyalarida ilg‘or bo‘lish",
-            quiz_q2_opt3: "🧠 Miya faoliyatini rivojlantirish",
-            quiz_q2_opt4: "🎓 Xalqaro sertifikat va til bilimi",
+            quiz_q2_opt1: "<span class="quiz-modern-icon" data-quiz-icon="career">✦</span>Zamonaviy kasb egallash",
+            quiz_q2_opt2: "<span class="quiz-modern-icon" data-quiz-icon="future">✦</span>Kelajak texnologiyalarida ilg‘or bo‘lish",
+            quiz_q2_opt3: "<span class="quiz-modern-icon" data-quiz-icon="mind">✦</span>Miya faoliyatini rivojlantirish",
+            quiz_q2_opt4: "<span class="quiz-modern-icon" data-quiz-icon="certificate">✦</span>Xalqaro sertifikat va til bilimi",
             quiz_result_title: "Sizga mos kurs:",
             quiz_cta: "Ariza qoldirish",
             quiz_restart: "Qayta boshlash",
@@ -5359,8 +5356,11 @@ document
             apply: "Оставить заявку",
             login: "Войти",
 
-            hero_badge: "🚀 Профессии будущего начинаются здесь",
+            hero_badge: "<span class="quiz-modern-icon" data-quiz-icon="future">✦</span>Профессии будущего начинаются здесь",
             hero_title: "Стройте своё будущее вместе с AKHSIKENT IT",
+            hero_title_prefix: "Стройте своё будущее вместе с",
+            hero_title_brand: "AKHSIKENT IT",
+            hero_title_suffix: "",
             hero_text: "Современный образовательный центр по IT, искусственному интеллекту, английскому языку и ментальной арифметике.",
             view_courses: "Смотреть курсы",
             free_consult: "Бесплатная консультация",
@@ -5513,15 +5513,15 @@ document
             quiz_title: "Какой курс вам подходит?",
             quiz_subtitle: "Ответьте на 2 вопроса — мы подберём подходящее направление.",
             quiz_q1: "Что вас больше всего интересует?",
-            quiz_q1_opt1: "🌐 Создание сайтов и приложений",
-            quiz_q1_opt2: "🤖 Искусственный интеллект и роботы",
-            quiz_q1_opt3: "🧮 Быстрый и точный счёт",
-            quiz_q1_opt4: "🇬🇧 Иностранный язык и общение",
+            quiz_q1_opt1: "<span class="quiz-modern-icon" data-quiz-icon="web">✦</span>Создание сайтов и приложений",
+            quiz_q1_opt2: "<span class="quiz-modern-icon" data-quiz-icon="ai">✦</span>Искусственный интеллект и роботы",
+            quiz_q1_opt3: "<span class="quiz-modern-icon" data-quiz-icon="mental">✦</span>Быстрый и точный счёт",
+            quiz_q1_opt4: "<span class="quiz-modern-icon" data-quiz-icon="english">✦</span>Иностранный язык и общение",
             quiz_q2: "Какой результат для вас важнее?",
-            quiz_q2_opt1: "💼 Освоить современную профессию",
-            quiz_q2_opt2: "🚀 Быть впереди в технологиях будущего",
-            quiz_q2_opt3: "🧠 Развить работу мозга",
-            quiz_q2_opt4: "🎓 Международный сертификат и язык",
+            quiz_q2_opt1: "<span class="quiz-modern-icon" data-quiz-icon="career">✦</span>Освоить современную профессию",
+            quiz_q2_opt2: "<span class="quiz-modern-icon" data-quiz-icon="future">✦</span>Быть впереди в технологиях будущего",
+            quiz_q2_opt3: "<span class="quiz-modern-icon" data-quiz-icon="mind">✦</span>Развить работу мозга",
+            quiz_q2_opt4: "<span class="quiz-modern-icon" data-quiz-icon="certificate">✦</span>Международный сертификат и язык",
             quiz_result_title: "Вам подходит курс:",
             quiz_cta: "Оставить заявку",
             quiz_restart: "Начать заново",
@@ -5582,8 +5582,11 @@ document
             apply: "Apply now",
             login: "Login",
 
-            hero_badge: "🚀 Future careers start here",
+            hero_badge: "<span class="quiz-modern-icon" data-quiz-icon="future">✦</span>Future careers start here",
             hero_title: "Build your future with AKHSIKENT IT",
+            hero_title_prefix: "Build your future with",
+            hero_title_brand: "AKHSIKENT IT",
+            hero_title_suffix: "",
             hero_text: "A modern education center focused on IT, artificial intelligence, English and mental arithmetic.",
             view_courses: "View courses",
             free_consult: "Free consultation",
@@ -5736,15 +5739,15 @@ document
             quiz_title: "Which course fits you?",
             quiz_subtitle: "Answer 2 questions — we'll suggest the right direction for you.",
             quiz_q1: "What interests you the most?",
-            quiz_q1_opt1: "🌐 Building websites and apps",
-            quiz_q1_opt2: "🤖 Artificial intelligence and robots",
-            quiz_q1_opt3: "🧮 Fast and accurate calculation",
-            quiz_q1_opt4: "🇬🇧 Foreign language and communication",
+            quiz_q1_opt1: "<span class="quiz-modern-icon" data-quiz-icon="web">✦</span>Building websites and apps",
+            quiz_q1_opt2: "<span class="quiz-modern-icon" data-quiz-icon="ai">✦</span>Artificial intelligence and robots",
+            quiz_q1_opt3: "<span class="quiz-modern-icon" data-quiz-icon="mental">✦</span>Fast and accurate calculation",
+            quiz_q1_opt4: "<span class="quiz-modern-icon" data-quiz-icon="english">✦</span>Foreign language and communication",
             quiz_q2: "Which outcome matters more to you?",
-            quiz_q2_opt1: "💼 Gaining a modern profession",
-            quiz_q2_opt2: "🚀 Staying ahead in future technology",
-            quiz_q2_opt3: "🧠 Developing brain performance",
-            quiz_q2_opt4: "🎓 International certificate and language skills",
+            quiz_q2_opt1: "<span class="quiz-modern-icon" data-quiz-icon="career">✦</span>Gaining a modern profession",
+            quiz_q2_opt2: "<span class="quiz-modern-icon" data-quiz-icon="future">✦</span>Staying ahead in future technology",
+            quiz_q2_opt3: "<span class="quiz-modern-icon" data-quiz-icon="mind">✦</span>Developing brain performance",
+            quiz_q2_opt4: "<span class="quiz-modern-icon" data-quiz-icon="certificate">✦</span>International certificate and language skills",
             quiz_result_title: "The course for you:",
             quiz_cta: "Apply now",
             quiz_restart: "Start over",
@@ -6071,7 +6074,7 @@ document
     (function initQuiz() {
 
         const quizScores = { frontend: 0, ai: 0, mental: 0, english: 0 };
-        const quizIcons = { frontend: "🌐", ai: "🤖", mental: "🧮", english: "🇬🇧" };
+        const quizIcons = { frontend: "<span class="quiz-modern-icon" data-quiz-icon="web">✦</span>", ai: "<span class="quiz-modern-icon" data-quiz-icon="ai">✦</span>", mental: "<span class="quiz-modern-icon" data-quiz-icon="mental">✦</span>", english: "<span class="quiz-modern-icon" data-quiz-icon="english">✦</span>" };
         const quizSelectValue = {
             frontend: "Frontend",
             ai: "Sun’iy intellekt",
@@ -6589,7 +6592,7 @@ async function loadStudentHomeworkResults() {
             <div class="dashboard-header-content">
 
                 <div class="dashboard-label">
-                    🎓 AKHSIKENT IT STUDENT
+                    <span class="quiz-modern-icon" data-quiz-icon="certificate">✦</span>AKHSIKENT IT STUDENT
                 </div>
 
                 <h2>
