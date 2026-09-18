@@ -3445,3 +3445,19 @@ a {
     .report-grid{grid-template-columns:1fr}
     .section-back-btn{width:38px;height:38px}
 }
+
+#section-homework .section-header h2,
+#section-homework .section-header p,
+#section-homework .panel-header h3,
+#section-homework .panel-header p{
+    font-size:inherit;
+}
+#section-homework .section-header h2{font-size:22px!important}
+#section-homework .section-header p{font-size:12px!important}
+#section-homework .panel-header h3{font-size:16px!important}
+#section-homework .panel-header p{font-size:11px!important}
+#section-homework .homework-stat-card strong{font-size:22px!important}
+#section-homework .homework-stat-card small{font-size:11px!important}
+#section-homework .module-table{font-size:12px}
+#section-homework .module-table th{font-size:10px;letter-spacing:.06em}
+#section-homework .module-table td{font-size:12px}
