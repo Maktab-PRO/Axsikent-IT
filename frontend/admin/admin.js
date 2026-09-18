@@ -2274,8 +2274,14 @@ async function loadLeads() {
                 '<option value="rejected"' + (lead.status === "rejected" ? " selected" : "") + '>Rad etilgan</option>' +
                 '</select></td>' +
                 '<td>' +
-                actionButton("Ko‘rish", "viewLead(" + Number(lead.id) + ")") + " " +
-                actionButton("O‘chirish", "deleteLead(" + Number(lead.id) + ")", "danger") +
+                '<div class="lead-action-group">' +
+                '<button type="button" class="lead-view-btn" onclick="viewLead(' + Number(lead.id) + ')">' +
+                '<span class="lead-view-icon">⌕</span> Ko‘rish</button>' +
+                (lead.status === "new" || lead.status === "contacted"
+                    ? '<button type="button" class="lead-approve-btn" onclick="approveLead(' + Number(lead.id) + ')">✓ Tasdiqlash</button>'
+                    : '') +
+                '<button type="button" class="lead-delete-btn" onclick="deleteLead(' + Number(lead.id) + ')">O‘chirish</button>' +
+                '</div>' +
                 '</td></tr>'
             )
         );
@@ -2291,27 +2297,55 @@ async function loadLeads() {
 async function viewLead(id) {
     try {
         const lead = await apiRequest("/admin/leads/" + Number(id));
+        const statusText = {
+            new: "Yangi",
+            contacted: "Bog‘langan",
+            enrolled: "Tasdiqlangan",
+            rejected: "Rad etilgan"
+        }[lead.status] || lead.status || "—";
 
         showInfoModal(
-            "Ariza tafsilotlari",
-            '<div class="admin-detail-grid">' +
-            '<div><small>Ism</small><strong>' + escapeHtml(lead.full_name || "—") + '</strong></div>' +
-            '<div><small>Telefon</small><strong>' + escapeHtml(lead.phone || "—") + '</strong></div>' +
-            '<div><small>Yosh</small><strong>' + (lead.age ?? "—") + '</strong></div>' +
-            '<div><small>Kurs</small><strong>' + escapeHtml(lead.interested_course || "—") + '</strong></div>' +
-            '<div><small>Qulay vaqt</small><strong>' + escapeHtml(lead.preferred_time || "—") + '</strong></div>' +
-            '<div><small>Manba</small><strong>' + escapeHtml(lead.source || "—") + '</strong></div>' +
-            '<div><small>Status</small><strong>' + escapeHtml(lead.status || "—") + '</strong></div>' +
-            '<div><small>Oldingi IT kursi</small><strong>' + escapeHtml(lead.previous_it_course || "—") + '</strong></div>' +
+            "O‘quvchi arizasi",
+            '<div class="lead-detail-card">' +
+            '<div class="lead-detail-hero">' +
+            '<div class="lead-detail-avatar">' + escapeHtml((lead.full_name || "O").trim().charAt(0).toUpperCase()) + '</div>' +
+            '<div><span class="lead-detail-kicker">YANGI ARIZA</span><h3>' + escapeHtml(lead.full_name || "—") + '</h3><span class="lead-detail-status">' + escapeHtml(statusText) + '</span></div>' +
             '</div>' +
-            '<div class="admin-detail-block"><h3>Izoh</h3><p>' +
-            escapeHtml(lead.comment || "Izoh qoldirilmagan.") + '</p></div>' +
-            '<div class="modal-actions">' +
-            actionButton("Izohni o‘zgartirish", "editLeadComment(" + Number(lead.id) + ")") +
+            '<div class="lead-detail-grid">' +
+            '<div><span>TELEFON</span><strong>' + escapeHtml(lead.phone || "—") + '</strong></div>' +
+            '<div><span>KURS</span><strong>' + escapeHtml(lead.interested_course || "—") + '</strong></div>' +
+            '<div><span>QULAY VAQT</span><strong>' + escapeHtml(lead.preferred_time || "—") + '</strong></div>' +
+            '<div><span>YOSH</span><strong>' + (lead.age ?? "—") + '</strong></div>' +
+            '</div>' +
+            '<div class="lead-detail-extra">' +
+            '<div><span>OLDINGI IT KURSI</span><strong>' + escapeHtml(lead.previous_it_course || "—") + '</strong></div>' +
+            '<div><span>ARIZA YUBORILGAN</span><strong>' + escapeHtml(formatDate(lead.created_at)) + '</strong></div>' +
+            '</div>' +
+            '<div class="lead-detail-note"><span>QO‘SHIMCHA IZOH</span><p>' + escapeHtml(lead.comment || "Izoh qoldirilmagan.") + '</p></div>' +
+            '<div class="lead-detail-actions">' +
+            ((lead.status === "new" || lead.status === "contacted") ? '<button type="button" class="lead-approve-btn lead-approve-large" onclick="approveLead(' + Number(lead.id) + ')">✓ O‘quvchini tasdiqlash</button>' : '') +
+            '<button type="button" class="lead-secondary-btn" onclick="editLeadComment(' + Number(lead.id) + ')">Izohni o‘zgartirish</button>' +
+            '</div>' +
             '</div>'
         );
     } catch (error) {
         showToast(error.message, "error");
+    }
+}
+
+async function approveLead(id) {
+    try {
+        const data = await apiRequest("/admin/leads/" + Number(id) + "/status", {
+            method: "PUT",
+            body: JSON.stringify({ status: "enrolled" })
+        });
+
+        document.getElementById("moduleInfoModal")?.remove();
+        showToast("O‘quvchi tasdiqlandi. Student akkaunti faollashtirildi.");
+        await loadLeads();
+        await loadDashboard();
+    } catch (error) {
+        showToast(error.message || "O‘quvchini tasdiqlashda xatolik", "error");
     }
 }
 
