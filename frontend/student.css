@@ -1478,3 +1478,12 @@ textarea::placeholder {
     .notification-bell{width:42px;height:42px}
     .student-premium-modal{padding:24px 16px;border-radius:22px}
 }
+
+
+/* ============================================================
+   STUDENT FINAL PREMIUM POLISH
+============================================================ */
+.notification-bell-icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.notification-bell-icon{color:#a7f3d0}
+.notification-bell:focus-visible{outline:2px solid #8b5cf6;outline-offset:3px}
+#studentRewards,#studentBooks{scroll-margin-top:90px}
