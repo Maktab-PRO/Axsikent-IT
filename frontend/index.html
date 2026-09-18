@@ -2285,11 +2285,21 @@
 
         <div class="nav-actions">
 
-            <select id="languageSelect" class="language">
-                <option value="uz">UZ</option>
-                <option value="ru">RU</option>
-                <option value="en">EN</option>
-            </select>
+            <div class="language-custom" id="languageCustom">
+                <select id="languageSelect" class="language-native" aria-hidden="true" tabindex="-1">
+                    <option value="uz">UZ</option>
+                    <option value="ru">RU</option>
+                    <option value="en">EN</option>
+                </select>
+                <button type="button" class="language-custom-btn" id="languageCustomBtn" aria-expanded="false">
+                    <span id="languageCustomLabel">UZ</span><span class="language-chevron">⌄</span>
+                </button>
+                <div class="language-custom-menu" id="languageCustomMenu">
+                    <button type="button" data-language="uz">🇺🇿 O‘zbek</button>
+                    <button type="button" data-language="ru">🇷🇺 Русский</button>
+                    <button type="button" data-language="en">🇬🇧 English</button>
+                </div>
+            </div>
 
 
             <button class="mobile-menu" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Menyu">
@@ -2305,12 +2315,7 @@
                 <a href="#contact" onclick="closeMobileMenu()">Aloqa</a>
                 <div class="mobile-nav-divider"></div>
                 <a href="#application" class="mobile-nav-apply" onclick="closeMobileMenu()">Ariza qoldirish</a>
-               <button
-                   class="mobile-nav-login"
-                   onclick="closeMobileMenu(); openLoginModal();"
-                >
-                   🔐 Kirish
-               </button>
+
             </nav>
 
         </div>
@@ -5120,7 +5125,7 @@ document
             apply: "Ariza qoldirish",
             login: "Kirish",
 
-            hero_badge: "🚀 Kelajak kasblari shu yerdan boshlanadi",
+            hero_badge: "✦ Kelajak kasblari shu yerdan boshlanadi",
             hero_title_prefix: "Kelajagingizni",
             hero_title_brand: "AKHSIKENT IT",
             hero_title_suffix: "bilan quring",
@@ -5862,11 +5867,42 @@ document
     languageSelect.addEventListener(
         "change",
         function() {
-
             setLanguage(this.value);
-
         }
     );
+
+    const languageCustom = document.getElementById("languageCustom");
+    const languageCustomBtn = document.getElementById("languageCustomBtn");
+    const languageCustomMenu = document.getElementById("languageCustomMenu");
+    const languageCustomLabel = document.getElementById("languageCustomLabel");
+
+    function syncLanguageCustom(language) {
+        if (languageCustomLabel) languageCustomLabel.textContent = String(language || "uz").toUpperCase();
+    }
+
+    if (languageCustomBtn && languageCustomMenu) {
+        languageCustomBtn.addEventListener("click", function(event) {
+            event.stopPropagation();
+            const open = languageCustom.classList.toggle("active");
+            languageCustomBtn.setAttribute("aria-expanded", String(open));
+        });
+
+        languageCustomMenu.querySelectorAll("[data-language]").forEach(button => {
+            button.addEventListener("click", function() {
+                const lang = this.dataset.language;
+                languageSelect.value = lang;
+                setLanguage(lang);
+                syncLanguageCustom(lang);
+                languageCustom.classList.remove("active");
+                languageCustomBtn.setAttribute("aria-expanded", "false");
+            });
+        });
+
+        document.addEventListener("click", function() {
+            languageCustom.classList.remove("active");
+            languageCustomBtn.setAttribute("aria-expanded", "false");
+        });
+    }
 
 
     const savedLanguage =
@@ -5876,12 +5912,11 @@ document
 
 
     if (savedLanguage) {
-
-        languageSelect.value =
-            savedLanguage;
-
+        languageSelect.value = savedLanguage;
         setLanguage(savedLanguage);
-
+        syncLanguageCustom(savedLanguage);
+    } else {
+        syncLanguageCustom(languageSelect.value || "uz");
     }
 
 
