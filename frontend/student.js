@@ -2781,6 +2781,23 @@ showPremiumModal(
         firstLoad: true
     };
 
+    async function showStudentSystemNotification(title, message) {
+        if (!("Notification" in window) || Notification.permission !== "granted") return;
+        try {
+            const registration = await navigator.serviceWorker?.getRegistration();
+            if (registration?.showNotification) {
+                await registration.showNotification(title, {
+                    body: message,
+                    tag: "axsikent-student-notification"
+                });
+                return;
+            }
+        } catch (_) {}
+        try {
+            new Notification(title, {body: message});
+        } catch (_) {}
+    }
+
     async function loadStudentNotifications() {
         const token = localStorage.getItem("access_token");
         const badge = document.getElementById("studentNotificationBadge");
@@ -2812,12 +2829,7 @@ showPremiumModal(
 
             const fresh = items.filter(item => !studentNotificationState.ids.has(item.id));
             fresh.slice(0, 3).forEach(item => {
-                if ("Notification" in window && Notification.permission === "granted") {
-                    new Notification(item.title || "Axsikent IT", {
-                        body: item.message || "",
-                        icon: "https://akhsikent-it-school.onrender.com/favicon.ico"
-                    });
-                }
+                showStudentSystemNotification(item.title || "Axsikent IT", item.message || "");
             });
             items.forEach(item => studentNotificationState.ids.add(item.id));
         } catch (error) {
@@ -2835,6 +2847,11 @@ showPremiumModal(
         if ("Notification" in window && Notification.permission === "default") {
             try { await Notification.requestPermission(); } catch (_) {}
         }
+        try {
+            if ("serviceWorker" in navigator) {
+                await navigator.serviceWorker.register("sw.js");
+            }
+        } catch (_) {}
 
         try {
             const response = await fetch(API_URL + "/students/notifications", {
