@@ -3319,6 +3319,244 @@ showPremiumModal(
 
 }
 
+
+/* =========================
+   PODCASTS / TRAININGS / EXAMS
+========================= */
+
+function closeStudentExtraModal() {
+    const modal = document.getElementById("studentExtraContentModal");
+    if (modal) modal.remove();
+}
+
+function openStudentExtraModal(title) {
+    closeStudentExtraModal();
+
+    const modal = document.createElement("div");
+    modal.id = "studentExtraContentModal";
+    modal.innerHTML = `
+        <div style="position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.78);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:18px;">
+            <div style="width:100%;max-width:620px;max-height:88vh;overflow:auto;background:linear-gradient(145deg,#111118,#09090d);border:1px solid rgba(139,92,246,.3);border-radius:24px;padding:24px;color:#f5f3ff;box-sizing:border-box;box-shadow:0 25px 80px rgba(0,0,0,.65);">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:20px;">
+                    <h2 id="studentExtraTitle" style="margin:0;color:#fff;font-size:22px;">${title}</h2>
+                    <button type="button" onclick="closeStudentExtraModal()" style="width:40px;height:40px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.05);color:#fff;font-size:20px;cursor:pointer;">×</button>
+                </div>
+                <div id="studentExtraContentBody"></div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+function studentExtraLoading(text) {
+    return `<div style="text-align:center;padding:35px 15px;color:#aaa5b8;font-size:15px;">⏳<br><br>${text}</div>`;
+}
+
+function studentExtraError(text) {
+    return `<div style="padding:18px;border-radius:15px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);color:#fca5a5;">❌ ${escapeHtml(text)}</div>`;
+}
+
+function formatStudentContentDate(value) {
+    if (!value) return "Vaqt belgilanmagan";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+    return date.toLocaleString("uz-UZ", {
+        day:"2-digit", month:"2-digit", year:"numeric",
+        hour:"2-digit", minute:"2-digit"
+    });
+}
+
+async function loadStudentPodcasts() {
+    const body = document.getElementById("studentExtraContentBody");
+    if (!body) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        body.innerHTML = studentExtraError("Avval tizimga kiring.");
+        return;
+    }
+
+    body.innerHTML = studentExtraLoading("Podcastlar yuklanmoqda...");
+
+    try {
+        const response = await fetch(`${API_URL}/students/podcasts`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.detail || "Podcastlarni yuklashda xatolik.");
+
+        if (!Array.isArray(data) || !data.length) {
+            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;">🎧 Hozircha podcastlar mavjud emas.</div>';
+            return;
+        }
+
+        body.innerHTML = data.map(item => `
+            <div style="padding:18px;margin-bottom:12px;border:1px solid rgba(139,92,246,.2);border-radius:18px;background:rgba(255,255,255,.035);">
+                <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:7px;">🎧 ${escapeHtml(item.title || "Nomsiz podcast")}</div>
+                <div style="color:#aaa5b8;line-height:1.6;margin-bottom:12px;">${escapeHtml(item.description || "Tavsif mavjud emas")}</div>
+                ${item.audio_url ? `<audio controls preload="none" style="width:100%;"><source src="${escapeHtml(item.audio_url)}"></audio>` : '<div style="color:#817c8f;font-size:13px;">Audio fayl hali biriktirilmagan.</div>'}
+                ${item.duration_minutes ? `<div style="margin-top:10px;color:#c4b5fd;font-size:12px;">⏱ ${item.duration_minutes} daqiqa</div>` : ""}
+            </div>
+        `).join("");
+    } catch (error) {
+        console.error("Podcastlar:", error);
+        body.innerHTML = studentExtraError(error.message || "Podcastlarni yuklashda xatolik.");
+    }
+}
+
+async function loadStudentTrainings() {
+    const body = document.getElementById("studentExtraContentBody");
+    if (!body) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        body.innerHTML = studentExtraError("Avval tizimga kiring.");
+        return;
+    }
+
+    body.innerHTML = studentExtraLoading("Treninglar yuklanmoqda...");
+
+    try {
+        const response = await fetch(`${API_URL}/students/trainings`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.detail || "Treninglarni yuklashda xatolik.");
+
+        if (!Array.isArray(data) || !data.length) {
+            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;">📅 Hozircha faol treninglar mavjud emas.</div>';
+            return;
+        }
+
+        body.innerHTML = data.map(item => `
+            <div style="padding:18px;margin-bottom:12px;border:1px solid rgba(34,197,94,.18);border-radius:18px;background:rgba(255,255,255,.035);">
+                <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:7px;">📅 ${escapeHtml(item.title || "Nomsiz trening")}</div>
+                <div style="color:#aaa5b8;line-height:1.6;margin-bottom:10px;">${escapeHtml(item.description || "Tavsif mavjud emas")}</div>
+                <div style="color:#c4b5fd;font-size:13px;line-height:1.7;">
+                    🕒 ${escapeHtml(formatStudentContentDate(item.start_at))}
+                    ${item.end_at ? " — " + escapeHtml(formatStudentContentDate(item.end_at)) : ""}
+                    ${item.location ? "<br>📍 " + escapeHtml(item.location) : ""}
+                </div>
+                <div style="margin-top:14px;">
+                    ${item.registered
+                        ? '<div style="padding:11px 14px;border-radius:12px;background:rgba(34,197,94,.1);color:#86efac;font-weight:700;">✅ Siz ro‘yxatdan o‘tgansiz</div>'
+                        : `<button type="button" onclick="registerStudentTraining(${Number(item.id)})" style="width:100%;border:0;border-radius:12px;padding:12px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-weight:800;cursor:pointer;">Treningka ro‘yxatdan o‘tish</button>`}
+                </div>
+            </div>
+        `).join("");
+    } catch (error) {
+        console.error("Treninglar:", error);
+        body.innerHTML = studentExtraError(error.message || "Treninglarni yuklashda xatolik.");
+    }
+}
+
+async function registerStudentTraining(trainingId) {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        showPremiumModal("Tizimga kirish kerak","Treningka yozilish uchun avval tizimga kiring.","Kirish");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/students/trainings/${trainingId}/register`, {
+            method:"POST",
+            headers:{ "Authorization":`Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "Treningka ro‘yxatdan o‘tishda xatolik.");
+
+        showPremiumModal("Ro‘yxatdan o‘tildi",data.message || "Treningka muvaffaqiyatli ro‘yxatdan o‘tildi.","Ajoyib!");
+        await loadStudentTrainings();
+    } catch (error) {
+        console.error("Trening ro‘yxatdan o‘tish:",error);
+        showPremiumModal("Xatolik yuz berdi",error.message,"Yopish");
+    }
+}
+
+async function loadStudentExams() {
+    const body = document.getElementById("studentExtraContentBody");
+    if (!body) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        body.innerHTML = studentExtraError("Avval tizimga kiring.");
+        return;
+    }
+
+    body.innerHTML = studentExtraLoading("Imtihonlar yuklanmoqda...");
+
+    try {
+        const response = await fetch(`${API_URL}/students/exams`, {
+            headers:{ "Authorization":`Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (!response.ok) throw new Error(data.detail || "Imtihonlarni yuklashda xatolik.");
+
+        if (!Array.isArray(data) || !data.length) {
+            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;">🧪 Hozircha faol imtihonlar mavjud emas.</div>';
+            return;
+        }
+
+        body.innerHTML = data.map(item => `
+            <div style="padding:18px;margin-bottom:12px;border:1px solid rgba(59,130,246,.18);border-radius:18px;background:rgba(255,255,255,.035);">
+                <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:7px;">🧪 ${escapeHtml(item.title || "Nomsiz imtihon")}</div>
+                <div style="color:#aaa5b8;line-height:1.6;margin-bottom:10px;">${escapeHtml(item.description || "Tavsif mavjud emas")}</div>
+                <div style="color:#c4b5fd;font-size:13px;line-height:1.7;">
+                    🕒 ${escapeHtml(formatStudentContentDate(item.start_at))}
+                    ${item.end_at ? " — " + escapeHtml(formatStudentContentDate(item.end_at)) : ""}
+                    ${item.location ? "<br>📍 " + escapeHtml(item.location) : ""}
+                </div>
+                <div style="margin-top:14px;">
+                    ${item.registered
+                        ? '<div style="padding:11px 14px;border-radius:12px;background:rgba(59,130,246,.1);color:#93c5fd;font-weight:700;">✅ Siz ro‘yxatdan o‘tgansiz</div>'
+                        : `<button type="button" onclick="registerStudentExam(${Number(item.id)})" style="width:100%;border:0;border-radius:12px;padding:12px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;font-weight:800;cursor:pointer;">Imtihonga ro‘yxatdan o‘tish</button>`}
+                </div>
+            </div>
+        `).join("");
+    } catch (error) {
+        console.error("Imtihonlar:",error);
+        body.innerHTML = studentExtraError(error.message || "Imtihonlarni yuklashda xatolik.");
+    }
+}
+
+async function registerStudentExam(examId) {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        showPremiumModal("Tizimga kirish kerak","Imtihonga yozilish uchun avval tizimga kiring.","Kirish");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/students/exams/${examId}/register`, {
+            method:"POST",
+            headers:{ "Authorization":`Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "Imtihonga ro‘yxatdan o‘tishda xatolik.");
+
+        showPremiumModal("Ro‘yxatdan o‘tildi",data.message || "Imtihonga muvaffaqiyatli ro‘yxatdan o‘tildi.","Ajoyib!");
+        await loadStudentExams();
+    } catch (error) {
+        console.error("Imtihon ro‘yxatdan o‘tish:",error);
+        showPremiumModal("Xatolik yuz berdi",error.message,"Yopish");
+    }
+}
+
+function openStudentPodcasts() {
+    openStudentExtraModal("🎧 Podcastlar");
+    loadStudentPodcasts();
+}
+
+function openStudentTrainings() {
+    openStudentExtraModal("📅 Treninglar");
+    loadStudentTrainings();
+}
+
+function openStudentExams() {
+    openStudentExtraModal("🧪 Imtihonlar");
+    loadStudentExams();
+}
+
    function showPremiumModal(title, message, buttonText = "Yopish", onConfirm = null) {
 
 const oldModal = document.getElementById("premiumPurchaseModal");
