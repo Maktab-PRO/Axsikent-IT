@@ -3461,3 +3461,67 @@ a {
 #section-homework .module-table{font-size:12px}
 #section-homework .module-table th{font-size:10px;letter-spacing:.06em}
 #section-homework .module-table td{font-size:12px}
+
+
+/* =========================================================
+   FINAL ADMIN POLISH
+========================================================= */
+.section-back-btn{
+    width:42px;
+    height:42px;
+    display:grid;
+    place-items:center;
+    flex:0 0 auto;
+    margin-right:12px;
+    border:1px solid rgba(57,229,140,.18);
+    border-radius:14px;
+    background:linear-gradient(145deg,rgba(25,35,30,.96),rgba(8,12,10,.98));
+    color:#d8fbea;
+    box-shadow:0 10px 28px rgba(0,0,0,.18),inset 0 0 18px rgba(57,229,140,.035);
+    transition:.2s ease;
+}
+.section-back-btn span{font-size:22px;line-height:1;transform:translateX(-1px)}
+.section-back-btn:hover{transform:translateX(-3px);border-color:rgba(57,229,140,.55);color:#39e58c;box-shadow:0 14px 32px rgba(57,229,140,.12)}
+.section-back-btn[hidden]{display:none!important}
+
+#section-homework .section-header h2,
+#section-homework .panel-header h3{
+    font-size:inherit;
+    letter-spacing:normal;
+}
+#section-homework .section-header h2{font-size:24px}
+#section-homework .panel-header h3{font-size:16px}
+#section-homework .section-header p,
+#section-homework .panel-header p{font-size:12px}
+#section-homework .homework-stat-card strong{font-size:22px}
+#section-homework .homework-stat-card small{font-size:11px}
+#section-homework .module-table th{font-size:10px}
+#section-homework .module-table td{font-size:12px}
+
+.report-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.report-card{padding:20px;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:linear-gradient(145deg,rgba(22,28,25,.95),rgba(10,13,12,.98));box-shadow:0 14px 36px rgba(0,0,0,.18)}
+.report-card span,.report-card small{display:block;color:#7f8a84;font-size:11px}
+.report-card strong{display:block;margin:6px 0;color:#f2f7f4;font-size:30px}
+.report-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.report-summary>div{padding:16px;border-radius:15px;background:rgba(57,229,140,.055);border:1px solid rgba(57,229,140,.09)}
+.report-summary small{display:block;color:#7f8a84;font-size:10px}
+.report-summary strong{display:block;margin-top:5px;color:#39e58c;font-size:20px}
+
+.settings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.settings-card{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:linear-gradient(145deg,rgba(22,28,25,.95),rgba(10,13,12,.98))}
+.settings-card strong{display:block;font-size:13px;color:#eef4f0}.settings-card small{display:block;margin-top:4px;color:#7f8a84;font-size:10px}
+.settings-toggle{width:48px;height:27px;padding:3px;border-radius:999px;background:#252d29;border:1px solid rgba(255,255,255,.08);transition:.2s}
+.settings-toggle span{display:block;width:19px;height:19px;border-radius:50%;background:#77817c;transition:.2s}
+.settings-toggle.active{background:rgba(57,229,140,.18);border-color:rgba(57,229,140,.3)}
+.settings-toggle.active span{transform:translateX(19px);background:#39e58c;box-shadow:0 0 14px rgba(57,229,140,.35)}
+.settings-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.settings-actions .danger{color:#ff7d88}
+
+@media(max-width:900px){
+    .report-grid,.settings-grid{grid-template-columns:1fr 1fr}
+    .report-summary{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+    .report-grid,.settings-grid{grid-template-columns:1fr}
+    .section-back-btn{width:38px;height:38px;margin-right:7px}
+}
