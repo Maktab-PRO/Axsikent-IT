@@ -2773,13 +2773,145 @@ showPremiumModal(
     }
 
     /* =========================
+       NOTIFICATIONS
+    ========================= */
+
+    let studentNotificationState = {
+        ids: new Set(),
+        firstLoad: true
+    };
+
+    async function loadStudentNotifications() {
+        const token = localStorage.getItem("access_token");
+        const badge = document.getElementById("studentNotificationBadge");
+        if (!token) {
+            if (badge) badge.hidden = true;
+            return;
+        }
+
+        try {
+            const response = await fetch(API_URL + "/students/notifications", {
+                headers: {"Authorization": "Bearer " + token}
+            });
+            if (!response.ok) return;
+
+            const data = await response.json();
+            const items = Array.isArray(data.notifications) ? data.notifications : [];
+            const unread = Number(data.unread || 0);
+
+            if (badge) {
+                badge.textContent = unread > 99 ? "99+" : String(unread);
+                badge.hidden = unread <= 0;
+            }
+
+            if (studentNotificationState.firstLoad) {
+                studentNotificationState.ids = new Set(items.map(item => item.id));
+                studentNotificationState.firstLoad = false;
+                return;
+            }
+
+            const fresh = items.filter(item => !studentNotificationState.ids.has(item.id));
+            fresh.slice(0, 3).forEach(item => {
+                if ("Notification" in window && Notification.permission === "granted") {
+                    new Notification(item.title || "Axsikent IT", {
+                        body: item.message || "",
+                        icon: "https://akhsikent-it-school.onrender.com/favicon.ico"
+                    });
+                }
+            });
+            items.forEach(item => studentNotificationState.ids.add(item.id));
+        } catch (error) {
+            console.debug("Student notifications:", error);
+        }
+    }
+
+    async function openStudentNotifications() {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            showPremiumStudentMessage("Avval Student kabinetiga kiring.");
+            return;
+        }
+
+        if ("Notification" in window && Notification.permission === "default") {
+            try { await Notification.requestPermission(); } catch (_) {}
+        }
+
+        try {
+            const response = await fetch(API_URL + "/students/notifications", {
+                headers: {"Authorization": "Bearer " + token}
+            });
+            const data = await response.json();
+            const items = Array.isArray(data.notifications) ? data.notifications : [];
+
+            const rows = items.length
+                ? items.map(item =>
+                    '<button type="button" class="student-notification-item ' + (item.is_read ? "read" : "unread") + '" data-notification-id="' + Number(item.id) + '">' +
+                    '<span class="student-notification-icon">✦</span>' +
+                    '<span><strong>' + escapeHtml(item.title || "Bildirishnoma") + '</strong><small>' + escapeHtml(item.message || "") + '</small><em>' + formatStudentContentDate(item.created_at) + '</em></span>' +
+                    '</button>'
+                ).join("")
+                : '<div class="student-notification-empty"><span>✦</span><strong>Hozircha bildirishnoma yo‘q</strong><small>Yangi material yoki muhim xabar kelganda shu yerda chiqadi.</small></div>';
+
+            showStudentNotificationModal(rows);
+
+            document.querySelectorAll(".student-notification-item").forEach(item => {
+                item.addEventListener("click", async () => {
+                    const id = Number(item.dataset.notificationId);
+                    if (!Number.isInteger(id)) return;
+                    try {
+                        await fetch(API_URL + "/students/notifications/" + id + "/read", {
+                            method: "PUT",
+                            headers: {"Authorization": "Bearer " + token}
+                        });
+                        item.classList.remove("unread");
+                        item.classList.add("read");
+                        await loadStudentNotifications();
+                    } catch (_) {}
+                });
+            });
+        } catch (error) {
+            showPremiumStudentMessage(error.message || "Bildirishnomalarni yuklab bo‘lmadi.");
+        }
+    }
+
+    function showStudentNotificationModal(rows) {
+        document.getElementById("studentNotificationModal")?.remove();
+        const modal = document.createElement("div");
+        modal.id = "studentNotificationModal";
+        modal.className = "student-premium-overlay";
+        modal.innerHTML =
+            '<div class="student-premium-modal notification-modal">' +
+            '<button type="button" class="student-premium-close" aria-label="Yopish">×</button>' +
+            '<div class="student-premium-kicker">AXSIKENT IT / NOTIFICATIONS</div>' +
+            '<h2>Bildirishnomalar</h2>' +
+            '<div class="student-notification-list">' + rows + '</div>' +
+            '</div>';
+        document.body.appendChild(modal);
+        modal.querySelector(".student-premium-close").addEventListener("click", () => modal.remove());
+        modal.addEventListener("click", event => { if (event.target === modal) modal.remove(); });
+    }
+
+    function showPremiumStudentMessage(message) {
+        document.getElementById("studentMessageModal")?.remove();
+        const modal = document.createElement("div");
+        modal.id = "studentMessageModal";
+        modal.className = "student-premium-overlay";
+        modal.innerHTML =
+            '<div class="student-premium-modal">' +
+            '<button type="button" class="student-premium-close" aria-label="Yopish">×</button>' +
+            '<div class="student-premium-kicker">AXSIKENT IT</div>' +
+            '<h2>Xabar</h2><p>' + escapeHtml(message) + '</p>' +
+            '</div>';
+        document.body.appendChild(modal);
+        modal.querySelector(".student-premium-close").addEventListener("click", () => modal.remove());
+    }
+
+    /* =========================
        MESSAGE
     ========================= */
 
     function showMessage(message) {
-
-        alert(message);
-
+        showPremiumStudentMessage(message);
     }
 
 
@@ -2994,6 +3126,10 @@ loadStudentCourses();
 loadStudentRanking();
 loadStudentStats();
 loadStudentDashboardTasks();
+loadStudentRewards();
+loadStudentBooks();
+loadStudentNotifications();
+setInterval(loadStudentNotifications, 15000);
 
     function openStudentBooksMenu(element) {
     selectMenu(element);
