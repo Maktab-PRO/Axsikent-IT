@@ -109,6 +109,30 @@ def create_lead(
     }
 
 
+@router.get("/status/{lead_id}")
+def get_lead_status(
+    lead_id: int,
+    phone: str,
+    db: Session = Depends(get_db)
+):
+    lead = db.query(Lead).filter(
+        Lead.id == lead_id,
+        Lead.phone == phone.strip()
+    ).first()
+
+    if not lead:
+        raise HTTPException(
+            status_code=404,
+            detail="Ariza topilmadi."
+        )
+
+    return {
+        "lead_id": lead.id,
+        "status": lead.status,
+        "full_name": lead.full_name
+    }
+
+
 @router.get("/")
 def get_leads(
     db: Session = Depends(get_db)
