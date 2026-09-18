@@ -59,6 +59,7 @@ app.add_middleware(
 # =========================
 
 # DATABASE
+# Admin schema migration runs before seed_data()
 
 # =========================
 
