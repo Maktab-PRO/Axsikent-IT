@@ -470,28 +470,68 @@
         }
 
         .course-card {
-            background: white;
-            border: 1px solid #e8e8e8;
-            border-radius: 22px;
-            padding: 25px;
+            position: relative;
+            background: #fff;
+            border: 1px solid #e8ece9;
+            border-radius: 24px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            min-height: 300px;
-            transition: .25s;
+            min-height: 330px;
+            overflow: hidden;
+            transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
         }
 
         .course-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,.08);
+            transform: translateY(-7px);
+            border-color: #d5e8db;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, .10);
         }
 
         .course-icon {
-            font-size: 42px;
-            margin-bottom: 18px;
+            width: 88px;
+            height: 88px;
+            min-width: 88px;
+            margin-bottom: 22px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, #f8faf9 0%, #e7f5eb 100%);
+            border: 1px solid #d8e9dc;
+            box-shadow: 0 12px 25px rgba(22, 163, 74, .10), inset 0 1px 0 rgba(255,255,255,.95);
+            color: #15803d;
+        }
+
+        .course-icon::after {
+            content: "";
+            position: absolute;
+            width: 54px;
+            height: 54px;
+            right: -22px;
+            bottom: -24px;
+            border-radius: 50%;
+            background: rgba(22,163,74,.10);
+        }
+
+        .course-icon svg {
+            width: 50px;
+            height: 50px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 5px 4px rgba(22,163,74,.15));
+            position: relative;
+            z-index: 1;
         }
 
         .course-card h3 {
-            font-size: 23px;
+            font-size: 22px;
+            line-height: 1.2;
             margin-bottom: 10px;
         }
 
@@ -2211,10 +2251,14 @@
     #studentApprovalLoginBtn{width:100%}
 }
 
-        /* COURSE ICONS — Najot-style compact cards, larger icons */
-        .course-icon{width:64px;height:64px;min-width:64px;margin-bottom:18px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#f5f7f6;border:1px solid #e2e8e4;color:#111}
-        .course-icon svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-        @media(max-width:650px){.course-icon{width:56px;height:56px;min-width:56px;border-radius:14px;margin-bottom:16px}.course-icon svg{width:30px;height:30px}}
+        /* COURSE ICONS — 3D-inspired Najot-style presentation */
+        .course-icon svg{width:50px;height:50px}
+        @media(max-width:650px){
+            .course-icon{width:72px;height:72px;min-width:72px;border-radius:20px;margin-bottom:18px}
+            .course-icon svg{width:42px;height:42px}
+            .course-card{min-height:315px;padding:20px;border-radius:21px}
+            .course-card h3{font-size:20px}
+        }
         /* RESTORED MODERN LANGUAGE SELECTOR */
         .language-custom { position: relative; display: inline-flex; align-items: center; }
         .language-native { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
@@ -2238,8 +2282,8 @@
         }
         .language-custom-menu button:hover, .language-custom-menu button.active { background: #edf8f1; color: #15803d; }
         @media (max-width: 650px) {
-            .course-icon { width: 46px; height: 46px; min-width: 46px; border-radius: 13px; margin-bottom: 16px; }
-            .course-icon svg { width: 24px; height: 24px; }
+            .course-icon { width: 72px; height: 72px; min-width: 72px; border-radius: 20px; margin-bottom: 18px; }
+            .course-icon svg { width: 42px; height: 42px; }
         }
 </style>
 </head>
@@ -2503,7 +2547,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"></rect><path d="M8 9h8M8 13h5M8 17h8"></path></svg></div>
+                <div class="course-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="13" width="44" height="31" rx="6" fill="#dff7e6"></rect><rect x="14" y="17" width="36" height="23" rx="3" fill="#fff"></rect><path d="M24 51h16M20 45h24" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path><path d="M22 24h20M22 30h13" stroke="#4ade80" stroke-width="3.5" stroke-linecap="round"></path></svg></div>
 
                 <h3><span data-i18n="course_computer_title">Kompyuter savodxonligi</span></h3>
 
@@ -2529,7 +2573,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"></path></svg></div>
+                <div class="course-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M25 18L12 32l13 14M39 18l13 14-13 14M36 12L28 52" fill="none" stroke="#15803d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="14" cy="32" r="3" fill="#4ade80"></circle></svg></div>
 
                 <h3><span data-i18n="course_frontend_title">Frontend / Web</span></h3>
 
@@ -2555,7 +2599,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16H7z"></path><path d="M10 8h4M10 12h4M10 16h2"></path></svg></div>
+                <div class="course-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="12" width="40" height="40" rx="8" fill="#dff7e6"></rect><rect x="19" y="19" width="26" height="7" rx="3" fill="#15803d"></rect><rect x="19" y="29" width="26" height="7" rx="3" fill="#4ade80"></rect><rect x="19" y="39" width="18" height="7" rx="3" fill="#86efac"></rect></svg></div>
 
                 <h3><span data-i18n="course_backend_title">Backend</span></h3>
 
@@ -2581,7 +2625,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19l2-6L16 4a2.1 2.1 0 013 3l-9 9-5 3z"></path><path d="M13 7l4 4"></path></svg></div>
+                <div class="course-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M17 42l5-18 20-9 7 7-9 20-18 5z" fill="#dff7e6"></path><path d="M25 26l13 13M39 23l5 5" fill="none" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path><circle cx="22" cy="43" r="3" fill="#4ade80"></circle></svg></div>
 
                 <h3><span data-i18n="course_python_title">Python</span></h3>
 
@@ -2607,7 +2651,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M8 15l8-6M9 9h.01M15 15h.01"></path></svg></div>
+                <div class="course-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="21" fill="#dff7e6"></circle><path d="M20 39l22-18M23 22h.1M41 42h.1" stroke="#15803d" stroke-width="5" stroke-linecap="round"></path><path d="M25 45c7 3 16 1 21-5" fill="none" stroke="#4ade80" stroke-width="4" stroke-linecap="round"></path></svg></div>
 
                 <h3><span data-i18n="course_design_title">Grafik dizayn</span></h3>
 
@@ -2633,7 +2677,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l2.2 4.5L19 9.2l-3.5 3.4.8 4.8-4.3-2.3-4.3 2.3.8-4.8L5 9.2l4.8-.7z"></path></svg></div>
+                <div class="course-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 10l6 14 15 2-11 10 3 15-13-7-13 7 3-15-11-10 15-2z" fill="#dff7e6" stroke="#15803d" stroke-width="3" stroke-linejoin="round"></path><circle cx="32" cy="31" r="5" fill="#4ade80"></circle></svg></div>
 
                 <h3><span data-i18n="course_ai_title">Sun’iy intellekt</span></h3>
 
@@ -2659,7 +2703,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="12" rx="2"></rect><path d="M8 10h8M8 14h5"></path></svg></div>
+                <div class="course-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="19" width="40" height="31" rx="9" fill="#dff7e6" stroke="#15803d" stroke-width="3"></rect><path d="M32 12v7M24 31h.1M40 31h.1M24 40h16" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path><circle cx="32" cy="9" r="3" fill="#4ade80"></circle></svg></div>
 
                 <h3><span data-i18n="course_robot_title">Robototexnika</span></h3>
 
@@ -2685,7 +2729,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="M8 9h8M8 13h5M8 17h8"></path></svg></div>
+                <div class="course-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 9l22 13v24L32 55 10 46V22z" fill="#dff7e6" stroke="#15803d" stroke-width="3" stroke-linejoin="round"></path><path d="M10 22l22 13 22-13M32 35v20" fill="none" stroke="#4ade80" stroke-width="3"></path></svg></div>
 
                 <h3><span data-i18n="course_3d_title">3D Modellashtirish</span></h3>
 
@@ -2711,7 +2755,7 @@
 
             <article class="course-card" data-category="it">
 
-                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5z"></path><path d="M8 8h8M8 12h5M8 16h8"></path></svg></div>
+                <div class="course-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M15 12h34v40H15z" fill="#dff7e6" stroke="#15803d" stroke-width="3" stroke-linejoin="round"></path><path d="M22 22h20M22 30h13M22 38h20" stroke="#4ade80" stroke-width="4" stroke-linecap="round"></path><path d="M28 46h8" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path></svg></div>
 
                 <h3><span data-i18n="course_printer_title">3D Printer</span></h3>
 
@@ -2737,7 +2781,7 @@
 
             <article class="course-card" data-category="mental">
 
-                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h12v12H6z"></path><path d="M9 9h6M9 12h6M9 15h3"></path></svg></div>
+                <div class="course-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="13" y="8" width="38" height="48" rx="8" fill="#dff7e6" stroke="#15803d" stroke-width="3"></rect><path d="M22 19h20M22 29h.1M32 29h.1M42 29h.1M22 39h.1M32 39h.1M42 39h.1M22 49h20" stroke="#15803d" stroke-width="4" stroke-linecap="round"></path></svg></div>
 
                 <h3><span data-i18n="course_mental_title">Mental arifmetika</span></h3>
 
@@ -2763,7 +2807,7 @@
 
             <article class="course-card" data-category="english">
 
-                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="M8 9h8M8 13h5M8 17h8"></path></svg></div>
+                <div class="course-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="11" y="15" width="42" height="34" rx="6" fill="#dff7e6" stroke="#15803d" stroke-width="3"></rect><path d="M11 16l21 18 21-18M15 46l14-13M49 46L35 33" fill="none" stroke="#4ade80" stroke-width="3"></path></svg></div>
 
                 <h3><span data-i18n="course_english_title">Ingliz tili</span></h3>
 
@@ -2789,7 +2833,7 @@
 
             <article class="course-card" data-category="english">
 
-                <div class="course-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v10l-8 4-8-4V7l8-4z"></path><path d="M8 10h8M8 14h5"></path></svg></div>
+                <div class="course-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 8l23 12v24L32 56 9 44V20z" fill="#dff7e6" stroke="#15803d" stroke-width="3" stroke-linejoin="round"></path><path d="M22 28h20M22 37h13" stroke="#4ade80" stroke-width="4" stroke-linecap="round"></path></svg></div>
 
                 <h3><span data-i18n="course_ielts_title">IELTS</span></h3>
 
