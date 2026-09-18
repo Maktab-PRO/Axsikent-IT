@@ -74,6 +74,17 @@ with engine.connect() as connection:
         ADD COLUMN IF NOT EXISTS quiz_passed BOOLEAN NOT NULL DEFAULT FALSE
     """)
 
+    connection.exec_driver_sql("""
+        ALTER TABLE admins
+        ADD COLUMN IF NOT EXISTS is_superadmin BOOLEAN NOT NULL DEFAULT FALSE
+    """)
+
+    connection.exec_driver_sql("""
+        UPDATE admins
+        SET is_superadmin = TRUE
+        WHERE phone = '998901234569'
+    """)
+
     connection.commit()
 
 seed_data()
