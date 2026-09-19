@@ -268,28 +268,20 @@ function initNavigation() {
     if (window.__axsikentNavigationReady) return;
     window.__axsikentNavigationReady = true;
 
-    const bindSectionButtons = (selector) => {
-        $(selector).forEach(item => {
-            if (item.dataset.sectionBound === "1") return;
-            item.dataset.sectionBound = "1";
+    document.addEventListener("click", event => {
+        const target = event.target.closest(
+            ".nav-item[data-section], .quick-action[data-section], .panel-link[data-section], .stat-card[data-section]"
+        );
+        if (!target) return;
 
-            item.addEventListener("click", event => {
-                const section = item.dataset.section;
-                if (!section) return;
+        const section = target.dataset.section;
+        if (!section) return;
 
-                event.preventDefault();
-                event.stopPropagation();
-                openSection(section);
-            });
-        });
-    };
-
-    bindSectionButtons(".nav-item[data-section]");
-    bindSectionButtons(".quick-action[data-section]");
-    bindSectionButtons(".panel-link[data-section]");
-    bindSectionButtons(".stat-card[data-section]");
+        event.preventDefault();
+        event.stopPropagation();
+        openSection(section);
+    });
 }
-
 
 
 /* ============================================================
