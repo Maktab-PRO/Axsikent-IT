@@ -3484,19 +3484,20 @@ a {
 .section-back-btn:hover{transform:translateX(-3px);border-color:rgba(57,229,140,.55);color:#39e58c;box-shadow:0 14px 32px rgba(57,229,140,.12)}
 .section-back-btn[hidden]{display:none!important}
 
-#section-homework .section-header h2,
-#section-homework .panel-header h3{
-    font-size:inherit;
-    letter-spacing:normal;
+#section-homework .section-header h2{
+    font-size:20px;
+    letter-spacing:-.2px;
 }
-#section-homework .section-header h2{font-size:24px}
-#section-homework .panel-header h3{font-size:16px}
+#section-homework .panel-header h3{
+    font-size:14px;
+    letter-spacing:-.1px;
+}
 #section-homework .section-header p,
-#section-homework .panel-header p{font-size:12px}
-#section-homework .homework-stat-card strong{font-size:22px}
-#section-homework .homework-stat-card small{font-size:11px}
-#section-homework .module-table th{font-size:10px}
-#section-homework .module-table td{font-size:12px}
+#section-homework .panel-header p{font-size:11px}
+#section-homework .homework-stat-card strong{font-size:20px}
+#section-homework .homework-stat-card small{font-size:10px}
+#section-homework .module-table th{font-size:9px}
+#section-homework .module-table td{font-size:11px}
 
 .report-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .report-card{padding:20px;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:linear-gradient(145deg,rgba(22,28,25,.95),rgba(10,13,12,.98));box-shadow:0 14px 36px rgba(0,0,0,.18)}
