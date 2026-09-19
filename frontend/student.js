@@ -2534,6 +2534,8 @@ showPremiumModal(
         }
     }
 
+    window.openStudentProfile = openStudentProfile;
+
     function saveStudentBirthDate(studentId) {
         const input = document.getElementById("studentBirthDate");
         const message = document.getElementById("studentBirthDateMessage");
