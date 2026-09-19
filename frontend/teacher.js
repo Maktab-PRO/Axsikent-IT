@@ -3,8 +3,20 @@ const T={uz:{loginTitle:"O‘qituvchi paneliga kirish",loginText:"Kirish ma’lu
 let lang=localStorage.getItem("teacher_lang")||"uz", token=localStorage.getItem("teacher_access_token"), teacher=null, students=[];
 const $=id=>document.getElementById(id);
 function tr(){document.querySelectorAll("[data-i18n]").forEach(e=>{const k=e.dataset.i18n;if(T[lang][k])e.textContent=T[lang][k]});document.documentElement.lang=lang}
-function setLang(v){lang=v;localStorage.setItem("teacher_lang",v);tr();$("teacherLang").value=v;$("appLang").value=v}
-$("teacherLang").addEventListener("change",e=>setLang(e.target.value));$("appLang").addEventListener("change",e=>setLang(e.target.value));tr();
+function setLang(v){lang=v;localStorage.setItem("teacher_lang",v);tr();updateLanguagePickers();}
+function updateLanguagePickers(){
+  document.querySelectorAll(".language-picker").forEach(p=>{
+    const b=p.querySelector(".language-trigger"); if(b)b.innerHTML=lang.toUpperCase()+" <span>⌄</span>";
+    p.querySelectorAll("[data-lang]").forEach(x=>x.classList.toggle("selected",x.dataset.lang===lang));
+  });
+}
+document.querySelectorAll(".language-picker").forEach(p=>{
+  const trigger=p.querySelector(".language-trigger");
+  trigger.addEventListener("click",e=>{e.stopPropagation();document.querySelectorAll(".language-picker.open").forEach(x=>{if(x!==p)x.classList.remove("open")});p.classList.toggle("open");});
+  p.querySelectorAll("[data-lang]").forEach(x=>x.addEventListener("click",()=>{setLang(x.dataset.lang);p.classList.remove("open");}));
+});
+document.addEventListener("click",()=>document.querySelectorAll(".language-picker.open").forEach(x=>x.classList.remove("open")));
+tr();updateLanguagePickers();
 async function teacherLogin(e){e.preventDefault();const msg=$("teacherLoginMessage");msg.textContent="";try{const r=await fetch(API+"/teachers/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:$("teacherPhone").value.trim(),password:$("teacherPassword").value})});const d=await r.json();if(!r.ok)throw Error(d.detail||"Login failed");token=d.access_token;localStorage.setItem("teacher_access_token",token);localStorage.setItem("teacher_id",d.teacher_id);await boot()}catch(err){msg.textContent=err.message}}
 $("teacherLoginForm").addEventListener("submit",teacherLogin);
 function logout(){localStorage.removeItem("teacher_access_token");localStorage.removeItem("teacher_id");location.reload()}
