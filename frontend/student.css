@@ -1901,3 +1901,33 @@ textarea::placeholder {
     width:18px;
     height:18px;
 }
+
+
+/* Requested-only final adjustments */
+.dashboard-refresh-button{
+    width:42px;
+    height:42px;
+    padding:0;
+    color:#d1fae5;
+    background:linear-gradient(145deg,rgba(16,185,129,.30),rgba(22,163,74,.16));
+    border-color:rgba(52,211,153,.48);
+    box-shadow:0 8px 22px rgba(0,0,0,.22),inset 0 0 14px rgba(52,211,153,.08);
+}
+.dashboard-refresh-button svg{width:18px;height:18px}
+.dashboard-refresh-button:hover{
+    color:#fff;
+    border-color:rgba(110,231,183,.72);
+    background:linear-gradient(145deg,rgba(16,185,129,.38),rgba(22,163,74,.22));
+}
+.student-homework-empty-icon{
+    color:#5eead4!important;
+    background:linear-gradient(145deg,rgba(13,148,136,.18),rgba(45,212,191,.06))!important;
+    border-color:rgba(94,234,212,.20)!important;
+}
+.student-homework-empty-icon svg{width:28px;height:28px}
+@media(max-width:750px){
+    .dashboard-refresh-button{
+        width:38px;
+        height:38px;
+    }
+}
