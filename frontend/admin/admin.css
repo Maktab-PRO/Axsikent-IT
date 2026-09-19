@@ -3629,3 +3629,5 @@ a {
         box-sizing: border-box;
     }
 }
+
+.teacher-create-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;padding:20px 0}.teacher-create-form[hidden]{display:none}.teacher-create-form label{display:grid;gap:7px}.teacher-create-form label span{font-size:11px;color:#9ca3af;font-weight:800}.teacher-create-form input,.teacher-create-form select{width:100%;border:1px solid rgba(255,255,255,.09);border-radius:14px;background:#0c1110;color:#fff;padding:13px 14px}.teacher-create-actions{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap}.teacher-create-message{grid-column:1/-1;color:#86efac;font-size:12px;min-height:20px}@media(max-width:700px){.teacher-create-form{grid-template-columns:1fr}.teacher-create-actions{grid-column:auto}.teacher-create-message{grid-column:auto}}
