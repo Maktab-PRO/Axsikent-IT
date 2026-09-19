@@ -2428,7 +2428,7 @@ showPremiumModal(
         openStudentFeatureModal(
             "Profilim",
             "👤",
-            '<div style="text-align:center;padding:10px;">Profil ma’lumotlari yuklanmoqda...</div>'
+            '<div class="student-profile-loading">Profil ma’lumotlari yuklanmoqda...</div>'
         );
 
         try {
@@ -2455,30 +2455,71 @@ showPremiumModal(
             }
 
             const status = data.is_active
-                ? '<span style="color:#4ade80;">● Faol</span>'
-                : '<span style="color:#f87171;">● Faol emas</span>';
+                ? '<span class="student-profile-status active">● Faol</span>'
+                : '<span class="student-profile-status inactive">● Faol emas</span>';
+
+            const birthKey = "student_birth_date_" + data.id;
+            const savedBirthDate = localStorage.getItem(birthKey) || "";
 
             openStudentFeatureModal(
                 "Profilim",
                 "👤",
-                '<div style="display:grid;gap:12px;">' +
-                    '<div style="padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.04);">' +
-                        '<div style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:1px;">F.I.Sh.</div>' +
-                        '<div style="margin-top:6px;color:#fff;font-size:17px;font-weight:800;">' +
-                            escapeHtml(data.full_name || "O‘quvchi") +
+                '<div class="student-profile-card">' +
+                    '<div class="student-profile-info">' +
+                        '<div class="student-profile-icon">👤</div>' +
+                        '<div>' +
+                            '<div class="student-profile-label">Ism va familiya</div>' +
+                            '<div class="student-profile-value">' +
+                                escapeHtml(data.full_name || "O‘quvchi") +
+                            '</div>' +
                         '</div>' +
                     '</div>' +
-                    '<div style="padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.04);">' +
-                        '<div style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Telefon</div>' +
-                        '<div style="margin-top:6px;color:#fff;font-size:16px;font-weight:700;">' +
-                            escapeHtml(data.phone || "—") +
+
+                    '<div class="student-profile-info">' +
+                        '<div class="student-profile-icon">📱</div>' +
+                        '<div>' +
+                            '<div class="student-profile-label">Ro‘yxatdan o‘tgan telefon raqami</div>' +
+                            '<div class="student-profile-value">' +
+                                escapeHtml(data.phone || "—") +
+                            '</div>' +
                         '</div>' +
                     '</div>' +
-                    '<div style="padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.04);">' +
-                        '<div style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Holat</div>' +
-                        '<div style="margin-top:6px;font-size:15px;font-weight:800;">' +
-                            status +
+
+                    '<div class="student-profile-info">' +
+                        '<div class="student-profile-icon">●</div>' +
+                        '<div>' +
+                            '<div class="student-profile-label">Profil holati</div>' +
+                            '<div class="student-profile-value">' +
+                                status +
+                            '</div>' +
                         '</div>' +
+                    '</div>' +
+
+                    '<div class="student-profile-birthday">' +
+                        '<div class="student-profile-birthday-head">' +
+                            '<div>' +
+                                '<div class="student-profile-label">Tug‘ilgan kuningiz</div>' +
+                                '<div class="student-profile-birthday-hint">Tug‘ilgan sanangizni kiriting</div>' +
+                            '</div>' +
+                            '<span class="student-profile-calendar">🎂</span>' +
+                        '</div>' +
+
+                        '<input' +
+                            ' type="date"' +
+                            ' id="studentBirthDate"' +
+                            ' class="student-profile-date"' +
+                            ' value="' + escapeHtml(savedBirthDate) + '"' +
+                        '>' +
+
+                        '<button' +
+                            ' type="button"' +
+                            ' class="student-profile-save"' +
+                            ' onclick="saveStudentBirthDate(' + Number(data.id) + ')"' +
+                        '>' +
+                            'Saqlash' +
+                        '</button>' +
+
+                        '<div id="studentBirthDateMessage" class="student-profile-message"></div>' +
                     '</div>' +
                 '</div>'
             );
@@ -2486,13 +2527,33 @@ showPremiumModal(
             openStudentFeatureModal(
                 "Profil",
                 "⚠️",
-                '<div style="color:#f87171;">' +
+                '<div class="student-profile-error">' +
                     escapeHtml(error.message || "Profilni yuklashda xatolik") +
                 '</div>'
             );
         }
     }
 
+    function saveStudentBirthDate(studentId) {
+        const input = document.getElementById("studentBirthDate");
+        const message = document.getElementById("studentBirthDateMessage");
+
+        if (!input || !message) return;
+
+        if (!input.value) {
+            message.textContent = "Iltimos, tug‘ilgan sanangizni kiriting.";
+            message.className = "student-profile-message error";
+            return;
+        }
+
+        localStorage.setItem(
+            "student_birth_date_" + studentId,
+            input.value
+        );
+
+        message.textContent = "Tug‘ilgan sana saqlandi ✓";
+        message.className = "student-profile-message success";
+    }
 
     async function loadStudentPodcasts() {
         const token = localStorage.getItem("access_token");
