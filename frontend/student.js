@@ -1659,8 +1659,8 @@ function confirmLogoutStudent() {
 
         try {
             const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 15000);
-        const response = await fetch(API_URL + "/students/rewards?ts=" + Date.now(), {
+            const timeout = setTimeout(() => controller.abort(), 10000);
+            const response = await fetch(API_URL + "/students/rewards?ts=" + Date.now(), {
                 method: "GET",
                 cache: "no-store",
                 headers: {"Authorization":"Bearer " + token},
@@ -1714,9 +1714,18 @@ function confirmLogoutStudent() {
                 '</div><h3 style="color:#fff;margin:0 0 14px;font-size:17px;">🎁 Mavjud mukofotlar</h3>' + rewardHtml;
         } catch (error) {
             console.error("Rewards load error:", error);
-            container.innerHTML = '<div style="text-align:center;padding:30px;color:#ef4444;">' +
-                '<strong>Mukofotlarni yuklashda xatolik yuz berdi.</strong><br><span style="display:block;margin-top:8px;color:#9ca3af;">' +
-                escapeHtml(error.message || "Noma’lum xatolik") + '</span></div>';
+            const message = error && error.name === "AbortError"
+                ? "Server javob berishi uchun juda ko‘p vaqt ketdi."
+                : (error.message || "Noma’lum xatolik");
+
+            container.innerHTML =
+                '<div style="text-align:center;padding:30px;color:#fda4af;">' +
+                    '<strong>Mukofotlarni yuklab bo‘lmadi.</strong>' +
+                    '<div style="margin-top:8px;color:#9ca3af;font-size:12px;">' +
+                        escapeHtml(message) +
+                    '</div>' +
+                    '<button type="button" onclick="loadStudentRewards()" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button>' +
+                '</div>';
         }
     }
 
@@ -2930,14 +2939,18 @@ showPremiumModal(
 
         // The in-page notification center must not depend on browser permission prompts.
         try {
-            const response = await fetch(API_URL + "/students/notifications", {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 10000);
+
+            const response = await fetch(API_URL + "/students/notifications?ts=" + Date.now(), {
                 method: "GET",
                 headers: {
                     "Authorization": "Bearer " + token,
                     "Accept": "application/json"
                 },
-                cache: "no-store"
-            });
+                cache: "no-store",
+                signal: controller.signal
+            }).finally(() => clearTimeout(timeout));
 
             let data = {};
             try {
