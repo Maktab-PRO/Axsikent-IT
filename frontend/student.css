@@ -2125,9 +2125,23 @@ textarea::placeholder {
 @keyframes studentNavAuraTwo{50%{transform:translate(-34px,-10px) scale(.86);opacity:.65}}
 .topbar > *{position:relative;z-index:2}
 .student-site-logo-image{
-    width:215px;
-    height:68px;
+    width:270px;
+    height:98px;
     object-fit:contain;
+    display:block;
+}
+
+.premium-logo{
+    -webkit-tap-highlight-color:transparent;
+    -webkit-touch-callout:none;
+}
+
+.premium-logo:focus,
+.premium-logo:focus-visible,
+.premium-logo:active{
+    outline:none;
+    background:transparent!important;
+    box-shadow:none!important;
 }
 .topbar-right{gap:8px}
 .profile-mini{margin-right:2px}
@@ -2219,7 +2233,7 @@ body.support-modal-open{overflow:hidden}
     margin-top:22px;
 }
 @media(max-width:700px){
-    .student-site-logo-image{width:185px;height:62px}
+    .student-site-logo-image{width:215px;height:84px}
     .topbar{padding:0 16px}
     .topbar-right{gap:5px}
     .profile-mini{display:none}
