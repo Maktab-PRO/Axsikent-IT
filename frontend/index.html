@@ -2531,14 +2531,14 @@
     }
 
     .premium-brand {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
+        position: static;
+        transform: none;
+        margin-left: 0;
         z-index: 2;
+        flex: 0 0 auto;
     }
 
-     .site-logo-image {
+    .site-logo-image {
         width: 195px;
         height: 76px;
     }
@@ -2547,6 +2547,7 @@
         margin-left: auto;
         position: relative;
         z-index: 3;
+        flex: 0 0 auto;
     }
 
     .premium-brand:hover .site-logo-image {
@@ -2554,18 +2555,17 @@
     }
 }
 
-
-
 .premium-brand {
     display: flex;
     align-items: center;
     gap: 11px;
-    margin-left: -20px;
+    margin-left: 0;
     padding: 0;
     background: transparent;
     border-radius: 0;
     text-decoration: none;
     user-select: none;
+    flex: 0 0 auto;
 }
 
 .premium-brand-icon {
