@@ -1931,3 +1931,15 @@ textarea::placeholder {
         height:38px;
     }
 }
+
+
+/* Homework empty task icon — requested only */
+.student-homework-task-icon svg{
+    width:18px;
+    height:18px;
+    fill:none;
+    stroke:#0f766e;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
