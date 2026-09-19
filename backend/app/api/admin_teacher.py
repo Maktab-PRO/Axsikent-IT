@@ -224,7 +224,7 @@ def activate_teacher(
     }
 
 
-@router.post("/")
+@router.post("")
 def create_teacher(
     full_name: str,
     phone: str,
