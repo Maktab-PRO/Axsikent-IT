@@ -998,7 +998,6 @@ async function openStudentModule(courseId, moduleId) {
                 Tekshiruv yuklanmoqda...
             </div>
         </div>    `;
-
     try {
 
         const response = await fetch(
@@ -1997,8 +1996,7 @@ showPremiumModal(
                     color:#94a3b8;
                 ">
                     <div style="
-                        font-size:45px;
-                        margin-bottom:12px;
+                        font-size:45px;                        margin-bottom:12px;
                     ">
                         🎉
                     </div>
@@ -2415,7 +2413,7 @@ showPremiumModal(
         document.body.appendChild(modal);
     }
 
-    async function openStudentProfile() {
+    function openStudentProfile() {
         const token = localStorage.getItem("access_token");
 
         if (!token) {
@@ -2423,23 +2421,43 @@ showPremiumModal(
             return;
         }
 
-        openStudentFeatureModal(
-            "Profilim",
-            "👤",
-            '<div class="student-profile-loading">Profil ma’lumotlari yuklanmoqda...</div>'
-        );
+        const old = document.getElementById("studentProfileModal");
+        if (old) old.remove();
 
-        try {
-            const response = await fetch(
-                API_URL + "/students/me",
-                {
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                }
-            );
+        const modal = document.createElement("div");
+        modal.id = "studentProfileModal";
+        modal.style.cssText = "position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;";
 
-            const data = await response.json();
+        modal.innerHTML =
+            '<div style="width:min(520px,100%);max-height:88vh;overflow:auto;background:linear-gradient(145deg,#111827,#070b12);border:1px solid rgba(52,211,153,.28);border-radius:24px;padding:24px;box-sizing:border-box;color:#fff;box-shadow:0 30px 90px rgba(0,0,0,.7);">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">' +
+                    '<div><div style="font-size:11px;color:#34d399;font-weight:800;letter-spacing:.12em;">SHAXSIY KABINET</div><h2 style="margin:5px 0 0;font-size:23px;">Profilim</h2></div>' +
+                    '<button type="button" id="studentProfileClose" style="width:38px;height:38px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.05);color:#fff;font-size:22px;cursor:pointer;">×</button>' +
+                '</div>' +
+                '<div id="studentProfileBody" style="color:#cbd5e1;">' +
+                    '<div style="padding:28px 10px;text-align:center;">⏳<div style="margin-top:10px;">Ma’lumotlar yuklanmoqda...</div></div>' +
+                '</div>' +
+            '</div>';
+
+        document.body.appendChild(modal);
+
+        document.getElementById("studentProfileClose").onclick = function() {
+            modal.remove();
+        };
+
+        modal.onclick = function(event) {
+            if (event.target === modal) modal.remove();
+        };
+
+        const body = document.getElementById("studentProfileBody");
+
+        fetch(API_URL + "/students/me", {
+            method: "GET",
+            headers: { "Authorization": "Bearer " + token }
+        })
+        .then(async function(response) {
+            let data = {};
+            try { data = await response.json(); } catch (_) {}
 
             if (response.status === 401) {
                 localStorage.removeItem("access_token");
@@ -2449,111 +2467,63 @@ showPremiumModal(
             }
 
             if (!response.ok) {
-                throw new Error(data.detail || "Profilni yuklashda xatolik");
+                throw new Error(data.detail || "Profil ma’lumotlarini yuklashda xatolik");
             }
-
-            const status = data.is_active
-                ? '<span class="student-profile-status active">● Faol</span>'
-                : '<span class="student-profile-status inactive">● Faol emas</span>';
 
             const birthKey = "student_birth_date_" + data.id;
             const savedBirthDate = localStorage.getItem(birthKey) || "";
 
-            openStudentFeatureModal(
-                "Profilim",
-                "👤",
-                '<div class="student-profile-card">' +
-                    '<div class="student-profile-info">' +
-                        '<div class="student-profile-icon">👤</div>' +
-                        '<div>' +
-                            '<div class="student-profile-label">Ism va familiya</div>' +
-                            '<div class="student-profile-value">' +
-                                escapeHtml(data.full_name || "O‘quvchi") +
-                            '</div>' +
-                        '</div>' +
+            body.innerHTML =
+                '<div style="display:grid;gap:12px;">' +
+                    '<div style="padding:16px;border:1px solid rgba(52,211,153,.14);border-radius:17px;background:rgba(52,211,153,.06);">' +
+                        '<div style="font-size:11px;color:#94a3b8;font-weight:800;">ISM VA FAMILIYA</div>' +
+                        '<div id="profileFullName" style="margin-top:6px;font-size:16px;font-weight:800;color:#fff;"></div>' +
                     '</div>' +
-
-                    '<div class="student-profile-info">' +
-                        '<div class="student-profile-icon">📱</div>' +
-                        '<div>' +
-                            '<div class="student-profile-label">Ro‘yxatdan o‘tgan telefon raqami</div>' +
-                            '<div class="student-profile-value">' +
-                                escapeHtml(data.phone || "—") +
-                            '</div>' +
-                        '</div>' +
+                    '<div style="padding:16px;border:1px solid rgba(52,211,153,.14);border-radius:17px;background:rgba(52,211,153,.06);">' +
+                        '<div style="font-size:11px;color:#94a3b8;font-weight:800;">RO‘YXATDAN O‘TGAN TELEFON RAQAMI</div>' +
+                        '<div id="profilePhone" style="margin-top:6px;font-size:16px;font-weight:800;color:#fff;"></div>' +
                     '</div>' +
-
-                    '<div class="student-profile-info">' +
-                        '<div class="student-profile-icon">●</div>' +
-                        '<div>' +
-                            '<div class="student-profile-label">Profil holati</div>' +
-                            '<div class="student-profile-value">' +
-                                status +
-                            '</div>' +
-                        '</div>' +
+                    '<div style="padding:16px;border:1px solid rgba(52,211,153,.14);border-radius:17px;background:rgba(52,211,153,.06);">' +
+                        '<div style="font-size:11px;color:#94a3b8;font-weight:800;">PROFIL HOLATI</div>' +
+                        '<div id="profileStatus" style="margin-top:6px;font-size:16px;font-weight:800;"></div>' +
                     '</div>' +
-
-                    '<div class="student-profile-birthday">' +
-                        '<div class="student-profile-birthday-head">' +
-                            '<div>' +
-                                '<div class="student-profile-label">Tug‘ilgan kuningiz</div>' +
-                                '<div class="student-profile-birthday-hint">Tug‘ilgan sanangizni kiriting</div>' +
-                            '</div>' +
-                            '<span class="student-profile-calendar">🎂</span>' +
-                        '</div>' +
-
-                        '<input' +
-                            ' type="date"' +
-                            ' id="studentBirthDate"' +
-                            ' class="student-profile-date"' +
-                            ' value="' + escapeHtml(savedBirthDate) + '"' +
-                        '>' +
-
-                        '<button' +
-                            ' type="button"' +
-                            ' class="student-profile-save"' +
-                            ' onclick="saveStudentBirthDate(' + Number(data.id) + ')"' +
-                        '>' +
-                            'Saqlash' +
-                        '</button>' +
-
-                        '<div id="studentBirthDateMessage" class="student-profile-message"></div>' +
+                    '<div style="padding:18px;border:1px solid rgba(139,92,246,.30);border-radius:19px;background:linear-gradient(145deg,rgba(139,92,246,.10),rgba(52,211,153,.05));">' +
+                        '<div style="font-size:11px;color:#c4b5fd;font-weight:800;">TUG‘ILGAN KUNINGIZ</div>' +
+                        '<div style="margin-top:5px;color:#94a3b8;font-size:12px;">Tug‘ilgan sanangizni kiriting</div>' +
+                        '<input id="studentBirthDate" type="date" value="' + savedBirthDate + '" style="width:100%;height:46px;margin-top:13px;padding:0 12px;box-sizing:border-box;border-radius:12px;border:1px solid rgba(167,139,250,.25);background:#090e16;color:#fff;color-scheme:dark;">' +
+                        '<button id="studentBirthDateSave" type="button" style="width:100%;height:44px;margin-top:10px;border:0;border-radius:12px;background:linear-gradient(135deg,#059669,#15803d);color:#fff;font-weight:800;cursor:pointer;">Saqlash</button>' +
+                        '<div id="studentBirthDateMessage" style="min-height:17px;margin-top:8px;font-size:12px;"></div>' +
                     '</div>' +
-                '</div>'
-            );
-        } catch (error) {
-            openStudentFeatureModal(
-                "Profil",
-                "⚠️",
-                '<div class="student-profile-error">' +
-                    escapeHtml(error.message || "Profilni yuklashda xatolik") +
-                '</div>'
-            );
-        }
+                '</div>';
+
+            document.getElementById("profileFullName").textContent = data.full_name || "O‘quvchi";
+            document.getElementById("profilePhone").textContent = data.phone || "—";
+
+            const status = document.getElementById("profileStatus");
+            status.textContent = data.is_active ? "● Faol" : "● Faol emas";
+            status.style.color = data.is_active ? "#4ade80" : "#f87171";
+
+            document.getElementById("studentBirthDateSave").onclick = function() {
+                const input = document.getElementById("studentBirthDate");
+                const message = document.getElementById("studentBirthDateMessage");
+
+                if (!input.value) {
+                    message.textContent = "Iltimos, tug‘ilgan sanangizni kiriting.";
+                    message.style.color = "#f87171";
+                    return;
+                }
+
+                localStorage.setItem(birthKey, input.value);
+                message.textContent = "Tug‘ilgan sana saqlandi ✓";
+                message.style.color = "#4ade80";
+            };
+        })
+        .catch(function(error) {
+            body.innerHTML = '<div style="padding:18px;border:1px solid rgba(248,113,113,.2);border-radius:15px;color:#f87171;background:rgba(248,113,113,.06);">❌ ' + (error.message || "Profilni yuklashda xatolik") + '</div>';
+        });
     }
 
-    
-window.openStudentProfile = openStudentProfile;
-
-function bindStudentProfileButton() {
-    const button = document.getElementById("studentProfileQuickButton");
-
-    if (!button) {
-        return;
-    }
-
-    button.addEventListener("click", function(event) {
-        event.preventDefault();
-        openStudentProfile();
-    });
-}
-
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", bindStudentProfileButton);
-} else {
-    bindStudentProfileButton();
-}
-
+    window.openStudentProfile = openStudentProfile;
 
     function saveStudentBirthDate(studentId) {
         const input = document.getElementById("studentBirthDate");
@@ -2997,8 +2967,7 @@ if (document.readyState === "loading") {
     function showPremiumStudentMessage(message) {
         document.getElementById("studentMessageModal")?.remove();
         const modal = document.createElement("div");
-        modal.id = "studentMessageModal";
-        modal.className = "student-premium-overlay";
+        modal.id = "studentMessageModal";        modal.className = "student-premium-overlay";
         modal.innerHTML =
             '<div class="student-premium-modal">' +
             '<button type="button" class="student-premium-close" aria-label="Yopish">×</button>' +
