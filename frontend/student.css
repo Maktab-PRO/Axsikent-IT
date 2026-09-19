@@ -1943,3 +1943,10 @@ textarea::placeholder {
     stroke-linecap:round;
     stroke-linejoin:round;
 }
+
+
+/* Course tap highlight — remove blue press overlay only */
+.course{
+    -webkit-tap-highlight-color:transparent;
+    -webkit-touch-callout:none;
+}
