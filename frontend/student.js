@@ -2923,6 +2923,11 @@ showPremiumModal(
             return;
         }
 
+        // Open the notification center immediately so a slow API/Render wake-up is visible.
+        showStudentNotificationModal(
+            '<div class="student-notification-loading"><span class="student-notification-spinner"></span><strong>Bildirishnomalar yuklanmoqda...</strong><small>Bir oz kuting.</small></div>'
+        );
+
         // The in-page notification center must not depend on browser permission prompts.
         try {
             const response = await fetch(API_URL + "/students/notifications", {
@@ -2959,7 +2964,7 @@ showPremiumModal(
                 ).join("")
                 : '<div class="student-notification-empty"><span>✦</span><strong>Hozircha bildirishnoma yo‘q</strong><small>Yangi material yoki muhim xabar kelganda shu yerda chiqadi.</small></div>';
 
-            showStudentNotificationModal(rows);
+            updateStudentNotificationModal(rows);
 
             document.querySelectorAll(".student-notification-item").forEach(item => {
                 item.addEventListener("click", async () => {
@@ -2977,7 +2982,11 @@ showPremiumModal(
                 });
             });
         } catch (error) {
-            showPremiumStudentMessage(error.message || "Bildirishnomalarni yuklab bo‘lmadi.");
+            updateStudentNotificationModal(
+                '<div class="student-notification-error"><strong>Bildirishnomalarni yuklab bo‘lmadi.</strong><small>' +
+                escapeHtml(error.message || "Server bilan bog‘lanishda xatolik yuz berdi.") +
+                '</small></div>'
+            );
         }
     }
 
@@ -2999,6 +3008,13 @@ showPremiumModal(
         document.body.appendChild(modal);
         modal.querySelector(".student-premium-close").addEventListener("click", () => modal.remove());
         modal.addEventListener("click", event => { if (event.target === modal) modal.remove(); });
+    }
+
+    function updateStudentNotificationModal(rows) {
+        const modal = document.getElementById("studentNotificationModal");
+        if (!modal) return;
+        const list = modal.querySelector(".student-notification-list");
+        if (list) list.innerHTML = rows;
     }
 
     function showPremiumStudentMessage(message) {
