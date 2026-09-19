@@ -20,7 +20,7 @@
     </form>
     <div id="teacherLoginMessage" class="auth-message"></div>
     <div class="auth-note"><span>◈</span><span data-i18n="adminOnly">Yangi o‘qituvchi akkaunti administrator tomonidan yaratiladi.</span></div>
-    <div class="auth-language"><span>◎</span><select id="teacherLang"><option value="uz">UZ</option><option value="ru">RU</option><option value="en">EN</option></select></div>
+    <div class="auth-language"><span>◎</span><div class="language-picker" data-picker="teacher"><button type="button" class="language-trigger" id="teacherLangButton">UZ <span>⌄</span></button><div class="language-menu"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div></div></div>
   </div>
 </div>
 
@@ -28,7 +28,7 @@
 <header class="teacher-topbar">
   <a class="brand" href="index.html"><img src="assets/Sayt%20logo.png" alt="Axsikent IT"></a>
   <div class="top-actions">
-    <select id="appLang" class="language-select"><option value="uz">UZ</option><option value="ru">RU</option><option value="en">EN</option></select>
+    <div class="language-picker" data-picker="app"><button type="button" class="language-trigger" id="appLangButton">UZ <span>⌄</span></button><div class="language-menu"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div></div>
     <button id="logoutBtn" class="icon-btn" type="button" aria-label="Logout">↪</button>
   </div>
 </header>
