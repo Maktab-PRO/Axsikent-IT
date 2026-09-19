@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Axsikent IT — Teacher Command Center</title>
+<link rel="stylesheet" href="teacher.css">
+</head>
+<body>
+<div id="teacherLogin" class="auth-screen">
+  <div class="auth-glow glow-a"></div><div class="auth-glow glow-b"></div>
+  <div class="auth-card">
+    <a class="auth-logo" href="index.html"><img src="assets/Sayt%20logo.png" alt="Axsikent IT"></a>
+    <div class="auth-kicker">AXSIKENT IT / TEACHER ACCESS</div>
+    <h1 data-i18n="loginTitle">O‘qituvchi paneliga kirish</h1>
+    <p data-i18n="loginText">Kirish ma’lumotlaringizni kiriting. Yangi o‘qituvchini faqat administrator ro‘yxatdan o‘tkazadi.</p>
+    <form id="teacherLoginForm">
+      <label><span data-i18n="phone">Telefon raqam</span><input id="teacherPhone" type="tel" placeholder="+998 90 123 45 67" autocomplete="tel" required></label>
+      <label><span data-i18n="password">Parol</span><input id="teacherPassword" type="password" placeholder="Parol" autocomplete="current-password" required></label>
+      <button class="premium-btn primary" type="submit"><span>↗</span><span data-i18n="enter">Kirish</span></button>
+    </form>
+    <div id="teacherLoginMessage" class="auth-message"></div>
+    <div class="auth-note"><span>◈</span><span data-i18n="adminOnly">Yangi o‘qituvchi akkaunti administrator tomonidan yaratiladi.</span></div>
+    <div class="auth-language"><span>◎</span><select id="teacherLang"><option value="uz">UZ</option><option value="ru">RU</option><option value="en">EN</option></select></div>
+  </div>
+</div>
+
+<div id="teacherApp" class="teacher-app" hidden>
+<header class="teacher-topbar">
+  <a class="brand" href="index.html"><img src="assets/Sayt%20logo.png" alt="Axsikent IT"></a>
+  <div class="top-actions">
+    <select id="appLang" class="language-select"><option value="uz">UZ</option><option value="ru">RU</option><option value="en">EN</option></select>
+    <button id="logoutBtn" class="icon-btn" type="button" aria-label="Logout">↪</button>
+  </div>
+</header>
+<div class="teacher-layout">
+<aside class="teacher-sidebar">
+  <div class="teacher-identity"><div class="avatar" id="teacherAvatar">A</div><div><strong id="teacherName">O‘qituvchi</strong><small id="teacherSubject">—</small></div></div>
+  <nav>
+    <button class="side-item active" data-section="dashboard"><span>⌂</span><b data-i18n="dashboard">Dashboard</b></button>
+    <button class="side-item" data-section="students"><span>◎</span><b data-i18n="students">O‘quvchilar</b></button>
+    <button class="side-item" data-section="lessons"><span>▣</span><b data-i18n="lessons">Darslar</b></button>
+    <button class="side-item" data-section="quiz"><span>◇</span><b data-i18n="quiz">Quiz / Savollar</b></button>
+    <button class="side-item" data-section="attendance"><span>◷</span><b data-i18n="attendance">Davomat</b></button>
+    <button class="side-item" data-section="grades"><span>★</span><b data-i18n="grades">Baholar</b></button>
+    <button class="side-item" data-section="courses"><span>◈</span><b data-i18n="courses">Fanlar / Kurslar</b></button>
+    <button class="side-item" data-section="support"><span>?</span><b data-i18n="support">Texnik yordam</b></button>
+  </nav>
+</aside>
+<main class="teacher-main">
+<section class="teacher-section active" id="section-dashboard">
+  <div class="hero-head"><div><div class="eyebrow" data-i18n="command">TEACHER COMMAND CENTER</div><h2 data-i18n="welcome">Xush kelibsiz, o‘qituvchi</h2><p data-i18n="dashboardText">O‘quvchilar, darslar, davomat va baholarni bir markazdan boshqaring.</p></div><div class="status-pill"><i></i><span data-i18n="operational">System Operational</span></div></div>
+  <div class="stat-grid"><div class="stat-card"><span>◎</span><small data-i18n="myStudents">Mening o‘quvchilarim</small><strong id="statStudents">0</strong></div><div class="stat-card"><span>▣</span><small data-i18n="myLessons">Darslar</small><strong id="statLessons">0</strong></div><div class="stat-card"><span>◷</span><small data-i18n="todayAttendance">Bugungi davomat</small><strong id="statAttendance">—</strong></div><div class="stat-card"><span>★</span><small data-i18n="pendingGrades">Kutilayotgan baholar</small><strong id="statGrades">0</strong></div></div>
+  <div class="dashboard-grid"><div class="panel"><div class="panel-title"><div><span class="panel-icon">◈</span><h3 data-i18n="quick">Tezkor boshqaruv</h3></div></div><div class="quick-grid"><button data-section="attendance"><span>◷</span><b data-i18n="markAttendance">Davomat belgilash</b></button><button data-section="grades"><span>★</span><b data-i18n="gradeStudent">O‘quvchiga baho qo‘yish</b></button><button data-section="lessons"><span>▣</span><b data-i18n="assignLesson">Dars biriktirish</b></button><button data-section="quiz"><span>◇</span><b data-i18n="addQuiz">Quiz savol qo‘shish</b></button></div></div><div class="panel"><div class="panel-title"><div><span class="panel-icon">✦</span><h3 data-i18n="teacherInfo">O‘qituvchi ma’lumoti</h3></div></div><div class="info-list"><div><small data-i18n="fullName">Ism-familiya</small><strong id="infoName">—</strong></div><div><small data-i18n="subject">Fan</small><strong id="infoSubject">—</strong></div><div><small data-i18n="phone">Telefon</small><strong id="infoPhone">—</strong></div></div></div></div>
+</section>
+
+<section class="teacher-section" id="section-students"><div class="section-head"><div><div class="eyebrow">TEACHER / STUDENTS</div><h2 data-i18n="students">O‘quvchilar</h2><p data-i18n="studentsText">Sizga biriktirilgan o‘quvchilarni boshqaring.</p></div><button class="premium-btn ghost" data-action="refresh"><span>↻</span><span data-i18n="refresh">Yangilash</span></button></div><div class="panel table-panel"><div id="studentsContent" class="empty-state"><span>◎</span><strong data-i18n="loadingStudents">O‘quvchilar yuklanmoqda...</strong></div></div></section>
+
+<section class="teacher-section" id="section-lessons"><div class="section-head"><div><div class="eyebrow">TEACHER / LESSONS</div><h2 data-i18n="lessons">Darslar</h2><p data-i18n="lessonsText">Dars materiallarini va o‘quvchilarga biriktirishni boshqaring.</p></div></div><div class="panel form-panel"><div class="form-grid"><label><span data-i18n="student">O‘quvchi</span><select id="lessonStudent"><option data-i18n="choose">Tanlang</option></select></label><label><span data-i18n="course">Fan / Kurs</span><select id="lessonCourse"><option data-i18n="choose">Tanlang</option></select></label><label class="wide"><span data-i18n="lessonTitle">Dars nomi</span><input id="lessonTitle" placeholder="Masalan: HTML asoslari"></label><label class="wide"><span data-i18n="lessonLink">Video / material havolasi</span><input id="lessonLink" placeholder="https://..."></label></div><button class="premium-btn primary" type="button" id="assignLessonBtn"><span>＋</span><span data-i18n="assign">Biriktirish</span></button><div id="lessonMessage" class="form-message"></div></div></section>
+
+<section class="teacher-section" id="section-quiz"><div class="section-head"><div><div class="eyebrow">TEACHER / ASSESSMENT</div><h2 data-i18n="quiz">Quiz / Savollar</h2><p data-i18n="quizText">Darsga test savollarini joylang va to‘g‘ri javobni belgilang.</p></div></div><div class="panel form-panel"><div class="form-grid"><label><span data-i18n="lesson">Dars</span><input id="quizLessonId" type="number" min="1" placeholder="Lesson ID"></label><label class="wide"><span data-i18n="question">Savol</span><textarea id="quizQuestion" rows="3" placeholder="Savol matni"></textarea></label><label><span>A</span><input id="quizA"></label><label><span>B</span><input id="quizB"></label><label><span>C</span><input id="quizC"></label><label><span>D</span><input id="quizD"></label><label><span data-i18n="correct">To‘g‘ri javob</span><select id="quizCorrect"><option>A</option><option>B</option><option>C</option><option>D</option></select></label></div><button class="premium-btn primary" id="addQuizBtn" type="button"><span>＋</span><span data-i18n="saveQuiz">Quizni saqlash</span></button><div id="quizMessage" class="form-message"></div></div></section>
+
+<section class="teacher-section" id="section-attendance"><div class="section-head"><div><div class="eyebrow">TEACHER / ATTENDANCE</div><h2 data-i18n="attendance">Davomat</h2><p data-i18n="attendanceText">Har bir o‘quvchi uchun keldi / kelmadi holatini belgilang.</p></div><input class="date-input" id="attendanceDate" type="date"></div><div class="panel table-panel"><div id="attendanceContent" class="empty-state"><span>◷</span><strong data-i18n="loadingStudents">O‘quvchilar yuklanmoqda...</strong></div></div></section>
+
+<section class="teacher-section" id="section-grades"><div class="section-head"><div><div class="eyebrow">TEACHER / GRADES</div><h2 data-i18n="grades">Baholar</h2><p data-i18n="gradesText">O‘quvchilarga baho va izoh qoldiring.</p></div></div><div class="panel form-panel"><div class="form-grid"><label><span data-i18n="student">O‘quvchi</span><select id="gradeStudent"><option data-i18n="choose">Tanlang</option></select></label><label><span data-i18n="score">Baho (0–100)</span><input id="gradeScore" type="number" min="0" max="100"></label><label class="wide"><span data-i18n="comment">Izoh</span><textarea id="gradeComment" rows="4" placeholder="O‘quvchi uchun izoh"></textarea></label></div><button class="premium-btn primary" id="saveGradeBtn" type="button"><span>★</span><span data-i18n="saveGrade">Bahoni saqlash</span></button><div id="gradeMessage" class="form-message"></div></div></section>
+
+<section class="teacher-section" id="section-courses"><div class="section-head"><div><div class="eyebrow">TEACHER / SUBJECT</div><h2 data-i18n="courses">Fanlar / Kurslar</h2><p data-i18n="coursesText">O‘qituvchi sifatida sizga biriktirilgan fanlar shu yerda.</p></div></div><div class="panel" id="coursesContent"><div class="empty-state"><span>◈</span><strong data-i18n="subjectAssigned">Faningiz administrator tomonidan biriktiriladi.</strong></div></div></section>
+
+<section class="teacher-section" id="section-support"><div class="section-head"><div><div class="eyebrow">AXSIKENT IT / SUPPORT</div><h2 data-i18n="support">Texnik yordam</h2><p data-i18n="supportText">Platforma bo‘yicha yordam kerak bo‘lsa, biz bilan bog‘laning.</p></div></div><div class="support-grid"><a href="tel:+998973739399" class="support-card"><span>☎</span><strong>+998 97 373 93 99</strong><small data-i18n="call">Qo‘ng‘iroq</small></a><a href="mailto:adxamjonai99@gmail.com" class="support-card"><span>✉</span><strong>adxamjonai99@gmail.com</strong><small>Email</small></a></div></section>
+</main></div>
+
+<footer class="teacher-footer"><div class="footer-brand"><img src="assets/Sayt%20logo.png" alt="Axsikent IT"></div><p data-i18n="footerText">Zamonaviy ta’lim va kuchli kelajak sari.</p><div class="socials"><a href="https://t.me/akhsikent_edu" aria-label="Telegram">✈</a><a href="https://instagram.com/akhsikent_edu" aria-label="Instagram">◎</a><a href="https://youtube.com/@akhsikent_edu" aria-label="YouTube">▶</a><a href="https://facebook.com/akhsikent_edu" aria-label="Facebook">f</a></div><div class="creator"><span data-i18n="creator">Platforma yaratuvchisi</span><a href="https://t.me/Mister_A_01" aria-label="Telegram creator">✈</a><a href="https://instagram.com/adiiik_01" aria-label="Instagram creator">◎</a></div></footer>
+</div>
+<script src="teacher.js"></script>
+</body></html>
