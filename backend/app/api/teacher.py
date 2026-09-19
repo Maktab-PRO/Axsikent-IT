@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException\nfrom fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
@@ -101,7 +101,7 @@ def login_teacher(
 
 @router.get("/me/dashboard")
 def teacher_dashboard(
-    credentials = Depends(__import__("fastapi").security.HTTPAuthorizationCredentials),
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
     db: Session = Depends(get_db)
 ):
     from app.core.security import verify_token
