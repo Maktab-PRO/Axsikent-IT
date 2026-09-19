@@ -997,8 +997,7 @@ async function openStudentModule(courseId, moduleId) {
             <div style="margin-top:10px;font-weight:600;">
                 Tekshiruv yuklanmoqda...
             </div>
-        </div>
-    `;
+        </div>    `;
 
     try {
 
@@ -1997,7 +1996,6 @@ showPremiumModal(
                     padding:40px 20px;
                     color:#94a3b8;
                 ">
-
                     <div style="
                         font-size:45px;
                         margin-bottom:12px;
@@ -2534,7 +2532,28 @@ showPremiumModal(
         }
     }
 
-    window.openStudentProfile = openStudentProfile;
+    
+window.openStudentProfile = openStudentProfile;
+
+function bindStudentProfileButton() {
+    const button = document.getElementById("studentProfileQuickButton");
+
+    if (!button) {
+        return;
+    }
+
+    button.addEventListener("click", function(event) {
+        event.preventDefault();
+        openStudentProfile();
+    });
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bindStudentProfileButton);
+} else {
+    bindStudentProfileButton();
+}
+
 
     function saveStudentBirthDate(studentId) {
         const input = document.getElementById("studentBirthDate");
@@ -2997,7 +3016,6 @@ showPremiumModal(
     function showMessage(message) {
         showPremiumStudentMessage(message);
     }
-
 
     /* =========================
        START
