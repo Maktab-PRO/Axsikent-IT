@@ -178,7 +178,8 @@ const sectionTitles = {
     administrators: "Administratorlar",
     podcasts: "Podcastlar",
     trainings: "Treninglar",
-    exams: "Imtihonlar"
+    exams: "Imtihonlar",
+    support: "Texnik yordam"
 };
 
 
@@ -1330,6 +1331,10 @@ function renderStudents(students) {
 
             <div class="students-filter">
 
+                <button type="button" class="panel-link" id="studentAllBtn">
+                    Barchasi
+                </button>
+
                 <select id="studentStatusFilter">
 
                     <option value="all">
@@ -1451,6 +1456,15 @@ function renderStudents(students) {
             }
         );
 
+    }
+
+    const allButton = document.getElementById("studentAllBtn");
+    if (allButton) {
+        allButton.addEventListener("click", () => {
+            if (statusFilter) statusFilter.value = "all";
+            if (searchInput) searchInput.value = "";
+            filterStudents(students);
+        });
     }
 }
 
