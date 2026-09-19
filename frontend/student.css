@@ -2336,6 +2336,30 @@ body.support-modal-open{overflow:hidden}
 }
 
 
+/* Student notifications — premium window */
+.student-notification-modal{
+    width:min(580px,100%);
+    border-color:rgba(52,211,153,.20);
+    background:
+        radial-gradient(circle at 100% 0,rgba(52,211,153,.12),transparent 32%),
+        radial-gradient(circle at 0 100%,rgba(139,92,246,.12),transparent 35%),
+        linear-gradient(145deg,#10161a,#080b10);
+}
+.student-notification-head-icon{
+    width:48px;height:48px;border-radius:15px;display:grid;place-items:center;
+    margin-bottom:13px;color:#d1fae5;font-size:22px;font-weight:900;
+    background:linear-gradient(135deg,rgba(52,211,153,.18),rgba(139,92,246,.20));
+    border:1px solid rgba(167,139,250,.22);
+    box-shadow:0 10px 30px rgba(0,0,0,.22);
+}
+.student-notification-subtitle{margin:-9px 0 18px;color:#8f9bad;font-size:12px;line-height:1.5}
+.student-notification-loading{min-height:150px}
+.student-notification-loading-icon{
+    width:48px;height:48px;border-radius:15px;display:grid;place-items:center;
+    color:#c4b5fd;font-size:22px;background:rgba(139,92,246,.10);
+    border:1px solid rgba(167,139,250,.20);
+}
+
 /* Requested: premium rewards modal + remove mobile blue tap on book purchase */
 .student-rewards-modal{
     position:fixed;
