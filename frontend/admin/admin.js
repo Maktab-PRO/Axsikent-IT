@@ -198,7 +198,7 @@ function openSection(section) {
         history.replaceState(null, "", "#" + section);
     }
 
-    $(".nav-item").forEach(item => {
+    $$(".nav-item").forEach(item => {
         item.classList.toggle(
             "active",
             item.dataset.section === section
