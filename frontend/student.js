@@ -59,8 +59,8 @@ async function loadStudentCourses() {
                     padding:25px;
                     color:#7b8496;
                 ">
-                    <div style="font-size:40px; margin-bottom:10px;">
-                        📚
+                    <div class="student-modern-empty-icon" style="margin-bottom:14px;">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h13a1 1 0 0 1 1 1v15H7a2 2 0 0 0-2 2V4Z"/><path d="M7 20h12M9 8h7M9 12h6"/></svg>
                     </div>
 
                     <strong style="
@@ -97,8 +97,8 @@ async function loadStudentCourses() {
 
                     <div class="course-top">
 
-                        <div class="course-icon">
-                            💻
+                        <div class="course-icon student-modern-course-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
                         </div>
 
                         <div>
@@ -342,11 +342,15 @@ async function openStudentCourse(courseId) {
 
                         <div style="
                             margin-top:9px;
+                            display:flex;
+                            align-items:center;
+                            gap:11px;
                             font-size:17px;
                             font-weight:800;
                             color:#f8fafc;
                         ">
-                            📚 ${module.title}
+                            <span class="student-modern-module-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h13a1 1 0 0 1 1 1v15H7a2 2 0 0 0-2 2V4Z"/><path d="M7 20h12M9 8h7M9 12h7"/></svg></span>
+                            <span>${module.title}</span>
                         </div>
 
                         <div style="
@@ -544,7 +548,7 @@ async function openStudentModule(courseId, moduleId) {
                 gap:13px;
             ">
 
-                <div style="
+                <div class="student-modern-lesson-icon ${lesson.completed ? "completed" : ""}" style="
                     width:46px;
                     height:46px;
                     border-radius:14px;
@@ -563,7 +567,7 @@ async function openStudentModule(courseId, moduleId) {
                         };
                     font-size:21px;
                 ">
-                    ${lesson.completed ? "✅" : "📖"}
+                    ${lesson.completed ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-9"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h4M9 16h5"/></svg>'}
                 </div>
 
                 <div>
@@ -1995,10 +1999,8 @@ showPremiumModal(
                     padding:40px 20px;
                     color:#94a3b8;
                 ">
-                    <div style="
-                        font-size:45px;                        margin-bottom:12px;
-                    ">
-                        🎉
+                    <div class="student-modern-empty-icon" style="margin-bottom:14px;">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/></svg>
                     </div>
 
                     <div style="
