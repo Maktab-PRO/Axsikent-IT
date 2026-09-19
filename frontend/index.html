@@ -998,6 +998,91 @@
             color: #666;
             padding: 20px;        }
 
+
+        /* =========================
+           FOOTER SUPPORT
+        ========================= */
+
+        .footer-support-btn {
+            border: 0;
+            background: transparent;
+            color: #fff;
+            font: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 0;
+            cursor: pointer;
+            letter-spacing: .25px;
+        }
+
+        .footer-support-btn:hover {
+            color: #4ade80;
+        }
+
+        .support-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0,0,0,.55);
+            backdrop-filter: blur(6px);
+        }
+
+        .support-modal.active {
+            display: flex;
+        }
+
+        .support-modal-card {
+            width: min(360px, 100%);
+            background: #111;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.14);
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 24px 70px rgba(0,0,0,.35);
+        }
+
+        .support-modal-card h3 {
+            margin: 0 0 16px;
+            color: #fff;
+            font-size: 19px;
+        }
+
+        .support-contact {
+            display: block;
+            color: #fff;
+            padding: 11px 12px;
+            margin-bottom: 9px;
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: 11px;
+            background: rgba(255,255,255,.045);
+            font-size: 13px;
+        }
+
+        .support-contact:hover {
+            border-color: rgba(74,222,128,.35);
+            background: rgba(74,222,128,.08);
+        }
+
+        .support-close-btn {
+            width: 100%;
+            margin-top: 7px;
+            padding: 10px 14px;
+            border: 1px solid rgba(255,255,255,.14);
+            border-radius: 10px;
+            background: #fff;
+            color: #111;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .support-close-btn:hover {
+            background: #e8e8e8;
+        }
+
         /* =========================
            FOOTER DEVELOPER
         ========================= */
@@ -4326,7 +4411,9 @@
 
 
         <div class="footer-developer">
-            <span>Dastur yaratuvchisi</span>
+            <button type="button" class="footer-support-btn" onclick="openSupportModal()">Texnik yordam</button>
+            
+            <span>Platforma yaratuvchisi</span>
             <div class="footer-developer-links">
                 <a href="https://t.me/mister_a_01" target="_blank" rel="noopener" aria-label="Telegram"><svg viewBox="0 0 24 24"><path d="M21.9 3.6c.3-1.1-.7-2-1.8-1.6L1.6 9.6c-1.1.4-1.1 1.9 0 2.3l4.8 1.6 1.9 5.9c.3.9 1.5 1.1 2.1.4l2.6-2.9 4.9 3.6c.9.6 2.1.1 2.3-1L21.9 3.6z"/></svg></a>
                 <a href="https://www.instagram.com/adiiik_01?stkn=eGxrbDF0amhxc3Fz" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5.5A4.5 4.5 0 1 0 12 16.5 4.5 4.5 0 0 0 12 7.5zm5.2-1.2a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z"/></svg></a>
@@ -4342,6 +4429,17 @@
     </div>
 
 </footer>
+
+    <div id="supportModal" class="support-modal" role="dialog" aria-modal="true" aria-labelledby="supportModalTitle">
+        <div class="support-modal-card" onclick="event.stopPropagation()">
+            <h3 id="supportModalTitle">Texnik yordam</h3>
+            <a class="support-contact" href="tel:973739399">📞 973 739 399</a>
+            <a class="support-contact" href="mailto:adxamjonai99@gmail.com">✉️ adxamjonai99@gmail.com</a>
+            <button type="button" class="support-close-btn" onclick="closeSupportModal()">Qaytish</button>
+        </div>
+    </div>
+
+
 
 
 <!-- =========================
@@ -6874,6 +6972,21 @@ async function loadStudentHomeworkResults() {
     }
 }
     
+
+    function openSupportModal() {
+        const modal = document.getElementById("supportModal");
+        if (modal) modal.classList.add("active");
+    }
+
+    function closeSupportModal() {
+        const modal = document.getElementById("supportModal");
+        if (modal) modal.classList.remove("active");
+    }
+
+    document.getElementById("supportModal")?.addEventListener("click", function() {
+        closeSupportModal();
+    });
+
     function logoutStudent() {
 
     localStorage.removeItem("access_token");
