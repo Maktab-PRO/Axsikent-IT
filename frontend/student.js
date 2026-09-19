@@ -1,4 +1,38 @@
-const API_URL = "https://axsikent-it-4.onrender.com";
+async function fetchStudentApi(path, token, options = {}) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+
+    try {
+        const response = await fetch(API_URL + path, {
+            ...options,
+            headers: {
+                "Accept": "application/json",
+                ...(options.headers || {}),
+                "Authorization": "Bearer " + token
+            },
+            cache: "no-store",
+            signal: controller.signal
+        });
+
+        const text = await response.text();
+        let data = {};
+
+        if (text) {
+            try {
+                data = JSON.parse(text);
+            } catch (_) {
+                data = {};
+            }
+        }
+
+        return {response, data};
+    } finally {
+        clearTimeout(timeout);
+    }
+}
+
+
+const API_URL = "https://axsikent-it-4.onrender.com";\n// Student API fetches use a hard timeout so Rewards/Notifications cannot stay on loading forever.
     /* =========================
    LOAD STUDENT COURSES
 ========================= */
@@ -1646,90 +1680,82 @@ function confirmLogoutStudent() {
     }
 
     async function loadStudentRewards() {
-        const container = document.getElementById("studentRewardsContent");
-        if (!container) return;
+    const container = document.getElementById("studentRewardsContent");
+    if (!container) return;
 
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-            container.innerHTML = '<div style="text-align:center;padding:30px;color:#ef4444;">Avval tizimga kiring.</div>';
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        container.innerHTML = '<div style="text-align:center;padding:30px;color:#ef4444;">Avval tizimga kiring.</div>';
+        return;
+    }
+
+    container.innerHTML = '<div style="text-align:center;padding:25px;color:#7b8496;">Mukofotlar yuklanmoqda...</div>';
+
+    try {
+        const result = await fetchStudentApi("/students/rewards?ts=" + Date.now(), token, {
+            method: "GET"
+        });
+        const response = result.response;
+        const data = result.data;
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
             return;
         }
 
-        container.innerHTML = '<div style="text-align:center;padding:25px;color:#7b8496;">Mukofotlar yuklanmoqda...</div>';
-
-        try {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 10000);
-            const response = await fetch(API_URL + "/students/rewards?ts=" + Date.now(), {
-                method: "GET",
-                cache: "no-store",
-                headers: {"Authorization":"Bearer " + token},
-                signal: controller.signal
-            }).finally(() => clearTimeout(timeout));
-
-            let data = {};
-            try { data = await response.json(); } catch (_) {}
-
-            if (response.status === 401) {
-                localStorage.removeItem("access_token");
-                localStorage.removeItem("user_role");
-                window.location.href = "index.html";
-                return;
-            }
-
-            if (!response.ok) {
-                throw new Error(data.detail || ("Server xatosi: " + response.status));
-            }
-
-            const student = data.student || {};
-            const rewards = Array.isArray(data.rewards) ? data.rewards : [];
-
-            let rewardHtml = rewards.map(function(reward) {
-                return '<div style="position:relative;overflow:hidden;border:1px solid rgba(139,92,246,.28);border-radius:20px;padding:22px;margin-bottom:16px;background:linear-gradient(145deg,rgba(20,18,30,.96),rgba(10,10,15,.98));box-shadow:0 12px 35px rgba(0,0,0,.28);">' +
-                    '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">' +
-                        '<div style="width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;background:linear-gradient(135deg,#8B5CF6,#6D28D9);">🎁</div>' +
-                        '<h3 style="margin:0;color:#fff;font-size:18px;">' + escapeHtml(reward.name || "Mukofot") + '</h3>' +
-                    '</div>' +
-                    '<p style="color:#aaa5b8;margin:0 0 18px;line-height:1.6;font-size:14px;">' + escapeHtml(reward.description || "Mukofot tavsifi mavjud emas") + '</p>' +
-                    '<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:15px;flex-wrap:wrap;">' +
-                        '<div><div style="color:#817c8f;font-size:12px;margin-bottom:5px;">Mukofot narxi</div>' +
-                        '<div style="color:#c4b5fd;font-size:16px;font-weight:800;">🪙 ' + Number(reward.coin_price || 0) + ' Coin</div>' +
-                        (Number(reward.crystal_price || 0) > 0 ? '<div style="color:#c4b5fd;font-size:16px;font-weight:800;margin-top:7px;">💎 ' + Number(reward.crystal_price) + ' Crystal</div>' : '') +
-                        '</div>' +
-                        '<button onclick="buyStudentReward(' + Number(reward.id) + ')" style="border:none;border-radius:13px;padding:12px 20px;background:linear-gradient(135deg,#8B5CF6,#6D28D9);color:#fff;font-weight:800;cursor:pointer;">Sotib olish</button>' +
-                    '</div>' +
-                    '<div style="margin-top:16px;color:#777285;font-size:12px;">Mavjud: ' + Number(reward.stock || 0) + ' dona</div>' +
-                '</div>';
-            }).join("");
-
-            if (!rewardHtml) {
-                rewardHtml = '<div style="text-align:center;padding:35px;color:#7b8496;"><div style="font-size:42px;margin-bottom:10px;">🎁</div><strong style="display:block;color:#fff;margin-bottom:7px;">Hozircha mukofot mavjud emas</strong><span>Administrator mukofot qo‘shganda shu yerda ko‘rinadi.</span></div>';
-            }
-
-            container.innerHTML =
-                '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;">' +
-                    '<div style="padding:16px;border-radius:16px;background:rgba(52,211,153,.10);"><div>🪙</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.coins || 0) + '</div><div style="color:#9ca3af;font-size:12px;">Coin</div></div>' +
-                    '<div style="padding:16px;border-radius:16px;background:rgba(168,85,247,.10);"><div>💎</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.crystals || 0) + '</div><div style="color:#9ca3af;font-size:12px;">Crystal</div></div>' +
-                    '<div style="padding:16px;border-radius:16px;background:rgba(59,130,246,.10);"><div>⭐</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.xp || 0) + '</div><div style="color:#9ca3af;font-size:12px;">XP · Level ' + Number(student.level || 1) + '</div></div>' +
-                '</div><h3 style="color:#fff;margin:0 0 14px;font-size:17px;">🎁 Mavjud mukofotlar</h3>' + rewardHtml;
-        } catch (error) {
-            console.error("Rewards load error:", error);
-            const message = error && error.name === "AbortError"
-                ? "Server javob berishi uchun juda ko‘p vaqt ketdi."
-                : (error.message || "Noma’lum xatolik");
-
-            container.innerHTML =
-                '<div style="text-align:center;padding:30px;color:#fda4af;">' +
-                    '<strong>Mukofotlarni yuklab bo‘lmadi.</strong>' +
-                    '<div style="margin-top:8px;color:#9ca3af;font-size:12px;">' +
-                        escapeHtml(message) +
-                    '</div>' +
-                    '<button type="button" onclick="loadStudentRewards()" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button>' +
-                '</div>';
+        if (!response.ok) {
+            throw new Error(data.detail || ("Server xatosi: " + response.status));
         }
-    }
 
-    async function buyStudentReward(productId) {
+        const student = data.student || {};
+        const rewards = Array.isArray(data.rewards) ? data.rewards : [];
+
+        let rewardHtml = rewards.map(function(reward) {
+            return '<div style="position:relative;overflow:hidden;border:1px solid rgba(139,92,246,.28);border-radius:20px;padding:22px;margin-bottom:16px;background:linear-gradient(145deg,rgba(20,18,30,.96),rgba(10,10,15,.98));box-shadow:0 12px 35px rgba(0,0,0,.28);">' +
+                '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">' +
+                    '<div style="width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;background:linear-gradient(135deg,#8B5CF6,#6D28D9);">🎁</div>' +
+                    '<h3 style="margin:0;color:#fff;font-size:18px;">' + escapeHtml(reward.name || "Mukofot") + '</h3>' +
+                '</div>' +
+                '<p style="color:#aaa5b8;margin:0 0 18px;line-height:1.6;font-size:14px;">' + escapeHtml(reward.description || "Mukofot tavsifi mavjud emas") + '</p>' +
+                '<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:15px;flex-wrap:wrap;">' +
+                    '<div><div style="color:#817c8f;font-size:12px;margin-bottom:5px;">Mukofot narxi</div>' +
+                    '<div style="color:#c4b5fd;font-size:16px;font-weight:800;">🪙 ' + Number(reward.coin_price || 0) + ' Coin</div>' +
+                    (Number(reward.crystal_price || 0) > 0 ? '<div style="color:#c4b5fd;font-size:16px;font-weight:800;margin-top:7px;">💎 ' + Number(reward.crystal_price) + ' Crystal</div>' : '') +
+                    '</div>' +
+                    '<button onclick="buyStudentReward(' + Number(reward.id) + ')" style="border:none;border-radius:13px;padding:12px 20px;background:linear-gradient(135deg,#8B5CF6,#6D28D9);color:#fff;font-weight:800;cursor:pointer;">Sotib olish</button>' +
+                '</div>' +
+                '<div style="margin-top:16px;color:#777285;font-size:12px;">Mavjud: ' + Number(reward.stock || 0) + ' dona</div>' +
+            '</div>';
+        }).join("");
+
+        if (!rewardHtml) {
+            rewardHtml = '<div style="text-align:center;padding:35px;color:#7b8496;"><div style="font-size:42px;margin-bottom:10px;">🎁</div><strong style="display:block;color:#fff;margin-bottom:7px;">Hozircha mukofot mavjud emas</strong><span>Administrator mukofot qo‘shganda shu yerda ko‘rinadi.</span></div>';
+        }
+
+        container.innerHTML =
+            '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;">' +
+                '<div style="padding:16px;border-radius:16px;background:rgba(52,211,153,.10);"><div>🪙</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.coins || 0) + '</div><div style="color:#9ca3af;font-size:12px;">Coin</div></div>' +
+                '<div style="padding:16px;border-radius:16px;background:rgba(168,85,247,.10);"><div>💎</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.crystals || 0) + '</div><div style="color:#9ca3af;font-size:12px;">Crystal</div></div>' +
+                '<div style="padding:16px;border-radius:16px;background:rgba(59,130,246,.10);"><div>⭐</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.xp || 0) + '</div><div style="color:#9ca3af;font-size:12px;">XP · Level ' + Number(student.level || 1) + '</div></div>' +
+            '</div><h3 style="color:#fff;margin:0 0 14px;font-size:17px;">🎁 Mavjud mukofotlar</h3>' + rewardHtml;
+    } catch (error) {
+        console.error("Rewards load error:", error);
+        const message = error && error.name === "AbortError"
+            ? "Server 8 soniya ichida javob bermadi."
+            : (error.message || "Noma’lum xatolik");
+
+        container.innerHTML =
+            '<div style="text-align:center;padding:30px;color:#fda4af;">' +
+                '<strong>Mukofotlarni yuklab bo‘lmadi.</strong>' +
+                '<div style="margin-top:8px;color:#9ca3af;font-size:12px;">' + escapeHtml(message) + '</div>' +
+                '<button type="button" onclick="loadStudentRewards()" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button>' +
+            '</div>';
+    }
+}
+
+async function buyStudentReward(productId) {
 
 const token = localStorage.getItem("access_token");
 
@@ -2895,12 +2921,12 @@ showPremiumModal(
         }
 
         try {
-            const response = await fetch(API_URL + "/students/notifications", {
-                headers: {"Authorization": "Bearer " + token}
+            const result = await fetchStudentApi("/students/notifications", token, {
+                method: "GET"
             });
+            const response = result.response;
+            const data = result.data;
             if (!response.ok) return;
-
-            const data = await response.json();
             const items = Array.isArray(data.notifications) ? data.notifications : [];
             const unread = Number(data.unread || 0);
 
@@ -2939,25 +2965,11 @@ showPremiumModal(
 
         // The in-page notification center must not depend on browser permission prompts.
         try {
-            const controller = new AbortController();
-            const timeout = setTimeout(() => controller.abort(), 10000);
-
-            const response = await fetch(API_URL + "/students/notifications?ts=" + Date.now(), {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token,
-                    "Accept": "application/json"
-                },
-                cache: "no-store",
-                signal: controller.signal
-            }).finally(() => clearTimeout(timeout));
-
-            let data = {};
-            try {
-                data = await response.json();
-            } catch (_) {
-                data = {};
-            }
+            const result = await fetchStudentApi("/students/notifications?ts=" + Date.now(), token, {
+                method: "GET"
+            });
+            const response = result.response;
+            const data = result.data;
 
             if (!response.ok) {
                 throw new Error(
