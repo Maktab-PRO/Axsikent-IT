@@ -267,40 +267,28 @@ function initNavigation() {
     if (window.__axsikentNavigationReady) return;
     window.__axsikentNavigationReady = true;
 
-    document.addEventListener("click", event => {
-        const target = event.target.closest("[data-section]");
-        if (!target) return;
-        if (!target.closest(".nav-item,.quick-action,.panel-link,.stat-card")) return;
-        event.preventDefault();
-        openSection(target.dataset.section);
-    });
+    const bindSectionButtons = (selector) => {
+        $(selector).forEach(item => {
+            if (item.dataset.sectionBound === "1") return;
+            item.dataset.sectionBound = "1";
 
+            item.addEventListener("click", event => {
+                const section = item.dataset.section;
+                if (!section) return;
 
-    $$(".quick-action").forEach(item => {
-
-        item.addEventListener("click", () => {
-
-            openSection(
-                item.dataset.section
-            );
-
+                event.preventDefault();
+                event.stopPropagation();
+                openSection(section);
+            });
         });
+    };
 
-    });
-
-
-    $$(".panel-link").forEach(item => {
-
-        item.addEventListener("click", () => {
-
-            openSection(
-                item.dataset.section
-            );
-
-        });
-
-    });
+    bindSectionButtons(".nav-item[data-section]");
+    bindSectionButtons(".quick-action[data-section]");
+    bindSectionButtons(".panel-link[data-section]");
+    bindSectionButtons(".stat-card[data-section]");
 }
+
 
 
 /* ============================================================
@@ -652,41 +640,55 @@ function initAdministratorManagement() {
    ============================================================ */
 
 async function refreshDashboard() {
-
-    const button =
-        $("#refreshBtn");
-
+    const button = $("#refreshBtn");
 
     if (button) {
-        button.classList.add(
-            "is-loading"
-        );
+        button.classList.add("is-loading");
+        button.disabled = true;
     }
 
-
     try {
-
         await Promise.all([
             loadDashboard(),
             loadShopStats()
         ]);
 
-    } finally {
+        const current = window.__axsikentCurrentSection || "dashboard";
+        const loaders = {
+            students: loadStudents,
+            teachers: loadTeachers,
+            courses: loadCourses,
+            groups: loadGroups,
+            homework: loadHomeworkSubmissions,
+            leads: loadLeads,
+            rewards: loadRewards,
+            orders: loadOrders,
+            books: loadBooks,
+            ranking: loadRanking,
+            reports: loadReports,
+            settings: loadSettings,
+            podcasts: loadPodcasts,
+            trainings: loadTrainings,
+            exams: loadExams
+        };
 
-        if (button) {
-
-            setTimeout(() => {
-
-                button.classList.remove(
-                    "is-loading"
-                );
-
-            }, 500);
-
+        if (current !== "dashboard" && typeof loaders[current] === "function") {
+            await loaders[current]();
         }
 
+        showToast("Ma’lumotlar yangilandi");
+    } catch (error) {
+        showToast(error.message || "Yangilashda xatolik yuz berdi", "error");
+    } finally {
+        if (button) {
+            setTimeout(() => {
+                button.classList.remove("is-loading");
+                button.disabled = false;
+            }, 500);
+        }
     }
 }
+
 
 
 /* ============================================================
@@ -3757,35 +3759,59 @@ async function loadReports() {
 function loadSettings() {
     const box = document.getElementById("settingsContent");
     if (!box) return;
+
     const compact = localStorage.getItem("axsikent_admin_compact") === "1";
     const autoRefresh = localStorage.getItem("axsikent_admin_auto_refresh") !== "0";
     const notifications = localStorage.getItem("axsikent_admin_notifications") !== "0";
+
     box.innerHTML =
         '<div class="settings-grid">' +
         '<div class="settings-card"><div><strong>Ixcham ko‘rinish</strong><small>Jadvallarni zichroq ko‘rsatish</small></div><button type="button" class="settings-toggle ' + (compact ? "active" : "") + '" data-setting="compact" aria-pressed="' + compact + '"><span></span></button></div>' +
         '<div class="settings-card"><div><strong>Avto yangilash</strong><small>Dashboardni avtomatik yangilash</small></div><button type="button" class="settings-toggle ' + (autoRefresh ? "active" : "") + '" data-setting="auto-refresh" aria-pressed="' + autoRefresh + '"><span></span></button></div>' +
         '<div class="settings-card"><div><strong>Bildirishnomalar</strong><small>Admin panel xabarlarini ko‘rsatish</small></div><button type="button" class="settings-toggle ' + (notifications ? "active" : "") + '" data-setting="notifications" aria-pressed="' + notifications + '"><span></span></button></div>' +
         '</div>' +
+        '<div class="admin-support-card">' +
+            '<div class="admin-support-icon">?</div>' +
+            '<div class="admin-support-content"><span class="panel-eyebrow">ALOQA</span><h3>Texnik yordam</h3><p>Admin panel bo‘yicha yordam kerak bo‘lsa, biz bilan bog‘laning.</p>' +
+            '<div class="admin-support-links"><a href="tel:+998973739399">📞 +998 97 373 93 99</a><a href="mailto:adxamjonai99@gmail.com">✉ adxamjonai99@gmail.com</a></div></div>' +
+        '</div>' +
         '<div class="settings-actions"><button type="button" class="panel-link" id="settingsRefreshBtn">↻ Dashboardni yangilash</button><button type="button" class="panel-link" id="settingsSiteBtn">↗ Asosiy sayt</button><button type="button" class="panel-link danger" id="settingsLogoutBtn">⤴ Chiqish</button></div>';
+
     box.querySelectorAll("[data-setting]").forEach(button => {
         button.addEventListener("click", () => {
             const key = button.dataset.setting;
             const next = button.getAttribute("aria-pressed") !== "true";
+
             button.setAttribute("aria-pressed", String(next));
             button.classList.toggle("active", next);
+
             if (key === "compact") {
                 document.body.classList.toggle("admin-compact", next);
                 localStorage.setItem("axsikent_admin_compact", next ? "1" : "0");
             }
-            if (key === "auto-refresh") localStorage.setItem("axsikent_admin_auto_refresh", next ? "1" : "0");
-            if (key === "notifications") localStorage.setItem("axsikent_admin_notifications", next ? "1" : "0");
+
+            if (key === "auto-refresh") {
+                localStorage.setItem("axsikent_admin_auto_refresh", next ? "1" : "0");
+                initAdminAutoRefresh();
+            }
+
+            if (key === "notifications") {
+                localStorage.setItem("axsikent_admin_notifications", next ? "1" : "0");
+            }
+
+            showToast("Sozlama saqlandi");
         });
     });
+
     box.querySelector("#settingsRefreshBtn")?.addEventListener("click", refreshDashboard);
-    box.querySelector("#settingsSiteBtn")?.addEventListener("click", () => { window.location.href = "../index.html"; });
+    box.querySelector("#settingsSiteBtn")?.addEventListener("click", () => {
+        window.location.href = "../index.html";
+    });
     box.querySelector("#settingsLogoutBtn")?.addEventListener("click", logout);
+
     document.body.classList.toggle("admin-compact", compact);
 }
+
 
 let adminAutoRefreshTimer = null;
 function initAdminAutoRefresh() {
