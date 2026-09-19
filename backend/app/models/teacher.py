@@ -32,3 +32,14 @@ class Teacher(Base):
         Boolean,
         default=True
     )
+
+    birth_date = Column(
+        Date,
+        nullable=True
+    )
+
+    approved_by_admin = Column(
+        Boolean,
+        default=True,
+        nullable=False
+    )
