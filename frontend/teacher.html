@@ -9,7 +9,7 @@
 <div id="teacherLogin" class="auth-screen">
   <div class="auth-glow glow-a"></div><div class="auth-glow glow-b"></div>
   <div class="auth-card">
-    <a class="auth-logo" href="index.html"><img src="assets/Sayt%20logo.png" alt="Axsikent IT"></a>
+    <button class="auth-logo" id="teacherLoginLogo" type="button" aria-label="Axsikent IT"><img src="assets/Sayt%20logo.png" alt="Axsikent IT"></button>
     <div class="auth-kicker">AXSIKENT IT / TEACHER ACCESS</div>
     <h1 data-i18n="loginTitle">O‘qituvchi paneliga kirish</h1>
     <p data-i18n="loginText">Kirish ma’lumotlaringizni kiriting. Yangi o‘qituvchini faqat administrator ro‘yxatdan o‘tkazadi.</p>
@@ -20,14 +20,14 @@
     </form>
     <div id="teacherLoginMessage" class="auth-message"></div>
     <div class="auth-note"><span>◈</span><span data-i18n="adminOnly">Yangi o‘qituvchi akkaunti administrator tomonidan yaratiladi.</span></div>
-    <div class="auth-language"><span>◎</span><div class="language-picker" data-picker="teacher"><button type="button" class="language-trigger" id="teacherLangButton">UZ <span>⌄</span></button><div class="language-menu"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div></div></div>
+    <div class="auth-language"><span>◎</span><div class="language-picker" data-picker="teacher"><button type="button" class="language-trigger" id="teacherLangButton">UZ <span>⌄</span></button><div class="language-menu"><button type="button" data-lang="uz">🇺🇿 UZ</button><button type="button" data-lang="ru">🇷🇺 RU</button><button type="button" data-lang="en">🇬🇧 EN</button></div></div></div>
   </div>
 </div>
 
 <div id="teacherApp" class="teacher-app" hidden>
 <header class="teacher-topbar">
-  <a class="brand" href="index.html"><img src="assets/Sayt%20logo.png" alt="Axsikent IT"></a>
-  <div class="top-actions">
+  <button class="brand" id="teacherBrandLogo" type="button" aria-label="Refresh teacher panel"><img src="assets/Sayt%20logo.png" alt="Axsikent IT"></button>
+  <div class="top-actions"><button id="teacherRefreshBtn" class="icon-btn refresh-teacher-btn" type="button" aria-label="Refresh">↻</button>
     <div class="language-picker" data-picker="app"><button type="button" class="language-trigger" id="appLangButton">UZ <span>⌄</span></button><div class="language-menu"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div></div>
     <button id="logoutBtn" class="icon-btn" type="button" aria-label="Logout">↪</button>
   </div>
