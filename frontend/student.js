@@ -2970,6 +2970,9 @@ showPremiumModal(
         }
     }
 
+    // Make the notification action available to the HTML button.
+    window.openStudentNotifications = openStudentNotifications;
+
     function showStudentNotificationModal(rows) {
         document.getElementById("studentNotificationModal")?.remove();
         const modal = document.createElement("div");
