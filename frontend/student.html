@@ -40,6 +40,11 @@
             <span class="notification-badge" id="studentNotificationBadge" hidden>0</span>
         </button>
 
+        <button class="dashboard-refresh-button" type="button" onclick="window.location.reload()" aria-label="Ma’lumotlarni yangilash" title="Ma’lumotlarni yangilash">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-4M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.9 4M20 19v-4h-4"/></svg>
+            <span>Yangilash</span>
+        </button>
+
         <div class="profile-mini">
             <div class="profile-name" id="topStudentName">
                 O‘quvchi
@@ -195,8 +200,8 @@
 
             <div class="stat-card">
 
-                <div class="stat-icon">
-                    ⭐
+                <div class="stat-icon stat-icon-xp">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.2 5.2 5.6.5-4.2 3.7 1.3 5.5-4.9-2.9-4.9 2.9 1.3-5.5-4.2-3.7 5.6-.5L12 3Z"/></svg>
                 </div>
 
                 <div>
@@ -214,8 +219,8 @@
 
             <div class="stat-card">
 
-                <div class="stat-icon">
-                    🏆
+                <div class="stat-icon stat-icon-rank">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4"/><path d="M12 13v4M8 21h8M9 17h6"/></svg>
                 </div>
 
                 <div>
@@ -233,8 +238,8 @@
 
             <div class="stat-card">
 
-                <div class="stat-icon">
-                    📝
+                <div class="stat-icon stat-icon-task">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/></svg>
                 </div>
 
                 <div>
@@ -252,8 +257,8 @@
 
             <div class="stat-card">
 
-                <div class="stat-icon">
-                    🔥
+                <div class="stat-icon stat-icon-active">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c2.5 3 5 4.5 5 8.5A5 5 0 1 1 7 9c0 2 1 3 2.7 4.1C9.3 9.8 11 7 12 3Z"/></svg>
                 </div>
 
                 <div>
@@ -297,8 +302,8 @@
 
                     <div class="course-top">
 
-                        <div class="course-icon">
-                            💻
+                        <div class="course-icon course-icon-computer">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
                         </div>
 
                         <div>
@@ -340,8 +345,8 @@
 
                     <div class="course-top">
 
-                        <div class="course-icon">
-                            📝
+                        <div class="course-icon course-icon-homework">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l3 3v15H6V3Z"/><path d="M15 3v4h4M9 12h6M9 16h4"/></svg>
                         </div>
 
                         <div>
@@ -503,7 +508,7 @@
         <!-- HOMEWORK RESULTS -->
         <div class="card">
             <div class="card-header">
-        <h2>📝 Uy vazifalarim</h2>
+        <h2><span class="section-title-icon icon-homework">✓</span> Uy vazifalarim</h2>
     </div>
 
     <div id="studentHomeworkList">
@@ -522,7 +527,7 @@
             <div class="card" id="studentRanking">
                 
                 <div class="card-header">
-        <h2>🏆 Reyting</h2>
+        <h2><span class="section-title-icon icon-ranking">◆</span> Reyting</h2>
     </div>
 
     
@@ -542,7 +547,7 @@
             <div class="card" id="studentRewards">
 
     <div class="card-header">
-        <h2>🎁 Mukofotlar</h2>
+        <h2><span class="section-title-icon icon-reward">✦</span> Mukofotlar</h2>
     </div>
 
     <div id="studentRewardsContent">
@@ -560,7 +565,7 @@
             <div class="card" id="studentBooks">
 
     <div class="card-header">
-        <h2>📖 Kitoblar</h2>
+        <h2><span class="section-title-icon icon-books">▤</span> Kitoblar</h2>
     </div>
 
     <div id="studentBooksContent">
@@ -582,7 +587,7 @@
 
                 <div class="card-header">
 
-                    <h2>📝 So‘nggi vazifalar</h2>
+                    <h2><span class="section-title-icon icon-recent">↗</span> So‘nggi vazifalar</h2>
 
                     <span class="view-all" onclick="openStudentHomeworkFromHome()">
                         Barchasi →
@@ -593,7 +598,7 @@
 
                 <div id="studentRecentTasks">
                     <div class="task">
-                        <div class="task-check">📝</div>
+                        <div class="task-check task-check-modern"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/></svg></div>
                         <div>
                             <div class="task-name">Vazifalar yuklanmoqda...</div>
                             <div class="task-date">Ma’lumotlar tayyorlanmoqda</div>
@@ -610,7 +615,7 @@
 
                 <div class="card-header">
 
-                    <h2>🔥 Faollik</h2>
+                    <h2><span class="section-title-icon icon-activity">◌</span> Faollik</h2>
 
                 </div>
 
