@@ -3092,12 +3092,12 @@ function showStudentNotificationModal(rows) {
     modal.id = "studentNotificationModal";
     modal.className = "student-premium-overlay";
     modal.innerHTML =
-        '<div class="student-premium-modal notification-modal">' +
+        '<div class="student-premium-modal notification-modal student-notification-modal">' +
         '<button type="button" class="student-premium-close" aria-label="Yopish">×</button>' +
         '<div class="student-notification-head-icon">✦</div>' +
         '<div class="student-premium-kicker">AXSIKENT IT / NOTIFICATIONS</div>' +
         '<h2>Bildirishnomalar</h2>' +
-        '<p class="student-notification-subtitle">Muhim xabarlar va platformadagi yangiliklar shu yerda.</p>'
+        '<p class="student-notification-subtitle">Muhim xabarlar va platformadagi yangiliklar shu yerda.</p>' +
         '<div class="student-notification-list">' + rows + '</div>' +
         '</div>';
 
