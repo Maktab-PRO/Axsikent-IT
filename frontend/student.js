@@ -3604,7 +3604,7 @@ async function loadStudentPodcasts() {
         if (!response.ok) throw new Error(data.detail || "Podcastlarni yuklashda xatolik.");
 
         if (!Array.isArray(data) || !data.length) {
-            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;">🎧 Hozircha podcastlar mavjud emas.</div>';
+            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M5 13a7 7 0 0 1 14 0"/><path d="M5 13v4a2 2 0 0 0 2 2h1v-7H7a2 2 0 0 0-2 1ZM19 13v4a2 2 0 0 1-2 2h-1v-7h1a2 2 0 0 1 2 1ZM12 19v2"/></svg><span style="margin-left:10px;">Hozircha podcastlar mavjud emas.</span></div>';
             return;
         }
 
@@ -3642,7 +3642,7 @@ async function loadStudentTrainings() {
         if (!response.ok) throw new Error(data.detail || "Treninglarni yuklashda xatolik.");
 
         if (!Array.isArray(data) || !data.length) {
-            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;">📅 Hozircha faol treninglar mavjud emas.</div>';
+            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M4 7.5 12 4l8 3.5L12 11 4 7.5Z"/><path d="M6.5 9v5.2c0 1.8 2.5 3.3 5.5 3.3s5.5-1.5 5.5-3.3V9"/><path d="M20 8v6"/></svg><span style="margin-left:10px;">Hozircha faol treninglar mavjud emas.</span></div>';
             return;
         }
 
@@ -3711,7 +3711,7 @@ async function loadStudentExams() {
         if (!response.ok) throw new Error(data.detail || "Imtihonlarni yuklashda xatolik.");
 
         if (!Array.isArray(data) || !data.length) {
-            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;">🧪 Hozircha faol imtihonlar mavjud emas.</div>';
+            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 3h6M10 3v5l-5 9a3 3 0 0 0 3 4h8a3 3 0 0 0 3-4l-5-9V3"/><path d="M8 15h8"/></svg><span style="margin-left:10px;">Hozircha faol imtihonlar mavjud emas.</span></div>';
             return;
         }
 
@@ -3761,17 +3761,17 @@ async function registerStudentExam(examId) {
 }
 
 function openStudentPodcasts() {
-    openStudentExtraModal("🎧 Podcastlar");
+    openStudentExtraModal("<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;\"><path d=\"M5 13a7 7 0 0 1 14 0\"/><path d=\"M5 13v4a2 2 0 0 0 2 2h1v-7H7a2 2 0 0 0-2 1ZM19 13v4a2 2 0 0 1-2 2h-1v-7h1a2 2 0 0 1 2 1ZM12 19v2\"/></svg><span style=\"margin-left:8px;\">Podcastlar</span>");
     loadStudentPodcasts();
 }
 
 function openStudentTrainings() {
-    openStudentExtraModal("📅 Treninglar");
+    openStudentExtraModal("<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;\"><path d=\"M4 7.5 12 4l8 3.5L12 11 4 7.5Z\"/><path d=\"M6.5 9v5.2c0 1.8 2.5 3.3 5.5 3.3s5.5-1.5 5.5-3.3V9\"/><path d=\"M20 8v6\"/></svg><span style=\"margin-left:8px;\">Treninglar</span>");
     loadStudentTrainings();
 }
 
 function openStudentExams() {
-    openStudentExtraModal("🧪 Imtihonlar");
+    openStudentExtraModal("<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;\"><path d=\"M9 3h6M10 3v5l-5 9a3 3 0 0 0 3 4h8a3 3 0 0 0 3-4l-5-9V3\"/><path d=\"M8 15h8\"/></svg><span style=\"margin-left:8px;\">Imtihonlar</span>");
     loadStudentExams();
 }
 
