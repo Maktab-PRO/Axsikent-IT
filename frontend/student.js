@@ -2926,9 +2926,28 @@ showPremiumModal(
         // The in-page notification center must not depend on browser permission prompts.
         try {
             const response = await fetch(API_URL + "/students/notifications", {
-                headers: {"Authorization": "Bearer " + token}
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json"
+                },
+                cache: "no-store"
             });
-            const data = await response.json();
+
+            let data = {};
+            try {
+                data = await response.json();
+            } catch (_) {
+                data = {};
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail ||
+                    "Bildirishnomalarni yuklab bo‘lmadi."
+                );
+            }
+
             const items = Array.isArray(data.notifications) ? data.notifications : [];
 
             const rows = items.length
