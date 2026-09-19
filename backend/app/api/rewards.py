@@ -47,8 +47,7 @@ def get_student_rewards(
         db.refresh(gamification)
 
     products = db.query(ShopProduct).filter(
-        ShopProduct.is_active == True,
-        ShopProduct.stock > 0
+        ShopProduct.is_active == True
     ).order_by(
         ShopProduct.id.asc()
     ).all()
