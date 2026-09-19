@@ -1586,6 +1586,22 @@ function confirmLogoutStudent() {
 }
 
 
+    function openStudentSupport() {
+        const modal = document.getElementById("studentSupportModal");
+        if (!modal) return;
+        modal.classList.add("show");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("support-modal-open");
+    }
+
+    function closeStudentSupport() {
+        const modal = document.getElementById("studentSupportModal");
+        if (!modal) return;
+        modal.classList.remove("show");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("support-modal-open");
+    }
+
     /* =========================
        MENU
     ========================= */
