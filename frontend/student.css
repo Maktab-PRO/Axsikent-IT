@@ -1649,3 +1649,155 @@ textarea::placeholder {
     background:rgba(248,113,113,.06);
     color:#f87171;
 }
+
+
+/* =========================================================
+   STUDENT DASHBOARD — MODERN ICON SYSTEM
+========================================================= */
+
+.dashboard-refresh-button{
+    height:46px;
+    padding:0 14px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    border:1px solid rgba(167,139,250,.22);
+    border-radius:15px;
+    background:linear-gradient(145deg,rgba(139,92,246,.13),rgba(16,185,129,.07));
+    color:#ddd6fe;
+    cursor:pointer;
+    box-shadow:0 10px 28px rgba(0,0,0,.20),inset 0 0 18px rgba(139,92,246,.04);
+    font-size:11px;
+    font-weight:800;
+    transition:.22s ease;
+}
+.dashboard-refresh-button svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.dashboard-refresh-button:hover{
+    transform:translateY(-2px);
+    border-color:rgba(167,139,250,.55);
+    color:#fff;
+    box-shadow:0 14px 34px rgba(139,92,246,.14);
+}
+.dashboard-refresh-button:active{transform:translateY(0) scale(.98)}
+
+.stat-icon{
+    display:grid!important;
+    place-items:center;
+    border-radius:16px!important;
+    border:1px solid rgba(255,255,255,.08)!important;
+    box-shadow:inset 0 0 18px rgba(255,255,255,.025),0 10px 24px rgba(0,0,0,.18)!important;
+}
+.stat-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.stat-icon-xp{color:#c4b5fd;background:linear-gradient(145deg,rgba(124,58,237,.20),rgba(79,70,229,.07))!important}
+.stat-icon-rank{color:#67e8f9;background:linear-gradient(145deg,rgba(8,145,178,.20),rgba(14,116,144,.07))!important}
+.stat-icon-task{color:#5eead4;background:linear-gradient(145deg,rgba(13,148,136,.20),rgba(15,118,110,.07))!important}
+.stat-icon-active{color:#86efac;background:linear-gradient(145deg,rgba(22,163,74,.20),rgba(21,128,61,.07))!important}
+
+.course-icon{
+    display:grid!important;
+    place-items:center;
+    border-radius:16px!important;
+    transition:.22s ease;
+}
+.course-icon svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.course:hover .course-icon{transform:translateY(-2px) scale(1.04)}
+.course-icon-computer{color:#67e8f9;background:linear-gradient(145deg,rgba(8,145,178,.20),rgba(6,78,59,.10))!important;border:1px solid rgba(103,232,249,.18)!important}
+.course-icon-homework{color:#c4b5fd;background:linear-gradient(145deg,rgba(124,58,237,.20),rgba(139,92,246,.07))!important;border:1px solid rgba(196,181,253,.18)!important}
+
+.section-title-icon{
+    width:31px;
+    height:31px;
+    margin-right:8px;
+    display:inline-grid;
+    place-items:center;
+    vertical-align:-7px;
+    border-radius:10px;
+    font-size:15px;
+    font-weight:900;
+    box-shadow:inset 0 0 16px rgba(255,255,255,.03);
+}
+.icon-homework{color:#5eead4;background:rgba(13,148,136,.13);border:1px solid rgba(45,212,191,.18)}
+.icon-ranking{color:#67e8f9;background:rgba(8,145,178,.13);border:1px solid rgba(103,232,249,.18)}
+.icon-reward{color:#c4b5fd;background:rgba(124,58,237,.14);border:1px solid rgba(196,181,253,.20)}
+.icon-books{color:#86efac;background:rgba(22,163,74,.13);border:1px solid rgba(134,239,172,.18)}
+.icon-recent{color:#f0abfc;background:rgba(192,38,211,.11);border:1px solid rgba(240,171,252,.18)}
+.icon-activity{color:#fda4af;background:rgba(225,29,72,.11);border:1px solid rgba(253,164,175,.18)}
+
+.task-check-modern{
+    width:42px!important;
+    height:42px!important;
+    display:grid!important;
+    place-items:center!important;
+    border-radius:13px!important;
+    color:#c4b5fd!important;
+    background:linear-gradient(145deg,rgba(124,58,237,.17),rgba(16,185,129,.06))!important;
+    border:1px solid rgba(196,181,253,.16)!important;
+}
+.task-check-modern svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+#studentActivityContent{
+    padding:2px 0;
+}
+#studentActivityContent > div:first-child{
+    gap:12px!important;
+}
+.student-activity-card{
+    position:relative;
+    overflow:hidden;
+    min-height:158px;
+    padding:20px;
+    border-radius:20px;
+    box-sizing:border-box;
+    transition:.22s ease;
+}
+.student-activity-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 18px 42px rgba(0,0,0,.30);
+}
+.student-activity-card::after{
+    content:"";
+    position:absolute;
+    inset:1px;
+    border-radius:19px;
+    pointer-events:none;
+    background:linear-gradient(135deg,rgba(255,255,255,.035),transparent 45%);
+}
+.student-activity-icon{
+    position:relative;
+    z-index:1;
+    width:48px;
+    height:48px;
+    display:grid;
+    place-items:center;
+    border-radius:15px;
+}
+.student-activity-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.student-activity-label{position:relative;z-index:1;margin-top:13px;font-size:10px;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
+.student-activity-value{position:relative;z-index:1;display:block;margin-top:3px;font-size:26px;font-weight:900;color:#fff}
+.student-activity-value span{font-size:12px;color:#94a3b8;font-weight:600;margin-left:5px}
+.activity-streak{background:radial-gradient(circle at 100% 0,rgba(244,63,94,.12),transparent 38%),linear-gradient(145deg,#191016,#0d0b10);border:1px solid rgba(251,113,133,.18)}
+.activity-streak .student-activity-icon{color:#fda4af;background:linear-gradient(145deg,rgba(225,29,72,.22),rgba(244,63,94,.07));border:1px solid rgba(253,164,175,.18)}
+.activity-streak .student-activity-label{color:#fda4af}
+.activity-xp{background:radial-gradient(circle at 100% 0,rgba(139,92,246,.15),transparent 38%),linear-gradient(145deg,#171321,#0d0a13);border:1px solid rgba(196,181,253,.20)}
+.activity-xp .student-activity-icon{color:#c4b5fd;background:linear-gradient(145deg,rgba(124,58,237,.23),rgba(139,92,246,.07));border:1px solid rgba(196,181,253,.20)}
+.activity-xp .student-activity-label{color:#c4b5fd}
+.activity-tasks{background:radial-gradient(circle at 100% 0,rgba(20,184,166,.13),transparent 38%),linear-gradient(145deg,#0d1717,#090e0e);border:1px solid rgba(94,234,212,.18)}
+.activity-tasks .student-activity-icon{color:#5eead4;background:linear-gradient(145deg,rgba(13,148,136,.23),rgba(45,212,191,.07));border:1px solid rgba(94,234,212,.18)}
+.activity-tasks .student-activity-label{color:#5eead4}
+.student-activity-note{
+    margin-top:12px;
+    padding:12px 14px;
+    border-radius:14px;
+    background:linear-gradient(90deg,rgba(255,255,255,.025),rgba(139,92,246,.035));
+    border:1px solid rgba(255,255,255,.06);
+    color:#7f8a9d;
+    font-size:11px;
+    text-align:center;
+}
+@media(max-width:700px){
+    .dashboard-refresh-button span{display:none}
+    .dashboard-refresh-button{width:46px;padding:0}
+    #studentActivityContent > div:first-child{grid-template-columns:1fr!important}
+    .student-activity-card{min-height:135px}
+}
