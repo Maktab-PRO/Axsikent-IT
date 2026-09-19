@@ -564,7 +564,7 @@ async function openStudentModule(courseId, moduleId) {
                         };
                     font-size:21px;
                 ">
-                    ${lesson.completed ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-9"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h4M9 16h5"/></svg>'}
+                    ${lesson.completed ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-9"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6a2 2 0 0 1 2-2h5v16H7a2 2 0 0 0-2 2V6Z"/><path d="M12 4h5a2 2 0 0 1 2 2v16h-7V4Z"/><path d="m10 10 4 2-4 2v-4Z"/></svg>'}
                 </div>
 
                 <div>
@@ -2752,7 +2752,7 @@ showPremiumModal(
             if (!homeworks.length) {
                 container.innerHTML =
                     '<div class="task" onclick="openStudentHomeworkFromHome()" style="cursor:pointer;">' +
-                        '<div class="task-check">✅</div>' +
+                        '<div class="task-check student-homework-task-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a2 2 0 0 1 2 2v16H5V5a2 2 0 0 1 2-2Z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></div>' +
                         '<div>' +
                             '<div class="task-name">Hozircha yangi vazifa yo‘q</div>' +
                             '<div class="task-date">Uy vazifalari bo‘limini ochish uchun bosing</div>' +
