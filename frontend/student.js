@@ -1674,14 +1674,33 @@ function confirmLogoutStudent() {
 
     async function openStudentRewardsMenu(element) {
         selectMenu(element);
-        const container = document.getElementById("studentRewards");
-        if (!container) return;
-        container.scrollIntoView({behavior:"smooth", block:"center"});
-        await loadStudentRewards();
+        const modalId = "studentRewardsModal";
+        const oldModal = document.getElementById(modalId);
+        if (oldModal) oldModal.remove();
+
+        const modal = document.createElement("div");
+        modal.id = modalId;
+        modal.className = "student-rewards-modal";
+        modal.innerHTML =
+            '<div class="student-rewards-modal-backdrop"></div>' +
+            '<div class="student-rewards-modal-box">' +
+                '<button type="button" class="student-rewards-modal-close" aria-label="Yopish">×</button>' +
+                '<div class="student-rewards-modal-kicker">AXSIKENT IT / REWARDS</div>' +
+                '<h2>Mukofotlar</h2>' +
+                '<div id="studentRewardsModalContent"></div>' +
+            '</div>';
+
+        document.body.appendChild(modal);
+
+        const close = function(){ modal.remove(); };
+        modal.querySelector(".student-rewards-modal-close").onclick = close;
+        modal.querySelector(".student-rewards-modal-backdrop").onclick = close;
+
+        await loadStudentRewards("studentRewardsModalContent");
     }
 
-    async function loadStudentRewards() {
-    const container = document.getElementById("studentRewardsContent");
+    async function loadStudentRewards(targetId) {
+    const container = document.getElementById(targetId || "studentRewardsContent");
     if (!container) return;
 
     const token = localStorage.getItem("access_token");
@@ -1805,7 +1824,7 @@ async function buyStudentReward(productId) {
                     "Ajoyib!"
                 );
 
-                await loadStudentRewards();
+                await loadStudentRewards("studentRewardsModalContent");
             } catch (error) {
                 console.error("Reward buy error:", error);
                 showPremiumModal("Xatolik yuz berdi", error.message || "Mukofotni sotib olishda xatolik", "Yopish");
@@ -3331,7 +3350,6 @@ loadStudentCourses();
 loadStudentRanking();
 loadStudentStats();
 loadStudentDashboardTasks();
-loadStudentRewards();
 loadStudentBooks();
 loadStudentNotifications();
 setInterval(loadStudentNotifications, 15000);
@@ -3549,6 +3567,8 @@ async function loadStudentBooks() {
         </div>
 
         <button
+            type="button"
+            class="student-book-buy-button"
             onclick="buyStudentBook(${book.id})"
             style="
                 border:none;
