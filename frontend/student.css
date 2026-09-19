@@ -1487,3 +1487,165 @@ textarea::placeholder {
 .notification-bell-icon{color:#a7f3d0}
 .notification-bell:focus-visible{outline:2px solid #8b5cf6;outline-offset:3px}
 #studentRewards,#studentBooks{scroll-margin-top:90px}
+
+
+/* =========================================
+   STUDENT PROFILE — MODERN PERSONAL INFO
+========================================= */
+
+.student-profile-loading{
+    padding:22px;
+    text-align:center;
+    color:#94a3b8;
+}
+
+.student-profile-card{
+    display:grid;
+    gap:12px;
+}
+
+.student-profile-info{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    padding:15px;
+    border:1px solid rgba(52,211,153,.12);
+    border-radius:17px;
+    background:
+        linear-gradient(145deg,rgba(16,185,129,.07),rgba(139,92,246,.05));
+}
+
+.student-profile-icon{
+    width:42px;
+    height:42px;
+    flex:0 0 42px;
+    display:grid;
+    place-items:center;
+    border-radius:13px;
+    color:#a7f3d0;
+    background:linear-gradient(135deg,rgba(52,211,153,.16),rgba(139,92,246,.12));
+    border:1px solid rgba(167,139,250,.16);
+    font-size:18px;
+}
+
+.student-profile-label{
+    color:#8f9bad;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+}
+
+.student-profile-value{
+    margin-top:5px;
+    color:#f8fafc;
+    font-size:15px;
+    font-weight:800;
+    line-height:1.45;
+}
+
+.student-profile-status.active{
+    color:#4ade80;
+}
+
+.student-profile-status.inactive{
+    color:#f87171;
+}
+
+.student-profile-birthday{
+    margin-top:2px;
+    padding:17px;
+    border:1px solid rgba(139,92,246,.22);
+    border-radius:19px;
+    background:
+        radial-gradient(circle at 100% 0,rgba(139,92,246,.13),transparent 42%),
+        linear-gradient(145deg,rgba(139,92,246,.09),rgba(52,211,153,.05));
+    box-shadow:inset 0 0 25px rgba(139,92,246,.025);
+}
+
+.student-profile-birthday-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+}
+
+.student-profile-birthday-hint{
+    margin-top:4px;
+    color:#707b8e;
+    font-size:11px;
+}
+
+.student-profile-calendar{
+    width:40px;
+    height:40px;
+    display:grid;
+    place-items:center;
+    border-radius:12px;
+    background:rgba(167,139,250,.10);
+    border:1px solid rgba(167,139,250,.18);
+    font-size:19px;
+}
+
+.student-profile-date{
+    width:100%;
+    min-height:46px;
+    box-sizing:border-box;
+    padding:0 13px;
+    border-radius:13px !important;
+    border:1px solid rgba(167,139,250,.20) !important;
+    background:#0a0f18 !important;
+    color:#f8fafc !important;
+    color-scheme:dark;
+    outline:none;
+    font-size:14px;
+    font-weight:700;
+}
+
+.student-profile-date:focus{
+    border-color:rgba(167,139,250,.65) !important;
+    box-shadow:0 0 0 3px rgba(139,92,246,.10);
+}
+
+.student-profile-save{
+    width:100%;
+    margin-top:10px;
+    min-height:44px;
+    border:1px solid rgba(52,211,153,.28);
+    border-radius:13px;
+    background:linear-gradient(135deg,#059669,#15803d);
+    color:#fff;
+    font-size:13px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 10px 25px rgba(16,185,129,.12);
+}
+
+.student-profile-save:hover{
+    border-color:rgba(110,231,183,.55);
+    box-shadow:0 12px 30px rgba(16,185,129,.18);
+}
+
+.student-profile-message{
+    min-height:16px;
+    margin-top:8px;
+    font-size:11px;
+    font-weight:700;
+}
+
+.student-profile-message.success{
+    color:#4ade80;
+}
+
+.student-profile-message.error{
+    color:#f87171;
+}
+
+.student-profile-error{
+    padding:15px;
+    border:1px solid rgba(248,113,113,.16);
+    border-radius:15px;
+    background:rgba(248,113,113,.06);
+    color:#f87171;
+}
