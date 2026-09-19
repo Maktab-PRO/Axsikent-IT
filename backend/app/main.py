@@ -89,6 +89,16 @@ with engine.connect() as connection:
     """)
 
     connection.exec_driver_sql("""
+        ALTER TABLE teachers
+        ADD COLUMN IF NOT EXISTS birth_date DATE
+    """)
+
+    connection.exec_driver_sql("""
+        ALTER TABLE teachers
+        ADD COLUMN IF NOT EXISTS approved_by_admin BOOLEAN NOT NULL DEFAULT TRUE
+    """)
+
+    connection.exec_driver_sql("""
         UPDATE admins
         SET is_superadmin = TRUE
         WHERE phone = '998901234569'
