@@ -123,6 +123,17 @@ function escapeHtml(value) {
 
 function openTeacherCreate(){const f=document.getElementById("teacherCreateForm");if(f){f.hidden=false;f.scrollIntoView({behavior:"smooth",block:"start"});}}
 function closeTeacherCreate(){const f=document.getElementById("teacherCreateForm");if(f)f.hidden=true;const m=document.getElementById("teacherCreateMessage");if(m)m.textContent="";}
+function initTeacherPasswordEyes(){
+ document.querySelectorAll(".password-eye[data-password-target]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+   const input=document.getElementById(btn.dataset.passwordTarget); if(!input)return;
+   const showing=input.type==="text"; input.type=showing?"password":"text";
+   btn.classList.toggle("active",!showing);
+   btn.textContent=showing?"◉":"◉";
+   btn.setAttribute("aria-label",showing?"Parolni ko‘rsatish":"Parolni yashirish");
+  });
+ });
+}
 function initTeacherCreate(){
  const f=document.getElementById("teacherCreateForm"); if(!f)return;
  f.addEventListener("submit",async e=>{
@@ -140,7 +151,7 @@ function initTeacherCreate(){
   if(!birth||!subject){showToast("Tug‘ilgan sana va yo‘nalishni tanlang.","error");return}
   try{
    const q=new URLSearchParams({full_name:name,phone,password:p,subject,birth_date:birth});
-   const d=await apiRequest("/admin/teachers/?"+q.toString(),{method:"POST"});
+   const d=await apiRequest("/admin/teachers?"+q.toString(),{method:"POST"});
    msg.textContent=d.message||"O‘qituvchi muvaffaqiyatli ro‘yxatdan o‘tkazildi.";
    showToast(d.message||"O‘qituvchi muvaffaqiyatli ro‘yxatdan o‘tkazildi.","success");
    f.reset(); await loadTeachers();
@@ -3905,6 +3916,7 @@ async function initAdminPanel() {
     initNotifications();
     initAdministratorManagement();
 initTeacherCreate();
+initTeacherPasswordEyes();
     initStudentActions();
     initAdminAutoRefresh();
 
