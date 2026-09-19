@@ -2334,3 +2334,88 @@ body.support-modal-open{overflow:hidden}
     stroke-linecap:round;
     stroke-linejoin:round;
 }
+
+
+/* Requested: premium rewards modal + remove mobile blue tap on book purchase */
+.student-rewards-modal{
+    position:fixed;
+    inset:0;
+    z-index:999999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    box-sizing:border-box;
+}
+.student-rewards-modal-backdrop{
+    position:absolute;
+    inset:0;
+    background:rgba(2,6,23,.80);
+    backdrop-filter:blur(13px);
+}
+.student-rewards-modal-box{
+    position:relative;
+    z-index:1;
+    width:min(720px,100%);
+    max-height:88vh;
+    overflow:auto;
+    padding:26px;
+    box-sizing:border-box;
+    border-radius:26px;
+    background:
+        radial-gradient(circle at 90% 0,rgba(139,92,246,.20),transparent 34%),
+        radial-gradient(circle at 0 100%,rgba(16,185,129,.10),transparent 34%),
+        linear-gradient(145deg,#111827,#070b12);
+    border:1px solid rgba(167,139,250,.25);
+    box-shadow:0 35px 100px rgba(0,0,0,.72),inset 0 0 35px rgba(139,92,246,.04);
+    color:#fff;
+}
+.student-rewards-modal-close{
+    position:absolute;
+    top:13px;
+    right:13px;
+    width:38px;
+    height:38px;
+    border:1px solid rgba(255,255,255,.09);
+    border-radius:12px;
+    background:rgba(255,255,255,.045);
+    color:#cbd5e1;
+    font-size:23px;
+    line-height:1;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+}
+.student-rewards-modal-close:active,
+.student-rewards-modal-close:focus{
+    background:rgba(255,255,255,.045);
+    color:#fff;
+    outline:none;
+}
+.student-rewards-modal-kicker{
+    color:#a78bfa;
+    font-size:10px;
+    font-weight:900;
+    letter-spacing:.14em;
+    margin-bottom:5px;
+}
+.student-rewards-modal-box h2{
+    margin:0 45px 18px 0;
+    color:#fff;
+    font-size:24px;
+    font-weight:900;
+}
+.student-book-buy-button{
+    -webkit-tap-highlight-color:transparent!important;
+    -webkit-touch-callout:none;
+}
+.student-book-buy-button:active,
+.student-book-buy-button:focus,
+.student-book-buy-button:focus-visible{
+    outline:none!important;
+    background:linear-gradient(135deg,#8B5CF6,#6D28D9)!important;
+    color:#fff!important;
+    box-shadow:0 8px 24px rgba(139,92,246,.25)!important;
+}
+@media(max-width:700px){
+    .student-rewards-modal-box{padding:23px 16px}
+}
