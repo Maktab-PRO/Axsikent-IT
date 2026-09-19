@@ -2923,15 +2923,7 @@ showPremiumModal(
             return;
         }
 
-        if ("Notification" in window && Notification.permission === "default") {
-            try { await Notification.requestPermission(); } catch (_) {}
-        }
-        try {
-            if ("serviceWorker" in navigator) {
-                await navigator.serviceWorker.register("sw.js");
-            }
-        } catch (_) {}
-
+        // The in-page notification center must not depend on browser permission prompts.
         try {
             const response = await fetch(API_URL + "/students/notifications", {
                 headers: {"Authorization": "Bearer " + token}
