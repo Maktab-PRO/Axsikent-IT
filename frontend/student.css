@@ -2243,3 +2243,76 @@ body.support-modal-open{overflow:hidden}
     .student-support-modal-box{padding:25px 19px}
     .student-support-modal .student-support-contacts{grid-template-columns:1fr}
 }
+
+/* Student menu: remove blue press/active flash */
+.sidebar .menu-item,
+.sidebar .menu-item:hover,
+.sidebar .menu-item:active,
+.sidebar .menu-item:focus,
+.sidebar .menu-item:focus-visible,
+.sidebar .menu-item.active{
+    -webkit-tap-highlight-color:transparent;
+}
+.sidebar .menu-item:active,
+.sidebar .menu-item.active{
+    background:linear-gradient(145deg,rgba(17,24,39,.96),rgba(12,20,18,.98)) !important;
+    color:#f8fafc !important;
+}
+.sidebar .menu-item:hover{
+    background:linear-gradient(145deg,rgba(34,197,94,.10),rgba(139,92,246,.07));
+}
+.sidebar .menu-item.active .menu-icon,
+.sidebar .menu-item:active .menu-icon{
+    color:#a7f3d0 !important;
+    background:rgba(255,255,255,.045) !important;
+    border-color:rgba(52,211,153,.16) !important;
+    box-shadow:0 0 18px rgba(34,197,94,.06) !important;
+}
+.welcome-tag-icon{
+    width:32px;
+    height:32px;
+    display:inline-grid;
+    place-items:center;
+    margin-right:7px;
+    border-radius:10px;
+    color:#a7f3d0;
+    background:linear-gradient(145deg,rgba(34,197,94,.16),rgba(139,92,246,.12));
+    border:1px solid rgba(167,243,208,.16);
+    vertical-align:middle;
+    box-shadow:inset 0 0 14px rgba(52,211,153,.04);
+}
+.welcome-tag-icon svg{
+    width:18px;
+    height:18px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.7;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+.student-notification-loading,
+.student-notification-error{
+    min-height:150px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    text-align:center;
+    color:#f8fafc;
+}
+.student-notification-loading small,
+.student-notification-error small{
+    color:#8f9bad;
+    font-size:12px;
+}
+.student-notification-error strong{color:#fda4af}
+.student-notification-spinner{
+    width:30px;
+    height:30px;
+    border:2px solid rgba(167,139,250,.18);
+    border-top-color:#a78bfa;
+    border-radius:50%;
+    animation:studentNotificationSpin .75s linear infinite;
+}
+@keyframes studentNotificationSpin{to{transform:rotate(360deg)}}
