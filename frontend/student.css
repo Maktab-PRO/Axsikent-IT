@@ -2316,3 +2316,21 @@ body.support-modal-open{overflow:hidden}
     animation:studentNotificationSpin .75s linear infinite;
 }
 @keyframes studentNotificationSpin{to{transform:rotate(360deg)}}
+
+
+/* Homework empty-state icon — match the other modern colored icons */
+.student-homework-task-icon{
+    color:#5eead4!important;
+    background:linear-gradient(145deg,rgba(13,148,136,.18),rgba(45,212,191,.06))!important;
+    border:1px solid rgba(94,234,212,.20)!important;
+    box-shadow:inset 0 0 18px rgba(94,234,212,.04),0 8px 20px rgba(0,0,0,.10);
+}
+.student-homework-task-icon svg{
+    width:18px;
+    height:18px;
+    fill:none!important;
+    stroke:#5eead4!important;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
