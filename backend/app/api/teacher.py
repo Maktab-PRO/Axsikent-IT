@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException\nfrom fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
@@ -85,11 +86,11 @@ def login_teacher(
         )
 
     access_token = create_access_token(
-    {
-        "sub": str(user.id),
-        "role": "teacher"
-    }
-)
+        {
+            "sub": str(user.id),
+            "role": "teacher"
+        }
+    )
     return {
         "message": "Teacher login muvaffaqiyatli",
         "access_token": access_token,
