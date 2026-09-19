@@ -1834,3 +1834,70 @@ textarea::placeholder {
 .inline-modern-icon{width:18px;height:18px;display:inline-block;vertical-align:-4px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .inline-modern-icon-wrap{display:inline-flex;align-items:center;gap:8px}
 @media(max-width:750px){.topbar-actions{gap:6px}.topbar-right{gap:7px}.topbar-actions .notification-bell,.topbar-actions .dashboard-refresh-button{width:42px;height:42px}}
+
+
+/* Student requested polish — refresh + course loading states only */
+.dashboard-refresh-button{
+    color:#a7f3d0;
+    background:linear-gradient(145deg,rgba(16,185,129,.16),rgba(34,197,94,.06));
+    border-color:rgba(52,211,153,.28);
+    box-shadow:0 10px 28px rgba(0,0,0,.20),inset 0 0 18px rgba(52,211,153,.05);
+}
+.dashboard-refresh-button:hover{
+    color:#ffffff;
+    border-color:rgba(110,231,183,.62);
+    background:linear-gradient(145deg,rgba(16,185,129,.24),rgba(34,197,94,.10));
+    box-shadow:0 14px 34px rgba(16,185,129,.16);
+}
+
+.student-modern-loading-icon{
+    width:48px;
+    height:48px;
+    margin:0 auto 10px;
+    display:grid;
+    place-items:center;
+    border-radius:15px;
+    border:1px solid rgba(255,255,255,.09);
+    box-shadow:inset 0 0 18px rgba(255,255,255,.025),0 10px 24px rgba(0,0,0,.18);
+}
+.student-modern-loading-icon svg{
+    width:24px;
+    height:24px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.7;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+.student-loading-modules{
+    color:#a78bfa;
+    background:linear-gradient(145deg,rgba(124,58,237,.20),rgba(139,92,246,.06));
+    border-color:rgba(167,139,250,.20);
+}
+.student-loading-lessons{
+    color:#5eead4;
+    background:linear-gradient(145deg,rgba(13,148,136,.20),rgba(45,212,191,.06));
+    border-color:rgba(94,234,212,.18);
+}
+.student-loading-check{
+    color:#67e8f9;
+    background:linear-gradient(145deg,rgba(8,145,178,.20),rgba(14,116,144,.06));
+    border-color:rgba(103,232,249,.18);
+}
+.student-modern-checking-state{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    color:#94a3b8;
+    padding:10px;
+}
+.student-modern-checking-state .student-modern-loading-icon{
+    width:34px;
+    height:34px;
+    margin:0;
+}
+.student-modern-checking-state .student-modern-loading-icon svg{
+    width:18px;
+    height:18px;
+}
