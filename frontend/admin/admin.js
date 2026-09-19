@@ -194,7 +194,11 @@ function openSection(section) {
     window.__axsikentPreviousSection = previousSection !== section ? previousSection : "dashboard";
     window.__axsikentCurrentSection = section;
 
-    $$(".nav-item").forEach(item => {
+    if (window.location.hash !== "#" + section) {
+        history.replaceState(null, "", "#" + section);
+    }
+
+    $(".nav-item").forEach(item => {
         item.classList.toggle(
             "active",
             item.dataset.section === section
@@ -2718,43 +2722,31 @@ async function toggleCourse(id, active) {
 
 async function openCourseCreate() {
     const categories = window.adminCategories || [];
-
     const categoryText = categories.length
-        ? categories.map(c => c.id + " — " + c.name).join("\n")
+        ? categories.map(c => c.id + " — " + c.name).join(" | ")
         : "Kategoriya ma’lumoti topilmadi.";
 
-    const category = window.prompt(
-        "Kategoriya ID:\n" + categoryText
-    );
-
-    if (category === null) return;
-
-    const name = window.prompt("Kurs nomi:");
-    if (!name?.trim()) return;
-
-    const categoryId = Number(category);
-
-    if (!Number.isInteger(categoryId) || categoryId <= 0) {
-        showToast("Kategoriya ID noto‘g‘ri.", "error");
-        return;
-    }
-
-    try {
+    openAdminContentForm("＋ Yangi kurs", [
+        {id:"category", label:"Kategoriya ID", required:true, placeholder:categoryText},
+        {id:"name", label:"Kurs nomi", required:true, placeholder:"Masalan: Frontend"},
+        {id:"description", label:"Tavsif", type:"textarea", placeholder:"Kurs haqida qisqacha..."}
+    ], async values => {
+        const categoryId = Number(values.category);
+        if (!Number.isInteger(categoryId) || categoryId <= 0) {
+            throw new Error("Kategoriya ID noto‘g‘ri.");
+        }
         await apiRequest("/admin/courses/", {
             method: "POST",
             body: JSON.stringify({
                 category_id: categoryId,
-                name: name.trim(),
-                description: ""
+                name: values.name.trim(),
+                description: values.description.trim()
             })
         });
-
         showToast("Kurs yaratildi");
         await loadCourses();
         await loadDashboard();
-    } catch (error) {
-        showToast(error.message, "error");
-    }
+    });
 }
 
 /* ============================================================
@@ -2902,45 +2894,36 @@ async function toggleGroup(id, active) {
 }
 
 async function openGroupCreate() {
-    const name = window.prompt("Guruh nomi:");
-    if (!name?.trim()) return;
+    openAdminContentForm("＋ Yangi guruh", [
+        {id:"name", label:"Guruh nomi", required:true, placeholder:"Masalan: Frontend A"},
+        {id:"course", label:"Kurs ID", required:true, placeholder:"Masalan: 1"},
+        {id:"teacher", label:"O‘qituvchi ID", required:true, placeholder:"Masalan: 3"},
+        {id:"capacity", label:"Sig‘im", type:"number", value:"15", placeholder:"15"}
+    ], async values => {
+        const courseId = Number(values.course);
+        const teacherId = Number(values.teacher);
+        const capacity = Number(values.capacity || 15);
 
-    const course = window.prompt("Kurs ID:");
-    if (course === null) return;
+        if (!Number.isInteger(courseId) || courseId <= 0 ||
+            !Number.isInteger(teacherId) || teacherId <= 0 ||
+            !Number.isInteger(capacity) || capacity <= 0) {
+            throw new Error("Kurs, o‘qituvchi yoki sig‘im ma’lumoti noto‘g‘ri.");
+        }
 
-    const teacher = window.prompt("O‘qituvchi ID:");
-    if (teacher === null) return;
-
-    const courseId = Number(course);
-    const teacherId = Number(teacher);
-
-    if (
-        !Number.isInteger(courseId) ||
-        !Number.isInteger(teacherId) ||
-        courseId <= 0 ||
-        teacherId <= 0
-    ) {
-        showToast("Kurs yoki o‘qituvchi ID noto‘g‘ri.", "error");
-        return;
-    }
-
-    try {
         await apiRequest("/admin/groups/", {
             method: "POST",
             body: JSON.stringify({
-                name: name.trim(),
+                name: values.name.trim(),
                 course_id: courseId,
                 teacher_id: teacherId,
-                capacity: 15,
+                capacity,
                 status: "active"
             })
         });
 
         showToast("Guruh yaratildi");
         await loadGroups();
-    } catch (error) {
-        showToast(error.message, "error");
-    }
+    });
 }
 
 /* ============================================================
@@ -3205,36 +3188,26 @@ async function deleteProduct(id) {
 }
 
 async function openProductCreate() {
-    const name = window.prompt("Mukofot nomi:");
-    if (!name?.trim()) return;
+    openAdminContentForm("✦ Yangi mukofot", [
+        {id:"name", label:"Mukofot nomi", required:true, placeholder:"Masalan: Axsikent sovg‘asi"},
+        {id:"coin", label:"Coin narxi", type:"number", value:"0", placeholder:"0"},
+        {id:"crystal", label:"Crystal narxi", type:"number", value:"0", placeholder:"0"},
+        {id:"stock", label:"Stock", type:"number", value:"0", placeholder:"0"}
+    ], async values => {
+        const coinValue = Number(values.coin);
+        const crystalValue = Number(values.crystal);
+        const stockValue = Number(values.stock);
 
-    const coin = window.prompt("Coin narxi:", "0");
-    if (coin === null) return;
+        if (!Number.isInteger(coinValue) || coinValue < 0 ||
+            !Number.isInteger(crystalValue) || crystalValue < 0 ||
+            !Number.isInteger(stockValue) || stockValue < 0) {
+            throw new Error("Narx yoki stock noto‘g‘ri.");
+        }
 
-    const crystal = window.prompt("Crystal narxi:", "0");
-    if (crystal === null) return;
-
-    const stock = window.prompt("Stock:", "0");
-    if (stock === null) return;
-
-    const coinValue = Number(coin);
-    const crystalValue = Number(crystal);
-    const stockValue = Number(stock);
-
-    if (
-        !Number.isInteger(coinValue) || coinValue < 0 ||
-        !Number.isInteger(crystalValue) || crystalValue < 0 ||
-        !Number.isInteger(stockValue) || stockValue < 0
-    ) {
-        showToast("Narx yoki stock noto‘g‘ri.", "error");
-        return;
-    }
-
-    try {
         await apiRequest("/admin/shop/products", {
             method: "POST",
             body: JSON.stringify({
-                name: name.trim(),
+                name: values.name.trim(),
                 description: "",
                 image_url: "",
                 coin_price: coinValue,
@@ -3246,9 +3219,7 @@ async function openProductCreate() {
         showToast("Mukofot qo‘shildi");
         await loadRewards();
         await loadShopStats();
-    } catch (error) {
-        showToast(error.message, "error");
-    }
+    });
 }
 
 async function openRuleCreate() {
@@ -3478,49 +3449,38 @@ async function loadBooks() {
 }
 
 async function openBookCreate() {
-    const title = window.prompt("Kitob nomi:");
-    if (!title?.trim()) return;
+    openAdminContentForm("＋ Yangi kitob", [
+        {id:"title", label:"Kitob nomi", required:true, placeholder:"Masalan: Python asoslari"},
+        {id:"price", label:"Narxi (so‘m)", type:"number", value:"0", placeholder:"0"},
+        {id:"coin", label:"Coin narxi", type:"number", value:"0", placeholder:"0"},
+        {id:"stock", label:"Stock", type:"number", value:"0", placeholder:"0"}
+    ], async values => {
+        const priceValue = Number(values.price);
+        const coinValue = Number(values.coin);
+        const stockValue = Number(values.stock);
 
-    const price = window.prompt("Narxi:", "0");
-    if (price === null) return;
+        if (!Number.isFinite(priceValue) || priceValue < 0 ||
+            !Number.isInteger(coinValue) || coinValue < 0 ||
+            !Number.isInteger(stockValue) || stockValue < 0) {
+            throw new Error("Kitob narxi yoki stock noto‘g‘ri.");
+        }
 
-    const coin = window.prompt("Coin narxi:", "0");
-    if (coin === null) return;
+        const params = new URLSearchParams({
+            title: values.title.trim(),
+            description: "",
+            image_url: "",
+            price: String(priceValue),
+            coin_price: String(coinValue),
+            stock: String(stockValue)
+        });
 
-    const stock = window.prompt("Stock:", "0");
-    if (stock === null) return;
-
-    const priceValue = Number(price);
-    const coinValue = Number(coin);
-    const stockValue = Number(stock);
-
-    if (
-        !Number.isFinite(priceValue) || priceValue < 0 ||
-        !Number.isInteger(coinValue) || coinValue < 0 ||
-        !Number.isInteger(stockValue) || stockValue < 0
-    ) {
-        showToast("Kitob narxi yoki stock noto‘g‘ri.", "error");
-        return;
-    }
-
-    try {
-        await apiRequest("/admin/books", {
-            method: "POST",
-            body: JSON.stringify({
-                title: title.trim(),
-                description: "",
-                image_url: "",
-                price: priceValue,
-                coin_price: coinValue,
-                stock: stockValue
-            })
+        await apiRequest("/admin/books?" + params.toString(), {
+            method: "POST"
         });
 
         showToast("Kitob qo‘shildi");
         await loadBooks();
-    } catch (error) {
-        showToast(error.message, "error");
-    }
+    });
 }
 
 /* ============================================================
@@ -3919,6 +3879,13 @@ async function initAdminPanel() {
     initAdministratorManagement();
     initStudentActions();
     initAdminAutoRefresh();
+
+    const savedSection = window.location.hash.replace("#", "").trim();
+    if (savedSection && document.getElementById("section-" + savedSection)) {
+        openSection(savedSection);
+    } else {
+        openSection("dashboard");
+    }
 
     const logoutButton = document.getElementById("logoutBtn");
     if (logoutButton) {
