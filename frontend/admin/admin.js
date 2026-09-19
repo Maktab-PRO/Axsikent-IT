@@ -121,6 +121,33 @@ function escapeHtml(value) {
 }
 
 
+function openTeacherCreate(){const f=document.getElementById("teacherCreateForm");if(f){f.hidden=false;f.scrollIntoView({behavior:"smooth",block:"start"});}}
+function closeTeacherCreate(){const f=document.getElementById("teacherCreateForm");if(f)f.hidden=true;const m=document.getElementById("teacherCreateMessage");if(m)m.textContent="";}
+function initTeacherCreate(){
+ const f=document.getElementById("teacherCreateForm"); if(!f)return;
+ f.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const name=document.getElementById("teacherCreateName").value.trim();
+  let phone=document.getElementById("teacherCreatePhone").value.trim();
+  const p=document.getElementById("teacherCreatePassword").value;
+  const p2=document.getElementById("teacherCreatePassword2").value;
+  const birth=document.getElementById("teacherCreateBirthDate").value;
+  const subject=document.getElementById("teacherCreateSubject").value;
+  const msg=document.getElementById("teacherCreateMessage"); msg.textContent="";
+  if(!phone.startsWith("+")){showToast("Telefon raqam + bilan boshlanishi kerak.","error");return}
+  if(p!==p2){showToast("Parollar bir xil emas.","error");return}
+  if(!/[A-Za-z]/.test(p)||!/[0-9]/.test(p)||!/[^A-Za-z0-9]/.test(p)||p.length<8){showToast("Parol kamida 8 ta belgi: harf, raqam va maxsus belgi.","error");return}
+  if(!birth||!subject){showToast("Tug‘ilgan sana va yo‘nalishni tanlang.","error");return}
+  try{
+   const q=new URLSearchParams({full_name:name,phone,password:p,subject,birth_date:birth});
+   const d=await apiRequest("/admin/teachers/?"+q.toString(),{method:"POST"});
+   msg.textContent=d.message||"O‘qituvchi muvaffaqiyatli ro‘yxatdan o‘tkazildi.";
+   showToast(d.message||"O‘qituvchi muvaffaqiyatli ro‘yxatdan o‘tkazildi.","success");
+   f.reset(); await loadTeachers();
+  }catch(err){msg.textContent=err.message;showToast(err.message,"error")}
+ });
+}
+
 /* ============================================================
    TOAST
    ============================================================ */
@@ -3877,6 +3904,7 @@ async function initAdminPanel() {
     initMobileMenu();
     initNotifications();
     initAdministratorManagement();
+initTeacherCreate();
     initStudentActions();
     initAdminAutoRefresh();
 
