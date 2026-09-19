@@ -3000,7 +3000,7 @@ async function openStudentNotifications() {
     }
 
     showStudentNotificationModal(
-        '<div class="student-notification-loading"><span class="student-notification-spinner"></span><strong>Bildirishnomalar yuklanmoqda...</strong><small>Bir oz kuting.</small></div>'
+        '<div class="student-notification-loading"><span class="student-notification-loading-icon">✦</span><strong>Bildirishnomalar tekshirilmoqda</strong><small>Yangi xabarlar tekshirilmoqda...</small></div>'
     );
 
     try {
@@ -3094,8 +3094,10 @@ function showStudentNotificationModal(rows) {
     modal.innerHTML =
         '<div class="student-premium-modal notification-modal">' +
         '<button type="button" class="student-premium-close" aria-label="Yopish">×</button>' +
+        '<div class="student-notification-head-icon">✦</div>' +
         '<div class="student-premium-kicker">AXSIKENT IT / NOTIFICATIONS</div>' +
         '<h2>Bildirishnomalar</h2>' +
+        '<p class="student-notification-subtitle">Muhim xabarlar va platformadagi yangiliklar shu yerda.</p>'
         '<div class="student-notification-list">' + rows + '</div>' +
         '</div>';
 
