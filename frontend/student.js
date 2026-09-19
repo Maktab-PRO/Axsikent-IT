@@ -32,7 +32,8 @@ async function fetchStudentApi(path, token, options = {}) {
 }
 
 
-const API_URL = "https://axsikent-it-4.onrender.com";\n// Student API fetches use a hard timeout so Rewards/Notifications cannot stay on loading forever.
+const API_URL = "https://axsikent-it-4.onrender.com";
+// Student API fetches use a hard timeout so Rewards/Notifications cannot stay on loading forever.
     /* =========================
    LOAD STUDENT COURSES
 ========================= */
