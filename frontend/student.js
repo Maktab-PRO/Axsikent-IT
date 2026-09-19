@@ -59,8 +59,8 @@ async function loadStudentCourses() {
                     padding:25px;
                     color:#7b8496;
                 ">
-                    <div class="student-modern-empty-icon" style="margin-bottom:14px;">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h13a1 1 0 0 1 1 1v15H7a2 2 0 0 0-2 2V4Z"/><path d="M7 20h12M9 8h7M9 12h6"/></svg>
+                    <div class="student-modern-empty-icon student-homework-empty-icon" style="margin-bottom:14px;">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a2 2 0 0 1 2 2v16H5V5a2 2 0 0 1 2-2Z"/><path d="M9 3v3h6V3M9 11h6M9 15h4"/></svg>
                     </div>
 
                     <strong style="
@@ -175,10 +175,7 @@ async function openStudentCourse(courseId) {
             padding:40px 20px;
             color:#94a3b8;
         ">
-            <div style="
-                font-size:32px;
-                margin-bottom:10px;
-            ">📚</div>
+            <div class="student-modern-loading-icon student-loading-modules"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5a2 2 0 0 1 2-2h11v18H7a2 2 0 0 1-2-2V5Z"/><path d="M5 7h10M9 11h5M9 15h5"/></svg></div>
 
             <div style="
                 font-size:15px;
