@@ -194,7 +194,7 @@ function openSection(section) {
     window.__axsikentPreviousSection = previousSection !== section ? previousSection : "dashboard";
     window.__axsikentCurrentSection = section;
 
-    $(".nav-item").forEach(item => {
+    $$(".nav-item").forEach(item => {
         item.classList.toggle(
             "active",
             item.dataset.section === section
