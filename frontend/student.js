@@ -461,7 +461,7 @@ async function openStudentModule(courseId, moduleId) {
             padding:25px;
             color:#7b8496;
         ">
-            📖 Darslar yuklanmoqda...
+            <span class="student-modern-loading-icon student-loading-lessons"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span> Darslar yuklanmoqda...
         </div>
     `;
 
@@ -997,7 +997,7 @@ async function openStudentModule(courseId, moduleId) {
             padding:40px 20px;
             color:#7b8496;
         ">
-            <div style="font-size:35px;">📝</div>
+            <div class="student-modern-loading-icon student-loading-check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/></svg></div>
             <div style="margin-top:10px;font-weight:600;">
                 Tekshiruv yuklanmoqda...
             </div>
@@ -1173,12 +1173,9 @@ async function openStudentModule(courseId, moduleId) {
                     document.getElementById("quizResult");
 
                 resultBox.innerHTML = `
-                    <div style="
-                        text-align:center;
-                        color:#7b8496;
-                        padding:10px;
-                    ">
-                        Tekshirilmoqda...
+                    <div class="student-modern-checking-state">
+                        <span class="student-modern-loading-icon student-loading-check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+                        <span>Tekshirilmoqda...</span>
                     </div>
                 `;
 
