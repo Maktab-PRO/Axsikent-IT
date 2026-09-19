@@ -1693,11 +1693,29 @@ function confirmLogoutStudent() {
     container.innerHTML = '<div style="text-align:center;padding:25px;color:#7b8496;">Mukofotlar yuklanmoqda...</div>';
 
     try {
-        const result = await fetchStudentApi("/students/rewards?ts=" + Date.now(), token, {
-            method: "GET"
-        });
-        const response = result.response;
-        const data = result.data;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10000);
+
+        let response;
+        let data = {};
+        try {
+            response = await fetch(API_URL + "/students/rewards?ts=" + Date.now(), {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json"
+                },
+                cache: "no-store",
+                signal: controller.signal
+            });
+
+            const text = await response.text();
+            if (text) {
+                try { data = JSON.parse(text); } catch (_) { data = {}; }
+            }
+        } finally {
+            clearTimeout(timer);
+        }
 
         if (response.status === 401) {
             localStorage.removeItem("access_token");
@@ -1713,112 +1731,87 @@ function confirmLogoutStudent() {
         const student = data.student || {};
         const rewards = Array.isArray(data.rewards) ? data.rewards : [];
 
-        let rewardHtml = rewards.map(function(reward) {
+        const rewardHtml = rewards.map(function(reward) {
+            const stock = Number(reward.stock || 0);
+            const coinPrice = Number(reward.coin_price || 0);
+            const crystalPrice = Number(reward.crystal_price || 0);
+            const canBuy = stock > 0 && Number(student.coins || 0) >= coinPrice && Number(student.crystals || 0) >= crystalPrice;
+
             return '<div style="position:relative;overflow:hidden;border:1px solid rgba(139,92,246,.28);border-radius:20px;padding:22px;margin-bottom:16px;background:linear-gradient(145deg,rgba(20,18,30,.96),rgba(10,10,15,.98));box-shadow:0 12px 35px rgba(0,0,0,.28);">' +
                 '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">' +
                     '<div style="width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;background:linear-gradient(135deg,#8B5CF6,#6D28D9);">🎁</div>' +
-                    '<h3 style="margin:0;color:#fff;font-size:18px;">' + escapeHtml(reward.name || "Mukofot") + '</h3>' +
+                    '<div style="min-width:0;"><h3 style="margin:0;color:#fff;font-size:18px;">' + escapeHtml(reward.name || "Mukofot") + '</h3>' +
+                    '<div style="margin-top:4px;color:' + (stock > 0 ? '#86efac' : '#fca5a5') + ';font-size:12px;font-weight:700;">' + (stock > 0 ? "Mavjud: " + stock + " dona" : "Hozircha tugagan") + '</div></div>' +
                 '</div>' +
                 '<p style="color:#aaa5b8;margin:0 0 18px;line-height:1.6;font-size:14px;">' + escapeHtml(reward.description || "Mukofot tavsifi mavjud emas") + '</p>' +
                 '<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:15px;flex-wrap:wrap;">' +
                     '<div><div style="color:#817c8f;font-size:12px;margin-bottom:5px;">Mukofot narxi</div>' +
-                    '<div style="color:#c4b5fd;font-size:16px;font-weight:800;">🪙 ' + Number(reward.coin_price || 0) + ' Coin</div>' +
-                    (Number(reward.crystal_price || 0) > 0 ? '<div style="color:#c4b5fd;font-size:16px;font-weight:800;margin-top:7px;">💎 ' + Number(reward.crystal_price) + ' Crystal</div>' : '') +
+                    '<div style="color:#c4b5fd;font-size:16px;font-weight:800;">🪙 ' + coinPrice + ' Coin</div>' +
+                    (crystalPrice > 0 ? '<div style="color:#c4b5fd;font-size:16px;font-weight:800;margin-top:7px;">💎 ' + crystalPrice + ' Crystal</div>' : '') +
                     '</div>' +
-                    '<button onclick="buyStudentReward(' + Number(reward.id) + ')" style="border:none;border-radius:13px;padding:12px 20px;background:linear-gradient(135deg,#8B5CF6,#6D28D9);color:#fff;font-weight:800;cursor:pointer;">Sotib olish</button>' +
+                    '<button type="button" onclick="buyStudentReward(' + Number(reward.id) + ')" ' + (canBuy ? '' : 'disabled') + ' style="border:none;border-radius:13px;padding:12px 20px;background:' + (canBuy ? 'linear-gradient(135deg,#8B5CF6,#6D28D9)' : 'rgba(255,255,255,.08)') + ';color:' + (canBuy ? '#fff' : '#777') + ';font-weight:800;cursor:' + (canBuy ? 'pointer' : 'not-allowed') + ';">' + (stock <= 0 ? "Tugagan" : (canBuy ? "Sotib olish" : "Coin/Crystal yetarli emas")) + '</button>' +
                 '</div>' +
-                '<div style="margin-top:16px;color:#777285;font-size:12px;">Mavjud: ' + Number(reward.stock || 0) + ' dona</div>' +
             '</div>';
         }).join("");
 
-        if (!rewardHtml) {
-            rewardHtml = '<div style="text-align:center;padding:35px;color:#7b8496;"><div style="font-size:42px;margin-bottom:10px;">🎁</div><strong style="display:block;color:#fff;margin-bottom:7px;">Hozircha mukofot mavjud emas</strong><span>Administrator mukofot qo‘shganda shu yerda ko‘rinadi.</span></div>';
-        }
+        const rewardsBlock = rewardHtml || '<div style="text-align:center;padding:35px;color:#7b8496;"><div style="font-size:42px;margin-bottom:10px;">🎁</div><strong style="display:block;color:#fff;margin-bottom:7px;">Hozircha mukofot mavjud emas</strong><span>Administrator mukofot qo‘shganda shu yerda ko‘rinadi.</span></div>';
 
         container.innerHTML =
             '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;">' +
                 '<div style="padding:16px;border-radius:16px;background:rgba(52,211,153,.10);"><div>🪙</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.coins || 0) + '</div><div style="color:#9ca3af;font-size:12px;">Coin</div></div>' +
                 '<div style="padding:16px;border-radius:16px;background:rgba(168,85,247,.10);"><div>💎</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.crystals || 0) + '</div><div style="color:#9ca3af;font-size:12px;">Crystal</div></div>' +
                 '<div style="padding:16px;border-radius:16px;background:rgba(59,130,246,.10);"><div>⭐</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.xp || 0) + '</div><div style="color:#9ca3af;font-size:12px;">XP · Level ' + Number(student.level || 1) + '</div></div>' +
-            '</div><h3 style="color:#fff;margin:0 0 14px;font-size:17px;">🎁 Mavjud mukofotlar</h3>' + rewardHtml;
+            '</div><h3 style="color:#fff;margin:0 0 14px;font-size:17px;">🎁 Mavjud mukofotlar</h3>' + rewardsBlock;
     } catch (error) {
         console.error("Rewards load error:", error);
-        const message = error && error.name === "AbortError"
-            ? "Server 8 soniya ichida javob bermadi."
-            : (error.message || "Noma’lum xatolik");
-
-        container.innerHTML =
-            '<div style="text-align:center;padding:30px;color:#fda4af;">' +
-                '<strong>Mukofotlarni yuklab bo‘lmadi.</strong>' +
-                '<div style="margin-top:8px;color:#9ca3af;font-size:12px;">' + escapeHtml(message) + '</div>' +
-                '<button type="button" onclick="loadStudentRewards()" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button>' +
-            '</div>';
+        const message = error && error.name === "AbortError" ? "Server 10 soniya ichida javob bermadi." : (error.message || "Noma’lum xatolik");
+        container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;"><strong>Mukofotlarni yuklab bo‘lmadi.</strong><div style="margin-top:8px;color:#9ca3af;font-size:12px;">' + escapeHtml(message) + '</div><button type="button" onclick="loadStudentRewards()" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
     }
 }
+
 
 async function buyStudentReward(productId) {
+    const token = localStorage.getItem("access_token");
 
-const token = localStorage.getItem("access_token");
+    if (!token) {
+        showPremiumModal("Tizimga kirish kerak", "Mukofot sotib olish uchun avval tizimga kiring.", "Kirish");
+        return;
+    }
 
-if (!token) {
     showPremiumModal(
-        "Tizimga kirish kerak",
-        "Mukofot sotib olish uchun avval tizimga kiring.",
-        "Kirish"
-    );
-    return;
-}
-
-showPremiumModal(
-    "Mukofotni sotib olish",
-    "Bu mukofotni Coin va Crystal orqali sotib olishni tasdiqlaysizmi?",
-    "Sotib olish",
-    async () => {
-
-        try {
-
-            const response = await fetch(
-                `${API_URL}/students/rewards/${productId}/buy`,
-                {
+        "Mukofotni sotib olish",
+        "Bu mukofotni Coin va Crystal orqali sotib olishni tasdiqlaysizmi?",
+        "Sotib olish",
+        async () => {
+            try {
+                const response = await fetch(API_URL + "/students/rewards/" + Number(productId) + "/buy", {
                     method: "POST",
                     headers: {
-                        "Authorization": `Bearer ${token}`
+                        "Authorization": "Bearer " + token,
+                        "Accept": "application/json"
                     }
+                });
+
+                let data = {};
+                try { data = await response.json(); } catch (_) {}
+
+                if (!response.ok) {
+                    throw new Error(data.detail || "Mukofotni sotib olishda xatolik");
                 }
-            );
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(
-                    data.detail || "Mukofotni sotib olishda xatolik"
+                showPremiumModal(
+                    "Xarid muvaffaqiyatli!",
+                    "🎉 " + (data.message || "Mukofot buyurtma qilindi") + "<br><br>Buyurtma №" + data.order_id + "<br>🪙 Coin: " + Number((data.student || {}).coins || 0) + "<br>💎 Crystal: " + Number((data.student || {}).crystals || 0),
+                    "Ajoyib!"
                 );
+
+                await loadStudentRewards();
+            } catch (error) {
+                console.error("Reward buy error:", error);
+                showPremiumModal("Xatolik yuz berdi", error.message || "Mukofotni sotib olishda xatolik", "Yopish");
             }
-
-            showPremiumModal(
-                "Xarid muvaffaqiyatli!",
-                `🎉 ${data.message}<br><br>` +
-                `Buyurtma №${data.order_id}<br>` +
-                `🪙 Coin: ${data.student.coins}<br>` +
-                `💎 Crystal: ${data.student.crystals}`,
-                "Ajoyib!"
-            );
-
-            await loadStudentRewards();
-
-        } catch (error) {
-
-            console.error(error);
-
-            showPremiumModal(
-                "Xatolik yuz berdi",
-                error.message,
-                "Yopish"
-            );
         }
-    }
-);
-
+    );
 }
 
 
@@ -2914,134 +2907,196 @@ showPremiumModal(
     }
 
     async function loadStudentNotifications() {
-        const token = localStorage.getItem("access_token");
-        const badge = document.getElementById("studentNotificationBadge");
-        if (!token) {
+    const token = localStorage.getItem("access_token");
+    const badge = document.getElementById("studentNotificationBadge");
+
+    if (!token) {
+        if (badge) badge.hidden = true;
+        return;
+    }
+
+    try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10000);
+
+        let response;
+        let data = {};
+        try {
+            response = await fetch(API_URL + "/students/notifications?ts=" + Date.now(), {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json"
+                },
+                cache: "no-store",
+                signal: controller.signal
+            });
+            const text = await response.text();
+            if (text) {
+                try { data = JSON.parse(text); } catch (_) { data = {}; }
+            }
+        } finally {
+            clearTimeout(timer);
+        }
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
             if (badge) badge.hidden = true;
             return;
         }
 
-        try {
-            const result = await fetchStudentApi("/students/notifications", token, {
-                method: "GET"
-            });
-            const response = result.response;
-            const data = result.data;
-            if (!response.ok) return;
-            const items = Array.isArray(data.notifications) ? data.notifications : [];
-            const unread = Number(data.unread || 0);
+        if (!response.ok) return;
 
-            if (badge) {
-                badge.textContent = unread > 99 ? "99+" : String(unread);
-                badge.hidden = unread <= 0;
-            }
+        const items = Array.isArray(data.notifications) ? data.notifications : [];
+        const unread = Number(data.unread || 0);
 
-            if (studentNotificationState.firstLoad) {
-                studentNotificationState.ids = new Set(items.map(item => item.id));
-                studentNotificationState.firstLoad = false;
-                return;
-            }
-
-            const fresh = items.filter(item => !studentNotificationState.ids.has(item.id));
-            fresh.slice(0, 3).forEach(item => {
-                showStudentSystemNotification(item.title || "Axsikent IT", item.message || "");
-            });
-            items.forEach(item => studentNotificationState.ids.add(item.id));
-        } catch (error) {
-            console.debug("Student notifications:", error);
+        if (badge) {
+            badge.textContent = unread > 99 ? "99+" : String(unread);
+            badge.hidden = unread <= 0;
         }
-    }
 
-    async function openStudentNotifications() {
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-            showPremiumStudentMessage("Avval Student kabinetiga kiring.");
+        if (studentNotificationState.firstLoad) {
+            studentNotificationState.ids = new Set(items.map(item => Number(item.id)));
+            studentNotificationState.firstLoad = false;
             return;
         }
 
-        // Open the notification center immediately so a slow API/Render wake-up is visible.
-        showStudentNotificationModal(
-            '<div class="student-notification-loading"><span class="student-notification-spinner"></span><strong>Bildirishnomalar yuklanmoqda...</strong><small>Bir oz kuting.</small></div>'
-        );
+        items.filter(item => !studentNotificationState.ids.has(Number(item.id))).slice(0, 3).forEach(item => {
+            showStudentSystemNotification(item.title || "Axsikent IT", item.message || "");
+        });
+        items.forEach(item => studentNotificationState.ids.add(Number(item.id)));
+    } catch (error) {
+        console.debug("Student notifications:", error);
+    }
+}
 
-        // The in-page notification center must not depend on browser permission prompts.
+
+async function openStudentNotifications() {
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        showPremiumStudentMessage("Avval Student kabinetiga kiring.");
+        return;
+    }
+
+    showStudentNotificationModal(
+        '<div class="student-notification-loading"><span class="student-notification-spinner"></span><strong>Bildirishnomalar yuklanmoqda...</strong><small>Bir oz kuting.</small></div>'
+    );
+
+    try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10000);
+
+        let response;
+        let data = {};
         try {
-            const result = await fetchStudentApi("/students/notifications?ts=" + Date.now(), token, {
-                method: "GET"
+            response = await fetch(API_URL + "/students/notifications?ts=" + Date.now(), {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json"
+                },
+                cache: "no-store",
+                signal: controller.signal
             });
-            const response = result.response;
-            const data = result.data;
-
-            if (!response.ok) {
-                throw new Error(
-                    data.detail ||
-                    "Bildirishnomalarni yuklab bo‘lmadi."
-                );
+            const text = await response.text();
+            if (text) {
+                try { data = JSON.parse(text); } catch (_) { data = {}; }
             }
-
-            const items = Array.isArray(data.notifications) ? data.notifications : [];
-
-            const rows = items.length
-                ? items.map(item =>
-                    '<button type="button" class="student-notification-item ' + (item.is_read ? "read" : "unread") + '" data-notification-id="' + Number(item.id) + '">' +
-                    '<span class="student-notification-icon">✦</span>' +
-                    '<span><strong>' + escapeHtml(item.title || "Bildirishnoma") + '</strong><small>' + escapeHtml(item.message || "") + '</small><em>' + formatStudentContentDate(item.created_at) + '</em></span>' +
-                    '</button>'
-                ).join("")
-                : '<div class="student-notification-empty"><span>✦</span><strong>Hozircha bildirishnoma yo‘q</strong><small>Yangi material yoki muhim xabar kelganda shu yerda chiqadi.</small></div>';
-
-            updateStudentNotificationModal(rows);
-
-            document.querySelectorAll(".student-notification-item").forEach(item => {
-                item.addEventListener("click", async () => {
-                    const id = Number(item.dataset.notificationId);
-                    if (!Number.isInteger(id)) return;
-                    try {
-                        await fetch(API_URL + "/students/notifications/" + id + "/read", {
-                            method: "PUT",
-                            headers: {"Authorization": "Bearer " + token}
-                        });
-                        item.classList.remove("unread");
-                        item.classList.add("read");
-                        await loadStudentNotifications();
-                    } catch (_) {}
-                });
-            });
-        } catch (error) {
-            updateStudentNotificationModal(
-                '<div class="student-notification-error"><strong>Bildirishnomalarni yuklab bo‘lmadi.</strong><small>' +
-                escapeHtml(error.message || "Server bilan bog‘lanishda xatolik yuz berdi.") +
-                '</small></div>'
-            );
+        } finally {
+            clearTimeout(timer);
         }
-    }
 
-    // Make the notification action available to the HTML button.
-    window.openStudentNotifications = openStudentNotifications;
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            throw new Error("Sessiya tugagan. Qayta kiring.");
+        }
 
-    function showStudentNotificationModal(rows) {
-        document.getElementById("studentNotificationModal")?.remove();
-        const modal = document.createElement("div");
-        modal.id = "studentNotificationModal";
-        modal.className = "student-premium-overlay";
-        modal.innerHTML =
-            '<div class="student-premium-modal notification-modal">' +
-            '<button type="button" class="student-premium-close" aria-label="Yopish">×</button>' +
-            '<div class="student-premium-kicker">AXSIKENT IT / NOTIFICATIONS</div>' +
-            '<h2>Bildirishnomalar</h2>' +
-            '<div class="student-notification-list">' + rows + '</div>' +
-            '</div>';
-        document.body.appendChild(modal);
-        modal.querySelector(".student-premium-close").addEventListener("click", () => modal.remove());
-        modal.addEventListener("click", event => { if (event.target === modal) modal.remove(); });
-    }
+        if (!response.ok) {
+            throw new Error(data.detail || "Bildirishnomalarni yuklab bo‘lmadi.");
+        }
 
-    function updateStudentNotificationModal(rows) {
-        const modal = document.getElementById("studentNotificationModal");
-        if (!modal) return;
-        const list = modal.querySelector(".student-notification-list");
-        if (list) list.innerHTML = rows;
+        const items = Array.isArray(data.notifications) ? data.notifications : [];
+        const rows = items.length
+            ? items.map(item =>
+                '<button type="button" class="student-notification-item ' + (item.is_read ? "read" : "unread") + '" data-notification-id="' + Number(item.id) + '">' +
+                '<span class="student-notification-icon">✦</span>' +
+                '<span><strong>' + escapeHtml(item.title || "Bildirishnoma") + '</strong><small>' + escapeHtml(item.message || "") + '</small><em>' + formatStudentContentDate(item.created_at) + '</em></span>' +
+                '</button>'
+            ).join("")
+            : '<div class="student-notification-empty"><span>✦</span><strong>Hozircha bildirishnoma yo‘q</strong><small>Yangi material yoki muhim xabar kelganda shu yerda chiqadi.</small></div>';
+
+        updateStudentNotificationModal(rows);
+
+        document.querySelectorAll("#studentNotificationModal .student-notification-item").forEach(item => {
+            item.addEventListener("click", async () => {
+                const id = Number(item.dataset.notificationId);
+                if (!Number.isInteger(id)) return;
+
+                try {
+                    const readResponse = await fetch(API_URL + "/students/notifications/" + id + "/read", {
+                        method: "PUT",
+                        headers: {
+                            "Authorization": "Bearer " + token,
+                            "Accept": "application/json"
+                        }
+                    });
+
+                    if (!readResponse.ok) return;
+                    item.classList.remove("unread");
+                    item.classList.add("read");
+                    await loadStudentNotifications();
+                } catch (error) {
+                    console.debug("Notification read:", error);
+                }
+            });
+        });
+    } catch (error) {
+        updateStudentNotificationModal(
+            '<div class="student-notification-error"><strong>Bildirishnomalarni yuklab bo‘lmadi.</strong><small>' +
+            escapeHtml(error.message || "Server bilan bog‘lanishda xatolik yuz berdi.") +
+            '</small></div>'
+        );
     }
+}
+
+
+window.openStudentNotifications = openStudentNotifications;
+
+
+function showStudentNotificationModal(rows) {
+    document.getElementById("studentNotificationModal")?.remove();
+
+    const modal = document.createElement("div");
+    modal.id = "studentNotificationModal";
+    modal.className = "student-premium-overlay";
+    modal.innerHTML =
+        '<div class="student-premium-modal notification-modal">' +
+        '<button type="button" class="student-premium-close" aria-label="Yopish">×</button>' +
+        '<div class="student-premium-kicker">AXSIKENT IT / NOTIFICATIONS</div>' +
+        '<h2>Bildirishnomalar</h2>' +
+        '<div class="student-notification-list">' + rows + '</div>' +
+        '</div>';
+
+    document.body.appendChild(modal);
+
+    modal.querySelector(".student-premium-close").addEventListener("click", () => modal.remove());
+    modal.addEventListener("click", event => {
+        if (event.target === modal) modal.remove();
+    });
+}
+
+
+function updateStudentNotificationModal(rows) {
+    const modal = document.getElementById("studentNotificationModal");
+    if (!modal) return;
+
+    const list = modal.querySelector(".student-notification-list");
+    if (list) list.innerHTML = rows;
+}
+
 
     function showPremiumStudentMessage(message) {
         document.getElementById("studentMessageModal")?.remove();
