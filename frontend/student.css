@@ -2129,7 +2129,7 @@ textarea::placeholder {
     height:68px;
     object-fit:contain;
 }
-.topbar-right{gap:18px}
+.topbar-right{gap:8px}
 .profile-mini{margin-right:2px}
 .notification-bell{
     position:relative;
@@ -2221,7 +2221,7 @@ body.support-modal-open{overflow:hidden}
 @media(max-width:700px){
     .student-site-logo-image{width:185px;height:62px}
     .topbar{padding:0 16px}
-    .topbar-right{gap:10px}
+    .topbar-right{gap:5px}
     .profile-mini{display:none}
     .notification-bell{margin-left:0}
     .dashboard-refresh-button span{display:none}
