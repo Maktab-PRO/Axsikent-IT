@@ -35,11 +35,10 @@ def register_teacher(
         Teacher.phone == teacher.phone
     ).first()
 
-    if existing_teacher:
-        raise HTTPException(
-            status_code=400,
-            detail="Bu telefon raqam allaqachon ro'yxatdan o'tgan"
-        )
+    raise HTTPException(
+        status_code=403,
+        detail="O‘qituvchi mustaqil ro‘yxatdan o‘ta olmaydi. Administrator orqali yaratiladi."
+    )
 
     hashed_password = pwd_context.hash(
         teacher.password
@@ -65,7 +64,9 @@ def login_teacher(
     db: Session = Depends(get_db)
 ):
     user = db.query(Teacher).filter(
-        Teacher.phone == teacher.phone
+        Teacher.phone == teacher.phone,
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
     ).first()
 
     if not user:
