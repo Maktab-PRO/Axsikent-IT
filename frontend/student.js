@@ -2809,40 +2809,34 @@ showPremiumModal(
         const completed = Number(completedHomework || 0);
 
         container.innerHTML =
-            '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;">' +
+            '<div class="student-activity-grid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));">' +
 
-                '<div style="position:relative;overflow:hidden;min-height:138px;padding:20px;border-radius:20px;background:linear-gradient(145deg,#151b16,#0b100d);border:1px solid rgba(52,211,153,.18);box-shadow:0 14px 35px rgba(0,0,0,.24);box-sizing:border-box;">' +
-                    '<div style="position:absolute;width:90px;height:90px;right:-35px;top:-35px;border-radius:50%;background:rgba(34,197,94,.13);filter:blur(18px);"></div>' +
-                    '<div style="position:relative;width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#14532d,#22c55e);box-shadow:0 8px 22px rgba(34,197,94,.22);">' +
-                        '<svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M12 3c2 3 5 4 5 8a5 5 0 1 1-10 0c0-2 1-4 3-5 0 2 1 3 2 3 1-2 1-4 0-6Z"/><path d="M9 17c.5 1 1.5 1.5 3 1.5s2.5-.5 3-1.5"/></svg>' +
+                '<div class="student-activity-card activity-streak">' +
+                    '<div class="student-activity-icon">' +
+                        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c2.5 3 5 4.5 5 8.5A5 5 0 1 1 7 9c0 2 1 3 2.7 4.1C9.3 9.8 11 7 12 3Z"/><path d="M10 18.5c.6.5 1.3.7 2 .7s1.4-.2 2-.7"/></svg>' +
                     '</div>' +
-                    '<div style="position:relative;margin-top:13px;font-size:11px;color:#86efac;font-weight:800;letter-spacing:.08em;text-transform:uppercase;">Faollik</div>' +
-                    '<strong style="position:relative;display:block;margin-top:2px;font-size:25px;color:#fff;">' + streak + '<span style="font-size:12px;color:#94a3b8;font-weight:600;margin-left:5px;">kun</span></strong>' +
+                    '<div class="student-activity-label">Faollik</div>' +
+                    '<strong class="student-activity-value">' + streak + '<span>kun</span></strong>' +
                 '</div>' +
 
-                '<div style="position:relative;overflow:hidden;min-height:138px;padding:20px;border-radius:20px;background:linear-gradient(145deg,#17131f,#0c0912);border:1px solid rgba(167,139,250,.20);box-shadow:0 14px 35px rgba(0,0,0,.24);box-sizing:border-box;">' +
-                    '<div style="position:absolute;width:90px;height:90px;right:-35px;top:-35px;border-radius:50%;background:rgba(139,92,246,.15);filter:blur(18px);"></div>' +
-                    '<div style="position:relative;width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#6d28d9,#a78bfa);box-shadow:0 8px 22px rgba(139,92,246,.22);">' +
-                        '<svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M12 3.5 14.7 9l5.8.8-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8-4.2-4.1L9.3 9 12 3.5Z"/></svg>' +
+                '<div class="student-activity-card activity-xp">' +
+                    '<div class="student-activity-icon">' +
+                        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.2 5.2 5.6.5-4.2 3.7 1.3 5.5-4.9-2.9-4.9 2.9 1.3-5.5-4.2-3.7L9.8 8.2 12 3Z"/><path d="M12 6v3"/></svg>' +
                     '</div>' +
-                    '<div style="position:relative;margin-top:13px;font-size:11px;color:#c4b5fd;font-weight:800;letter-spacing:.08em;text-transform:uppercase;">Bilim tajribasi</div>' +
-                    '<strong style="position:relative;display:block;margin-top:2px;font-size:25px;color:#fff;">' + totalXp.toLocaleString() + '<span style="font-size:12px;color:#a1a1aa;font-weight:600;margin-left:5px;">XP</span></strong>' +
+                    '<div class="student-activity-label">Bilim tajribasi</div>' +
+                    '<strong class="student-activity-value">' + totalXp.toLocaleString() + '<span>XP</span></strong>' +
                 '</div>' +
 
-                '<div style="position:relative;overflow:hidden;min-height:138px;padding:20px;border-radius:20px;background:linear-gradient(145deg,#17171b,#0b0b0e);border:1px solid rgba(45,212,191,.18);box-shadow:0 14px 35px rgba(0,0,0,.24);box-sizing:border-box;">' +
-                    '<div style="position:absolute;width:90px;height:90px;right:-35px;top:-35px;border-radius:50%;background:rgba(45,212,191,.13);filter:blur(18px);"></div>' +
-                    '<div style="position:relative;width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f766e,#2dd4bf);box-shadow:0 8px 22px rgba(45,212,191,.18);">' +
-                        '<svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>' +
+                '<div class="student-activity-card activity-tasks">' +
+                    '<div class="student-activity-icon">' +
+                        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/><path d="M9 8h6"/></svg>' +
                     '</div>' +
-                    '<div style="position:relative;margin-top:13px;font-size:11px;color:#5eead4;font-weight:800;letter-spacing:.08em;text-transform:uppercase;">Vazifalar</div>' +
-                    '<strong style="position:relative;display:block;margin-top:2px;font-size:25px;color:#fff;">' + completed + '<span style="font-size:12px;color:#94a3b8;font-weight:600;margin-left:5px;">ta bajarilgan</span></strong>' +
+                    '<div class="student-activity-label">Bajarilgan vazifalar</div>' +
+                    '<strong class="student-activity-value">' + completed + '<span>ta</span></strong>' +
                 '</div>' +
 
             '</div>' +
-
-            '<div style="margin-top:12px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);color:#64748b;font-size:11px;text-align:center;">' +
-                'O‘qishdagi faolligingiz shu yerda jamlanadi' +
-            '</div>'; 
+            '<div class="student-activity-note">O‘qishdagi faolligingiz, XP va bajarilgan vazifalar bir joyda.</div>';
     }
 
     /* =========================
