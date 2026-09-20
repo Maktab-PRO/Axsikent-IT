@@ -17,7 +17,32 @@ document.querySelectorAll(".language-picker").forEach(p=>{
 });
 document.addEventListener("click",()=>document.querySelectorAll(".language-picker.open").forEach(x=>x.classList.remove("open")));
 tr();updateLanguagePickers();
-async function teacherLogin(e){e.preventDefault();const msg=$("teacherLoginMessage"),btn=document.querySelector("#teacherLoginForm button[type=\"submit\"]");msg.textContent="";if(btn){btn.disabled=true;btn.style.opacity=".65"}try{const r=await fetch(API+"/teachers/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:$("teacherPhone").value.trim(),password:$("teacherPassword").value})});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.detail||"Login failed");if(!d.access_token)throw Error("Server access token qaytarmadi");token=d.access_token;localStorage.setItem("teacher_access_token",token);localStorage.setItem("teacher_id",d.teacher_id);await boot()}catch(err){msg.textContent=err.message||"Kirishda xatolik yuz berdi"}finally{if(btn){btn.disabled=false;btn.style.opacity=""}}}
+async function teacherLogin(e){
+  e.preventDefault();
+  const msg=$("teacherLoginMessage");
+  const btn=document.querySelector("#teacherLoginForm button[type="submit"]");
+  const phone=$("teacherPhone").value.trim();
+  const password=$("teacherPassword").value;
+  msg.textContent="";
+  if(!phone||!password){msg.textContent="Telefon raqam va parolni kiriting.";return}
+  if(btn){btn.disabled=true;btn.setAttribute("aria-busy","true")}
+  try{
+    const r=await fetch(API+"/teachers/login",{method:"POST",mode:"cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone,password})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw Error(d.detail||"Telefon raqam yoki parol noto'g'ri");
+    if(!d.access_token)throw Error("Kirish tasdiqlanmadi.");
+    token=d.access_token;
+    localStorage.setItem("teacher_access_token",token);
+    if(d.teacher_id!=null)localStorage.setItem("teacher_id",d.teacher_id);
+    $("teacherLogin").hidden=true;
+    $("teacherApp").hidden=false;
+    await loadTeacherData();
+  }catch(err){
+    msg.textContent=err.message||"Kirishda xatolik yuz berdi";
+  }finally{
+    if(btn){btn.disabled=false;btn.removeAttribute("aria-busy")}
+  }
+}
 $("teacherLoginForm").addEventListener("submit",teacherLogin);
 function logout(){localStorage.removeItem("teacher_access_token");localStorage.removeItem("teacher_id");location.reload()}
 $("logoutBtn").addEventListener("click",logout);
