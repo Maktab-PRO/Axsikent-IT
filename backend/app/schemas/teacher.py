@@ -1,4 +1,6 @@
-from pydantic import BaseModel, Field, field_validator\nimport re\nfrom datetime import date
+from pydantic import BaseModel, Field, field_validator
+import re
+from datetime import date
 
 
 class TeacherCreate(BaseModel):
