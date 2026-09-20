@@ -151,7 +151,7 @@ function initTeacherCreate(){
   if(!birth||!subject){showToast("Tug‘ilgan sana va yo‘nalishni tanlang.","error");return}
   try{
    const q=new URLSearchParams({full_name:name,phone,password:p,subject,birth_date:birth});
-   const d=await apiRequest("/admin/teachers?"+q.toString(),{method:"POST"});
+   const d=await apiRequest("/admin/teachers/create?"+q.toString(),{method:"POST"});
    msg.textContent=d.message||"O‘qituvchi muvaffaqiyatli ro‘yxatdan o‘tkazildi.";
    showToast(d.message||"O‘qituvchi muvaffaqiyatli ro‘yxatdan o‘tkazildi.","success");
    f.reset(); await loadTeachers();
