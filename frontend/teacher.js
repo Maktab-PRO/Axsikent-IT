@@ -17,42 +17,6 @@ document.querySelectorAll(".language-picker").forEach(p=>{
 });
 document.addEventListener("click",()=>document.querySelectorAll(".language-picker.open").forEach(x=>x.classList.remove("open")));
 tr();updateLanguagePickers();
-async function teacherLogin(e){
-  e.preventDefault();
-  const msg=$("teacherLoginMessage");
-  const btn=document.querySelector('#teacherLoginForm button[type="submit"]');
-  const phone=$("teacherPhone").value.trim();
-  const password=$("teacherPassword").value;
-  msg.textContent="";
-  if(!phone||!password){msg.textContent="Telefon raqam va parolni kiriting.";return}
-  if(btn){btn.disabled=true;btn.setAttribute("aria-busy","true")}
-
-  const teacherWindow=window.open("about:blank","_blank");
-  try{
-    const r=await fetch(API+"/teachers/login",{method:"POST",mode:"cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone,password})});
-    const d=await r.json().catch(()=>({}));
-    if(!r.ok)throw Error(d.detail||"Telefon raqam yoki parol noto'g'ri");
-    if(!d.access_token)throw Error("Kirish tasdiqlanmadi.");
-
-    token=d.access_token;
-    localStorage.setItem("teacher_access_token",token);
-    if(d.teacher_id!=null)localStorage.setItem("teacher_id",d.teacher_id);
-
-    const panelUrl=new URL("teacher.html",window.location.href).href;
-    if(teacherWindow&&!teacherWindow.closed){
-      teacherWindow.location.href=panelUrl;
-    }else{
-      $("teacherLogin").hidden=true;
-      $("teacherApp").hidden=false;
-      await loadTeacherData();
-    }
-  }catch(err){
-    if(teacherWindow&&!teacherWindow.closed)teacherWindow.close();
-    msg.textContent=err.message||"Kirishda xatolik yuz berdi";
-  }finally{
-    if(btn){btn.disabled=false;btn.removeAttribute("aria-busy")}
-  }
-}
 $("teacherLoginForm").addEventListener("submit",teacherLogin);
 function logout(){localStorage.removeItem("teacher_access_token");localStorage.removeItem("teacher_id");location.reload()}
 $("logoutBtn").addEventListener("click",logout);
@@ -74,5 +38,10 @@ $("addQuizBtn").addEventListener("click",async()=>{try{const q=new URLSearchPara
 $("assignLessonBtn").addEventListener("click",async()=>{$("lessonMessage").textContent="";try{await api("/teachers/assign-lesson",{method:"POST",body:JSON.stringify({student_id:Number($("lessonStudent").value),course_id:Number($("lessonCourse").value),title:$("lessonTitle").value,video_url:$("lessonLink").value||null})});$("lessonMessage").textContent="Dars biriktirildi."}catch(e){$("lessonMessage").textContent=e.message}});
 $("saveGradeBtn").addEventListener("click",async()=>{try{await api("/teachers/grades",{method:"POST",body:JSON.stringify({student_id:Number($("gradeStudent").value),score:Number($("gradeScore").value),comment:$("gradeComment").value||null})});$("gradeMessage").textContent="Baho saqlandi va o‘quvchiga ko‘rinadi."}catch(e){$("gradeMessage").textContent=e.message}});
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-async function boot(){ $("teacherLogin").hidden=true;$("teacherApp").hidden=false; if(!$("attendanceDate").value)$("attendanceDate").value=new Date().toISOString().slice(0,10);await loadTeacherData()}
-if(token)boot();
+async function boot(){
+  if(!token){location.href="teacher-login.html";return}
+  $("teacherApp").hidden=false;
+  if(!$("attendanceDate").value)$("attendanceDate").value=new Date().toISOString().slice(0,10);
+  await loadTeacherData()
+}
+boot();
