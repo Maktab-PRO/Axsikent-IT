@@ -26,18 +26,28 @@ async function teacherLogin(e){
   msg.textContent="";
   if(!phone||!password){msg.textContent="Telefon raqam va parolni kiriting.";return}
   if(btn){btn.disabled=true;btn.setAttribute("aria-busy","true")}
+
+  const teacherWindow=window.open("about:blank","_blank");
   try{
     const r=await fetch(API+"/teachers/login",{method:"POST",mode:"cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone,password})});
     const d=await r.json().catch(()=>({}));
     if(!r.ok)throw Error(d.detail||"Telefon raqam yoki parol noto'g'ri");
     if(!d.access_token)throw Error("Kirish tasdiqlanmadi.");
+
     token=d.access_token;
     localStorage.setItem("teacher_access_token",token);
     if(d.teacher_id!=null)localStorage.setItem("teacher_id",d.teacher_id);
-    $("teacherLogin").hidden=true;
-    $("teacherApp").hidden=false;
-    await loadTeacherData();
+
+    const panelUrl=new URL("teacher.html",window.location.href).href;
+    if(teacherWindow&&!teacherWindow.closed){
+      teacherWindow.location.href=panelUrl;
+    }else{
+      $("teacherLogin").hidden=true;
+      $("teacherApp").hidden=false;
+      await loadTeacherData();
+    }
   }catch(err){
+    if(teacherWindow&&!teacherWindow.closed)teacherWindow.close();
     msg.textContent=err.message||"Kirishda xatolik yuz berdi";
   }finally{
     if(btn){btn.disabled=false;btn.removeAttribute("aria-busy")}
