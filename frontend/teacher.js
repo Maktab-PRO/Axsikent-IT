@@ -20,7 +20,7 @@ tr();updateLanguagePickers();
 async function teacherLogin(e){
   e.preventDefault();
   const msg=$("teacherLoginMessage");
-  const btn=document.querySelector("#teacherLoginForm button[type="submit"]");
+  const btn=document.querySelector('#teacherLoginForm button[type="submit"]');
   const phone=$("teacherPhone").value.trim();
   const password=$("teacherPassword").value;
   msg.textContent="";
