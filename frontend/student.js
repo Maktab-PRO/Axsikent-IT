@@ -4143,12 +4143,34 @@ async function loadStudentOnlineExams() {
         return;
     }
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+
     try {
-        const response = await fetch(API_URL + "/online-exams/available", {
-            headers: {"Authorization":"Bearer " + token}
+        const response = await fetch(API_URL + "/online-exams/available?ts=" + Date.now(), {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Accept": "application/json"
+            },
+            cache: "no-store",
+            signal: controller.signal
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.detail || "Online testlarni yuklashda xatolik.");
+
+        const raw = await response.text();
+        let data = {};
+        try {
+            data = raw ? JSON.parse(raw) : {};
+        } catch (_) {
+            data = {};
+        }
+
+        if (response.status === 401) {
+            throw new Error("Sessiya tugagan. Student kabinetiga qayta kiring.");
+        }
+        if (!response.ok) {
+            throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
+        }
 
         const exams = Array.isArray(data.exams) ? data.exams : [];
         if (!exams.length) {
@@ -4165,22 +4187,23 @@ async function loadStudentOnlineExams() {
                             <div style="font-size:17px;font-weight:900;color:#fff;">📝 ${escapeOnlineExamHtml(exam.title)}</div>
                             <div style="margin-top:7px;color:#9aa4b5;font-size:13px;line-height:1.55;">${escapeOnlineExamHtml(exam.description || "Online test")}</div>
                         </div>
-                        <div style="padding:7px 10px;border-radius:10px;background:rgba(167,139,250,.10);color:#c4b5fd;font-size:11px;font-weight:800;">${exam.time_limit_minutes} daqiqa</div>
+                        <div style="padding:8px 11px;border-radius:10px;background:rgba(167,139,250,.10);color:#c4b5fd;font-size:12px;font-weight:800;">${Number(exam.time_limit_minutes || 0)} min · ${Number(exam.pass_score || 0)}%</div>
                     </div>
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;color:#aab3c2;font-size:12px;">
-                        <span>🎯 O‘tish: ${exam.pass_score}%</span>
-                        <span>🔁 Urinish: ${exam.attempts_used}/${exam.max_attempts}</span>
+                    <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap;">
+                        <span style="color:#8b95a7;font-size:12px;">Urinish: ${Number(exam.attempts_used || 0)}/${Number(exam.max_attempts || 0)}</span>
+                        <button type="button" ${disabled ? "disabled" : ""} onclick="startStudentOnlineExam(${Number(exam.id)})" style="padding:10px 15px;border:0;border-radius:11px;background:${disabled ? "rgba(255,255,255,.08)" : "linear-gradient(135deg,#7c3aed,#059669)"};color:#fff;font-weight:800;opacity:${disabled ? ".55" : "1"};">${disabled ? "Urinish tugagan" : "Testni boshlash"}</button>
                     </div>
-                    <button type="button" ${disabled ? "disabled" : ""} onclick="startStudentOnlineExam(${Number(exam.id)})"
-                        style="margin-top:15px;width:100%;padding:12px;border:0;border-radius:12px;background:${disabled ? "rgba(255,255,255,.07)" : "linear-gradient(135deg,#7c3aed,#059669)"};color:${disabled ? "#737b8a" : "#fff"};font-weight:900;cursor:${disabled ? "not-allowed" : "pointer"};">
-                        ${disabled ? "Urinishlar tugagan" : "Testni boshlash →"}
-                    </button>
                 </div>
             `;
         }).join("");
     } catch (error) {
-        console.error("Online test:", error);
-        content.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">❌ ' + escapeOnlineExamHtml(error.message) + '</div>';
+        console.error("Online test load:", error);
+        const message = error?.name === "AbortError"
+            ? "Server javobi 12 soniyada kelmadi. Backend/Render holatini tekshirish kerak."
+            : (error?.message || "Online testlarni yuklab bo‘lmadi.");
+        content.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">❌ ' + escapeOnlineExamHtml(message) + '</div>';
+    } finally {
+        clearTimeout(timeout);
     }
 }
 
