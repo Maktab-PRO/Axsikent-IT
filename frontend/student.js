@@ -4011,16 +4011,31 @@ async function startStudentOnlineExam(examId) {
         studentOnlineDeadline = new Date(data.deadline_at);
 
         const section = document.getElementById("studentExamsSection");
-        const testSection = document.getElementById("studentOnlineTestSection");
-        const title = document.getElementById("studentOnlineTestTitle");
-        const questions = document.getElementById("studentOnlineQuestions");
+        const oldTestSection = document.getElementById("studentOnlineTestSection");
+        const modal = document.getElementById("studentOnlineTestWindow");
 
         if (section) section.style.display = "none";
-        if (testSection) {
-            testSection.style.display = "block";
-            testSection.scrollIntoView({behavior:"smooth",block:"start"});
+        if (oldTestSection) oldTestSection.style.display = "none";
+
+        if (!modal) {
+            openStudentOnlineTests();
+            throw new Error("Online Test oynasi qayta ochildi. Iltimos, testni yana boshlang.");
         }
-        if (title) title.textContent = data.title || "Online Test";
+
+        const body = document.getElementById("studentOnlineWindowBody");
+        if (!body) throw new Error("Online Test oynasi topilmadi.");
+
+        body.innerHTML =
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 2px 16px;border-bottom:1px solid rgba(255,255,255,.08);">' +
+                '<div><div style="font-size:10px;color:#a78bfa;font-weight:900;letter-spacing:.14em;">AXSIKENT IT / ASSESSMENT</div><h2 id="studentOnlineTestTitle" style="margin:5px 0 0;color:#fff;font-size:21px;">' + escapeOnlineExamHtml(data.title || "Online Test") + '</h2></div>' +
+                '<div id="studentExamTimer" style="min-width:78px;text-align:center;padding:10px 12px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#059669);color:#fff;font-weight:900;font-size:16px;">00:00</div>' +
+            '</div>' +
+            '<div id="studentOnlineQuestions" style="padding-top:18px;"></div>' +
+            '<div style="position:sticky;bottom:0;margin-top:8px;padding-top:14px;background:linear-gradient(180deg,rgba(7,11,18,0),#070b12 28%);">' +
+                '<button id="studentOnlineSubmit" type="button" onclick="submitStudentOnlineExam()" style="width:100%;padding:14px 18px;border:0;border-radius:13px;background:linear-gradient(135deg,#7c3aed,#059669);color:#fff;font-weight:900;font-size:15px;cursor:pointer;box-shadow:0 10px 25px rgba(124,58,237,.18);">Testni topshirish</button>' +
+            '</div>';
+
+        const questions = document.getElementById("studentOnlineQuestions");
 
         const list = Array.isArray(data.questions) ? data.questions : [];
         questions.innerHTML = list.map((q,index) => {
