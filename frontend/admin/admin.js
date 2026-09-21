@@ -936,11 +936,15 @@ async function loadStudents() {
     `;
 
     try {
-        const data = await apiRequest(
-            "/admin/homework/submissions"
-        );
+        const [data, aiData] = await Promise.all([
+            apiRequest("/admin/homework/submissions"),
+            apiRequest("/admin/homework/ai-submissions")
+        ]);
 
-        const submissions = data.submissions || [];
+        const submissions = [
+            ...(data.submissions || []),
+            ...(aiData.submissions || [])
+        ].sort((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
 
         setText(
             "homeworkTotal",
@@ -1053,7 +1057,7 @@ function renderHomeworkSubmissions(
 
                         return `
                             <tr
-                                onclick="viewHomeworkSubmission(${item.id})"
+                                onclick="${item.source === "telegram_ai" ? "viewAIHomeworkSubmission(" + item.id + ")" : "viewHomeworkSubmission(" + item.id + ")"}"
                                 style="cursor:pointer"
                             >
 
@@ -1149,6 +1153,37 @@ function filterHomeworkSubmissions() {
                 ? ""
                 : "none";
     });
+}
+
+
+async function viewAIHomeworkSubmission(submissionId) {
+    try {
+        const data = await apiRequest("/admin/homework/ai-submissions/" + Number(submissionId));
+        const modal = document.createElement("div");
+        modal.className = "admin-detail-modal";
+        const mistakes = (data.mistakes || []).map(item => "<li>" + escapeHtml(item) + "</li>").join("") || "<li>Xato topilmadi.</li>";
+        modal.innerHTML = `
+            <div class="admin-detail-card">
+                <button class="admin-detail-close" onclick="this.closest('.admin-detail-modal').remove()">×</button>
+                <div class="section-eyebrow">AKHSIKENT AI / TELEGRAM</div>
+                <h2>${escapeHtml(data.student_name || "Noma’lum o‘quvchi")}</h2>
+                <p class="admin-detail-subtitle">${escapeHtml(data.homework_title || "AI topshirig‘i")}</p>
+                <div class="admin-detail-grid">
+                    <div><small>O‘quvchi ID</small><strong>${data.student_id}</strong></div>
+                    <div><small>Ball</small><strong>${data.score ?? "—"}/100</strong></div>
+                    <div><small>Natija</small><strong>${data.passed ? "✅ O‘tdi" : "🔒 O‘tmadi"}</strong></div>
+                    <div><small>Status</small><strong>${escapeHtml(data.status || "—")}</strong></div>
+                </div>
+                <div class="admin-detail-block"><small>TOPSHIRIQ</small><p>${escapeHtml(data.task || "—")}</p></div>
+                <div class="admin-detail-block"><small>O‘QUVCHI JAVOBI</small><p>${escapeHtml(data.answer || "—")}</p></div>
+                <div class="admin-detail-block"><small>XATOLAR</small><ul>${mistakes}</ul></div>
+                <div class="admin-detail-block"><small>IZOH</small><p>${escapeHtml(data.explanation || "—")}</p></div>
+                <div class="admin-detail-block"><small>TAVSIYA</small><p>${escapeHtml(data.recommendation || "—")}</p></div>
+            </div>`;
+        document.body.appendChild(modal);
+    } catch (error) {
+        showToast(error.message || "AI topshiriqni ochib bo‘lmadi", "error");
+    }
 }
 
 
