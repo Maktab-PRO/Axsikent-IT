@@ -10,6 +10,11 @@ class Settings(BaseSettings):
 
     SECRET_KEY: str = "axsikent-it-secret-key-change-later"
 
+    OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-5-mini"
+    TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_WEBHOOK_SECRET: str = ""
+
     class Config:
         env_file = ".env"
         extra = "ignore"
