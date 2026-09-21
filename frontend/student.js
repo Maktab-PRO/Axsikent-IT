@@ -4223,6 +4223,9 @@ async function loadStudentDashboardHomework() {
                     const sub = submissions.find(function(item){ return Number(item.homework_id) === Number(hw.id); });
                     const status = sub ? (sub.status === "checked" ? "✅ Tekshirildi" : "⏳ Topshirilgan") : "🆕 Yangi";
                     const color = sub && sub.status === "checked" ? "#4ade80" : sub ? "#facc15" : "#60a5fa";
+                    const submitButton = sub
+                        ? '<button type="button" onclick="openStudentHomeworkSubmit(' + Number(hw.id) + ', \'Qayta topshirish\')" style="margin-top:12px;width:100%;padding:11px 14px;border:1px solid rgba(139,92,246,.25);border-radius:12px;background:rgba(139,92,246,.10);color:#c4b5fd;font-weight:800;cursor:pointer;">Qayta topshirish</button>'
+                        : '<button type="button" onclick="openStudentHomeworkSubmit(' + Number(hw.id) + ', \'Topshirish\')" style="margin-top:12px;width:100%;padding:11px 14px;border:0;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#059669);color:#fff;font-weight:800;cursor:pointer;">Vazifani topshirish</button>';
                     return '<div style="padding:15px;margin-bottom:10px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);">' +
                         '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">' +
                         '<strong style="color:#fff;font-size:14px;">' + escapeHtml(hw.title || "Uy vazifasi") + '</strong>' +
@@ -4301,6 +4304,61 @@ async function loadStudentDashboardHomework() {
         console.error("Student dashboard homework/activity:", error);
         setError(error && error.name === "AbortError" ? "Server 20 soniyada javob bermadi." : (error.message || "Ma’lumotlarni yuklashda xatolik."));
     }
+}
+
+async function openStudentHomeworkSubmit(homeworkId, buttonLabel) {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        showPremiumModal("Tizimga kirish kerak", "Uy vazifasini topshirish uchun avval tizimga kiring.", "Yopish");
+        return;
+    }
+
+    document.getElementById("studentHomeworkSubmitModal")?.remove();
+
+    const modal = document.createElement("div");
+    modal.id = "studentHomeworkSubmitModal";
+    modal.innerHTML = '<div style="position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.82);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;">' +
+        '<div style="width:min(560px,100%);background:linear-gradient(145deg,#111118,#09090d);border:1px solid rgba(139,92,246,.3);border-radius:22px;padding:22px;color:#fff;box-shadow:0 25px 80px rgba(0,0,0,.7);">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><h3 style="margin:0;font-size:20px;">📝 Uy vazifasini ' + escapeHtml(buttonLabel || "topshirish") + '</h3><button type="button" id="studentHomeworkSubmitClose" style="width:40px;height:40px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.05);color:#fff;font-size:22px;">×</button></div>' +
+        '<textarea id="studentHomeworkAnswer" rows="7" placeholder="Javobingizni shu yerga yozing..." style="width:100%;margin-top:18px;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:#0b0d13;color:#fff;box-sizing:border-box;resize:vertical;outline:none;"></textarea>' +
+        '<button type="button" id="studentHomeworkSubmitButton" style="width:100%;margin-top:14px;padding:13px;border:0;border-radius:13px;background:linear-gradient(135deg,#7c3aed,#059669);color:#fff;font-weight:900;">Yuborish</button>' +
+        '</div></div>';
+
+    document.body.appendChild(modal);
+    const close = () => modal.remove();
+    document.getElementById("studentHomeworkSubmitClose").onclick = close;
+    modal.firstElementChild.addEventListener("click", e => { if (e.target === modal.firstElementChild) close(); });
+
+    document.getElementById("studentHomeworkSubmitButton").onclick = async function() {
+        const answer = document.getElementById("studentHomeworkAnswer").value.trim();
+        if (!answer) {
+            showPremiumModal("Javob kiritilmagan", "Avval uy vazifasiga javob yozing.", "Yopish");
+            return;
+        }
+
+        this.disabled = true;
+        this.textContent = "Yuborilmoqda...";
+
+        try {
+            const response = await fetch(API_URL + "/homework/" + Number(homeworkId) + "/submit?answer=" + encodeURIComponent(answer), {
+                method: "POST",
+                headers: {"Authorization": "Bearer " + token, "Accept": "application/json"},
+                cache: "no-store"
+            });
+            const raw = await response.text();
+            let data = {};
+            try { data = raw ? JSON.parse(raw) : {}; } catch (_) {}
+            if (!response.ok) throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
+
+            close();
+            showPremiumModal("Vazifa topshirildi", data.message || "Uy vazifasi muvaffaqiyatli topshirildi.", "Ajoyib!");
+            await loadStudentDashboardHomework();
+        } catch (error) {
+            this.disabled = false;
+            this.textContent = "Yuborish";
+            showPremiumModal("Xatolik yuz berdi", error.message || "Uy vazifasini topshirib bo‘lmadi.", "Yopish");
+        }
+    };
 }
 
 function initStudentDashboard() {
