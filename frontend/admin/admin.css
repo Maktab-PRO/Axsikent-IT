@@ -3826,3 +3826,65 @@ button:active,
 #section-homework .module-table{font-size:11px}
 #section-homework .module-table th{font-size:9px!important}
 #section-homework .module-table td{font-size:11px!important}
+
+
+/* HOMEWORK CONTENT — ONLY THIS SECTION */
+#section-homework .homework-panel .homework-stats{
+    gap:10px;
+}
+#section-homework .homework-panel .homework-stat-card{
+    padding:13px 14px;
+    border-radius:14px;
+}
+#section-homework .homework-panel .homework-stat-card span{
+    font-size:16px;
+}
+#section-homework .homework-panel .homework-stat-card small{
+    font-size:9px!important;
+}
+#section-homework .homework-panel .homework-stat-card strong{
+    font-size:17px!important;
+}
+#section-homework .homework-panel .students-toolbar{
+    margin-bottom:12px;
+}
+#section-homework .homework-panel .students-search{
+    height:40px;
+    padding:0 12px;
+}
+#section-homework .homework-panel .students-search span{
+    font-size:18px;
+}
+#section-homework .homework-panel .admin-table{
+    font-size:11px!important;
+}
+#section-homework .homework-panel .admin-table th{
+    padding:10px 12px!important;
+    font-size:9px!important;
+}
+#section-homework .homework-panel .admin-table td{
+    padding:11px 12px!important;
+    font-size:10px!important;
+    line-height:1.4;
+}
+#section-homework .homework-panel .admin-table td strong{
+    font-size:10px!important;
+}
+#section-homework .homework-answer-preview{
+    font-size:10px!important;
+}
+#section-homework .homework-panel .admin-table tbody tr,
+#section-homework .homework-panel .admin-table tbody tr *{
+    -webkit-tap-highlight-color:transparent!important;
+    -webkit-touch-callout:none;
+}
+#section-homework .homework-panel .admin-table tbody tr:focus,
+#section-homework .homework-panel .admin-table tbody tr:focus-visible,
+#section-homework .homework-panel .admin-table tbody tr:active{
+    outline:none!important;
+    background:rgba(57,229,140,.035)!important;
+    -webkit-tap-highlight-color:transparent!important;
+}
+#section-homework .homework-panel .admin-table tbody tr:active td{
+    background:transparent!important;
+}
