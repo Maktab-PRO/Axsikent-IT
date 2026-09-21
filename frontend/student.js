@@ -3091,7 +3091,6 @@ loadStudent();
 loadStudentHomeworkResults();
 loadStudentCourses();
 loadStudentRanking();
-loadStudentStats();
 loadStudentDashboardTasks();
 loadStudentBooks();
 loadStudentNotifications();
