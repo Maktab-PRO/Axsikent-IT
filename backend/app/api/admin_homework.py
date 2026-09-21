@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -12,6 +13,7 @@ from app.models.homework import Homework, HomeworkSubmission
 from app.models.group import Group
 from app.models.teacher import Teacher
 from app.models.student import Student
+from app.models.ai_telegram_submission import AITelegramSubmission
 
 
 router = APIRouter(
@@ -307,6 +309,36 @@ def get_homework_stats(
     # =========================================================
 # 3. GET ALL SUBMISSIONS
 # =========================================================
+
+@router.get("/ai-submissions")
+def get_all_ai_submissions(
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
+):
+    items = db.query(AITelegramSubmission).order_by(AITelegramSubmission.id.desc()).all()
+    result = []
+    for item in items:
+        student = db.query(Student).filter(Student.id == item.student_id).first()
+        result.append({
+            "id": item.id,
+            "source": "telegram_ai",
+            "student_id": item.student_id,
+            "student_name": student.full_name if student else None,
+            "homework_id": None,
+            "homework_title": "🤖 AKHSIKENT AI / Telegram",
+            "task": item.task,
+            "answer": item.answer,
+            "status": item.status,
+            "score": item.score,
+            "passed": item.passed == "true",
+            "mistakes": json.loads(item.mistakes) if item.mistakes else [],
+            "explanation": item.explanation,
+            "recommendation": item.recommendation,
+            "submitted_at": item.submitted_at,
+            "checked_at": item.checked_at
+        })
+    return {"total": len(result), "submissions": result}
+
 
 @router.get("/submissions")
 def get_all_admin_submissions(
@@ -611,6 +643,35 @@ def get_admin_submissions(
 # =========================================================
 # 9. GET SINGLE SUBMISSION
 # =========================================================
+
+@router.get("/ai-submissions/{submission_id}")
+def get_admin_ai_submission(
+    submission_id: int,
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
+):
+    item = db.query(AITelegramSubmission).filter(AITelegramSubmission.id == submission_id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="AI topshiriq topilmadi.")
+    student = db.query(Student).filter(Student.id == item.student_id).first()
+    return {
+        "id": item.id,
+        "source": "telegram_ai",
+        "student_id": item.student_id,
+        "student_name": student.full_name if student else None,
+        "homework_title": "🤖 AKHSIKENT AI / Telegram",
+        "task": item.task,
+        "answer": item.answer,
+        "score": item.score,
+        "passed": item.passed == "true",
+        "mistakes": json.loads(item.mistakes) if item.mistakes else [],
+        "explanation": item.explanation,
+        "recommendation": item.recommendation,
+        "status": item.status,
+        "submitted_at": item.submitted_at,
+        "checked_at": item.checked_at
+    }
+
 
 @router.get("/submissions/{submission_id}")
 def get_admin_submission(
