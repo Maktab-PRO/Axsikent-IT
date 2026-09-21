@@ -2145,7 +2145,7 @@ async function buyStudentReward(productId) {
 
             const submitted =
                 submission &&
-                submission.status === "submitted";
+                (submission.status === "submitted" || submission.status === "late");
 
             const checked =
                 submission &&
@@ -4246,7 +4246,7 @@ async function loadStudentDashboardHomework() {
             homeworkList.innerHTML = homeworks.length
                 ? homeworks.map(function(hw) {
                     const sub = submissions.find(function(item){ return Number(item.homework_id) === Number(hw.id); });
-                    const status = sub ? (sub.status === "checked" ? "✅ Tekshirildi" : "⏳ Topshirilgan") : "🆕 Yangi";
+                    const status = sub ? (sub.status === "checked" ? "✅ Tekshirildi" : sub.status === "late" ? "⚠️ Kech topshirilgan" : "⏳ Topshirilgan") : "🆕 Yangi";
                     const color = sub && sub.status === "checked" ? "#4ade80" : sub ? "#facc15" : "#60a5fa";
                     const submitButton = sub
                         ? '<button type="button" onclick="openStudentHomeworkSubmit(' + Number(hw.id) + ', \'Qayta topshirish\')" style="margin-top:12px;width:100%;padding:11px 14px;border:1px solid rgba(139,92,246,.25);border-radius:12px;background:rgba(139,92,246,.10);color:#c4b5fd;font-weight:800;cursor:pointer;">Qayta topshirish</button>'
@@ -4274,7 +4274,7 @@ async function loadStudentDashboardHomework() {
                         return Number(x.id) === Number(item.homework_id);
                     });
                     const checked = item.status === "checked";
-                    const statusText = checked ? "✅ Tekshirildi" : "⏳ Tekshirilmoqda";
+                    const statusText = checked ? "✅ Tekshirildi" : item.status === "late" ? "⚠️ Kech topshirilgan" : "⏳ Tekshirilmoqda";
                     const statusColor = checked ? "#4ade80" : "#facc15";
 
                     return '<div style="padding:16px;margin-bottom:10px;border-radius:15px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);">' +
@@ -4369,7 +4369,7 @@ async function loadStudentDashboardHomework() {
         if (activity) {
             const items = submissions.slice(0,5).map(function(item){
                 const hw = homeworks.find(function(x){ return Number(x.id) === Number(item.homework_id); });
-                const label = item.status === "checked" ? "Vazifa tekshirildi" : "Vazifa topshirildi";
+                const label = item.status === "checked" ? "Vazifa tekshirildi" : item.status === "late" ? "Vazifa kech topshirildi" : "Vazifa topshirildi";
                 return '<div style="display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06);">' +
                     '<div style="width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(52,211,153,.10);color:#34d399;">✓</div>' +
                     '<div style="flex:1;"><div style="color:#fff;font-weight:700;font-size:13px;">' + label + '</div><div style="margin-top:4px;color:#94a3b8;font-size:11px;">' + escapeHtml(hw ? hw.title : "Uy vazifasi") + '</div></div>' +
