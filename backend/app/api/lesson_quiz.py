@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.models.lesson_quiz import LessonQuiz
+from app.models.lesson import Lesson
 from app.core.security import require_admin
 from app.models.admin import Admin
 
@@ -24,6 +25,17 @@ def create_lesson_quiz(
     db: Session = Depends(get_db),
     admin: Admin = Depends(require_admin)
 ):
+
+    lesson = db.query(Lesson).filter(
+        Lesson.id == lesson_id,
+        Lesson.is_active == True
+    ).first()
+
+    if not lesson:
+        raise HTTPException(
+            status_code=404,
+            detail="Faol dars topilmadi"
+        )
 
     correct_answer = correct_answer.upper()
 
