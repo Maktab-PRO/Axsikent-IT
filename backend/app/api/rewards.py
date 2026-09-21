@@ -29,6 +29,13 @@ def get_student_rewards(
             detail="Token noto'g'ri yoki muddati tugagan"
         )
 
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
+
     gamification = db.query(StudentGamification).filter(
         StudentGamification.student_id == student_id
     ).first()
