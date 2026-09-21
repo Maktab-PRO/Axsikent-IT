@@ -3638,6 +3638,77 @@ function openStudentTrainings() {
     loadStudentTrainings();
 }
 
+function openStudentOnlineTests() {
+    const oldModal = document.getElementById("studentOnlineTestWindow");
+    if (oldModal) oldModal.remove();
+
+    const modal = document.createElement("div");
+    modal.id = "studentOnlineTestWindow";
+    modal.style.cssText = "position:fixed;inset:0;z-index:2147483646;background:rgba(0,0,0,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:14px;box-sizing:border-box;";
+
+    modal.innerHTML =
+        '<div style="width:min(900px,100%);height:min(90vh,760px);display:flex;flex-direction:column;background:linear-gradient(145deg,#111827,#070b12);border:1px solid rgba(139,92,246,.35);border-radius:24px;box-shadow:0 30px 100px rgba(0,0,0,.8);overflow:hidden;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.08);">' +
+                '<div><div style="font-size:10px;color:#a78bfa;font-weight:900;letter-spacing:.14em;">AXSIKENT IT / ASSESSMENT</div><h2 style="margin:5px 0 0;color:#fff;font-size:21px;">📝 Online Test</h2></div>' +
+                '<button type="button" id="studentOnlineTestWindowClose" style="width:42px;height:42px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;font-size:24px;cursor:pointer;">×</button>' +
+            '</div>' +
+            '<div id="studentOnlineWindowBody" style="flex:1;overflow:auto;padding:18px;"></div>' +
+        '</div>';
+
+    document.body.appendChild(modal);
+    document.getElementById("studentOnlineTestWindowClose").onclick = () => modal.remove();
+    modal.addEventListener("click", e => { if (e.target === modal) modal.remove(); });
+
+    const body = document.getElementById("studentOnlineWindowBody");
+    body.innerHTML = '<div style="padding:35px;text-align:center;color:#aab3c2;">⏳ Online testlar yuklanmoqda...</div>';
+
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        body.innerHTML = '<div style="padding:25px;text-align:center;color:#f87171;">Avval Student kabinetiga kiring.</div>';
+        return;
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 12000);
+
+    fetch(API_URL + "/online-exams/available?ts=" + Date.now(), {
+        method:"GET",
+        headers:{"Authorization":"Bearer " + token,"Accept":"application/json"},
+        cache:"no-store",
+        signal:controller.signal
+    })
+    .then(async response => {
+        const raw = await response.text();
+        let data = {};
+        try { data = raw ? JSON.parse(raw) : {}; } catch (_) {}
+        if (!response.ok) throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
+        return Array.isArray(data.exams) ? data.exams : [];
+    })
+    .then(exams => {
+        if (!exams.length) {
+            body.innerHTML = '<div style="padding:45px 20px;text-align:center;color:#94a3b8;">Hozircha faol online testlar mavjud emas.</div>';
+            return;
+        }
+
+        body.innerHTML = exams.map(exam =>
+            '<div style="padding:18px;margin-bottom:12px;border-radius:18px;background:rgba(255,255,255,.035);border:1px solid rgba(139,92,246,.18);">' +
+                '<div style="font-size:18px;font-weight:900;color:#fff;">📝 ' + escapeOnlineExamHtml(exam.title || "Online Test") + '</div>' +
+                '<div style="margin-top:7px;color:#9aa4b5;font-size:13px;line-height:1.55;">' + escapeOnlineExamHtml(exam.description || "Online test") + '</div>' +
+                '<div style="margin-top:13px;color:#cbd5e1;font-size:12px;">⏱ ' + Number(exam.time_limit_minutes || 0) + ' daqiqa &nbsp; • &nbsp; 🎯 ' + Number(exam.pass_score || 0) + '% o‘tish</div>' +
+                '<div style="margin-top:14px;display:flex;justify-content:flex-end;">' +
+                    '<button type="button" ' + (exam.can_start ? '' : 'disabled') + ' onclick="startStudentOnlineExam(' + Number(exam.id) + ')" style="padding:11px 17px;border:0;border-radius:12px;background:' + (exam.can_start ? 'linear-gradient(135deg,#7c3aed,#059669)' : 'rgba(255,255,255,.08)') + ';color:#fff;font-weight:800;cursor:pointer;">' +
+                        (exam.can_start ? 'Testni boshlash' : 'Urinish tugagan') +
+                    '</button>' +
+                '</div>' +
+            '</div>'
+        ).join("");
+    })
+    .catch(error => {
+        body.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">❌ ' + escapeOnlineExamHtml(error.message || "Online testlarni yuklab bo‘lmadi.") + '</div>';
+    })
+    .finally(() => clearTimeout(timeout));
+}
+
 function openStudentExams() {
     openStudentExtraModal("<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;\"><path d=\"M9 3h6M10 3v5l-5 9a3 3 0 0 0 3 4h8a3 3 0 0 0 3-4l-5-9V3\"/><path d=\"M8 15h8\"/></svg><span style=\"margin-left:8px;\">Imtihonlar</span>");
     loadStudentExams();
