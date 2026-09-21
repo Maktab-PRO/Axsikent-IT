@@ -80,7 +80,7 @@ if settings.TELEGRAM_BOT_TOKEN:
     try:
         httpx.post(
             f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/setWebhook",
-            json={"url": "https://axsikent-it-4.onrender.com/telegram/webhook"},
+            json={"url": "https://axsikent-it-backend.onrender.com/telegram/webhook"},
             timeout=10.0,
         )
     except Exception:
