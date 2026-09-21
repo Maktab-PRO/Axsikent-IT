@@ -78,7 +78,7 @@ def buy_book(
     book = db.query(Book).filter(
         Book.id == book_id,
         Book.is_active == True
-    ).first()
+    ).with_for_update().first()
 
     if not book:
         raise HTTPException(
@@ -94,7 +94,7 @@ def buy_book(
 
     gamification = db.query(StudentGamification).filter(
         StudentGamification.student_id == student_id
-    ).first()
+    ).with_for_update().first()
 
     if not gamification:
         raise HTTPException(
