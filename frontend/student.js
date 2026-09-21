@@ -1389,6 +1389,10 @@ if (finishButton) {
 
             showLessonSuccessModal(result.progress);
 
+            // Backend progressni yangiladi. UI ham darhol yangilansin:
+            // kurs/modul ro'yxatida eski progress qolib ketmasligi kerak.
+            await loadStudentCourses();
+
            if (button) {
 
     button.textContent = "✅ Tugallandi";
