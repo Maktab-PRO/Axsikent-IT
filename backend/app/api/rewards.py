@@ -38,7 +38,7 @@ def get_student_rewards(
 
     gamification = db.query(StudentGamification).filter(
         StudentGamification.student_id == student_id
-    ).with_for_update().first()
+    ).first()
 
     if not gamification:
         gamification = StudentGamification(
@@ -95,7 +95,7 @@ def buy_reward(
 
     gamification = db.query(StudentGamification).filter(
         StudentGamification.student_id == student_id
-    ).first()
+    ).with_for_update().first()
 
     student = db.query(Student).filter(
         Student.id == student_id,
