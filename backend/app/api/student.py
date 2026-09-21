@@ -2,6 +2,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from passlib.context import CryptContext
 
 from app.db import get_db
@@ -286,7 +287,9 @@ def get_course_modules(
             Lesson.is_active == True
         ).count()
 
-        completed_lessons = db.query(LessonProgress).join(
+        completed_lessons = db.query(
+            func.count(func.distinct(LessonProgress.lesson_id))
+        ).join(
             Lesson,
             LessonProgress.lesson_id == Lesson.id
         ).filter(
@@ -294,7 +297,7 @@ def get_course_modules(
             LessonProgress.is_completed == True,
             Lesson.module_id == module.id,
             Lesson.is_active == True
-        ).count()
+        ).scalar() or 0
 
         if total_lessons > 0:
             progress = round(
@@ -796,7 +799,9 @@ def complete_lesson(
         CourseModule.is_active == True
     ).count()
 
-    completed_lessons = db.query(LessonProgress).join(
+    completed_lessons = db.query(
+        func.count(func.distinct(LessonProgress.lesson_id))
+    ).join(
         Lesson,
         LessonProgress.lesson_id == Lesson.id
     ).join(
@@ -808,7 +813,7 @@ def complete_lesson(
         CourseModule.course_id == course_id,
         Lesson.is_active == True,
         CourseModule.is_active == True
-    ).count()
+    ).scalar() or 0
 
     if total_lessons > 0:
         student_course.progress = round(
