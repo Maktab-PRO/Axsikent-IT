@@ -1,11 +1,21 @@
-from fastapi import APIRouter, Request, HTTPException
+from fastapi import APIRouter, Request, HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from sqlalchemy.orm import Session
 from app.core.config import settings
+from app.core.security import verify_token
+from app.models.student import Student
+from app.db import get_db
 from openai import OpenAI
 import httpx
 import json
+import base64
+import hashlib
+import hmac
+import time
 
 
 router = APIRouter(prefix="/telegram", tags=["Telegram AI"])
+security = HTTPBearer()
 
 
 async def send_telegram_message(chat_id: str, text: str):
@@ -18,6 +28,79 @@ async def send_telegram_message(chat_id: str, text: str):
             "chat_id": chat_id,
             "text": text
         })
+
+
+def create_student_link_code(student_id: int) -> str:
+    expires = int(time.time()) + 900
+    payload = f"{student_id}:{expires}"
+    signature = hmac.new(
+        settings.SECRET_KEY.encode("utf-8"),
+        payload.encode("utf-8"),
+        hashlib.sha256
+    ).hexdigest()[:24]
+    raw = f"{payload}:{signature}".encode("utf-8")
+    return base64.urlsafe_b64encode(raw).decode("utf-8").rstrip("=")
+
+
+def verify_student_link_code(code: str):
+    try:
+        padded = code + "=" * (-len(code) % 4)
+        raw = base64.urlsafe_b64decode(padded.encode("utf-8")).decode("utf-8")
+        student_id_text, expires_text, signature = raw.split(":", 2)
+        payload = f"{student_id_text}:{expires_text}"
+
+        expected = hmac.new(
+            settings.SECRET_KEY.encode("utf-8"),
+            payload.encode("utf-8"),
+            hashlib.sha256
+        ).hexdigest()[:24]
+
+        if not hmac.compare_digest(signature, expected):
+            return None
+
+        if int(expires_text) < int(time.time()):
+            return None
+
+        return int(student_id_text)
+    except Exception:
+        return None
+
+
+@router.get("/connect")
+async def create_telegram_connect_link(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    student_id = verify_token(credentials.credentials)
+
+    if not student_id:
+        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
+
+    student = db.query(Student).filter(Student.id == student_id).first()
+
+    if not student:
+        raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
+
+    if not settings.TELEGRAM_BOT_TOKEN:
+        raise HTTPException(status_code=503, detail="Telegram bot hali sozlanmagan")
+
+    token = create_student_link_code(student.id)
+
+    url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/getMe"
+    async with httpx.AsyncClient(timeout=15) as client:
+        response = await client.get(url)
+        data = response.json()
+
+    if not data.get("ok") or not (data.get("result") or {}).get("username"):
+        raise HTTPException(status_code=503, detail="Telegram bot ma'lumotlarini olishda xatolik")
+
+    username = data["result"]["username"]
+
+    return {
+        "connected": bool(student.telegram_chat_id),
+        "bot_username": username,
+        "connect_url": f"https://t.me/{username}?start={token}"
+    }
 
 
 @router.get("/status")
@@ -38,7 +121,10 @@ async def telegram_status():
 
 
 @router.post("/webhook")
-async def telegram_webhook(request: Request):
+async def telegram_webhook(
+    request: Request,
+    db: Session = Depends(get_db)
+):
     if settings.TELEGRAM_WEBHOOK_SECRET:
         secret = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
         if secret != settings.TELEGRAM_WEBHOOK_SECRET:
@@ -54,6 +140,30 @@ async def telegram_webhook(request: Request):
         return {"ok": True}
 
     if text.startswith("/start"):
+        parts = text.split(maxsplit=1)
+
+        if len(parts) == 2:
+            student_id = verify_student_link_code(parts[1].strip())
+
+            if student_id:
+                student = db.query(Student).filter(Student.id == student_id).first()
+
+                if student:
+                    student.telegram_chat_id = str(chat_id)
+                    db.commit()
+
+                    await send_telegram_message(
+                        str(chat_id),
+                        "✅ Telegram muvaffaqiyatli ulandi!\n\n"
+                        f"👨‍🎓 O‘quvchi: {student.full_name}\n"
+                        "🤖 Endi AKHSIKENT AI (Ustoz AI) orqali "
+                        "uy vazifalaringizni tekshirishingiz mumkin.\n\n"
+                        "Format:\n"
+                        "TOPSHIRIQ: ...\n"
+                        "JAVOB: ..."
+                    )
+                    return {"ok": True}
+
         await send_telegram_message(
             str(chat_id),
             "🤖 AKHSIKENT AI (Ustoz AI)\n\n"
