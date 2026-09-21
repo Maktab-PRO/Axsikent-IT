@@ -4240,7 +4240,53 @@ async function loadStudentDashboardHomework() {
         }
 
         if (homeworkResults) {
-            homeworkResults.innerHTML = "";
+            if (!submissions.length) {
+                homeworkResults.innerHTML =
+                    '<div style="text-align:center;padding:24px;color:#94a3b8;">Hozircha topshirilgan uy vazifalari yo‘q.</div>';
+            } else {
+                homeworkResults.innerHTML = submissions.map(function(item) {
+                    const hw = homeworks.find(function(x) {
+                        return Number(x.id) === Number(item.homework_id);
+                    });
+                    const checked = item.status === "checked";
+                    const statusText = checked ? "✅ Tekshirildi" : "⏳ Tekshirilmoqda";
+                    const statusColor = checked ? "#4ade80" : "#facc15";
+
+                    return '<div style="padding:16px;margin-bottom:10px;border-radius:15px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);">' +
+                        '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;">' +
+                            '<strong style="color:#fff;font-size:14px;">' +
+                                escapeHtml(hw ? hw.title : ("Uy vazifasi #" + Number(item.homework_id))) +
+                            '</strong>' +
+                            '<span style="color:' + statusColor + ';font-size:11px;font-weight:800;">' +
+                                statusText +
+                            '</span>' +
+                        '</div>' +
+                        '<div style="margin-top:10px;padding:12px;border-radius:12px;background:rgba(0,0,0,.18);color:#cbd5e1;font-size:12px;line-height:1.6;">' +
+                            '<div style="color:#64748b;font-size:10px;font-weight:800;margin-bottom:5px;">SIZNING JAVOBINGIZ</div>' +
+                            escapeHtml(item.answer || "Javob kiritilmagan.") +
+                        '</div>' +
+                        (checked
+                            ? '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">' +
+                                '<div style="flex:0 0 auto;min-width:100px;padding:12px 14px;border-radius:12px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.16);">' +
+                                    '<div style="color:#64748b;font-size:10px;font-weight:800;">BAHO</div>' +
+                                    '<div style="margin-top:3px;color:#4ade80;font-size:23px;font-weight:900;">' +
+                                        (item.score === null || item.score === undefined ? "—" : Number(item.score) + "/100") +
+                                    '</div>' +
+                                '</div>' +
+                                '<div style="flex:1;min-width:200px;padding:12px 14px;border-radius:12px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.16);">' +
+                                    '<div style="color:#a78bfa;font-size:10px;font-weight:800;">USTOZ IZOHI</div>' +
+                                    '<div style="margin-top:4px;color:#d8dbe4;font-size:12px;line-height:1.55;">' +
+                                        escapeHtml(item.teacher_comment || "Izoh qoldirilmagan.") +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>'
+                            : '<div style="margin-top:10px;color:#94a3b8;font-size:11px;">Javobingiz ustoz tomonidan tekshirilgach, baho va izoh shu yerda ko‘rinadi.</div>') +
+                        (item.checked_at
+                            ? '<div style="margin-top:9px;color:#64748b;font-size:10px;">Tekshirilgan vaqt: ' + escapeHtml(formatStudentContentDate(item.checked_at)) + '</div>'
+                            : '') +
+                    '</div>';
+                }).join("");
+            }
         }
 
         if (recentTasks) {
