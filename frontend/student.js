@@ -2697,6 +2697,12 @@ async function buyStudentReward(productId) {
         const testSection = document.getElementById("studentOnlineTestSection");
         if (testSection) testSection.style.display = "none";
         if (section) section.style.display = "none";
+
+        openStudentFeatureModal(
+            "Imtihonlar",
+            "🧪",
+            studentExtraLoading("Imtihonlar yuklanmoqda...")
+        );
         loadStudentExams();
     }
 
