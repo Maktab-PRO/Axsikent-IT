@@ -15,7 +15,7 @@ from app.models.lesson_quiz import LessonQuiz
 from app.models.student_lesson import StudentLesson
 from app.models.lesson_progress import LessonProgress
 from app.schemas.student import StudentCreate, StudentLogin, StudentResponse
-from app.core.security import create_access_token
+from app.core.security import create_access_token, verify_token
 
 
 router = APIRouter(prefix="/students", tags=["Students"])
@@ -103,7 +103,9 @@ def student_exams(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    student_id = get_student_id(credentials)
+    student_id = verify_token(credentials.credentials)
+    if not student_id:
+        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
     exams = db.query(Exam).filter(
         Exam.is_active == True
     ).order_by(Exam.start_at.asc()).all()
