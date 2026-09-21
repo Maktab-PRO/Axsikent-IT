@@ -221,7 +221,21 @@
         
 
 
-        <!-- STATS -->
+        <!-- ONLINE EXAMS -->
+<section id="studentExamsSection" class="card" style="margin-top:22px;display:none;">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+    <div><div style="color:#a78bfa;font-size:10px;font-weight:900;letter-spacing:.14em;">ASSESSMENT</div><h2 style="margin:5px 0;color:#fff;">📝 Online Testlar</h2><p style="margin:0;color:#94a3b8;font-size:13px;">Vaqtli testni boshlang va natijangizni darhol oling.</p></div>
+    <button type="button" onclick="loadStudentOnlineExams()" style="padding:11px 15px;border:1px solid rgba(167,139,250,.25);border-radius:12px;background:rgba(139,92,246,.10);color:#c4b5fd;font-weight:800;">↻ Yangilash</button>
+  </div>
+  <div id="studentOnlineExamsContent" style="margin-top:18px;"></div>
+</section>
+<section id="studentOnlineTestSection" class="card" style="margin-top:22px;display:none;">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;"><div><div style="color:#a78bfa;font-size:10px;font-weight:900;letter-spacing:.14em;">ONLINE TEST</div><h2 id="studentOnlineTestTitle" style="margin:5px 0;color:#fff;">Test</h2></div><div id="studentExamTimer" style="padding:10px 14px;border-radius:12px;background:rgba(239,68,68,.12);color:#fca5a5;font-weight:900;">00:00</div></div>
+  <div id="studentOnlineQuestions" style="margin-top:18px;"></div>
+  <button id="studentOnlineSubmit" type="button" onclick="submitStudentOnlineExam()" style="margin-top:18px;width:100%;padding:14px;border:0;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#059669);color:#fff;font-weight:900;">Testni topshirish</button>
+</section>
+
+<!-- STATS -->
 
         <section class="stats">
 
