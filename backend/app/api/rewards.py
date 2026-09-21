@@ -116,14 +116,8 @@ def buy_reward(
             detail="Coin yetarli emas"
         )
 
-    if product.crystal_price > gamification.crystals:
-        raise HTTPException(
-            status_code=400,
-            detail="Crystal yetarli emas"
-        )
-
+    # Student Shop xaridlari Coin orqali amalga oshiriladi.
     gamification.coins -= product.coin_price
-    gamification.crystals -= product.crystal_price
 
     product.stock -= 1
 
@@ -132,7 +126,7 @@ def buy_reward(
         product_id=product.id,
         quantity=1,
         coin_spent=product.coin_price,
-        crystal_spent=product.crystal_price,
+        crystal_spent=0,
         status="pending"
     )
 
