@@ -993,3 +993,9 @@
     </div>
 
 </div>
+<script>
+let studentExamPageVisible=false;
+function markStudentExamPageVisible(value){studentExamPageVisible=!!value;}
+document.addEventListener("visibilitychange",function(){if(document.hidden&&studentExamPageVisible)alert("⚠️ Test oynasidan chiqdingiz. Test davom etmoqda.");});
+window.addEventListener("blur",function(){if(studentExamPageVisible&&!document.hidden)alert("⚠️ Test oynasidan boshqa oynaga o‘tdingiz. Test davom etmoqda.");});
+</script>
