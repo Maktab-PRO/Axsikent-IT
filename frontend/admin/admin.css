@@ -4051,3 +4051,8 @@ button:active,
 .admin-login-card{
     padding-top:12px !important;
 }
+
+/* ONLY LOGIN LOGO TEXT — PLACE DIRECTLY UNDER LOGO */
+.admin-login-card .login-brand-info{
+    margin-top:-55px !important;
+}
