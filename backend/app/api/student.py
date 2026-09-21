@@ -670,12 +670,17 @@ def submit_lesson_quiz(
 
     passed = score == total
 
-    progress.quiz_passed = passed
+    # Bir marta muvaffaqiyatli o'tilgan test holatini qayta urinishda
+    # noto'g'ri javoblar sabab bekor qilib yubormaymiz.
+    if passed:
+        progress.quiz_passed = True
+
+    current_quiz_passed = bool(progress.quiz_passed)
 
     db.commit()
 
     return {
-        "passed": passed,
+        "passed": current_quiz_passed,
         "score": score,
         "total": total,
         "message": (
