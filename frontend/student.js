@@ -1776,7 +1776,7 @@ function confirmLogoutStudent() {
             const stock = Number(reward.stock || 0);
             const coinPrice = Number(reward.coin_price || 0);
             const crystalPrice = Number(reward.crystal_price || 0);
-            const canBuy = stock > 0 && Number(student.coins || 0) >= coinPrice && Number(student.crystals || 0) >= crystalPrice;
+            const canBuy = stock > 0 && Number(student.coins || 0) >= coinPrice;
 
             return '<div style="position:relative;overflow:hidden;border:1px solid rgba(139,92,246,.28);border-radius:20px;padding:22px;margin-bottom:16px;background:linear-gradient(145deg,rgba(20,18,30,.96),rgba(10,10,15,.98));box-shadow:0 12px 35px rgba(0,0,0,.28);">' +
                 '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">' +
@@ -1790,7 +1790,7 @@ function confirmLogoutStudent() {
                     '<div style="color:#c4b5fd;font-size:16px;font-weight:800;">🪙 ' + coinPrice + ' Coin</div>' +
                     (crystalPrice > 0 ? '<div style="color:#c4b5fd;font-size:16px;font-weight:800;margin-top:7px;">💎 ' + crystalPrice + ' Crystal</div>' : '') +
                     '</div>' +
-                    '<button type="button" onclick="buyStudentReward(' + Number(reward.id) + ')" ' + (canBuy ? '' : 'disabled') + ' style="border:none;border-radius:13px;padding:12px 20px;background:' + (canBuy ? 'linear-gradient(135deg,#8B5CF6,#6D28D9)' : 'rgba(255,255,255,.08)') + ';color:' + (canBuy ? '#fff' : '#777') + ';font-weight:800;cursor:' + (canBuy ? 'pointer' : 'not-allowed') + ';">' + (stock <= 0 ? "Tugagan" : (canBuy ? "Sotib olish" : "Coin/Crystal yetarli emas")) + '</button>' +
+                    '<button type="button" onclick="buyStudentReward(' + Number(reward.id) + ')" ' + (canBuy ? '' : 'disabled') + ' style="border:none;border-radius:13px;padding:12px 20px;background:' + (canBuy ? 'linear-gradient(135deg,#8B5CF6,#6D28D9)' : 'rgba(255,255,255,.08)') + ';color:' + (canBuy ? '#fff' : '#777') + ';font-weight:800;cursor:' + (canBuy ? 'pointer' : 'not-allowed') + ';">' + (stock <= 0 ? "Tugagan" : (canBuy ? "Sotib olish" : "Coin yetarli emas")) + '</button>' +
                 '</div>' +
             '</div>';
         }).join("");
@@ -1821,7 +1821,7 @@ async function buyStudentReward(productId) {
 
     showPremiumModal(
         "Mukofotni sotib olish",
-        "Bu mukofotni Coin va Crystal orqali sotib olishni tasdiqlaysizmi?",
+        "Bu mukofotni Coin orqali sotib olishni tasdiqlaysizmi?",
         "Sotib olish",
         async () => {
             try {
@@ -1842,7 +1842,7 @@ async function buyStudentReward(productId) {
 
                 showPremiumModal(
                     "Xarid muvaffaqiyatli!",
-                    "🎉 " + (data.message || "Mukofot buyurtma qilindi") + "<br><br>Buyurtma №" + data.order_id + "<br>🪙 Coin: " + Number((data.student || {}).coins || 0) + "<br>💎 Crystal: " + Number((data.student || {}).crystals || 0),
+                    "🎉 " + (data.message || "Mukofot buyurtma qilindi") + "<br><br>Buyurtma №" + data.order_id + "<br>🪙 Coin: " + Number((data.student || {}).coins || 0),
                     "Ajoyib!"
                 );
 
