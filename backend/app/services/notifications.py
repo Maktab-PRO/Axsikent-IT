@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.models.student import Student
 from app.models.notification import Notification
+from app.models.student_group import StudentGroup
 
 
 def notify_all_students(
@@ -18,6 +19,36 @@ def notify_all_students(
         db.add(
             Notification(
                 student_id=student.id,
+                title=title,
+                message=message,
+                notification_type=notification_type,
+                is_read=False,
+            )
+        )
+
+    db.commit()
+
+
+def notify_group_students(
+    db: Session,
+    group_id: int,
+    title: str,
+    message: str,
+    notification_type: str = "homework",
+):
+    student_ids = db.query(StudentGroup.student_id).join(
+        Student,
+        Student.id == StudentGroup.student_id
+    ).filter(
+        StudentGroup.group_id == group_id,
+        StudentGroup.is_active == True,
+        Student.is_active == True,
+    ).all()
+
+    for (student_id,) in student_ids:
+        db.add(
+            Notification(
+                student_id=student_id,
                 title=title,
                 message=message,
                 notification_type=notification_type,
