@@ -57,3 +57,27 @@ def notify_group_students(
         )
 
     db.commit()
+
+
+def notify_student(
+    db: Session,
+    student_id: int,
+    title: str,
+    message: str,
+    notification_type: str = "content",
+):
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True,
+    ).first()
+    if not student:
+        return
+
+    db.add(Notification(
+        student_id=student_id,
+        title=title,
+        message=message,
+        notification_type=notification_type,
+        is_read=False,
+    ))
+    db.commit()
