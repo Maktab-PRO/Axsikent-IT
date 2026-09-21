@@ -3907,6 +3907,98 @@ async function loadTrainings() {
     }
 }
 
+function openOnlineExamCreate() {
+    const panel = document.getElementById("onlineExamCreatePanel");
+    if (panel) { panel.hidden = false; panel.scrollIntoView({behavior:"smooth", block:"start"}); }
+}
+
+async function createOnlineExam(event) {
+    event.preventDefault();
+    try {
+        const data = await apiRequest("/online-exams/admin/create", {
+            method: "POST",
+            body: JSON.stringify({
+                title: document.getElementById("onlineExamTitle").value.trim(),
+                description: document.getElementById("onlineExamDescription").value.trim() || null,
+                time_limit_minutes: Number(document.getElementById("onlineExamTime").value),
+                pass_score: Number(document.getElementById("onlineExamPass").value),
+                max_attempts: Number(document.getElementById("onlineExamAttempts").value)
+            })
+        });
+        const examId = data?.exam?.id;
+        document.getElementById("onlineExamCreateMessage").textContent = "Online Test yaratildi. Endi savollar qo‘shing.";
+        showToast("Online Test yaratildi", "success");
+        if (examId) openOnlineExamQuestions(examId, data.exam.title);
+    } catch (error) {
+        showToast(error.message || "Online Test yaratilmadi", "error");
+    }
+}
+
+async function openOnlineExamQuestions(examId, title) {
+    window.__activeOnlineExamId = Number(examId);
+    const panel = document.getElementById("onlineExamQuestionsPanel");
+    const titleEl = document.getElementById("onlineExamQuestionsTitle");
+    if (titleEl) titleEl.textContent = title || ("Test #" + examId);
+    if (panel) { panel.hidden = false; panel.scrollIntoView({behavior:"smooth", block:"start"}); }
+    await loadOnlineExamQuestions(examId);
+}
+
+async function loadOnlineExamQuestions(examId) {
+    const box = document.getElementById("onlineQuestionsList");
+    if (!box) return;
+    try {
+        const data = await apiRequest("/online-exams/admin/" + Number(examId) + "/questions");
+        const questions = data?.questions || [];
+        box.innerHTML = questions.length
+            ? "<div class='admin-table-wrap'><table class='admin-table'><thead><tr><th>#</th><th>Savol</th><th>To‘g‘ri javob</th></tr></thead><tbody>" +
+              questions.map((q,n) => "<tr><td>"+(n+1)+"</td><td>"+escapeHtml(q.question)+"</td><td>"+["A","B","C","D"][Number(q.correct_answer)]+"</td></tr>").join("") +
+              "</tbody></table></div>"
+            : "<div class='module-empty'><h3>Hali savollar yo‘q</h3><p>Birinchi savolni yuqoridagi forma orqali qo‘shing.</p></div>";
+    } catch (error) {
+        box.innerHTML = "<div class='module-empty'><h3>Xatolik</h3><p>"+escapeHtml(error.message)+"</p></div>";
+    }
+}
+
+async function addOnlineQuestion(event) {
+    event.preventDefault();
+    const examId = Number(window.__activeOnlineExamId);
+    if (!examId) { showToast("Avval Online Test yarating.", "error"); return; }
+    try {
+        await apiRequest("/online-exams/admin/" + examId + "/questions", {
+            method: "POST",
+            body: JSON.stringify({
+                question: document.getElementById("onlineQuestionText").value.trim(),
+                options: [
+                    document.getElementById("onlineOptionA").value.trim(),
+                    document.getElementById("onlineOptionB").value.trim(),
+                    document.getElementById("onlineOptionC").value.trim(),
+                    document.getElementById("onlineOptionD").value.trim()
+                ],
+                correct_answer: Number(document.getElementById("onlineCorrect").value)
+            })
+        });
+        document.getElementById("onlineQuestionForm").reset();
+        document.getElementById("onlineCorrect").value = "0";
+        showToast("Savol qo‘shildi", "success");
+        await loadOnlineExamQuestions(examId);
+    } catch (error) {
+        showToast(error.message || "Savol qo‘shilmadi", "error");
+    }
+}
+
+function initOnlineExamAdmin() {
+    const examForm = document.getElementById("onlineExamCreateForm");
+    const questionForm = document.getElementById("onlineQuestionForm");
+    if (examForm && !examForm.dataset.ready) {
+        examForm.dataset.ready = "1";
+        examForm.addEventListener("submit", createOnlineExam);
+    }
+    if (questionForm && !questionForm.dataset.ready) {
+        questionForm.dataset.ready = "1";
+        questionForm.addEventListener("submit", addOnlineQuestion);
+    }
+}
+
 async function loadExams() {
     const box = document.getElementById("examsContent");
     if (!box) return;
@@ -3979,6 +4071,7 @@ async function initAdminPanel() {
     initAdministratorManagement();
 initTeacherCreate();
 initTeacherPasswordEyes();
+    initOnlineExamAdmin();
     initStudentActions();
     initAdminAutoRefresh();
 
