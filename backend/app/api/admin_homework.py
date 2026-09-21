@@ -14,6 +14,7 @@ from app.models.group import Group
 from app.models.teacher import Teacher
 from app.models.student import Student
 from app.models.ai_telegram_submission import AITelegramSubmission
+from app.services.notifications import notify_group_students
 
 
 router = APIRouter(
@@ -458,6 +459,14 @@ def create_admin_homework(
     db.add(homework)
     db.commit()
     db.refresh(homework)
+
+    notify_group_students(
+        db,
+        group_id=homework.group_id,
+        title="📚 Yangi uy vazifasi",
+        message=f"{homework.title} uy vazifasi sizga biriktirildi.",
+        notification_type="homework",
+    )
 
     return {
         "message": "Uy vazifasi yaratildi.",
