@@ -3136,7 +3136,6 @@ loadStudent();
 loadStudentHomeworkResults();
 loadStudentCourses();
 loadStudentRanking();
-loadStudentDashboardTasks();
 loadStudentBooks();
 loadStudentNotifications();
 setInterval(loadStudentNotifications, 15000);
