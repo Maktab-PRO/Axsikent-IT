@@ -488,12 +488,18 @@ def mark_lesson_as_read(
     else:
         progress.is_read = True
 
+    has_quiz = db.query(LessonQuiz).filter(
+        LessonQuiz.lesson_id == lesson_id,
+        LessonQuiz.is_active == True
+    ).first() is not None
+
     db.commit()
 
     return {
         "message": "Dars o'qilgan deb belgilandi",
         "lesson_id": lesson_id,
         "is_read": True,
+        "has_quiz": has_quiz,
         "quiz_passed": progress.quiz_passed,
         "is_completed": progress.is_completed
     }
@@ -761,7 +767,12 @@ def complete_lesson(
             detail="Avval darsni o'qib chiqing"
         )
 
-    if not progress.quiz_passed:
+    has_quiz = db.query(LessonQuiz).filter(
+        LessonQuiz.lesson_id == lesson_id,
+        LessonQuiz.is_active == True
+    ).first() is not None
+
+    if has_quiz and not progress.quiz_passed:
         raise HTTPException(
             status_code=400,
             detail="Avval dars yakuniy tekshiruvdan o'ting"
