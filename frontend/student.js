@@ -3133,7 +3133,6 @@ async function loadStudentHomeworkResults() {
 ========================= */
 
 loadStudent();
-loadStudentHomeworkResults();
 loadStudentCourses();
 loadStudentRanking();
 loadStudentBooks();
