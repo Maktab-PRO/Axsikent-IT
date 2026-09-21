@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.core.security import verify_token
 from app.models.gamification import StudentGamification
+from app.models.student import Student
 from app.models.shop import ShopProduct, ShopOrder
 
 router = APIRouter(
@@ -82,10 +83,19 @@ def buy_reward(
     db: Session = Depends(get_db)
 ):
     student_id = verify_token(credentials.credentials)
+    if not student_id:
+        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
 
     gamification = db.query(StudentGamification).filter(
         StudentGamification.student_id == student_id
     ).first()
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
 
     if not gamification:
         raise HTTPException(
