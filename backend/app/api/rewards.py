@@ -38,7 +38,7 @@ def get_student_rewards(
 
     gamification = db.query(StudentGamification).filter(
         StudentGamification.student_id == student_id
-    ).first()
+    ).with_for_update().first()
 
     if not gamification:
         gamification = StudentGamification(
@@ -113,7 +113,7 @@ def buy_reward(
     product = db.query(ShopProduct).filter(
         ShopProduct.id == product_id,
         ShopProduct.is_active == True
-    ).first()
+    ).with_for_update().first()
 
     if not product:
         raise HTTPException(
