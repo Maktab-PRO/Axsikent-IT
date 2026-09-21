@@ -12,6 +12,7 @@ from app.core.security import require_admin, verify_token
 from app.models.admin import Admin
 from app.models.student import Student
 from app.models.online_exam import OnlineExam, OnlineExamQuestion, OnlineExamAttempt
+from app.models.student_course import StudentCourse
 
 router = APIRouter(prefix="/online-exams", tags=["Online Exams"])
 security = HTTPBearer()
@@ -53,8 +54,19 @@ def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security
         raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
 
     exams = db.query(OnlineExam).filter(OnlineExam.is_active == True).order_by(OnlineExam.id.desc()).all()
+    active_course_ids = {
+        row.course_id for row in db.query(StudentCourse.course_id).filter(
+            StudentCourse.student_id == student_id,
+            StudentCourse.is_active == True
+        ).all()
+    }
+
     result = []
     for exam in exams:
+        # course_id berilgan test faqat shu kursga faol biriktirilgan
+        # o‘quvchiga ko‘rinadi. course_id=None esa umumiy test hisoblanadi.
+        if exam.course_id is not None and exam.course_id not in active_course_ids:
+            continue
         attempts = db.query(OnlineExamAttempt).filter(
             OnlineExamAttempt.exam_id == exam.id,
             OnlineExamAttempt.student_id == student_id,
@@ -80,6 +92,15 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
     exam = db.query(OnlineExam).filter(OnlineExam.id == exam_id, OnlineExam.is_active == True).first()
     if not exam:
         raise HTTPException(status_code=404, detail="Imtihon topilmadi")
+
+    if exam.course_id is not None:
+        enrolled = db.query(StudentCourse.id).filter(
+            StudentCourse.student_id == student_id,
+            StudentCourse.course_id == exam.course_id,
+            StudentCourse.is_active == True
+        ).first()
+        if not enrolled:
+            raise HTTPException(status_code=403, detail="Bu test siz biriktirilgan kurs uchun mavjud emas")
 
     attempts = db.query(OnlineExamAttempt).filter(
         OnlineExamAttempt.exam_id == exam_id,
