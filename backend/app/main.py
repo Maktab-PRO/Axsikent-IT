@@ -90,6 +90,14 @@ if settings.TELEGRAM_BOT_TOKEN:
 Base.metadata.create_all(bind=engine)
 with engine.connect() as connection:
     connection.exec_driver_sql("""
+        ALTER TABLE online_exam_attempts
+        ADD COLUMN IF NOT EXISTS question_ids TEXT
+    """)
+    connection.exec_driver_sql("""
+        ALTER TABLE online_exam_attempts
+        ADD COLUMN IF NOT EXISTS deadline_at TIMESTAMP
+    """)
+    connection.exec_driver_sql("""
         ALTER TABLE lesson_progress
         ADD COLUMN IF NOT EXISTS is_read BOOLEAN NOT NULL DEFAULT FALSE
     """)
