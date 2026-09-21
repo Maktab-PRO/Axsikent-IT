@@ -15,6 +15,7 @@ class OnlineExam(Base):
     pass_score = Column(Integer, default=80, nullable=False)
     max_attempts = Column(Integer, default=1, nullable=False)
     question_count = Column(Integer, default=0, nullable=False)
+    question_limit = Column(Integer, nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
