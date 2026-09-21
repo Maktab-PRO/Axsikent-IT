@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.models.lesson_quiz import LessonQuiz
+from app.core.security import require_admin
+from app.models.admin import Admin
 
 router = APIRouter(
     prefix="/admin/lesson-quizzes",
@@ -19,7 +21,8 @@ def create_lesson_quiz(
     option_c: str,
     option_d: str,
     correct_answer: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
 ):
 
     correct_answer = correct_answer.upper()
