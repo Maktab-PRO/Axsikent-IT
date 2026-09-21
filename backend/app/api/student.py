@@ -685,7 +685,7 @@ def submit_lesson_quiz(
         "total": total,
         "message": (
             "✅ Tekshiruvdan muvaffaqiyatli o'tdingiz"
-            if passed
+            if current_quiz_passed
             else "❌ Javoblarda xatolik bor. Qayta urinib ko'ring."
         )
     }
