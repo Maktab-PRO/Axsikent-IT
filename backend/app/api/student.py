@@ -204,8 +204,41 @@ def get_my_courses(
         Course.is_active == True
     ).all()
 
-    return [
-        {
+    result = []
+
+    for student_course, course in student_courses:
+        # Kurs progressini saqlangan qiymatdan emas, amaldagi faol darslardan
+        # qayta hisoblaymiz. Shunda admin dars qo'shsa/o'chirsa ham student
+        # kabinetidagi foiz eskirib qolmaydi.
+        total_lessons = db.query(Lesson).join(
+            CourseModule,
+            Lesson.module_id == CourseModule.id
+        ).filter(
+            CourseModule.course_id == course.id,
+            CourseModule.is_active == True,
+            Lesson.is_active == True
+        ).count()
+
+        completed_lessons = db.query(
+            func.count(func.distinct(LessonProgress.lesson_id))
+        ).join(
+            Lesson,
+            LessonProgress.lesson_id == Lesson.id
+        ).join(
+            CourseModule,
+            Lesson.module_id == CourseModule.id
+        ).filter(
+            LessonProgress.student_id == student_id,
+            LessonProgress.is_completed == True,
+            CourseModule.course_id == course.id,
+            CourseModule.is_active == True,
+            Lesson.is_active == True
+        ).scalar() or 0
+
+        progress = round(completed_lessons / total_lessons * 100) if total_lessons else 0
+        progress = max(0, min(100, progress))
+
+        result.append({
             "id": course.id,
             "name": course.name,
             "description": course.description,
@@ -216,11 +249,11 @@ def get_my_courses(
             "lessons_per_week": course.lessons_per_week,
             "price_min": course.price_min,
             "price_max": course.price_max,
-            "progress": student_course.progress,
+            "progress": progress,
             "enrolled_at": student_course.enrolled_at
-        }
-        for student_course, course in student_courses
-    ]
+        })
+
+    return result
 @router.get("/courses/{course_id}/modules")
 def get_course_modules(
     course_id: int,
