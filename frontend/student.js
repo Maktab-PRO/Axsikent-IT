@@ -4021,12 +4021,35 @@ async function startStudentOnlineExam(examId) {
     }
 
     try {
-        const response = await fetch(API_URL + "/online-exams/" + Number(examId) + "/start", {
-            method:"POST",
-            headers:{"Authorization":"Bearer " + token}
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.detail || "Testni boshlashda xatolik.");
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30000);
+
+        let response;
+        let data = {};
+        try {
+            response = await fetch(API_URL + "/online-exams/" + Number(examId) + "/start", {
+                method:"POST",
+                headers:{
+                    "Authorization":"Bearer " + token,
+                    "Accept":"application/json"
+                },
+                cache:"no-store",
+                signal:controller.signal
+            });
+
+            const raw = await response.text();
+            try {
+                data = raw ? JSON.parse(raw) : {};
+            } catch (_) {
+                data = {};
+            }
+        } finally {
+            clearTimeout(timeout);
+        }
+
+        if (!response.ok) {
+            throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
+        }
 
         studentOnlineAttemptId = data.attempt_id;
         studentOnlineExamId = data.exam_id;
@@ -4082,6 +4105,162 @@ async function startStudentOnlineExam(examId) {
     } catch (error) {
         console.error("Online test start:", error);
         showPremiumModal("Testni boshlashda xatolik",escapeOnlineExamHtml(error.message),"Yopish");
+    }
+}
+
+
+async function loadStudentDashboardHomework() {
+    const token = localStorage.getItem("access_token");
+    const homeworkList = document.getElementById("studentHomeworkList");
+    const homeworkResults = document.getElementById("studentHomeworkResults");
+    const recentTasks = document.getElementById("studentRecentTasks");
+
+    if (!token) return;
+
+    const setError = function(message) {
+        const html = '<div style="text-align:center;padding:28px 18px;color:#f87171;">❌ ' + escapeHtml(message) + '</div>';
+        if (homeworkList) homeworkList.innerHTML = html;
+        if (homeworkResults) homeworkResults.innerHTML = "";
+        if (recentTasks) recentTasks.innerHTML = '<div class="task"><div class="task-name" style="color:#f87171;">Vazifalarni yuklab bo‘lmadi</div><div class="task-date">' + escapeHtml(message) + '</div></div>';
+    };
+
+    try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 20000);
+
+        let homeworkResponse;
+        let homeworks = [];
+        let submissions = [];
+
+        try {
+            homeworkResponse = await fetch(API_URL + "/homework/student?ts=" + Date.now(), {
+                method:"GET",
+                headers:{"Authorization":"Bearer " + token,"Accept":"application/json"},
+                cache:"no-store",
+                signal:controller.signal
+            });
+            const raw = await homeworkResponse.text();
+            try { homeworks = raw ? JSON.parse(raw) : []; } catch (_) { homeworks = []; }
+
+            if (!homeworkResponse.ok) {
+                throw new Error(homeworks.detail || ("Server xatosi: HTTP " + homeworkResponse.status));
+            }
+
+            const submissionsResponse = await fetch(API_URL + "/homework/student/submissions?ts=" + Date.now(), {
+                method:"GET",
+                headers:{"Authorization":"Bearer " + token,"Accept":"application/json"},
+                cache:"no-store",
+                signal:controller.signal
+            });
+            const submissionsRaw = await submissionsResponse.text();
+            try { submissions = submissionsRaw ? JSON.parse(submissionsRaw) : []; } catch (_) { submissions = []; }
+
+            if (!submissionsResponse.ok) {
+                throw new Error(submissions.detail || ("Server xatosi: HTTP " + submissionsResponse.status));
+            }
+        } finally {
+            clearTimeout(timeout);
+        }
+
+        if (!Array.isArray(homeworks)) homeworks = [];
+        if (!Array.isArray(submissions)) submissions = [];
+
+        if (homeworkList) {
+            homeworkList.innerHTML = homeworks.length
+                ? homeworks.map(function(hw) {
+                    const sub = submissions.find(function(item){ return Number(item.homework_id) === Number(hw.id); });
+                    const status = sub ? (sub.status === "checked" ? "✅ Tekshirildi" : "⏳ Topshirilgan") : "🆕 Yangi";
+                    const color = sub && sub.status === "checked" ? "#4ade80" : sub ? "#facc15" : "#60a5fa";
+                    return '<div style="padding:15px;margin-bottom:10px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);">' +
+                        '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">' +
+                        '<strong style="color:#fff;font-size:14px;">' + escapeHtml(hw.title || "Uy vazifasi") + '</strong>' +
+                        '<span style="color:' + color + ';font-size:11px;font-weight:800;white-space:nowrap;">' + status + '</span>' +
+                        '</div>' +
+                        '<div style="margin-top:6px;color:#94a3b8;font-size:12px;line-height:1.5;">' + escapeHtml(hw.description || "Tavsif mavjud emas.") + '</div>' +
+                        (hw.deadline ? '<div style="margin-top:7px;color:#64748b;font-size:11px;">⏰ ' + escapeHtml(hw.deadline) + '</div>' : '') +
+                        '</div>';
+                }).join("")
+                : '<div style="text-align:center;padding:28px;color:#94a3b8;">Hozircha uy vazifalari yo‘q.</div>';
+        }
+
+        if (homeworkResults) {
+            homeworkResults.innerHTML = "";
+        }
+
+        if (recentTasks) {
+            const recent = homeworks.slice(0,5);
+            recentTasks.innerHTML = recent.length
+                ? recent.map(function(hw) {
+                    const sub = submissions.find(function(item){ return Number(item.homework_id) === Number(hw.id); });
+                    const status = sub ? (sub.status === "checked" ? "Tekshirildi" : "Topshirilgan") : "Yangi vazifa";
+                    return '<div class="task">' +
+                        '<div class="task-check task-check-modern"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/></svg></div>' +
+                        '<div><div class="task-name">' + escapeHtml(hw.title || "Uy vazifasi") + '</div><div class="task-date">' + escapeHtml(status) + (hw.deadline ? ' · Muddat: ' + escapeHtml(hw.deadline) : '') + '</div></div>' +
+                        '</div>';
+                }).join("")
+                : '<div class="task"><div class="task-check task-check-modern"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/></svg></div><div><div class="task-name">Hozircha vazifa yo‘q</div><div class="task-date">Yangi vazifa berilganda shu yerda chiqadi</div></div></div>';
+        }
+
+        const done = submissions.filter(function(item){ return item.status === "checked"; }).length;
+        const statDone = document.getElementById("statHomeworkDone");
+        if (statDone) statDone.textContent = String(done);
+
+        const dates = submissions.map(function(item){
+            const value = item.checked_at || item.submitted_at;
+            return value ? new Date(value) : null;
+        }).filter(Boolean);
+
+        const dayKeys = Array.from(new Set(dates.map(function(d){
+            return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+        }))).sort().reverse();
+
+        let streak = 0;
+        if (dayKeys.length) {
+            let cursor = new Date();
+            cursor.setHours(0,0,0,0);
+            for (const key of dayKeys) {
+                const expected = cursor.getFullYear() + "-" + String(cursor.getMonth()+1).padStart(2,"0") + "-" + String(cursor.getDate()).padStart(2,"0");
+                if (key === expected) {
+                    streak++;
+                    cursor.setDate(cursor.getDate()-1);
+                } else if (key < expected) {
+                    break;
+                }
+            }
+        }
+
+        const statStreak = document.getElementById("statStreak");
+        if (statStreak) statStreak.textContent = streak + " kun";
+
+        const activity = document.getElementById("studentActivityContent");
+        if (activity) {
+            const items = submissions.slice(0,5).map(function(item){
+                const hw = homeworks.find(function(x){ return Number(x.id) === Number(item.homework_id); });
+                const label = item.status === "checked" ? "Vazifa tekshirildi" : "Vazifa topshirildi";
+                return '<div style="display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06);">' +
+                    '<div style="width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:rgba(52,211,153,.10);color:#34d399;">✓</div>' +
+                    '<div style="flex:1;"><div style="color:#fff;font-weight:700;font-size:13px;">' + label + '</div><div style="margin-top:4px;color:#94a3b8;font-size:11px;">' + escapeHtml(hw ? hw.title : "Uy vazifasi") + '</div></div>' +
+                    '</div>';
+            }).join("");
+
+            activity.innerHTML = items || '<div style="text-align:center;padding:30px;color:#94a3b8;">Hozircha faollik tarixi yo‘q.</div>';
+        }
+    } catch (error) {
+        console.error("Student dashboard homework/activity:", error);
+        setError(error && error.name === "AbortError" ? "Server 20 soniyada javob bermadi." : (error.message || "Ma’lumotlarni yuklashda xatolik."));
+    }
+}
+
+function initStudentDashboard() {
+    const run = function() {
+        loadStudent();
+        loadStudentCourses();
+        loadStudentDashboardHomework();
+    };
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", run, {once:true});
+    } else {
+        run();
     }
 }
 
