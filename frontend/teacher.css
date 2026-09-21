@@ -83,3 +83,17 @@
         min-height:260px !important;
     }
 }
+
+
+/* TELEFONDA BARCHA BO'LIMLAR — AYNAN BIR XIL BLOK */
+@media (max-width:600px){
+    #section-students > .table-panel,
+    #section-attendance > .table-panel,
+    #section-grades > .form-panel,
+    #section-courses > .panel,
+    #section-support > .support-grid{
+        height:420px !important;
+        min-height:420px !important;
+        overflow:auto !important;
+    }
+}
