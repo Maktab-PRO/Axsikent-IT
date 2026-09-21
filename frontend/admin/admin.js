@@ -936,15 +936,42 @@ async function loadStudents() {
     `;
 
     try {
-        const [data, aiData] = await Promise.all([
+        // Oddiy va Telegram AI topshiriqlarini alohida yuklaymiz.
+        // Bittasidagi xato ikkinchisini bloklamasligi kerak.
+        const [normalResult, aiResult] = await Promise.allSettled([
             apiRequest("/admin/homework/submissions"),
             apiRequest("/admin/homework/ai-submissions")
         ]);
 
+        const normalSubmissions =
+            normalResult.status === "fulfilled"
+                ? (normalResult.value?.submissions || [])
+                : [];
+
+        const aiSubmissions =
+            aiResult.status === "fulfilled"
+                ? (aiResult.value?.submissions || [])
+                : [];
+
+        if (
+            normalResult.status === "rejected" &&
+            aiResult.status === "rejected"
+        ) {
+            throw new Error(
+                normalResult.reason?.message ||
+                aiResult.reason?.message ||
+                "Topshirilgan vazifalar olinmadi."
+            );
+        }
+
         const submissions = [
-            ...(data.submissions || []),
-            ...(aiData.submissions || [])
-        ].sort((a, b) => new Date(b.submitted_at || 0) - new Date(a.submitted_at || 0));
+            ...normalSubmissions,
+            ...aiSubmissions
+        ].sort(
+            (a, b) =>
+                new Date(b.submitted_at || 0) -
+                new Date(a.submitted_at || 0)
+        );
 
         setText(
             "homeworkTotal",
