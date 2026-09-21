@@ -33,3 +33,9 @@ class Student(Base):
         Boolean,
         default=True
     )
+
+    telegram_chat_id = Column(
+        String(64),
+        unique=True,
+        nullable=True
+    )
