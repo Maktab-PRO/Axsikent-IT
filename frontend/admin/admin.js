@@ -3922,7 +3922,8 @@ async function createOnlineExam(event) {
                 description: document.getElementById("onlineExamDescription").value.trim() || null,
                 time_limit_minutes: Number(document.getElementById("onlineExamTime").value),
                 pass_score: Number(document.getElementById("onlineExamPass").value),
-                max_attempts: Number(document.getElementById("onlineExamAttempts").value)
+                max_attempts: Number(document.getElementById("onlineExamAttempts").value),
+                question_limit: document.getElementById("onlineExamQuestionLimit").value ? Number(document.getElementById("onlineExamQuestionLimit").value) : null
             })
         });
         const examId = data?.exam?.id;
