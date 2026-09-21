@@ -54,3 +54,15 @@
         height:58px !important;
     }
 }
+
+/* DASHBOARD INTRO — WHITE BACKGROUND, BOLD */
+.hero-head .dashboard-intro{
+    display:inline-block;
+    margin-top:10px !important;
+    padding:10px 14px !important;
+    background:#fff !important;
+    color:#111 !important;
+    font-weight:900 !important;
+    border-radius:10px !important;
+    line-height:1.5 !important;
+}
