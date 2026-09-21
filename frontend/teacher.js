@@ -17,7 +17,6 @@ document.querySelectorAll(".language-picker").forEach(p=>{
 });
 document.addEventListener("click",()=>document.querySelectorAll(".language-picker.open").forEach(x=>x.classList.remove("open")));
 tr();updateLanguagePickers();
-$("teacherLoginForm").addEventListener("submit",teacherLogin);
 function logout(){localStorage.removeItem("teacher_access_token");localStorage.removeItem("teacher_id");location.reload()}
 $("logoutBtn").addEventListener("click",logout);
 async function refreshTeacherPanel(){
@@ -27,7 +26,6 @@ async function refreshTeacherPanel(){
 }
 $("teacherRefreshBtn")?.addEventListener("click",refreshTeacherPanel);
 $("teacherBrandLogo")?.addEventListener("click",refreshTeacherPanel);
-$("teacherLoginLogo")?.addEventListener("click",()=>location.reload());
 function nav(section){document.querySelectorAll(".side-item").forEach(b=>b.classList.toggle("active",b.dataset.section===section));document.querySelectorAll(".teacher-section").forEach(s=>s.classList.toggle("active",s.id==="section-"+section));if(section==="students"||section==="attendance"||section==="grades"||section==="dashboard")loadTeacherData()}
 document.querySelectorAll(".side-item,[data-section]").forEach(b=>b.addEventListener("click",()=>nav(b.dataset.section)));
 async function api(path,opt={}){const r=await fetch(API+path,{...opt,headers:{"Content-Type":"application/json","Authorization":"Bearer "+token,...(opt.headers||{})}});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.detail||"Server xatosi");return d}
