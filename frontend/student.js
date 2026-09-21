@@ -1135,7 +1135,7 @@ async function openStudentModule(courseId, moduleId) {
                                     margin-bottom:12px;
                                     line-height:1.5;
                                 ">
-                                    ${index + 1}. ${quiz.question}
+                                    ${index + 1}. ${escapeHtml(quiz.question || "")}
                                 </div>
 
                                 ${[
@@ -1161,7 +1161,7 @@ async function openStudentModule(courseId, moduleId) {
                                             name="quiz_${quiz.id}"
                                             value="${letter}"
                                         >
-                                        <span>${letter}) ${option}</span>
+                                        <span>${letter}) ${escapeHtml(option || "")}</span>
                                     </label>
                                 `).join("")}
 
