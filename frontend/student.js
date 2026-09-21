@@ -1672,7 +1672,7 @@ function confirmLogoutStudent() {
     await loadStudentRanking();
 }
 
-    async async function openStudentRewardsMenu(element) {
+    async function openStudentRewardsMenu(element) {
         selectMenu(element);
         const modalId = "studentRewardsModal";
         const oldModal = document.getElementById(modalId);
@@ -1699,7 +1699,7 @@ function confirmLogoutStudent() {
         await loadStudentRewards("studentRewardsModalContent");
     }
 
-    async async function loadStudentRewards(targetId) {
+    async function loadStudentRewards(targetId) {
     const container = document.getElementById(targetId || "studentRewardsContent");
     if (!container) return;
 
