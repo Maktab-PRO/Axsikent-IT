@@ -3702,7 +3702,7 @@ function openStudentTrainings() {
     loadStudentTrainings();
 }
 
-function openStudentOnlineTests() {
+function openStudentOnlineTests(skipLoad = false) {
     const oldModal = document.getElementById("studentOnlineTestWindow");
     if (oldModal) oldModal.remove();
 
@@ -3729,6 +3729,10 @@ function openStudentOnlineTests() {
     const token = localStorage.getItem("access_token");
     if (!token) {
         body.innerHTML = '<div style="padding:25px;text-align:center;color:#f87171;">Avval Student kabinetiga kiring.</div>';
+        return;
+    }
+
+    if (skipLoad) {
         return;
     }
 
@@ -4115,8 +4119,14 @@ async function startStudentOnlineExam(examId) {
         if (oldTestSection) oldTestSection.style.display = "none";
 
         if (!modal) {
-            openStudentOnlineTests();
-            throw new Error("Online Test oynasi qayta ochildi. Iltimos, testni yana boshlang.");
+            // Yangi Online Test ro‘yxatidan boshlangan test uchun modal hali mavjud bo‘lmasligi mumkin.
+            // Uni bu yerning o‘zida yaratamiz va shu testni davom ettiramiz — foydalanuvchi qayta bosmaydi.
+            openStudentOnlineTests(true);
+        }
+
+        const activeModal = document.getElementById("studentOnlineTestWindow");
+        if (!activeModal) {
+            throw new Error("Online Test oynasini yaratib bo‘lmadi.");
         }
 
         const body = document.getElementById("studentOnlineWindowBody");
