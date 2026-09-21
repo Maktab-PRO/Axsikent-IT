@@ -200,7 +200,7 @@ function showToast(message, type = "success") {
    ============================================================ */
 
 const sectionTitles = {
-    dashboard: "Command Center",
+    dashboard: "Boshqaruv markazi",
     students: "O‘quvchilar",
     teachers: "O‘qituvchilar",
     courses: "Kurslar",
@@ -252,7 +252,7 @@ function openSection(section) {
 
     const title =
         sectionTitles[section] ||
-        "Command Center";
+        "Boshqaruv markazi";
 
     const pageTitle = $("#pageTitle");
     const breadcrumb = $("#breadcrumbCurrent");
