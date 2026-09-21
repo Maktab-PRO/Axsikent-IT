@@ -130,6 +130,17 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
             active.finished_reason = "timeout"
             active.submitted_at = datetime.now(timezone.utc)
             db.commit()
+
+            # Muddati tugagan urinish ham max_attempts hisobiga kiradi.
+            # Aks holda max_attempts=1 bo'lgan testda timeoutdan keyin
+            # yangi urinish ochilib, limitni chetlab o'tish mumkin edi.
+            submitted_attempts = db.query(OnlineExamAttempt).filter(
+                OnlineExamAttempt.exam_id == exam_id,
+                OnlineExamAttempt.student_id == student_id,
+                OnlineExamAttempt.status == "submitted"
+            ).count()
+            if submitted_attempts >= exam.max_attempts:
+                raise HTTPException(status_code=403, detail="Urinishlar soni tugagan")
         else:
             selected_ids = []
             try:
