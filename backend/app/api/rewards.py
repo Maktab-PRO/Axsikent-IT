@@ -7,6 +7,7 @@ from app.core.security import verify_token
 from app.models.gamification import StudentGamification
 from app.models.student import Student
 from app.models.shop import ShopProduct, ShopOrder
+from app.services.notifications import notify_student
 
 router = APIRouter(
     prefix="/students",
@@ -150,6 +151,14 @@ def buy_reward(
     db.add(order)
     db.commit()
     db.refresh(order)
+
+    notify_student(
+        db,
+        student_id=student_id,
+        title="🎁 Mukofot buyurtmasi",
+        message=f"{product.name} uchun buyurtmangiz qabul qilindi. Buyurtma №{order.id}.",
+        notification_type="reward_order",
+    )
 
     return {
         "success": True,
