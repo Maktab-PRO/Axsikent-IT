@@ -96,7 +96,15 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
     ).first()
 
     if active:
-        if active.deadline_at and datetime.now(timezone.utc) >= active.deadline_at:
+        # SQLite/PostgreSQL sozlamalariga qarab SQLAlchemy datetime qiymatini
+        # naive yoki timezone-aware qaytarishi mumkin. Ikkala holatni ham
+        # bir xil UTC ko‘rinishga keltiramiz, aks holda resume paytida
+        # "can't compare offset-naive and offset-aware datetimes" xatosi chiqishi mumkin.
+        active_deadline = active.deadline_at
+        if active_deadline and active_deadline.tzinfo is None:
+            active_deadline = active_deadline.replace(tzinfo=timezone.utc)
+
+        if active_deadline and datetime.now(timezone.utc) >= active_deadline:
             active.status = "submitted"
             active.finished_reason = "timeout"
             active.submitted_at = datetime.now(timezone.utc)
@@ -182,7 +190,11 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
     if not attempt:
         raise HTTPException(status_code=404, detail="Faol imtihon urinishi topilmadi")
 
-    if attempt.deadline_at and datetime.now(timezone.utc) > attempt.deadline_at:
+    attempt_deadline = attempt.deadline_at
+    if attempt_deadline and attempt_deadline.tzinfo is None:
+        attempt_deadline = attempt_deadline.replace(tzinfo=timezone.utc)
+
+    if attempt_deadline and datetime.now(timezone.utc) > attempt_deadline:
         attempt.status = "submitted"
         attempt.submitted_at = datetime.now(timezone.utc)
         attempt.finished_reason = "time_expired"
