@@ -4056,3 +4056,19 @@ button:active,
 .admin-login-card .login-brand-info{
     margin-top:-55px !important;
 }
+
+/* RESTORE SIDEBAR ADMIN LOGO SIZE */
+.sidebar .brand .brand-mark{
+    width:120px !important;
+    height:120px !important;
+    flex:0 0 120px !important;
+    transform:translateY(0) !important;
+}
+.sidebar .brand .brand-mark img{
+    width:120px !important;
+    height:120px !important;
+    transform:scale(1) !important;
+}
+.sidebar .brand .brand-info{
+    top:auto !important;
+}
