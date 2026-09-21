@@ -27,3 +27,30 @@
         height:72px !important;
     }
 }
+
+/* RESTORE TEACHER PANEL LOGO */
+.teacher-topbar{
+    height:82px !important;
+    align-items:center !important;
+}
+.teacher-topbar .brand{
+    height:auto !important;
+    display:block !important;
+}
+.teacher-topbar .brand img{
+    width:220px !important;
+    height:66px !important;
+    object-fit:contain !important;
+}
+@media (max-width:520px){
+    .teacher-topbar{
+        height:72px !important;
+    }
+    .teacher-topbar .brand{
+        height:auto !important;
+    }
+    .teacher-topbar .brand img{
+        width:180px !important;
+        height:58px !important;
+    }
+}
