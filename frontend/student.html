@@ -297,7 +297,6 @@
                         0
                     </div>
                 </div>
-
             </div>
 
 
@@ -597,8 +596,7 @@
     </div>
 
     <div id="studentBooksContent">
-        <div style="
-            text-align:center;
+        <div style="            text-align:center;
             padding:25px;
             color:#7b8496;
         ">
@@ -897,8 +895,7 @@
             Tabriklaymiz! 🎓
         </h3>
 
-        <p id="lessonSuccessText">
-            Siz hozirgina o‘zingizga biriktirilgan
+        <p id="lessonSuccessText">            Siz hozirgina o‘zingizga biriktirilgan
             darsni 100% muvaffaqiyatli tugatdingiz!
         </p>
 
@@ -1001,8 +998,14 @@
 <script src="student.js?v=20260921-2"></script>
 
 <script>
-let studentExamPageVisible=false;
-function markStudentExamPageVisible(value){studentExamPageVisible=!!value;}
-document.addEventListener("visibilitychange",function(){if(document.hidden&&studentExamPageVisible)alert("⚠️ Test oynasidan chiqdingiz. Test davom etmoqda.");});
-window.addEventListener("blur",function(){if(studentExamPageVisible&&!document.hidden)alert("⚠️ Test oynasidan boshqa oynaga o‘tdingiz. Test davom etmoqda.");});
+document.addEventListener("visibilitychange",function(){
+    if(document.hidden && window.studentExamPageVisible){
+        alert("⚠️ Test oynasidan chiqdingiz. Test davom etmoqda.");
+    }
+});
+window.addEventListener("blur",function(){
+    if(window.studentExamPageVisible && !document.hidden){
+        alert("⚠️ Test oynasidan boshqa oynaga o‘tdingiz. Test davom etmoqda.");
+    }
+});
 </script>
