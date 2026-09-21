@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -850,8 +850,48 @@ def complete_lesson(
         )
         db.add(progress)
 
+    # Har bir dars faqat bir marta XP beradi.
+    # Shu sabab qayta bosish/race holatida XP takroran berilmaydi.
+    gamification = db.query(StudentGamification).filter(
+        StudentGamification.student_id == student_id
+    ).first()
+    if not gamification:
+        gamification = StudentGamification(
+            student_id=student_id,
+            xp=0,
+            level=1,
+            coins=0,
+            crystals=0,
+            streak_days=0
+        )
+        db.add(gamification)
+        db.flush()
+
+    now_utc = datetime.now(timezone.utc)
+    gamification.xp = (gamification.xp or 0) + 10
+    gamification.level = max(1, (gamification.xp // 100) + 1)
+
+    previous_activity = gamification.last_activity_at
+    if previous_activity and previous_activity.tzinfo is None:
+        previous_activity = previous_activity.replace(tzinfo=timezone.utc)
+
+    if previous_activity:
+        previous_date = previous_activity.astimezone(timezone.utc).date()
+        today = now_utc.date()
+        if previous_date == today:
+            pass
+        elif previous_date == today - timedelta(days=1):
+            gamification.streak_days = (gamification.streak_days or 0) + 1
+        else:
+            gamification.streak_days = 1
+    else:
+        gamification.streak_days = 1
+
+    gamification.last_activity_at = now_utc
+
     db.commit()
     db.refresh(progress)
+    db.refresh(gamification)
 
     total_lessons = db.query(Lesson).join(
         CourseModule,
