@@ -1,6 +1,6 @@
 import json
 import random
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -106,7 +106,16 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
     selected = questions[:]
     random.shuffle(selected)
 
-    attempt = OnlineExamAttempt(exam_id=exam_id, student_id=student_id, status="in_progress")
+    started_at = datetime.now(timezone.utc)
+    deadline_at = started_at + timedelta(minutes=exam.time_limit_minutes)
+    attempt = OnlineExamAttempt(
+        exam_id=exam_id,
+        student_id=student_id,
+        status="in_progress",
+        started_at=started_at,
+        deadline_at=deadline_at,
+        question_ids=json.dumps([q.id for q in selected])
+    )
     db.add(attempt)
     db.commit()
     db.refresh(attempt)
@@ -116,6 +125,7 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
         "exam_id": exam.id,
         "title": exam.title,
         "time_limit_minutes": exam.time_limit_minutes,
+        "deadline_at": deadline_at.isoformat(),
         "pass_score": exam.pass_score,
         "questions": [{"id": q.id, "question": q.question, "options": json.loads(q.options)} for q in selected]
     }
@@ -136,7 +146,17 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
     if not attempt:
         raise HTTPException(status_code=404, detail="Faol imtihon urinishi topilmadi")
 
+    if attempt.deadline_at and datetime.now(timezone.utc) > attempt.deadline_at:
+        attempt.status = "submitted"
+        attempt.submitted_at = datetime.now(timezone.utc)
+        attempt.finished_reason = "time_expired"
+        attempt.answers = json.dumps(data.answers, ensure_ascii=False)
+        db.commit()
+        raise HTTPException(status_code=408, detail="Imtihon vaqti tugagan")
+
+    question_ids = json.loads(attempt.question_ids or "[]")
     questions = db.query(OnlineExamQuestion).filter(
+        OnlineExamQuestion.id.in_(question_ids),
         OnlineExamQuestion.exam_id == exam_id,
         OnlineExamQuestion.is_active == True
     ).all()
