@@ -44,3 +44,5 @@ class OnlineExamAttempt(Base):
     started_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     submitted_at = Column(DateTime, nullable=True)
     finished_reason = Column(String(50), nullable=True)
+    question_ids = Column(Text, nullable=True)
+    deadline_at = Column(DateTime, nullable=True)
