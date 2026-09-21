@@ -3969,6 +3969,16 @@ let studentOnlineExamId = null;
 let studentOnlineDeadline = null;
 let studentOnlineTimer = null;
 
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
 function escapeOnlineExamHtml(value) {
     return String(value ?? "")
         .replace(/&/g,"&amp;")
