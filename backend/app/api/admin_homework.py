@@ -14,7 +14,7 @@ from app.models.group import Group
 from app.models.teacher import Teacher
 from app.models.student import Student
 from app.models.ai_telegram_submission import AITelegramSubmission
-from app.services.notifications import notify_group_students
+from app.services.notifications import notify_group_students, notify_student
 
 
 router = APIRouter(
@@ -724,6 +724,21 @@ def grade_submission(
 
     db.commit()
     db.refresh(submission)
+
+    homework = db.query(Homework).filter(
+        Homework.id == submission.homework_id
+    ).first()
+    if homework:
+        notify_student(
+            db,
+            student_id=submission.student_id,
+            title="📝 Uy vazifasi baholandi",
+            message=f"{homework.title}: {submission.score}/100" + (
+                f" — {submission.teacher_comment}"
+                if submission.teacher_comment else ""
+            ),
+            notification_type="homework_result",
+        )
 
     return {
         "message": "Topshiriq baholandi.",
