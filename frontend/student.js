@@ -4363,3 +4363,5 @@ async function submitStudentOnlineExam() {
         showPremiumModal("Xatolik yuz berdi", escapeOnlineExamHtml(message), "Yopish");
     }
 }
+
+initStudentDashboard();
