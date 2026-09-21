@@ -1692,6 +1692,28 @@ function confirmLogoutStudent() {
 
         document.body.appendChild(modal);
 
+    // Online Test oynasidagi barcha tugmalar bir xil premium gradientda bo'ladi.
+    const oldStyle = document.getElementById("studentOnlineTestPremiumStyle");
+    if (oldStyle) oldStyle.remove();
+    const style = document.createElement("style");
+    style.id = "studentOnlineTestPremiumStyle";
+    style.textContent =
+        "#studentOnlineTestWindow button:not(:disabled){" +
+        "background:linear-gradient(135deg,#7c3aed,#059669)!important;" +
+        "color:#fff!important;" +
+        "border:0!important;" +
+        "box-shadow:0 8px 20px rgba(124,58,237,.16)!important;" +
+        "}" +
+        "#studentOnlineTestWindow button:disabled{" +
+        "background:rgba(255,255,255,.08)!important;" +
+        "color:#94a3b8!important;" +
+        "opacity:.75;" +
+        "}" +
+        "#studentOnlineTestWindow label{" +
+        "background:rgba(255,255,255,.025)!important;" +
+        "}";
+    document.head.appendChild(style);
+
         const close = function(){ modal.remove(); };
         modal.querySelector(".student-rewards-modal-close").onclick = close;
         modal.querySelector(".student-rewards-modal-backdrop").onclick = close;
