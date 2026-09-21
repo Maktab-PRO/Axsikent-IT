@@ -39,6 +39,14 @@ class SubmitExam(BaseModel):
     answers: dict[str, int] = Field(default_factory=dict)
 
 
+def parse_options(raw_options):
+    try:
+        parsed = json.loads(raw_options or "[]")
+        return parsed if isinstance(parsed, list) else []
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return []
+
+
 def student_id_from_token(credentials):
     student_id = verify_token(credentials.credentials)
     if not student_id:
@@ -166,7 +174,7 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
                 "questions": [{
                     "id": q.id,
                     "question": q.question,
-                    "options": json.loads(q.options or "[]")
+                    "options": parse_options(q.options)
                 } for q in selected]
             }
 
@@ -203,7 +211,7 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
         "time_limit_minutes": exam.time_limit_minutes,
         "deadline_at": deadline_at.isoformat(),
         "pass_score": exam.pass_score,
-        "questions": [{"id": q.id, "question": q.question, "options": json.loads(q.options)} for q in selected]
+        "questions": [{"id": q.id, "question": q.question, "options": parse_options(q.options)} for q in selected]
     }
 
 
@@ -226,7 +234,7 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
     if attempt_deadline and attempt_deadline.tzinfo is None:
         attempt_deadline = attempt_deadline.replace(tzinfo=timezone.utc)
 
-    if attempt_deadline and datetime.now(timezone.utc) > attempt_deadline:
+    if attempt_deadline and datetime.now(timezone.utc) >= attempt_deadline:
         attempt.status = "submitted"
         attempt.submitted_at = datetime.now(timezone.utc)
         attempt.finished_reason = "time_expired"
@@ -234,7 +242,12 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
         db.commit()
         raise HTTPException(status_code=408, detail="Imtihon vaqti tugagan")
 
-    question_ids = json.loads(attempt.question_ids or "[]")
+    try:
+        question_ids = json.loads(attempt.question_ids or "[]")
+        if not isinstance(question_ids, list):
+            question_ids = []
+    except (TypeError, ValueError, json.JSONDecodeError):
+        question_ids = []
     questions = db.query(OnlineExamQuestion).filter(
         OnlineExamQuestion.id.in_(question_ids),
         OnlineExamQuestion.exam_id == exam_id,
