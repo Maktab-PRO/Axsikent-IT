@@ -216,7 +216,7 @@ const sectionTitles = {
     administrators: "Administratorlar",
     podcasts: "Podcastlar",
     trainings: "Treninglar",
-    exams: "Imtihonlar",
+    exams: "Imtihonlar",\n    "online-tests": "Online Test",
     support: "Texnik yordam"
 };
 
@@ -296,7 +296,7 @@ function openSection(section) {
     if (section === "ranking") loadRanking();
     if (section === "podcasts") loadPodcasts();
     if (section === "trainings") loadTrainings();
-    if (section === "exams") loadExams();
+    if (section === "exams") loadExams();\n    if (section === "online-tests") { initOnlineExamAdmin(); }
 
     const backButton = document.getElementById("sectionBackBtn");
     if (backButton) backButton.hidden = section === "dashboard";
