@@ -112,6 +112,28 @@ with engine.connect() as connection:
         ADD COLUMN IF NOT EXISTS quiz_passed BOOLEAN NOT NULL DEFAULT FALSE
     """)
 
+    # Eski versiyalarda bir student+lesson uchun bir nechta progress qatori
+    # paydo bo'lishi mumkin edi. Avval eng to'liq qatorni qoldirib, qolgan
+    # dublikatlarni tozalaymiz; keyin kelajakda dublikat yaratishni DB darajasida
+    # bloklaymiz.
+    connection.exec_driver_sql("""
+        WITH ranked AS (
+            SELECT id,
+                   ROW_NUMBER() OVER (
+                       PARTITION BY student_id, lesson_id
+                       ORDER BY is_completed DESC, quiz_passed DESC, is_read DESC, id ASC
+                   ) AS rn
+            FROM lesson_progress
+        )
+        DELETE FROM lesson_progress
+        WHERE id IN (SELECT id FROM ranked WHERE rn > 1)
+    """)
+
+    connection.exec_driver_sql("""
+        CREATE UNIQUE INDEX IF NOT EXISTS uq_lesson_progress_student_lesson
+        ON lesson_progress (student_id, lesson_id)
+    """)
+
     connection.exec_driver_sql("""
         ALTER TABLE leads
         ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255)
