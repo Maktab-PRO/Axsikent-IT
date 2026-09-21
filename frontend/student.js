@@ -2672,8 +2672,14 @@ async function buyStudentReward(productId) {
     }
     function openStudentExams() {
         selectMenu(getStudentMenuButton("studentExamsMenu"));
-        openStudentFeatureModal("Imtihonlar","<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;\"><path d=\"M9 3h6M10 3v5l-5 9a3 3 0 0 0 3 4h8a3 3 0 0 0 3-4l-5-9V3\"/><path d=\"M8 15h8\"/></svg>",'<div>Imtihonlar yuklanmoqda...</div>');
-        loadStudentExams();
+        const section = document.getElementById("studentExamsSection");
+        const testSection = document.getElementById("studentOnlineTestSection");
+        if (testSection) testSection.style.display = "none";
+        if (section) {
+            section.style.display = "block";
+            section.scrollIntoView({behavior:"smooth", block:"start"});
+        }
+        loadStudentOnlineExams();
     }
     async function registerStudentExam(id) {
         const token=localStorage.getItem("access_token");
@@ -4104,3 +4110,220 @@ confirmButton.onclick = async () => {
 };
 
 }
+
+/* =========================
+   ONLINE TEST — STUDENT
+========================= */
+
+let studentOnlineAttemptId = null;
+let studentOnlineExamId = null;
+let studentOnlineDeadline = null;
+let studentOnlineTimer = null;
+
+function escapeOnlineExamHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+async function loadStudentOnlineExams() {
+    const section = document.getElementById("studentExamsSection");
+    const content = document.getElementById("studentOnlineExamsContent");
+    if (!content) return;
+
+    if (section) section.style.display = "block";
+    content.innerHTML = '<div style="padding:25px;text-align:center;color:#9ca3af;">⏳ Online testlar yuklanmoqda...</div>';
+
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        content.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);color:#fca5a5;">Avval tizimga kiring.</div>';
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL + "/online-exams/available", {
+            headers: {"Authorization":"Bearer " + token}
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "Online testlarni yuklashda xatolik.");
+
+        const exams = Array.isArray(data.exams) ? data.exams : [];
+        if (!exams.length) {
+            content.innerHTML = '<div style="padding:30px;text-align:center;color:#8b95a7;">Hozircha faol online testlar mavjud emas.</div>';
+            return;
+        }
+
+        content.innerHTML = exams.map(exam => {
+            const disabled = !exam.can_start;
+            return `
+                <div style="padding:18px;margin-bottom:12px;border-radius:18px;background:rgba(255,255,255,.035);border:1px solid rgba(139,92,246,.18);">
+                    <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+                        <div>
+                            <div style="font-size:17px;font-weight:900;color:#fff;">📝 ${escapeOnlineExamHtml(exam.title)}</div>
+                            <div style="margin-top:7px;color:#9aa4b5;font-size:13px;line-height:1.55;">${escapeOnlineExamHtml(exam.description || "Online test")}</div>
+                        </div>
+                        <div style="padding:7px 10px;border-radius:10px;background:rgba(167,139,250,.10);color:#c4b5fd;font-size:11px;font-weight:800;">${exam.time_limit_minutes} daqiqa</div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;color:#aab3c2;font-size:12px;">
+                        <span>🎯 O‘tish: ${exam.pass_score}%</span>
+                        <span>🔁 Urinish: ${exam.attempts_used}/${exam.max_attempts}</span>
+                    </div>
+                    <button type="button" ${disabled ? "disabled" : ""} onclick="startStudentOnlineExam(${Number(exam.id)})"
+                        style="margin-top:15px;width:100%;padding:12px;border:0;border-radius:12px;background:${disabled ? "rgba(255,255,255,.07)" : "linear-gradient(135deg,#7c3aed,#059669)"};color:${disabled ? "#737b8a" : "#fff"};font-weight:900;cursor:${disabled ? "not-allowed" : "pointer"};">
+                        ${disabled ? "Urinishlar tugagan" : "Testni boshlash →"}
+                    </button>
+                </div>
+            `;
+        }).join("");
+    } catch (error) {
+        console.error("Online test:", error);
+        content.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">❌ ' + escapeOnlineExamHtml(error.message) + '</div>';
+    }
+}
+
+async function startStudentOnlineExam(examId) {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        showPremiumModal("Tizimga kirish kerak","Online testni boshlash uchun avval tizimga kiring.","Kirish");
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL + "/online-exams/" + Number(examId) + "/start", {
+            method:"POST",
+            headers:{"Authorization":"Bearer " + token}
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || "Testni boshlashda xatolik.");
+
+        studentOnlineAttemptId = data.attempt_id;
+        studentOnlineExamId = data.exam_id;
+        studentOnlineDeadline = new Date(data.deadline_at);
+
+        const section = document.getElementById("studentExamsSection");
+        const testSection = document.getElementById("studentOnlineTestSection");
+        const title = document.getElementById("studentOnlineTestTitle");
+        const questions = document.getElementById("studentOnlineQuestions");
+
+        if (section) section.style.display = "none";
+        if (testSection) {
+            testSection.style.display = "block";
+            testSection.scrollIntoView({behavior:"smooth",block:"start"});
+        }
+        if (title) title.textContent = data.title || "Online Test";
+
+        const list = Array.isArray(data.questions) ? data.questions : [];
+        questions.innerHTML = list.map((q,index) => {
+            const options = Array.isArray(q.options) ? q.options : [];
+            return `
+                <div style="padding:18px;margin-bottom:14px;border-radius:18px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);">
+                    <div style="color:#fff;font-weight:800;line-height:1.6;margin-bottom:13px;">${index+1}. ${escapeOnlineExamHtml(q.question)}</div>
+                    <div style="display:grid;gap:8px;">
+                        ${options.map((option,optIndex) => `
+                            <label style="display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border-radius:12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);color:#d7dce5;cursor:pointer;">
+                                <input type="radio" name="studentExamQuestion_${q.id}" value="${optIndex}" style="margin-top:3px;">
+                                <span>${String.fromCharCode(65+optIndex)}. ${escapeOnlineExamHtml(option)}</span>
+                            </label>
+                        `).join("")}
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+        markStudentExamPageVisible(true);
+        startStudentExamTimer();
+    } catch (error) {
+        console.error("Online test start:", error);
+        showPremiumModal("Testni boshlashda xatolik",escapeOnlineExamHtml(error.message),"Yopish");
+    }
+}
+
+function startStudentExamTimer() {
+    if (studentOnlineTimer) clearInterval(studentOnlineTimer);
+
+    const timer = document.getElementById("studentExamTimer");
+    const tick = () => {
+        if (!studentOnlineDeadline) return;
+        const left = Math.max(0, studentOnlineDeadline.getTime() - Date.now());
+        const totalSeconds = Math.floor(left / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        if (timer) timer.textContent = String(minutes).padStart(2,"0") + ":" + String(seconds).padStart(2,"0");
+
+        if (left <= 0) {
+            clearInterval(studentOnlineTimer);
+            studentOnlineTimer = null;
+            markStudentExamPageVisible(false);
+            showPremiumModal("Vaqt tugadi","Test vaqti tugadi. Natijani server tekshiradi.","Yopish");
+        }
+    };
+
+    tick();
+    studentOnlineTimer = setInterval(tick,1000);
+}
+
+async function submitStudentOnlineExam() {
+    if (!studentOnlineExamId) return;
+
+    const token = localStorage.getItem("access_token");
+    const answers = {};
+    document.querySelectorAll('#studentOnlineQuestions input[type="radio"]:checked').forEach(input => {
+        const parts = input.name.split("_");
+        const questionId = parts[parts.length - 1];
+        answers[questionId] = Number(input.value);
+    });
+
+    const submitButton = document.getElementById("studentOnlineSubmit");
+    if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Yuborilmoqda...";
+    }
+
+    try {
+        const response = await fetch(API_URL + "/online-exams/" + Number(studentOnlineExamId) + "/submit", {
+            method:"POST",
+            headers:{
+                "Authorization":"Bearer " + token,
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({answers})
+        });
+        const data = await response.json();
+
+        markStudentExamPageVisible(false);
+        if (studentOnlineTimer) clearInterval(studentOnlineTimer);
+        studentOnlineTimer = null;
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Testni topshirishda xatolik.");
+        }
+
+        const passedText = data.passed ? "✅ O‘tdingiz" : "❌ O‘tmadingiz";
+        showPremiumModal(
+            data.passed ? "Test muvaffaqiyatli yakunlandi" : "Test yakunlandi",
+            passedText + "<br><br>📊 Natija: <strong>" + Number(data.score) + "%</strong><br>To‘g‘ri javoblar: " + Number(data.correct) + "/" + Number(data.total) + "<br>O‘tish chegarasi: " + Number(data.pass_score) + "%",
+            "Natijalar"
+        );
+
+        studentOnlineAttemptId = null;
+        studentOnlineExamId = null;
+        studentOnlineDeadline = null;
+
+        const testSection = document.getElementById("studentOnlineTestSection");
+        if (testSection) testSection.style.display = "none";
+        const section = document.getElementById("studentExamsSection");
+        if (section) section.style.display = "block";
+        await loadStudentOnlineExams();
+    } catch (error) {
+        console.error("Online test submit:",error);
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Testni topshirish";
+        }
+        showPremiumModal("Xatolik yuz berdi",escapeOnlineExamHtml(error.message),"Yopish");
+    }
+}
+
