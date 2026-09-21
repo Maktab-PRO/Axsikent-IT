@@ -8,7 +8,8 @@ from app.db import get_db
 from app.models.homework import Homework, HomeworkSubmission
 from app.models.teacher import Teacher
 from app.models.admin import Admin
-from app.core.security import verify_token
+from app.models.group import Group
+from app.core.security import verify_token, decode_token
 from app.services.notifications import notify_student
 
 
@@ -44,24 +45,39 @@ def create_homework(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    user_id = verify_token(credentials.credentials)
+    payload = decode_token(credentials.credentials)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
 
-    if not user_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    user_id = payload["user_id"]
+    role = payload.get("role")
 
     teacher = db.query(Teacher).filter(
         Teacher.id == teacher_id,
         Teacher.is_active == True
     ).first()
-
     if not teacher:
-        raise HTTPException(
-            status_code=404,
-            detail="O'qituvchi topilmadi"
-        )
+        raise HTTPException(status_code=404, detail="O'qituvchi topilmadi")
+
+    if role == "teacher":
+        if teacher_id != user_id:
+            raise HTTPException(status_code=403, detail="Faqat o'zingizga biriktirilgan o'qituvchi sifatida vazifa yarata olasiz")
+    elif role == "admin":
+        admin = db.query(Admin).filter(
+            Admin.id == user_id,
+            Admin.is_active == True
+        ).first()
+        if not admin:
+            raise HTTPException(status_code=403, detail="Administrator topilmadi yoki faol emas")
+    else:
+        raise HTTPException(status_code=403, detail="Faqat o'qituvchi yoki administrator uchun ruxsat berilgan")
+
+    group = db.query(Group).filter(
+        Group.id == group_id,
+        Group.is_active == True
+    ).first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Faol guruh topilmadi")
 
     homework = Homework(
         group_id=group_id,
