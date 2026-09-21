@@ -9,6 +9,7 @@ from app.models.homework import Homework, HomeworkSubmission
 from app.models.teacher import Teacher
 from app.models.admin import Admin
 from app.core.security import verify_token
+from app.services.notifications import notify_student
 
 
 router = APIRouter(
@@ -360,6 +361,21 @@ def grade_homework_submission(
 
     db.commit()
     db.refresh(submission)
+
+    homework = db.query(Homework).filter(
+        Homework.id == submission.homework_id
+    ).first()
+    if homework:
+        notify_student(
+            db,
+            student_id=submission.student_id,
+            title="📝 Uy vazifasi baholandi",
+            message=f"{homework.title}: {submission.score}/100" + (
+                f" — {submission.teacher_comment}"
+                if submission.teacher_comment else ""
+            ),
+            notification_type="homework_result",
+        )
 
     return {
         "message": "Uy vazifasi baholandi",
