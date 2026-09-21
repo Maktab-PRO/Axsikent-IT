@@ -6,6 +6,7 @@ from app.db import get_db
 from app.core.security import verify_token
 from app.models.book import Book, BookOrder
 from app.models.gamification import StudentGamification
+from app.models.student import Student
 
 
 router = APIRouter(
@@ -22,6 +23,13 @@ def get_books(
     db: Session = Depends(get_db)
 ):
     student_id = verify_token(credentials.credentials)
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
 
     books = db.query(Book).filter(
         Book.is_active == True,
@@ -54,6 +62,16 @@ def buy_book(
     db: Session = Depends(get_db)
 ):
     student_id = verify_token(credentials.credentials)
+
+    if not student_id:
+        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
 
     book = db.query(Book).filter(
         Book.id == book_id,
