@@ -2659,19 +2659,49 @@ async function buyStudentReward(productId) {
     async function loadStudentExams() {
         const token=localStorage.getItem("access_token");
         if(!token) return;
+
+        const modalBody=document.getElementById("studentExtraContentBody");
+        if(modalBody) modalBody.innerHTML=studentExtraLoading("Imtihonlar yuklanmoqda...");
+
+        const controller=new AbortController();
+        const timeout=setTimeout(()=>controller.abort(),12000);
+
         try {
-            const response=await fetch(API_URL+"/students/exams",{headers:{"Authorization":"Bearer "+token}});
-            const data=await response.json();
-            if(!response.ok) throw new Error(data.detail||"Imtihonlarni yuklab bo‘lmadi");
+            const response=await fetch(API_URL+"/students/exams?ts="+Date.now(),{
+                headers:{"Authorization":"Bearer "+token,"Accept":"application/json"},
+                cache:"no-store",
+                signal:controller.signal
+            });
+            const raw=await response.text();
+            let data=[];
+            try{ data=raw?JSON.parse(raw):[]; }catch(_){ data=[]; }
+            if(response.status===401) throw new Error("Sessiya tugagan. Student kabinetiga qayta kiring.");
+            if(!response.ok) throw new Error(data.detail||("Server xatosi: HTTP "+response.status));
             const content=data.length?data.map(function(item){
                 const button=item.registered?'<button disabled style="border:0;border-radius:10px;padding:10px 14px;background:#14532d;color:#86efac;font-weight:800;">✓ Ro‘yxatdan o‘tilgan</button>':'<button onclick="registerStudentExam('+Number(item.id)+')" style="border:0;border-radius:10px;padding:10px 14px;background:#22c55e;color:#052e16;font-weight:800;">Imtihonga yozilish</button>';
                 return '<div style="padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.04);margin-top:12px;"><strong style="color:#fff;">🧪 '+escapeHtml(item.title)+'</strong><p style="color:#94a3b8;">'+escapeHtml(item.description||"")+'</p><div style="color:#cbd5e1;font-size:13px;">📅 '+escapeHtml(String(item.start_at||""))+(item.location?"<br>📍 "+escapeHtml(item.location):"")+'</div><div style="margin-top:12px;">'+button+'</div></div>';
             }).join(""):'<div style="padding:25px;text-align:center;">Hozircha imtihon mavjud emas.</div>';
             openStudentFeatureModal("Imtihonlar","<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;\"><path d=\"M9 3h6M10 3v5l-5 9a3 3 0 0 0 3 4h8a3 3 0 0 0 3-4l-5-9V3\"/><path d=\"M8 15h8\"/></svg>",content);
-        } catch(e){openStudentFeatureModal("Imtihonlar","⚠️",'<span style="color:#f87171;">'+escapeHtml(e.message)+'</span>');}
+        } catch(e){
+            const message=e&&e.name==="AbortError"
+                ? "Server javobi 12 soniyada kelmadi. Backend/Render holatini tekshirish kerak."
+                : (e.message||"Imtihonlarni yuklashda xatolik.");
+            openStudentFeatureModal("Imtihonlar","⚠️",'<span style="color:#f87171;">'+escapeHtml(message)+'</span>');
+        } finally {
+            clearTimeout(timeout);
+        }
     }
     function openStudentExams() {
         selectMenu(getStudentMenuButton("studentExamsMenu"));
+        const section = document.getElementById("studentExamsSection");
+        const testSection = document.getElementById("studentOnlineTestSection");
+        if (testSection) testSection.style.display = "none";
+        if (section) section.style.display = "none";
+        loadStudentExams();
+    }
+
+    function openStudentOnlineTests() {
+        selectMenu(getStudentMenuButton("studentOnlineTestsMenu"));
         const section = document.getElementById("studentExamsSection");
         const testSection = document.getElementById("studentOnlineTestSection");
         if (testSection) testSection.style.display = "none";
