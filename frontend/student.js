@@ -4318,10 +4318,16 @@ async function loadStudentDashboardHomework() {
 
         let streak = 0;
         if (dayKeys.length) {
-            let cursor = new Date();
+            // Faollik streaki bugi:
+            // oldingi kod streakni faqat BUGUNdan boshlab hisoblar edi.
+            // Masalan, oxirgi faoliyat kecha bo‘lsa ham 0 kun chiqardi.
+            // Endi streak eng so‘nggi faoliyat kunidan boshlanadi va ketma-ket kunlarni sanaydi.
+            let cursor = new Date(dayKeys[0] + "T00:00:00");
             cursor.setHours(0,0,0,0);
+
             for (const key of dayKeys) {
                 const expected = cursor.getFullYear() + "-" + String(cursor.getMonth()+1).padStart(2,"0") + "-" + String(cursor.getDate()).padStart(2,"0");
+
                 if (key === expected) {
                     streak++;
                     cursor.setDate(cursor.getDate()-1);
