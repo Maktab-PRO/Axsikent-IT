@@ -498,7 +498,6 @@ async function openStudentModule(courseId, moduleId) {
     `;
 
     try {
-
         const response = await fetch(
             `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons`,
             {
@@ -997,7 +996,6 @@ async function openStudentModule(courseId, moduleId) {
         `;
 
     } catch (error) {
-
         console.error(error);
 
         container.innerHTML = `
@@ -1498,7 +1496,6 @@ if (finishButton) {
         );
     }
     async function loadStudent() {
-
         const token = localStorage.getItem("access_token");
 
         if (!token) {
@@ -1788,7 +1785,7 @@ function confirmLogoutStudent() {
                 '<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:15px;flex-wrap:wrap;">' +
                     '<div><div style="color:#817c8f;font-size:12px;margin-bottom:5px;">Mukofot narxi</div>' +
                     '<div style="color:#c4b5fd;font-size:16px;font-weight:800;">🪙 ' + coinPrice + ' Coin</div>' +
-                    (crystalPrice > 0 ? '<div style="color:#c4b5fd;font-size:16px;font-weight:800;margin-top:7px;">💎 ' + crystalPrice + ' Crystal</div>' : '') +
+
                     '</div>' +
                     '<button type="button" onclick="buyStudentReward(' + Number(reward.id) + ')" ' + (canBuy ? '' : 'disabled') + ' style="border:none;border-radius:13px;padding:12px 20px;background:' + (canBuy ? 'linear-gradient(135deg,#8B5CF6,#6D28D9)' : 'rgba(255,255,255,.08)') + ';color:' + (canBuy ? '#fff' : '#777') + ';font-weight:800;cursor:' + (canBuy ? 'pointer' : 'not-allowed') + ';">' + (stock <= 0 ? "Tugagan" : (canBuy ? "Sotib olish" : "Coin yetarli emas")) + '</button>' +
                 '</div>' +
@@ -1998,7 +1995,6 @@ async function buyStudentReward(productId) {
         block: "center"
     });
 }
-
     async function openStudentHomeworkMenu(element) {
 
     selectMenu(element);
@@ -2497,7 +2493,6 @@ async function buyStudentReward(productId) {
 
     function openStudentProfile() {
         const token = localStorage.getItem("access_token");
-
         if (!token) {
             window.location.href = "index.html";
             return;
@@ -2997,7 +2992,6 @@ async function loadStudentHomeworkResults() {
                     padding:18px;
                     margin-bottom:12px;
                 ">
-
                     <div style="
                         display:flex;
                         justify-content:space-between;
@@ -3497,7 +3491,6 @@ function openStudentExtraModal(title) {
     `;
     document.body.appendChild(modal);
 }
-
 function studentExtraLoading(text) {
     return `<div style="text-align:center;padding:35px 15px;color:#aaa5b8;font-size:15px;">⏳<br><br>${text}</div>`;
 }
@@ -3998,7 +3991,6 @@ async function loadStudentOnlineExams() {
 
     if (section) section.style.display = "block";
     content.innerHTML = '<div style="padding:25px;text-align:center;color:#9ca3af;">⏳ Online testlar yuklanmoqda...</div>';
-
     const token = localStorage.getItem("access_token");
     if (!token) {
         content.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);color:#fca5a5;">Avval tizimga kiring.</div>';
@@ -4497,8 +4489,7 @@ async function submitStudentOnlineExam() {
 
     try {
         const {response, data} = await fetchStudentApi(
-            "/online-exams/" + Number(studentOnlineExamId) + "/submit",
-            token,
+            "/online-exams/" + Number(studentOnlineExamId) + "/submit",            token,
             {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
