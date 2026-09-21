@@ -29,3 +29,5 @@ from app.models.book import Book, BookOrder
 from app.models.podcast import Podcast
 from app.models.training import Training, TrainingRegistration
 from app.models.exam import Exam, ExamRegistration
+
+from app.models.ai_telegram_submission import AITelegramSubmission
