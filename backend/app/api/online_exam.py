@@ -126,7 +126,7 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
                 "questions": [{
                     "id": q.id,
                     "question": q.question,
-                    "options": json.loads(q.options_json or "[]")
+                    "options": json.loads(q.options or "[]")
                 } for q in selected]
             }
 
