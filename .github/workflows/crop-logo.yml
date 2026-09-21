@@ -1,0 +1,37 @@
+name: Crop Axsikent logo
+on:
+  push:
+    paths:
+      - ".github/workflows/crop-logo.yml"
+permissions:
+  contents: write
+jobs:
+  crop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Crop transparent borders
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          p = "frontend/assets/Sayt logo.png"
+          im = Image.open(p).convert("RGBA")
+          bbox = im.getbbox()
+          if bbox:
+              cropped = im.crop(bbox)
+              cropped.save(p, format="PNG", optimize=True)
+              print("Original:", im.size, "bbox:", bbox, "new:", cropped.size)
+          else:
+              print("No visible pixels; leaving file unchanged")
+          PY
+      - name: Commit cropped logo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "frontend/assets/Sayt logo.png"
+          if git diff --cached --quiet; then
+            echo "No change needed"
+          else
+            git commit -m "Crop transparent space from logo"
+            git push
+          fi
