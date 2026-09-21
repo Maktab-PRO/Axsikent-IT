@@ -3666,7 +3666,8 @@ a {
     padding:0 2px;
     background:transparent;
     text-align:center;
-    overflow:hidden;
+    overflow:visible;
+    position:relative;
 }
 .brand-mark{
     width:190px;
@@ -3686,8 +3687,10 @@ a {
 .brand-info{
     width:100%;
     align-items:center;
-    margin-top:-25px;
-    position:relative;
+    position:absolute;
+    left:0;
+    top:136px;
+    margin:0;
     z-index:2;
 }
 .brand-info small{
