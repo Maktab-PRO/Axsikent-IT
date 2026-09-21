@@ -60,6 +60,7 @@ app.add_middleware(
         "https://akhsikent-it-school.onrender.com",
         "https://axsikent-it-4.onrender.com"
     ],
+    allow_origin_regex=r"https://.*\\.onrender\\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
