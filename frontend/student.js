@@ -4233,6 +4233,7 @@ async function loadStudentDashboardHomework() {
                         '</div>' +
                         '<div style="margin-top:6px;color:#94a3b8;font-size:12px;line-height:1.5;">' + escapeHtml(hw.description || "Tavsif mavjud emas.") + '</div>' +
                         (hw.deadline ? '<div style="margin-top:7px;color:#64748b;font-size:11px;">⏰ ' + escapeHtml(hw.deadline) + '</div>' : '') +
+                        submitButton +
                         '</div>';
                 }).join("")
                 : '<div style="text-align:center;padding:28px;color:#94a3b8;">Hozircha uy vazifalari yo‘q.</div>';
