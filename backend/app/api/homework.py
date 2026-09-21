@@ -79,6 +79,9 @@ def create_homework(
     if not group:
         raise HTTPException(status_code=404, detail="Faol guruh topilmadi")
 
+    if role == "teacher" and group.teacher_id != teacher_id:
+        raise HTTPException(status_code=403, detail="Bu guruh sizga biriktirilmagan")
+
     homework = Homework(
         group_id=group_id,
         teacher_id=teacher_id,
