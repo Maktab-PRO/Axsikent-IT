@@ -3991,3 +3991,58 @@ button:active,
     line-height:1.2 !important;
     color:#fff !important;
 }
+
+
+/* ADMIN LOGIN LOGO — TOP OF BLACK CARD, LARGE */
+.admin-login-card .login-brand{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:0 !important;
+    margin:-42px -34px 28px !important;
+    padding:0 34px !important;
+    text-align:center !important;
+}
+.admin-login-card .login-logo{
+    width:280px !important;
+    height:280px !important;
+    flex:0 0 280px !important;
+    margin:-18px auto 0 !important;
+    padding:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    overflow:visible !important;
+}
+.admin-login-card .login-logo img{
+    width:280px !important;
+    height:280px !important;
+    object-fit:contain !important;
+    display:block !important;
+    margin:0 !important;
+    filter:drop-shadow(0 10px 26px rgba(57,229,140,.18)) !important;
+}
+.admin-login-card .login-brand-info{
+    width:100% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    margin-top:-22px !important;
+}
+@media (max-width:520px){
+    .admin-login-card .login-brand{
+        margin:-32px -22px 24px !important;
+        padding:0 22px !important;
+    }
+    .admin-login-card .login-logo{
+        width:240px !important;
+        height:240px !important;
+        flex-basis:240px !important;
+        margin:-12px auto 0 !important;
+    }
+    .admin-login-card .login-logo img{
+        width:240px !important;
+        height:240px !important;
+    }
+}
