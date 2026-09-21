@@ -55,14 +55,11 @@
     }
 }
 
-/* DASHBOARD INTRO — WHITE BACKGROUND, BOLD */
+/* DASHBOARD INTRO — NO WHITE BACKGROUND, BOLD ONLY */
 .hero-head .dashboard-intro{
-    display:inline-block;
-    margin-top:10px !important;
-    padding:10px 14px !important;
-    background:#fff !important;
-    color:#111 !important;
+    background:transparent !important;
+    color:#7e8a85 !important;
     font-weight:900 !important;
-    border-radius:10px !important;
-    line-height:1.5 !important;
+    padding:0 !important;
+    border-radius:0 !important;
 }
