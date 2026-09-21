@@ -94,8 +94,41 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
         OnlineExamAttempt.student_id == student_id,
         OnlineExamAttempt.status == "in_progress"
     ).first()
+
     if active:
-        raise HTTPException(status_code=409, detail="Sizda boshlangan imtihon mavjud")
+        if active.deadline_at and datetime.now(timezone.utc) >= active.deadline_at:
+            active.status = "submitted"
+            active.finished_reason = "timeout"
+            active.submitted_at = datetime.now(timezone.utc)
+            db.commit()
+        else:
+            selected_ids = []
+            try:
+                selected_ids = json.loads(active.question_ids or "[]")
+            except Exception:
+                selected_ids = []
+
+            questions = db.query(OnlineExamQuestion).filter(
+                OnlineExamQuestion.exam_id == exam_id,
+                OnlineExamQuestion.is_active == True
+            ).all()
+            question_map = {q.id: q for q in questions}
+            selected = [question_map[qid] for qid in selected_ids if qid in question_map]
+
+            return {
+                "attempt_id": active.id,
+                "exam_id": exam.id,
+                "title": exam.title,
+                "time_limit_minutes": exam.time_limit_minutes,
+                "deadline_at": active.deadline_at.isoformat(),
+                "pass_score": exam.pass_score,
+                "resumed": True,
+                "questions": [{
+                    "id": q.id,
+                    "question": q.question,
+                    "options": json.loads(q.options_json or "[]")
+                } for q in selected]
+            }
 
     questions = db.query(OnlineExamQuestion).filter(
         OnlineExamQuestion.exam_id == exam_id,
