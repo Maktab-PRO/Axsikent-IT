@@ -2657,382 +2657,59 @@ async function buyStudentReward(productId) {
     }
 
     async function loadStudentExams() {
-        const token=localStorage.getItem("access_token");
-        if(!token) return;
-
-        const modalBody=document.getElementById("studentExtraContentBody");
-        if(modalBody) modalBody.innerHTML=studentExtraLoading("Imtihonlar yuklanmoqda...");
-
-        const controller=new AbortController();
-        const timeout=setTimeout(()=>controller.abort(),12000);
-
-        try {
-            const response=await fetch(API_URL+"/students/exams?ts="+Date.now(),{
-                headers:{"Authorization":"Bearer "+token,"Accept":"application/json"},
-                cache:"no-store",
-                signal:controller.signal
-            });
-            const raw=await response.text();
-            let data=[];
-            try{ data=raw?JSON.parse(raw):[]; }catch(_){ data=[]; }
-            if(response.status===401) throw new Error("Sessiya tugagan. Student kabinetiga qayta kiring.");
-            if(!response.ok) throw new Error(data.detail||("Server xatosi: HTTP "+response.status));
-            const content=data.length?data.map(function(item){
-                const button=item.registered?'<button disabled style="border:0;border-radius:10px;padding:10px 14px;background:#14532d;color:#86efac;font-weight:800;">✓ Ro‘yxatdan o‘tilgan</button>':'<button onclick="registerStudentExam('+Number(item.id)+')" style="border:0;border-radius:10px;padding:10px 14px;background:#22c55e;color:#052e16;font-weight:800;">Imtihonga yozilish</button>';
-                return '<div style="padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.04);margin-top:12px;"><strong style="color:#fff;">🧪 '+escapeHtml(item.title)+'</strong><p style="color:#94a3b8;">'+escapeHtml(item.description||"")+'</p><div style="color:#cbd5e1;font-size:13px;">📅 '+escapeHtml(String(item.start_at||""))+(item.location?"<br>📍 "+escapeHtml(item.location):"")+'</div><div style="margin-top:12px;">'+button+'</div></div>';
-            }).join(""):'<div style="padding:25px;text-align:center;">Hozircha imtihon mavjud emas.</div>';
-            openStudentFeatureModal("Imtihonlar","<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;\"><path d=\"M9 3h6M10 3v5l-5 9a3 3 0 0 0 3 4h8a3 3 0 0 0 3-4l-5-9V3\"/><path d=\"M8 15h8\"/></svg>",content);
-        } catch(e){
-            const message=e&&e.name==="AbortError"
-                ? "Server javobi 12 soniyada kelmadi. Backend/Render holatini tekshirish kerak."
-                : (e.message||"Imtihonlarni yuklashda xatolik.");
-            openStudentFeatureModal("Imtihonlar","⚠️",'<span style="color:#f87171;">'+escapeHtml(message)+'</span>');
-        } finally {
-            clearTimeout(timeout);
-        }
-    }
-    function openStudentExams() {
-        selectMenu(getStudentMenuButton("studentExamsMenu"));
-        const section = document.getElementById("studentExamsSection");
-        const testSection = document.getElementById("studentOnlineTestSection");
-        if (testSection) testSection.style.display = "none";
-        if (section) section.style.display = "none";
-
-        openStudentFeatureModal(
-            "Imtihonlar",
-            "🧪",
-            studentExtraLoading("Imtihonlar yuklanmoqda...")
-        );
-        loadStudentExams();
-    }
-
-    function openStudentOnlineTests() {
-        selectMenu(getStudentMenuButton("studentOnlineTestsMenu"));
-        const section = document.getElementById("studentExamsSection");
-        const testSection = document.getElementById("studentOnlineTestSection");
-        if (testSection) testSection.style.display = "none";
-        if (section) {
-            section.style.display = "block";
-            section.scrollIntoView({behavior:"smooth", block:"start"});
-        }
-        loadStudentOnlineExams();
-    }
-    async function registerStudentExam(id) {
-        const token=localStorage.getItem("access_token");
-        try {
-            const r=await fetch(API_URL+"/students/exams/"+Number(id)+"/register",{method:"POST",headers:{"Authorization":"Bearer "+token}});
-            const d=await r.json();
-            if(!r.ok) throw new Error(d.detail||"Ro‘yxatdan o‘tishda xatolik");
-            showPremiumModal("Imtihonga ro‘yxatdan o‘tildi","🧪 "+d.message,"Ajoyib!");
-            await loadStudentExams();
-        } catch(e){showPremiumModal("Xatolik yuz berdi",escapeHtml(e.message),"Yopish");}
-    }
-
-    async function loadStudentStats() {
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-            return;
-        }
-
-        const xpEl = document.getElementById("statTotalXp");
-        const rankEl = document.getElementById("statRank");
-        const homeworkEl = document.getElementById("statHomeworkDone");
-        const streakEl = document.getElementById("statStreak");
-
-        try {
-            const meResponse = await fetch(
-                API_URL + "/students/me",
-                {
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                }
-            );
-
-            const me = await meResponse.json();
-
-            if (meResponse.status === 401) {
-                localStorage.removeItem("access_token");
-                localStorage.removeItem("user_role");
-                window.location.href = "index.html";
-                return;
-            }
-
-            const results = await Promise.allSettled([
-                fetch(API_URL + "/students/rewards", {
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                }).then(response => response.json()),
-                fetch(API_URL + "/students/ranking").then(response => response.json()),
-                fetch(API_URL + "/homework/student/submissions", {
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                }).then(response => response.json())
-            ]);
-
-            const rewardData =
-                results[0].status === "fulfilled"
-                    ? results[0].value
-                    : null;
-
-            const ranking =
-                results[1].status === "fulfilled"
-                    ? results[1].value
-                    : [];
-
-            const submissions =
-                results[2].status === "fulfilled"
-                    ? results[2].value
-                    : [];
-
-            if (xpEl && rewardData && rewardData.student) {
-                xpEl.textContent =
-                    Number(rewardData.student.xp || 0).toLocaleString();
-            }
-
-            if (streakEl && rewardData && rewardData.student) {
-                streakEl.textContent =
-                    Number(rewardData.student.streak_days || 0) + " kun";
-            }
-
-            let completedHomework = 0;
-
-            if (homeworkEl && Array.isArray(submissions)) {
-                completedHomework = submissions.filter(
-                    item => item.status === "checked"
-                ).length;
-
-                homeworkEl.textContent = String(completedHomework);
-            }
-
-            if (rewardData && rewardData.student) {
-                renderStudentActivity(
-                    rewardData.student.streak_days,
-                    rewardData.student.xp,
-                    completedHomework
-                );
-            }
-
-            if (rankEl && Array.isArray(ranking) && me && me.id) {
-                const current = ranking.find(
-                    item => Number(item.student_id) === Number(me.id)
-                );
-
-                rankEl.textContent =
-                    current && current.rank
-                        ? "#" + current.rank
-                        : "—";
-            }
-        } catch (error) {
-            console.error("Student stats error:", error);
-        }
-    }
-
-
-    async function loadStudentDashboardTasks() {
-        const token = localStorage.getItem("access_token");
-        const container = document.getElementById("studentRecentTasks");
-
-        if (!token || !container) {
-            return;
-        }
-
-        try {
-            const response = await fetch(
-                API_URL + "/homework/student",
-                {
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                }
-            );
-
-            const homeworks = await response.json();
-
-            if (!response.ok) {
-                throw new Error(homeworks.detail || "Vazifalarni yuklab bo‘lmadi");
-            }
-
-            if (!homeworks.length) {
-                container.innerHTML =
-                    '<div class="task" onclick="openStudentHomeworkFromHome()" style="cursor:pointer;">' +
-                        '<div class="task-check student-homework-task-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a2 2 0 0 1 2 2v16H5V5a2 2 0 0 1 2-2Z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></div>' +
-                        '<div>' +
-                            '<div class="task-name">Hozircha yangi vazifa yo‘q</div>' +
-                            '<div class="task-date">Uy vazifalari bo‘limini ochish uchun bosing</div>' +
-                        '</div>' +
-                    '</div>';
-                return;
-            }
-
-            const latest = homeworks.slice(0, 2);
-
-            container.innerHTML = latest.map(function(homework) {
-                return (
-                    '<div class="task" onclick="openStudentHomeworkFromHome()" style="cursor:pointer;">' +
-                        '<div class="task-check">📝</div>' +
-                        '<div>' +
-                            '<div class="task-name">' +
-                                escapeHtml(homework.title || "Uy vazifasi") +
-                            '</div>' +
-                            '<div class="task-date">' +
-                                (homework.deadline
-                                    ? "⏰ " + escapeHtml(homework.deadline)
-                                    : "Topshirish uchun bosing") +
-                            '</div>' +
-                        '</div>' +
-                    '</div>'
-                );
-            }).join("");
-        } catch (error) {
-            console.error("Dashboard tasks error:", error);
-            container.innerHTML =
-                '<div class="task">' +
-                    '<div class="task-check">⚠️</div>' +
-                    '<div>' +
-                        '<div class="task-name">Vazifalarni yuklab bo‘lmadi</div>' +
-                        '<div class="task-date">Uy vazifalari bo‘limidan qayta urinib ko‘ring</div>' +
-                    '</div>' +
-                '</div>';
-        }
-    }
-
-    function renderStudentActivity(streakDays, xp, completedHomework) {
-        const container = document.getElementById("studentActivityContent");
-
-        if (!container) {
-            return;
-        }
-
-        const streak = Number(streakDays || 0);
-        const totalXp = Number(xp || 0);
-        const completed = Number(completedHomework || 0);
-
-        container.innerHTML =
-            '<div class="student-activity-grid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));">' +
-
-                '<div class="student-activity-card activity-streak">' +
-                    '<div class="student-activity-icon">' +
-                        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c2.5 3 5 4.5 5 8.5A5 5 0 1 1 7 9c0 2 1 3 2.7 4.1C9.3 9.8 11 7 12 3Z"/><path d="M10 18.5c.6.5 1.3.7 2 .7s1.4-.2 2-.7"/></svg>' +
-                    '</div>' +
-                    '<div class="student-activity-label">Faollik</div>' +
-                    '<strong class="student-activity-value">' + streak + '<span>kun</span></strong>' +
-                '</div>' +
-
-                '<div class="student-activity-card activity-xp">' +
-                    '<div class="student-activity-icon">' +
-                        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.2 5.2 5.6.5-4.2 3.7 1.3 5.5-4.9-2.9-4.9 2.9 1.3-5.5-4.2-3.7L9.8 8.2 12 3Z"/><path d="M12 6v3"/></svg>' +
-                    '</div>' +
-                    '<div class="student-activity-label">Bilim tajribasi</div>' +
-                    '<strong class="student-activity-value">' + totalXp.toLocaleString() + '<span>XP</span></strong>' +
-                '</div>' +
-
-                '<div class="student-activity-card activity-tasks">' +
-                    '<div class="student-activity-icon">' +
-                        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/><path d="M9 8h6"/></svg>' +
-                    '</div>' +
-                    '<div class="student-activity-label">Bajarilgan vazifalar</div>' +
-                    '<strong class="student-activity-value">' + completed + '<span>ta</span></strong>' +
-                '</div>' +
-
-            '</div>' +
-            '<div class="student-activity-note">O‘qishdagi faolligingiz, XP va bajarilgan vazifalar bir joyda.</div>';
-    }
-
-    /* =========================
-       NOTIFICATIONS
-    ========================= */
-
-    let studentNotificationState = {
-        ids: new Set(),
-        firstLoad: true
-    };
-
-    async function showStudentSystemNotification(title, message) {
-        if (!("Notification" in window) || Notification.permission !== "granted") return;
-        try {
-            const registration = await navigator.serviceWorker?.getRegistration();
-            if (registration?.showNotification) {
-                await registration.showNotification(title, {
-                    body: message,
-                    tag: "axsikent-student-notification"
-                });
-                return;
-            }
-        } catch (_) {}
-        try {
-            new Notification(title, {body: message});
-        } catch (_) {}
-    }
-
-    async function loadStudentNotifications() {
     const token = localStorage.getItem("access_token");
-    const badge = document.getElementById("studentNotificationBadge");
-
     if (!token) {
-        if (badge) badge.hidden = true;
+        openStudentFeatureModal("Imtihonlar", "⚠️", '<span style="color:#f87171;">Avval tizimga kiring.</span>');
         return;
     }
 
+    const modalBody = document.getElementById("studentExtraContentBody");
+    if (modalBody) modalBody.innerHTML = studentExtraLoading("Imtihonlar yuklanmoqda...");
+
     try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 10000);
+        const {response, data} = await fetchStudentApi("/students/exams?ts=" + Date.now(), token);
+        if (response.status === 401) throw new Error("Sessiya tugagan. Student kabinetiga qayta kiring.");
+        if (!response.ok) throw new Error(data?.detail || ("Server xatosi: HTTP " + response.status));
 
-        let response;
-        let data = {};
-        try {
-            response = await fetch(API_URL + "/students/notifications?ts=" + Date.now(), {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token,
-                    "Accept": "application/json"
-                },
-                cache: "no-store",
-                signal: controller.signal
-            });
-            const text = await response.text();
-            if (text) {
-                try { data = JSON.parse(text); } catch (_) { data = {}; }
-            }
-        } finally {
-            clearTimeout(timer);
-        }
-
-        if (response.status === 401) {
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("user_role");
-            if (badge) badge.hidden = true;
+        const exams = Array.isArray(data) ? data : [];
+        if (!exams.length) {
+            openStudentFeatureModal(
+                "Imtihonlar",
+                "🧪",
+                '<div style="text-align:center;padding:20px;color:#94a3b8;">Hozircha faol imtihonlar mavjud emas.</div>'
+            );
             return;
         }
 
-        if (!response.ok) return;
+        const html = exams.map(exam => {
+            const start = exam.start_at ? new Date(exam.start_at).toLocaleString("uz-UZ") : "Sana belgilanmagan";
+            const end = exam.end_at ? new Date(exam.end_at).toLocaleString("uz-UZ") : "";
+            const reg = exam.is_registered
+                ? '<span style="color:#22c55e;font-weight:800;">✓ Ro‘yxatdan o‘tilgan</span>'
+                : '<span style="color:#94a3b8;">Ro‘yxatdan o‘tilmagan</span>';
 
-        const items = Array.isArray(data.notifications) ? data.notifications : [];
-        const unread = Number(data.unread || 0);
+            return '<div style="padding:18px;margin-bottom:12px;border-radius:18px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);">' +
+                '<div style="font-size:18px;font-weight:900;color:#fff;">🧪 ' + escapeHtml(exam.title || "Imtihon") + '</div>' +
+                '<div style="margin-top:8px;color:#aab3c2;font-size:13px;line-height:1.55;">' + escapeHtml(exam.description || "Imtihon haqida ma’lumot") + '</div>' +
+                '<div style="margin-top:14px;display:grid;gap:8px;color:#d5d9e2;font-size:13px;">' +
+                    '<div>📅 <strong>Boshlanish:</strong> ' + escapeHtml(start) + '</div>' +
+                    (end ? '<div>⏱️ <strong>Tugash:</strong> ' + escapeHtml(end) + '</div>' : '') +
+                    '<div>📍 <strong>Manzil:</strong> ' + escapeHtml(exam.location || "Onlayn / belgilanmagan") + '</div>' +
+                    '<div>👥 <strong>Ro‘yxatdan o‘tganlar:</strong> ' + Number(exam.registrations || 0) + (exam.capacity ? " / " + Number(exam.capacity) : "") + '</div>' +
+                '</div>' +
+                '<div style="margin-top:14px;">' + reg + '</div>' +
+            '</div>';
+        }).join("");
 
-        if (badge) {
-            badge.textContent = unread > 99 ? "99+" : String(unread);
-            badge.hidden = unread <= 0;
-        }
-
-        if (studentNotificationState.firstLoad) {
-            studentNotificationState.ids = new Set(items.map(item => Number(item.id)));
-            studentNotificationState.firstLoad = false;
-            return;
-        }
-
-        items.filter(item => !studentNotificationState.ids.has(Number(item.id))).slice(0, 3).forEach(item => {
-            showStudentSystemNotification(item.title || "Axsikent IT", item.message || "");
-        });
-        items.forEach(item => studentNotificationState.ids.add(Number(item.id)));
+        openStudentFeatureModal("Imtihonlar", "🧪", html);
     } catch (error) {
-        console.debug("Student notifications:", error);
+        console.error("Student exams load:", error);
+        const message = error?.name === "AbortError"
+            ? "Server javobi 8 soniyada kelmadi."
+            : (error?.message || "Imtihonlarni yuklab bo‘lmadi.");
+        openStudentFeatureModal("Imtihonlar", "⚠️", '<span style="color:#f87171;">' + escapeHtml(message) + '</span>');
     }
 }
-
-
 async function openStudentNotifications() {
     const token = localStorage.getItem("access_token");
 
@@ -4328,6 +4005,11 @@ async function submitStudentOnlineExam() {
     if (!studentOnlineExamId) return;
 
     const token = localStorage.getItem("access_token");
+    if (!token) {
+        showPremiumModal("Sessiya tugagan", "Avval student kabinetiga qayta kiring.", "Yopish");
+        return;
+    }
+
     const answers = {};
     document.querySelectorAll('#studentOnlineQuestions input[type="radio"]:checked').forEach(input => {
         const parts = input.name.split("_");
@@ -4342,22 +4024,25 @@ async function submitStudentOnlineExam() {
     }
 
     try {
-        const response = await fetch(API_URL + "/online-exams/" + Number(studentOnlineExamId) + "/submit", {
-            method:"POST",
-            headers:{
-                "Authorization":"Bearer " + token,
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({answers})
-        });
-        const data = await response.json();
+        const {response, data} = await fetchStudentApi(
+            "/online-exams/" + Number(studentOnlineExamId) + "/submit",
+            token,
+            {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({answers})
+            }
+        );
 
         markStudentExamPageVisible(false);
         if (studentOnlineTimer) clearInterval(studentOnlineTimer);
         studentOnlineTimer = null;
 
         if (!response.ok) {
-            throw new Error(data.detail || "Testni topshirishda xatolik.");
+            const detail = data && data.detail
+                ? data.detail
+                : ("Server xatosi: HTTP " + response.status);
+            throw new Error(detail);
         }
 
         const passedText = data.passed ? "✅ O‘tdingiz" : "❌ O‘tmadingiz";
@@ -4377,12 +4062,17 @@ async function submitStudentOnlineExam() {
         if (section) section.style.display = "block";
         await loadStudentOnlineExams();
     } catch (error) {
-        console.error("Online test submit:",error);
+        console.error("Online test submit:", error);
+
         if (submitButton) {
             submitButton.disabled = false;
             submitButton.textContent = "Testni topshirish";
         }
-        showPremiumModal("Xatolik yuz berdi",escapeOnlineExamHtml(error.message),"Yopish");
+
+        const message = error && error.name === "AbortError"
+            ? "Server javobi 8 soniyada kelmadi."
+            : (error && error.message ? error.message : "Server bilan bog‘lanib bo‘lmadi. Internet/API ulanishini tekshiring.");
+
+        showPremiumModal("Xatolik yuz berdi", escapeOnlineExamHtml(message), "Yopish");
     }
 }
-
