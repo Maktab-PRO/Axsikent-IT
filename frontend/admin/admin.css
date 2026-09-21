@@ -3739,3 +3739,49 @@ a {
     transform:scale(.985);
     box-shadow:inset 0 0 0 1px rgba(57,229,140,.13);
 }
+
+
+/* ADMIN TOUCH STATES — REMOVE BLUE BROWSER/DEFAULT BUTTON FLASH */
+button,
+a,
+.nav-item,
+.quick-action,
+.panel-link,
+.stat-card,
+.settings-toggle,
+.section-back-btn,
+#studentAllBtn{
+    -webkit-tap-highlight-color:transparent !important;
+    -webkit-touch-callout:none;
+}
+button:focus,
+button:focus-visible,
+a:focus,
+a:focus-visible,
+.nav-item:focus,
+.nav-item:focus-visible,
+.quick-action:focus,
+.quick-action:focus-visible,
+.panel-link:focus,
+.panel-link:focus-visible,
+.stat-card:focus,
+.stat-card:focus-visible,
+.settings-toggle:focus,
+.settings-toggle:focus-visible,
+.section-back-btn:focus,
+.section-back-btn:focus-visible,
+#studentAllBtn:focus,
+#studentAllBtn:focus-visible{
+    outline:none !important;
+    box-shadow:none;
+}
+button:active,
+.nav-item:active,
+.quick-action:active,
+.panel-link:active,
+.stat-card:active,
+.settings-toggle:active,
+.section-back-btn:active,
+#studentAllBtn:active{
+    -webkit-tap-highlight-color:transparent !important;
+}
