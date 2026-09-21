@@ -2400,7 +2400,7 @@ async function buyStudentReward(productId) {
         );
 
         await loadStudentHomework();
-        await loadStudentHomeworkResults();
+        await loadStudentDashboardHomework();
 
     } catch (error) {
 
