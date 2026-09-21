@@ -63,3 +63,23 @@
     padding:0 !important;
     border-radius:0 !important;
 }
+
+
+/* TEACHER SECTIONS — BIR XIL KONTENT BLOKI */
+#section-students > .table-panel,
+#section-attendance > .table-panel,
+#section-grades > .form-panel,
+#section-courses > .panel,
+#section-support > .support-grid{
+    min-height:300px !important;
+}
+
+@media (max-width:600px){
+    #section-students > .table-panel,
+    #section-attendance > .table-panel,
+    #section-grades > .form-panel,
+    #section-courses > .panel,
+    #section-support > .support-grid{
+        min-height:260px !important;
+    }
+}
