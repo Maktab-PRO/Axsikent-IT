@@ -4072,3 +4072,42 @@ button:active,
 .sidebar .brand .brand-info{
     top:auto !important;
 }
+
+/* SIDEBAR BRAND — COMPACT BLOCK, LARGE LOGO, TEXT BELOW */
+.sidebar .brand{
+    min-height:145px !important;
+    height:145px !important;
+    padding:8px 10px !important;
+    overflow:visible !important;
+}
+.sidebar .brand .brand-mark{
+    width:130px !important;
+    height:130px !important;
+    flex:0 0 130px !important;
+    margin:0 auto !important;
+    transform:translateY(-2px) !important;
+    overflow:visible !important;
+}
+.sidebar .brand .brand-mark img{
+    width:130px !important;
+    height:130px !important;
+    display:block !important;
+    object-fit:contain !important;
+    transform:scale(1.35) !important;
+    transform-origin:center center !important;
+}
+.sidebar .brand .brand-info{
+    position:absolute !important;
+    left:0 !important;
+    top:118px !important;
+    width:100% !important;
+    margin:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    z-index:5 !important;
+}
+.sidebar .brand .brand-info small{
+    margin:0 !important;
+    position:static !important;
+}
