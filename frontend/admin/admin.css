@@ -4111,3 +4111,8 @@ button:active,
     margin:0 !important;
     position:static !important;
 }
+
+/* ONLY SIDEBAR LOGO — MOVE UP */
+.sidebar .brand .brand-mark{
+    transform:translateY(-14px) !important;
+}
