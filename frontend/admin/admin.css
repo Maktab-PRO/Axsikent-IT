@@ -4046,3 +4046,8 @@ button:active,
         height:240px !important;
     }
 }
+
+/* ONLY LOGIN BLACK CARD HEIGHT — TOP SHORTER */
+.admin-login-card{
+    padding-top:12px !important;
+}
