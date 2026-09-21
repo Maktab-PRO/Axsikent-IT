@@ -2856,7 +2856,7 @@ async function loadStudentNotifications() {
         if (!response.ok) throw new Error(data.detail || "Bildirishnomalarni yuklab bo‘lmadi.");
 
         const items = Array.isArray(data.notifications) ? data.notifications : [];
-        const badge = document.getElementById("notificationBadge");
+        const badge = document.getElementById("studentNotificationBadge");
         if (badge) {
             const unread = items.filter(item => !item.is_read).length;
             badge.textContent = String(unread);
