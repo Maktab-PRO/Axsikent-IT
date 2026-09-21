@@ -1,10 +1,14 @@
-from sqlalchemy import Column, Integer, Boolean, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, Boolean, DateTime, ForeignKey, UniqueConstraint
 from datetime import datetime
 from app.db import Base
 
 
 class LessonProgress(Base):
     __tablename__ = "lesson_progress"
+
+    __table_args__ = (
+        UniqueConstraint("student_id", "lesson_id", name="uq_lesson_progress_student_lesson"),
+    )
 
     id = Column(
         Integer,
