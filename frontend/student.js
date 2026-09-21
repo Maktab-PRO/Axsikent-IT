@@ -4307,6 +4307,17 @@ function initStudentDashboard() {
     }
 }
 
+
+/* =========================
+   ONLINE EXAM PAGE VISIBILITY
+   ========================= */
+function markStudentExamPageVisible(isVisible) {
+    // Online test oynasi uchun holatni xavfsiz boshqaradi.
+    // Hozircha backendda alohida visibility endpoint yo‘q;
+    // shu sababli bu funksiya UI/JS oqimini buzmasdan holatni saqlaydi.
+    window.studentExamPageVisible = Boolean(isVisible);
+}
+
 function startStudentExamTimer() {
     if (studentOnlineTimer) clearInterval(studentOnlineTimer);
 
