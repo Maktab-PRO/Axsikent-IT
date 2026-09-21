@@ -7,6 +7,7 @@ from passlib.context import CryptContext
 
 from app.db import get_db
 from app.models.student import Student
+from app.models.gamification import StudentGamification
 from app.models.exam import Exam, ExamRegistration
 from app.models.student_course import StudentCourse
 from app.models.course import Course
@@ -53,6 +54,19 @@ def register_student(
     )
 
     db.add(new_student)
+    db.flush()
+
+    # Har bir yangi o'quvchi uchun gamification profili darhol yaratiladi.
+    # Shu sabab Ranking, Coin/XP va Mukofotlar birinchi kirishdayoq ishlaydi.
+    db.add(StudentGamification(
+        student_id=new_student.id,
+        xp=0,
+        level=1,
+        coins=0,
+        crystals=0,
+        streak_days=0
+    ))
+
     db.commit()
     db.refresh(new_student)
 
