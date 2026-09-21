@@ -4309,6 +4309,7 @@ function initStudentDashboard() {
         loadStudent();
         loadStudentCourses();
         loadStudentDashboardHomework();
+        loadStudentOnlineExams();
     };
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", run, {once:true});
