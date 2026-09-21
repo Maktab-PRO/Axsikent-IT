@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.security import verify_token
 from app.models.student import Student
+from app.models.ai_telegram_submission import AITelegramSubmission
 from app.db import get_db
 from openai import OpenAI
 import httpx
@@ -195,6 +196,11 @@ async def telegram_webhook(
         await send_telegram_message(str(chat_id), "Topshiriq va javobni to'liq yuboring.")
         return {"ok": True}
 
+    student = db.query(Student).filter(Student.telegram_chat_id == str(chat_id)).first()
+    if not student:
+        await send_telegram_message(str(chat_id), "Avval Student paneldagi AKHSIKENT AI bo‘limidan Telegramni ulang.")
+        return {"ok": True}
+
     try:
         client = OpenAI(api_key=settings.OPENAI_API_KEY)
         prompt = f"""
@@ -224,6 +230,22 @@ score 0-100. 80 va yuqori passed=true.
 
         score = max(0, min(100, int(result.get("score", 0))))
         mistakes = result.get("mistakes") or []
+
+        ai_submission = AITelegramSubmission(
+            student_id=student.id,
+            telegram_chat_id=str(chat_id),
+            task=task,
+            answer=answer,
+            score=score,
+            passed="true" if score >= 80 else "false",
+            mistakes=json.dumps(mistakes, ensure_ascii=False),
+            explanation=str(result.get("explanation", "")),
+            recommendation=str(result.get("recommendation", "")),
+            status="checked",
+            checked_at=__import__("datetime").datetime.utcnow()
+        )
+        db.add(ai_submission)
+        db.commit()
         mistakes_text = "\n".join(f"• {item}" for item in mistakes) or "Xato topilmadi."
 
         reply = (
