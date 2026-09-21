@@ -3785,3 +3785,44 @@ button:active,
 #studentAllBtn:active{
     -webkit-tap-highlight-color:transparent !important;
 }
+
+
+/* HOMEWORK — MATCH ADMIN TYPOGRAPHY + REMOVE BLUE TOUCH STATE */
+#section-homework button,
+#section-homework a,
+#section-homework .quick-action,
+#section-homework .panel-link,
+#section-homework .stat-card{
+    -webkit-tap-highlight-color:transparent !important;
+    -webkit-touch-callout:none;
+}
+#section-homework button:focus,
+#section-homework button:focus-visible,
+#section-homework a:focus,
+#section-homework a:focus-visible,
+#section-homework .quick-action:focus,
+#section-homework .quick-action:focus-visible,
+#section-homework .panel-link:focus,
+#section-homework .panel-link:focus-visible,
+#section-homework .stat-card:focus,
+#section-homework .stat-card:focus-visible{
+    outline:none !important;
+    box-shadow:none !important;
+}
+#section-homework button:active,
+#section-homework a:active,
+#section-homework .quick-action:active,
+#section-homework .panel-link:active,
+#section-homework .stat-card:active{
+    -webkit-tap-highlight-color:transparent !important;
+    background-color:transparent;
+}
+#section-homework .section-header h2{font-size:18px!important}
+#section-homework .section-header p{font-size:10px!important}
+#section-homework .panel-header h3{font-size:13px!important}
+#section-homework .panel-header p{font-size:10px!important}
+#section-homework .homework-stat-card strong{font-size:18px!important}
+#section-homework .homework-stat-card small{font-size:9px!important}
+#section-homework .module-table{font-size:11px}
+#section-homework .module-table th{font-size:9px!important}
+#section-homework .module-table td{font-size:11px!important}
