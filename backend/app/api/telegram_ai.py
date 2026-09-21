@@ -20,6 +20,23 @@ async def send_telegram_message(chat_id: str, text: str):
         })
 
 
+@router.get("/status")
+async def telegram_status():
+    if not settings.TELEGRAM_BOT_TOKEN:
+        return {"configured": False, "message": "TELEGRAM_BOT_TOKEN topilmadi"}
+    url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/getWebhookInfo"
+    async with httpx.AsyncClient(timeout=15) as client:
+        response = await client.get(url)
+        data = response.json()
+    return {
+        "configured": True,
+        "telegram_ok": data.get("ok", False),
+        "webhook_url": (data.get("result") or {}).get("url", ""),
+        "pending_updates": (data.get("result") or {}).get("pending_update_count", 0),
+        "last_error": (data.get("result") or {}).get("last_error_message"),
+    }
+
+
 @router.post("/webhook")
 async def telegram_webhook(request: Request):
     if settings.TELEGRAM_WEBHOOK_SECRET:
