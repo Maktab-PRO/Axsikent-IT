@@ -23,6 +23,8 @@ def get_books(
     db: Session = Depends(get_db)
 ):
     student_id = verify_token(credentials.credentials)
+    if not student_id:
+        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
 
     student = db.query(Student).filter(
         Student.id == student_id,
