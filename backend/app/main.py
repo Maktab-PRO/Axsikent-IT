@@ -32,6 +32,8 @@ from app.api.admin_homework import router as admin_homework_router
 from app.api.student_extra import router as student_extra_router
 from app.api.admin_extra import router as admin_extra_router
 from app.api.notifications import router as notifications_router
+from app.api.ai_homework import router as ai_homework_router
+from app.api.telegram_ai import router as telegram_ai_router
 
 
 from app.seed import seed_data
@@ -81,6 +83,11 @@ with engine.connect() as connection:
     connection.exec_driver_sql("""
         ALTER TABLE leads
         ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255)
+    """)
+
+    connection.exec_driver_sql("""
+        ALTER TABLE students
+        ADD COLUMN IF NOT EXISTS telegram_chat_id VARCHAR(64) UNIQUE
     """)
 
     connection.exec_driver_sql("""
@@ -139,6 +146,8 @@ app.include_router(admin_homework_router)
 app.include_router(student_extra_router)
 app.include_router(admin_extra_router)
 app.include_router(notifications_router)
+app.include_router(ai_homework_router)
+app.include_router(telegram_ai_router)
 
 # =========================
 
