@@ -24,6 +24,7 @@ class ExamCreate(BaseModel):
     time_limit_minutes: int = Field(default=30, ge=1, le=180)
     pass_score: int = Field(default=80, ge=0, le=100)
     max_attempts: int = Field(default=1, ge=1, le=10)
+    question_limit: int | None = Field(default=None, ge=1, le=200)
 
 
 class QuestionCreate(BaseModel):
@@ -105,6 +106,8 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
 
     selected = questions[:]
     random.shuffle(selected)
+    if exam.question_limit:
+        selected = selected[:min(exam.question_limit, len(selected))]
 
     started_at = datetime.now(timezone.utc)
     deadline_at = started_at + timedelta(minutes=exam.time_limit_minutes)
