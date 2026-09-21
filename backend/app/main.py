@@ -1,5 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import httpx
+
+from app.core.config import settings
 
 from app.db import Base, engine
 
@@ -65,6 +68,21 @@ app.add_middleware(
 
 # DATABASE
 # Admin schema migration runs before seed_data()
+
+# =========================
+# TELEGRAM WEBHOOK
+# =========================
+# Bot token Render Environment Variables orqali olinadi.
+# Telegram webhook deploydan keyin avtomatik o'rnatiladi.
+if settings.TELEGRAM_BOT_TOKEN:
+    try:
+        httpx.post(
+            f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/setWebhook",
+            json={"url": "https://axsikent-it-4.onrender.com/telegram/webhook"},
+            timeout=10.0,
+        )
+    except Exception:
+        pass
 
 # =========================
 
