@@ -3937,18 +3937,59 @@ async function createOnlineExam(event) {
     }
 }
 
+function closeOnlineExamQuestions() {
+    const modal = document.getElementById("onlineExamQuestionsModal");
+    if (modal) modal.remove();
+    window.__activeOnlineExamId = null;
+}
+
+function onlineQuestionModalField(id, label, type, extra) {
+    return '<label style="display:block;margin-bottom:14px;">' +
+        '<span style="display:block;margin-bottom:7px;color:#cbd5e1;font-weight:800;">' + label + '</span>' +
+        (type === "textarea"
+            ? '<textarea id="' + id + '" rows="3" required style="width:100%;box-sizing:border-box;"></textarea>'
+            : '<input id="' + id + '" type="text" required style="width:100%;box-sizing:border-box;">') +
+        '</label>';
+}
+
 async function openOnlineExamQuestions(examId, title) {
+    closeOnlineExamQuestions();
     window.__activeOnlineExamId = Number(examId);
-    const panel = document.getElementById("onlineExamQuestionsPanel");
-    const titleEl = document.getElementById("onlineExamQuestionsTitle");
-    if (titleEl) titleEl.textContent = title || ("Test #" + examId);
-    if (panel) { panel.hidden = false; panel.scrollIntoView({behavior:"smooth", block:"start"}); }
+
+    const modal = document.createElement("div");
+    modal.id = "onlineExamQuestionsModal";
+    modal.style.cssText = "position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.78);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;";
+    modal.innerHTML =
+        '<div style="width:100%;max-width:820px;max-height:92vh;overflow:auto;background:linear-gradient(145deg,#111827,#070b12);border:1px solid rgba(139,92,246,.28);border-radius:24px;padding:24px;box-sizing:border-box;box-shadow:0 30px 100px rgba(0,0,0,.65);color:#fff;">' +
+            '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:20px;">' +
+                '<div><div style="color:#a78bfa;font-size:10px;font-weight:900;letter-spacing:.14em;">ONLINE TEST / SAVOLLAR</div>' +
+                '<h2 style="margin:6px 0 4px;color:#fff;">' + escapeHtml(title || ("Test #" + examId)) + '</h2>' +
+                '<p style="margin:0;color:#94a3b8;font-size:13px;">Savollarni shu alohida oynada qo‘shing va boshqaring.</p></div>' +
+                '<button type="button" onclick="closeOnlineExamQuestions()" style="width:42px;height:42px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.05);color:#fff;font-size:22px;cursor:pointer;">×</button>' +
+            '</div>' +
+            '<form id="onlineQuestionModalForm" class="administrator-form">' +
+                onlineQuestionModalField("onlineModalQuestionText","Savol","textarea") +
+                onlineQuestionModalField("onlineModalOptionA","Variant A","text") +
+                onlineQuestionModalField("onlineModalOptionB","Variant B","text") +
+                onlineQuestionModalField("onlineModalOptionC","Variant C","text") +
+                onlineQuestionModalField("onlineModalOptionD","Variant D","text") +
+                '<label style="display:block;margin-bottom:14px;"><span style="display:block;margin-bottom:7px;color:#cbd5e1;font-weight:800;">To‘g‘ri javob</span><select id="onlineModalCorrect" style="width:100%;box-sizing:border-box;"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></label>' +
+                '<button class="administrator-submit" type="submit">＋ Savol qo‘shish</button>' +
+            '</form>' +
+            '<div id="onlineModalQuestionsList" style="margin-top:22px;"></div>' +
+        '</div>';
+
+    document.body.appendChild(modal);
+
+    const form = document.getElementById("onlineQuestionModalForm");
+    if (form) form.addEventListener("submit", addOnlineQuestion);
     await loadOnlineExamQuestions(examId);
 }
 
 async function loadOnlineExamQuestions(examId) {
-    const box = document.getElementById("onlineQuestionsList");
+    const box = document.getElementById("onlineModalQuestionsList");
     if (!box) return;
+    box.innerHTML = '<div class="module-loading"><div class="module-spinner"></div><span>Savollar yuklanmoqda...</span></div>';
     try {
         const data = await apiRequest("/online-exams/admin/" + Number(examId) + "/questions");
         const questions = data?.questions || [];
@@ -3970,18 +4011,18 @@ async function addOnlineQuestion(event) {
         await apiRequest("/online-exams/admin/" + examId + "/questions", {
             method: "POST",
             body: JSON.stringify({
-                question: document.getElementById("onlineQuestionText").value.trim(),
+                question: document.getElementById("onlineModalQuestionText").value.trim(),
                 options: [
-                    document.getElementById("onlineOptionA").value.trim(),
-                    document.getElementById("onlineOptionB").value.trim(),
-                    document.getElementById("onlineOptionC").value.trim(),
-                    document.getElementById("onlineOptionD").value.trim()
+                    document.getElementById("onlineModalOptionA").value.trim(),
+                    document.getElementById("onlineModalOptionB").value.trim(),
+                    document.getElementById("onlineModalOptionC").value.trim(),
+                    document.getElementById("onlineModalOptionD").value.trim()
                 ],
-                correct_answer: Number(document.getElementById("onlineCorrect").value)
+                correct_answer: Number(document.getElementById("onlineModalCorrect").value)
             })
         });
-        document.getElementById("onlineQuestionForm").reset();
-        document.getElementById("onlineCorrect").value = "0";
+        document.getElementById("onlineQuestionModalForm").reset();
+        document.getElementById("onlineModalCorrect").value = "0";
         showToast("Savol qo‘shildi", "success");
         await loadOnlineExamQuestions(examId);
     } catch (error) {
@@ -3991,14 +4032,9 @@ async function addOnlineQuestion(event) {
 
 function initOnlineExamAdmin() {
     const examForm = document.getElementById("onlineExamCreateForm");
-    const questionForm = document.getElementById("onlineQuestionForm");
     if (examForm && !examForm.dataset.ready) {
         examForm.dataset.ready = "1";
         examForm.addEventListener("submit", createOnlineExam);
-    }
-    if (questionForm && !questionForm.dataset.ready) {
-        questionForm.dataset.ready = "1";
-        questionForm.addEventListener("submit", addOnlineQuestion);
     }
 }
 
