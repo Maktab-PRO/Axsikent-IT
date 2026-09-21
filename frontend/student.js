@@ -960,37 +960,56 @@ async function openStudentModule(courseId, moduleId) {
                     color:#94a3b8;
                     line-height:1.6;
                 ">
-                    Endi dars bo‘yicha bilimingizni tekshiring.
+                    ${result.has_quiz
+                        ? "Endi dars bo‘yicha bilimingizni tekshiring."
+                        : "Bu dars uchun tekshiruv mavjud emas. Darsni to‘g‘ridan-to‘g‘ri yakunlashingiz mumkin."
+                    }
                 </p>
 
-                <button
-                    onclick="
-                        startLessonQuiz(
-                            ${courseId},
-                            ${moduleId},
-                            ${lessonId}
-                        )
-                    "
-                    style="
-                        width:100%;
-                        margin-top:20px;
-                        border:none;
-                        background:
-                            linear-gradient(
-                            135deg,
-                            #0f766e,
-                            #34d399
-                            );
-                        color:white;
-                        padding:15px;
-                        border-radius:12px;
-                        font-weight:800;
-                        font-size:15px;
-                        cursor:pointer;
-                    "
-                >
-                    📝 Darsni tekshirish
-                </button>
+                ${result.has_quiz
+                    ? `<button
+                        onclick="
+                            startLessonQuiz(
+                                ${courseId},
+                                ${moduleId},
+                                ${lessonId}
+                            )
+                        "
+                        style="
+                            width:100%;
+                            margin-top:20px;
+                            border:none;
+                            background:linear-gradient(135deg,#0f766e,#34d399);
+                            color:white;
+                            padding:15px;
+                            border-radius:12px;
+                            font-weight:800;
+                            font-size:15px;
+                            cursor:pointer;
+                        "
+                    >
+                        📝 Darsni tekshirish
+                    </button>`
+                    : `<button
+                        type="button"
+                        id="finishLessonButton"
+                        onclick="completeStudentLesson(${courseId},${moduleId},${lessonId},this)"
+                        style="
+                            width:100%;
+                            margin-top:20px;
+                            border:none;
+                            background:linear-gradient(135deg,#166534,#22c55e);
+                            color:white;
+                            padding:15px;
+                            border-radius:12px;
+                            font-weight:800;
+                            font-size:15px;
+                            cursor:pointer;
+                        "
+                    >
+                        ✅ Darsni tugatdim
+                    </button>`
+                }
 
             </div>
         `;
