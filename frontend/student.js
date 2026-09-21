@@ -2823,6 +2823,51 @@ async function openStudentNotifications() {
 }
 
 
+async function loadStudentNotifications() {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 10000);
+        let response;
+        let data = {};
+        try {
+            response = await fetch(API_URL + "/students/notifications?ts=" + Date.now(), {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json"
+                },
+                cache: "no-store",
+                signal: controller.signal
+            });
+            const raw = await response.text();
+            try { data = raw ? JSON.parse(raw) : {}; } catch (_) { data = {}; }
+        } finally {
+            clearTimeout(timer);
+        }
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            return;
+        }
+        if (!response.ok) throw new Error(data.detail || "Bildirishnomalarni yuklab bo‘lmadi.");
+
+        const items = Array.isArray(data.notifications) ? data.notifications : [];
+        const badge = document.getElementById("notificationBadge");
+        if (badge) {
+            const unread = items.filter(item => !item.is_read).length;
+            badge.textContent = String(unread);
+            badge.style.display = unread > 0 ? "" : "none";
+        }
+    } catch (error) {
+        console.debug("Student notifications:", error);
+    }
+}
+
+
 window.openStudentNotifications = openStudentNotifications;
 
 
