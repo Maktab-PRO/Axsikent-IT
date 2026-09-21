@@ -37,6 +37,7 @@ from app.api.admin_extra import router as admin_extra_router
 from app.api.notifications import router as notifications_router
 from app.api.ai_homework import router as ai_homework_router
 from app.api.telegram_ai import router as telegram_ai_router
+from app.api.online_exam import router as online_exam_router
 
 
 from app.seed import seed_data
@@ -166,6 +167,7 @@ app.include_router(admin_extra_router)
 app.include_router(notifications_router)
 app.include_router(ai_homework_router)
 app.include_router(telegram_ai_router)
+app.include_router(online_exam_router)
 
 # =========================
 
