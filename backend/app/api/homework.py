@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -198,6 +198,14 @@ def submit_homework(
             detail="Bu uy vazifasi sizga tegishli emas"
         )
 
+    submission_status = "submitted"
+    if homework.deadline:
+        deadline = homework.deadline
+        if deadline.tzinfo is None:
+            deadline = deadline.replace(tzinfo=timezone.utc)
+        if datetime.now(timezone.utc) > deadline:
+            submission_status = "late"
+
     existing_submission = db.query(
         HomeworkSubmission
     ).filter(
@@ -208,7 +216,7 @@ def submit_homework(
     if existing_submission:
         existing_submission.answer = answer
         existing_submission.submitted_at = datetime.utcnow()
-        existing_submission.status = "submitted"
+        existing_submission.status = submission_status
 
         db.commit()
         db.refresh(existing_submission)
@@ -226,7 +234,7 @@ def submit_homework(
         homework_id=homework_id,
         student_id=student_id,
         answer=answer,
-        status="submitted"
+        status=submission_status
     )
 
     db.add(submission)
