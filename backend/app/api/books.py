@@ -7,6 +7,7 @@ from app.core.security import verify_token
 from app.models.book import Book, BookOrder
 from app.models.gamification import StudentGamification
 from app.models.student import Student
+from app.services.notifications import notify_student
 
 
 router = APIRouter(
@@ -123,6 +124,14 @@ def buy_book(
     db.add(order)
     db.commit()
     db.refresh(order)
+
+    notify_student(
+        db,
+        student_id=student_id,
+        title="📚 Kitob buyurtmasi",
+        message=f"{book.title} uchun buyurtmangiz qabul qilindi. Buyurtma №{order.id}.",
+        notification_type="book_order",
+    )
 
     return {
         "success": True,
