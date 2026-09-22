@@ -116,7 +116,10 @@ def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security
 @router.post("/{exam_id}/start")
 def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
     student_id = student_id_from_token(credentials, db)
-    exam = db.query(OnlineExam).filter(OnlineExam.id == exam_id, OnlineExam.is_active == True).first()
+    exam = db.query(OnlineExam).filter(
+        OnlineExam.id == exam_id,
+        OnlineExam.is_active == True
+    ).with_for_update().first()
     if not exam:
         raise HTTPException(status_code=404, detail="Imtihon topilmadi")
 
