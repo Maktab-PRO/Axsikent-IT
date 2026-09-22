@@ -288,6 +288,19 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
         OnlineExamQuestion.exam_id == exam_id
     ).all()
 
+    allowed_question_ids = {q.id for q in questions}
+    submitted_question_ids = {
+        int(key) for key in data.answers.keys()
+        if str(key).isdigit() and int(key) in allowed_question_ids
+    }
+    if len(submitted_question_ids) != len(data.answers):
+        raise HTTPException(status_code=400, detail="Javoblar ushbu test savollariga mos emas")
+
+    for q in questions:
+        answer = data.answers.get(str(q.id))
+        if answer is not None and (answer < 0 or answer >= len(parse_options(q.options))):
+            raise HTTPException(status_code=400, detail="Javob varianti mavjud emas")
+
     correct = sum(
         1 for q in questions
         if str(data.answers.get(str(q.id), "")) == q.correct_answer
