@@ -1498,16 +1498,7 @@ if (finishButton) {
 
         try {
 
-            const response = await fetch(
-                `${API_URL}/students/me`,
-                {
-                    method: "GET",
-
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                }
-            );
+            const {response, data} = await fetchStudentApi("/students/me", token);
 
 
             if (response.status === 401) {
@@ -2041,17 +2032,7 @@ async function buyStudentReward(productId) {
 
     try {
 
-        const response = await fetch(
-            `${API_URL}/homework/student`,
-            {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            }
-        );
-
-        const homeworks = await response.json();
+        const {response, data: homeworks} = await fetchStudentApi("/homework/student", token);
 
         if (!response.ok) {
             throw new Error(
@@ -2093,18 +2074,7 @@ async function buyStudentReward(productId) {
             return;
         }
 
-        const submissionsResponse = await fetch(
-            `${API_URL}/homework/student/submissions`,
-            {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            }
-        );
-
-        const submissions =
-            await submissionsResponse.json();
+        const {response: submissionsResponse, data: submissions} = await fetchStudentApi("/homework/student/submissions", token);
 
         container.innerHTML = homeworks.map(homework => {
 
@@ -2363,14 +2333,10 @@ async function buyStudentReward(productId) {
 
     try {
 
-        const response = await fetch(
-            `${API_URL}/homework/${homeworkId}/submit?answer=${encodeURIComponent(answer)}`,
-            {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            }
+        const {response, data} = await fetchStudentApi(
+            "/homework/" + Number(homeworkId) + "/submit?answer=" + encodeURIComponent(answer),
+            token,
+            {method: "POST"}
         );
 
         const result = await response.json();
@@ -2521,13 +2487,10 @@ async function buyStudentReward(productId) {
 
         const body = document.getElementById("studentProfileBody");
 
-        fetch(API_URL + "/students/me", {
-            method: "GET",
-            headers: { "Authorization": "Bearer " + token }
-        })
-        .then(async function(response) {
-            let data = {};
-            try { data = await response.json(); } catch (_) {}
+        fetchStudentApi("/students/me", token)
+        .then(function(result) {
+            const response = result.response;
+            const data = result.data;
 
             if (response.status === 401) {
                 localStorage.removeItem("access_token");
@@ -3365,11 +3328,11 @@ async function registerStudentExam(examId) {
     }
 
     try {
-        const response = await fetch(`${API_URL}/students/exams/${examId}/register`, {
-            method:"POST",
-            headers:{ "Authorization":`Bearer ${token}` }
-        });
-        const data = await response.json();
+        const {response, data} = await fetchStudentApi(
+            "/students/exams/" + Number(examId) + "/register",
+            token,
+            {method:"POST"}
+        );
         if (!response.ok) throw new Error(data.detail || "Imtihonga ro‘yxatdan o‘tishda xatolik.");
 
         showPremiumModal("Ro‘yxatdan o‘tildi",data.message || "Imtihonga muvaffaqiyatli ro‘yxatdan o‘tildi.","Ajoyib!");
@@ -3427,12 +3390,7 @@ function openStudentOnlineTests(skipLoad = false) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 12000);
 
-    fetch(API_URL + "/online-exams/available?ts=" + Date.now(), {
-        method:"GET",
-        headers:{"Authorization":"Bearer " + token,"Accept":"application/json"},
-        cache:"no-store",
-        signal:controller.signal
-    })
+    fetchStudentApi("/online-exams/available?ts=" + Date.now(), token)
     .then(async response => {
         const raw = await response.text();
         let data = {};
@@ -4090,14 +4048,11 @@ async function openStudentHomeworkSubmit(homeworkId, buttonLabel) {
         this.textContent = "Yuborilmoqda...";
 
         try {
-            const response = await fetch(API_URL + "/homework/" + Number(homeworkId) + "/submit?answer=" + encodeURIComponent(answer), {
-                method: "POST",
-                headers: {"Authorization": "Bearer " + token, "Accept": "application/json"},
-                cache: "no-store"
-            });
-            const raw = await response.text();
-            let data = {};
-            try { data = raw ? JSON.parse(raw) : {}; } catch (_) {}
+            const {response, data} = await fetchStudentApi(
+                "/homework/" + Number(homeworkId) + "/submit?answer=" + encodeURIComponent(answer),
+                token,
+                {method: "POST"}
+            );
             if (!response.ok) throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
 
             close();
