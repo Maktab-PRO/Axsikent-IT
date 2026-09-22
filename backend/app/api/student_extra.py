@@ -61,7 +61,10 @@ def get_trainings(credentials: HTTPAuthorizationCredentials = Depends(security),
         {"id": x.id, "title": x.title, "description": x.description, "start_at": x.start_at,
          "end_at": x.end_at, "location": x.location, "capacity": x.capacity,
          "registered": x.id in registrations, "registration_status": registrations.get(x.id)}
-        for x in db.query(Training).filter(Training.is_active == True).order_by(Training.start_at.asc()).all()
+        for x in db.query(Training).filter(
+            Training.is_active == True,
+            Training.end_at.is_(None) | (Training.end_at > datetime.utcnow())
+        ).order_by(Training.start_at.asc()).all()
     ]
 
 
@@ -110,7 +113,10 @@ def get_exams(credentials: HTTPAuthorizationCredentials = Depends(security), db:
         {"id": x.id, "title": x.title, "description": x.description, "start_at": x.start_at,
          "end_at": x.end_at, "location": x.location, "capacity": x.capacity,
          "registered": x.id in registrations, "registration_status": registrations.get(x.id)}
-        for x in db.query(Exam).filter(Exam.is_active == True).order_by(Exam.start_at.asc()).all()
+        for x in db.query(Exam).filter(
+            Exam.is_active == True,
+            Exam.end_at.is_(None) | (Exam.end_at > datetime.utcnow())
+        ).order_by(Exam.start_at.asc()).all()
     ]
 
 
