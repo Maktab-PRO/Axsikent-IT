@@ -130,6 +130,13 @@ def get_exams(credentials: HTTPAuthorizationCredentials = Depends(security), db:
 @router.post("/exams/{exam_id}/register")
 def register_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
     student_id = student_id_from_token(credentials, db)
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).with_for_update().first()
+    if not student:
+        raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
     exam = db.query(Exam).filter(Exam.id == exam_id, Exam.is_active == True).with_for_update().first()
     if not exam:
         raise HTTPException(status_code=404, detail="Imtihon topilmadi")
