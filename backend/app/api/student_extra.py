@@ -14,11 +14,29 @@ router = APIRouter(prefix="/students", tags=["Student Content"])
 security = HTTPBearer()
 
 
-def student_id_from_token(credentials):
-    student_id = verify_token(credentials.credentials)
-    if not student_id:
-        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
-    student = db_student = None
+def student_id_from_token(
+    credentials,
+    db: Session
+):
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "student":
+        raise HTTPException(
+            status_code=401,
+            detail="Student token noto'g'ri yoki muddati tugagan"
+        )
+
+    student_id = payload["user_id"]
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="O'quvchi topilmadi"
+        )
+
     return student_id
 
 
