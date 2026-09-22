@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from passlib.context import CryptContext
 
@@ -177,7 +178,11 @@ def create_admin(
     )
 
     db.add(new_admin)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Bu telefon raqam bilan administrator allaqachon mavjud")
     db.refresh(new_admin)
 
     return {
