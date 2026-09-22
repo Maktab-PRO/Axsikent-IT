@@ -81,7 +81,9 @@ def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security
     if not student:
         raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
 
-    exams = db.query(OnlineExam).filter(OnlineExam.is_active == True).order_by(OnlineExam.id.desc()).all()
+    exams = db.query(OnlineExam).filter(
+        OnlineExam.is_active == True
+    ).order_by(OnlineExam.id.desc()).all()
     from app.models.course import Course
 
     active_course_ids = {
