@@ -2859,7 +2859,9 @@ async function loadStudentNotifications() {
         const items = Array.isArray(data.notifications) ? data.notifications : [];
         const badge = document.getElementById("studentNotificationBadge");
         if (badge) {
-            const unread = items.filter(item => !item.is_read).length;
+            const unread = Number.isFinite(Number(data.unread))
+                ? Math.max(0, Number(data.unread))
+                : items.filter(item => !item.is_read).length;
             badge.textContent = String(unread);
             badge.style.display = unread > 0 ? "" : "none";
         }
