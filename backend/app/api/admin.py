@@ -262,7 +262,7 @@ def admin_dashboard(
     ).count()
 
     accepted_leads = db.query(Lead).filter(
-        Lead.status == "accepted"
+        Lead.status == "enrolled"
     ).count()
 
 
