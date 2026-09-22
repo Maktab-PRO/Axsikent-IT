@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.db import get_db
+from app.core.security import decode_token
 from app.models.student import Student
 from app.models.gamification import StudentGamification
 
@@ -10,11 +12,24 @@ router = APIRouter(
     tags=["Student Ranking"]
 )
 
+security = HTTPBearer()
+
 
 @router.get("/ranking")
 def get_student_ranking(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "student":
+        raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
+
+    student = db.query(Student).filter(
+        Student.id == payload["user_id"],
+        Student.is_active == True
+    ).first()
+    if not student:
+        raise HTTPException(status_code=403, detail="O'quvchi akkaunti faol emas")
     students = db.query(
         Student,
         StudentGamification
