@@ -6,6 +6,7 @@ from app.core.security import require_admin
 from app.models.admin import Admin
 from app.models.lesson import Lesson
 from app.models.course_module import CourseModule
+from app.models.course import Course
 
 
 router = APIRouter(
@@ -37,6 +38,17 @@ def create_lesson(
         raise HTTPException(
             status_code=404,
             detail="Modul topilmadi"
+        )
+
+    course = db.query(Course).filter(
+        Course.id == module.course_id,
+        Course.is_active == True
+    ).first()
+
+    if not course:
+        raise HTTPException(
+            status_code=400,
+            detail="Dars qo'shish uchun kurs faol bo'lishi kerak"
         )
 
     lesson = Lesson(
