@@ -208,9 +208,21 @@ def assign_teacher_lesson(
     if not student:
         raise HTTPException(status_code=404, detail="O‘quvchi topilmadi yoki faol emas")
 
-    module = db.query(CourseModule).filter(
+    enrollment = db.query(StudentCourse).filter(
+        StudentCourse.student_id == student.id,
+        StudentCourse.course_id == course_id,
+        StudentCourse.is_active == True
+    ).first()
+    if not enrollment:
+        raise HTTPException(status_code=403, detail="Bu o‘quvchi ushbu kursga faol biriktirilmagan")
+
+    module = db.query(CourseModule).join(
+        Course,
+        Course.id == CourseModule.course_id
+    ).filter(
         CourseModule.course_id == course_id,
-        CourseModule.is_active == True
+        CourseModule.is_active == True,
+        Course.is_active == True
     ).order_by(CourseModule.sort_order.asc(), CourseModule.id.asc()).first()
     if not module:
         raise HTTPException(status_code=404, detail="Kurs uchun faol modul topilmadi")
