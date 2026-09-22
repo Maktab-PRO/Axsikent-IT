@@ -1498,15 +1498,10 @@ if (finishButton) {
 
         try {
 
-            const response = await fetch(
-                `${API_URL}/students/me`,
-                {
-                    method: "GET",
-
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                }
+            const {response, data} = await fetchStudentApi(
+                "/students/me",
+                token,
+                {method: "GET"}
             );
 
 
