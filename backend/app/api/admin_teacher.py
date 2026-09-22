@@ -244,6 +244,20 @@ def deactivate_teacher(
             detail="Ustoz topilmadi"
         )
 
+    active_groups = db.query(Group).filter(
+        Group.teacher_id == teacher.id,
+        Group.is_active == True
+    ).count()
+
+    if active_groups:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Bu o'qituvchiga {active_groups} ta faol guruh biriktirilgan. "
+                "Avval guruhlarni boshqa o'qituvchiga o'tkazing yoki deaktiv qiling."
+            )
+        )
+
     teacher.is_active = False
 
     db.commit()
