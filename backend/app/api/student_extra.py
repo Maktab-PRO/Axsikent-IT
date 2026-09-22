@@ -149,7 +149,10 @@ def register_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depe
     ).first()
     if existing and existing.status == "registered":
         raise HTTPException(status_code=400, detail="Siz bu imtihonga allaqachon ro'yxatdan o'tgansiz")
-    if exam.end_at is not None and exam.end_at <= datetime.utcnow():
+    now = datetime.utcnow()
+    if exam.start_at is not None and exam.start_at <= now:
+        raise HTTPException(status_code=400, detail="Bu imtihon allaqachon boshlangan")
+    if exam.end_at is not None and exam.end_at <= now:
         raise HTTPException(status_code=400, detail="Bu imtihon allaqachon yakunlangan")
     if exam.capacity is not None:
         count = db.query(ExamRegistration).filter(
