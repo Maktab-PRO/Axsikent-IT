@@ -686,6 +686,11 @@ def submit_lesson_quiz(
             detail="Bu dars uchun tekshiruv mavjud emas"
         )
 
+    allowed_answer_ids = {str(quiz.id) for quiz in quizzes}
+    unknown_answer_ids = [key for key in answers.keys() if str(key) not in allowed_answer_ids]
+    if unknown_answer_ids:
+        raise HTTPException(status_code=400, detail="Javoblar ushbu dars savollariga mos emas")
+
     score = 0
 
     for quiz in quizzes:
