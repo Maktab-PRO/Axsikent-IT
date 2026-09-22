@@ -1515,10 +1515,6 @@ if (finishButton) {
                 return;
             }
 
-
-            const data = await response.json();
-
-
             if (!response.ok) {
 
                 showMessage(
