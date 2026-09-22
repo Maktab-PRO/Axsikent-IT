@@ -148,7 +148,7 @@ def get_teacher(
 ):
     teacher = db.query(Teacher).filter(
         Teacher.id == teacher_id
-    ).with_for_update().first()
+    ).first()
 
     if not teacher:
         raise HTTPException(
@@ -241,7 +241,7 @@ def deactivate_teacher(
 ):
     teacher = db.query(Teacher).filter(
         Teacher.id == teacher_id
-    ).first()
+    ).with_for_update().first()
 
     if not teacher:
         raise HTTPException(
