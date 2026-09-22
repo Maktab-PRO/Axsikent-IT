@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.db import get_db
 from app.core.security import require_admin
@@ -195,7 +196,11 @@ def create_category(
     )
 
     db.add(category)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Bu kategoriya allaqachon mavjud")
     db.refresh(category)
 
     return {
