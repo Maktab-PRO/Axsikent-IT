@@ -4239,13 +4239,17 @@ function startStudentExamTimer() {
         if (left <= 0) {
             clearInterval(studentOnlineTimer);
             studentOnlineTimer = null;
-            studentOnlineAttemptId = null;
-            studentOnlineExamId = null;
-            studentOnlineDeadline = null;
-            markStudentExamPageVisible(false);
             const submitButton = document.getElementById("studentOnlineSubmit");
             if (submitButton) submitButton.disabled = true;
-            showPremiumModal("Vaqt tugadi","Test vaqti tugadi. Natijani server tekshiradi.","Yopish");
+            if (studentOnlineExamId) {
+                submitStudentOnlineExam(true);
+            } else {
+                studentOnlineAttemptId = null;
+                studentOnlineExamId = null;
+                studentOnlineDeadline = null;
+                markStudentExamPageVisible(false);
+                showPremiumModal("Vaqt tugadi","Test vaqti tugadi.","Yopish");
+            }
         }
     };
 
@@ -4253,7 +4257,7 @@ function startStudentExamTimer() {
     studentOnlineTimer = setInterval(tick,1000);
 }
 
-async function submitStudentOnlineExam() {
+async function submitStudentOnlineExam(forceTimeout = false) {
     if (!studentOnlineExamId) return;
 
     const token = localStorage.getItem("access_token");
@@ -4293,6 +4297,14 @@ async function submitStudentOnlineExam() {
         }
 
         if (!response.ok) {
+            if (forceTimeout && response.status === 408) {
+                markStudentExamPageVisible(false);
+                studentOnlineAttemptId = null;
+                studentOnlineExamId = null;
+                studentOnlineDeadline = null;
+                showPremiumModal("Vaqt tugadi","Test vaqti tugadi. Javoblaringiz serverga saqlandi.","Yopish");
+                return;
+            }
             const detail = data && data.detail
                 ? data.detail
                 : ("Server xatosi: HTTP " + response.status);
