@@ -190,6 +190,13 @@ def submit_homework(
         raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
     student_id = payload["user_id"]
 
+    if not answer or not answer.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Uy vazifasi javobi bo'sh bo'lishi mumkin emas"
+        )
+    answer = answer.strip()
+
     student = db.query(Student).filter(
         Student.id == student_id,
         Student.is_active == True
