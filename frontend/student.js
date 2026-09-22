@@ -81,17 +81,7 @@ async function loadStudentCourses() {
         }
 
         if (!response.ok) {
-
-            container.innerHTML = `
-                <div style="
-                    text-align:center;
-                    padding:25px;
-                    color:#dc2626;
-                ">
-                    Kurslarni yuklashda xatolik yuz berdi.
-                </div>
-            `;
-
+            // Vaqtinchalik API/network xatosini studentga ko‘rsatmaymiz.
             return;
         }
 
@@ -189,7 +179,7 @@ async function loadStudentCourses() {
         if (error?.name === "AbortError") return;
 
         // Render/Internet qisqa uzilishida bir marta qayta urinib ko‘ramiz.
-        // Doimiy xatolik bo‘lsa, foydalanuvchiga xabar chiqariladi.
+        // Muvaffaqiyatsiz bo‘lsa ham studentga xatolik oynasi/yozuvi chiqmaydi.
         try {
             await new Promise(resolve => setTimeout(resolve, 800));
             const retryController = new AbortController();
@@ -242,15 +232,8 @@ async function loadStudentCourses() {
             if (retryError?.name === "AbortError") return;
         }
 
-        container.innerHTML = `
-            <div style="
-                text-align:center;
-                padding:25px;
-                color:#dc2626;
-            ">
-                Server bilan bog‘lanishda xatolik.
-            </div>
-        `;
+        // Qayta urinish ham muvaffaqiyatsiz bo‘lsa, mavjud UI holatini saqlaymiz.
+        return;
     }
 }
 
