@@ -11,7 +11,7 @@ async function fetchStudentApi(path, token, options = {}) {
                 "Authorization": "Bearer " + token
             },
             cache: "no-store",
-            signal: controller.signal
+            signal: options.signal || controller.signal
         });
 
         const text = await response.text();
@@ -862,11 +862,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
                             : `
                                 <button
                                     onclick="
-                                        markLessonRead(
-                                            ${courseId},
-                                            ${moduleId},
-                                            ${lessonId}
-                                        )
+                                        markLessonRead(\n                                            ${courseId},\n                                            ${moduleId},\n                                            ${lessonId},\n                                            this\n                                        )
                                     "
                                     style="
                                         width:100%;
@@ -911,9 +907,12 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
         `;
     }
 }
-        async function markLessonRead(courseId, moduleId, lessonId) {
+        async function markLessonRead(courseId, moduleId, lessonId, button) {
 
-    const token = localStorage.getItem("access_token");
+    if (button?.disabled) return;
+    if (button) { button.disabled = true; button.textContent = "Yuklanmoqda..."; }
+
+    const token/ = localStorage.getItem("access_token");
 
     if (!token) {
         window.location.href = "index.html";
@@ -1389,7 +1388,9 @@ if (finishButton) {
 }
     
         async function completeStudentLesson(courseId, moduleId, lessonId, button) {
-        let currentCourseId = courseId;
+        if (button?.disabled) return;
+        if (button) { button.disabled = true; button.textContent = "Yakunlanmoqda..."; }
+        let currentCourseId/ = courseId;
         let currentModuleId = moduleId;
 
         const token = localStorage.getItem("access_token");
@@ -1775,7 +1776,7 @@ function confirmLogoutStudent() {
                     "Accept": "application/json"
                 },
                 cache: "no-store",
-                signal: controller.signal
+                signal: options.signal || controller.signal
             });
 
             const text = await response.text();
@@ -1839,7 +1840,11 @@ function confirmLogoutStudent() {
 }
 
 
+const studentRewardPurchasesInFlight = new Set();
+
 async function buyStudentReward(productId) {
+    if (studentRewardPurchasesInFlight.has(Number(productId))) return;
+    studentRewardPurchasesInFlight.add(Number(productId));
     const token = localStorage.getItem("access_token");
 
     if (!token) {
@@ -1883,6 +1888,8 @@ async function buyStudentReward(productId) {
             } catch (error) {
                 console.error("Reward buy error:", error);
                 showPremiumModal("Xatolik yuz berdi", error.message || "Mukofotni sotib olishda xatolik", "Yopish");
+            } finally {
+                studentRewardPurchasesInFlight.delete(Number(productId));
             }
         }
     );
@@ -2258,7 +2265,7 @@ async function buyStudentReward(productId) {
                                 color:#64748b;
                                 font-size:12px;
                             ">
-                                ⏰ Muddat: ${homework.deadline}
+                                ⏰ Muddat: ${escapeHtml(homework.deadline)}
                             </div>
                         `
                         : ""
@@ -3139,7 +3146,11 @@ async function loadStudentBooks() {
 }
 
 
+const studentBookPurchasesInFlight = new Set();
+
 async function buyStudentBook(bookId) {
+    if (studentBookPurchasesInFlight.has(Number(bookId))) return;
+    studentBookPurchasesInFlight.add(Number(bookId));
     
 const token = localStorage.getItem("access_token");
 
@@ -3552,7 +3563,7 @@ function openStudentOnlineTests(skipLoad = false) {
                 '<div style="margin-top:7px;color:#9aa4b5;font-size:13px;line-height:1.55;">' + escapeOnlineExamHtml(exam.description || "Online test") + '</div>' +
                 '<div style="margin-top:13px;color:#cbd5e1;font-size:12px;">⏱ ' + Number(exam.time_limit_minutes || 0) + ' daqiqa &nbsp; • &nbsp; 🎯 ' + Number(exam.pass_score || 0) + '% o‘tish</div>' +
                 '<div style="margin-top:14px;display:flex;justify-content:flex-end;">' +
-                    '<button type="button" ' + (exam.can_start ? '' : 'disabled') + ' onclick="startStudentOnlineExam(' + Number(exam.id) + ')" style="padding:11px 17px;border:0;border-radius:12px;background:' + (exam.can_start ? 'linear-gradient(135deg,#7c3aed,#059669)' : 'rgba(255,255,255,.08)') + ';color:#fff;font-weight:800;cursor:pointer;">' +
+                    '<button type="button" ' + (exam.can_start ? '' : 'disabled') + ' onclick="startStudentOnlineExam(' + Number(exam.id) + ', this)" style="padding:11px 17px;border:0;border-radius:12px;background:' + (exam.can_start ? 'linear-gradient(135deg,#7c3aed,#059669)' : 'rgba(255,255,255,.08)') + ';color:#fff;font-weight:800;cursor:pointer;">' +
                         (exam.can_start ? 'Testni boshlash' : 'Urinish tugagan') +
                     '</button>' +
                 '</div>' +
@@ -3828,7 +3839,7 @@ async function loadStudentOnlineExams() {
                     </div>
                     <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap;">
                         <span style="color:#8b95a7;font-size:12px;">Urinish: ${Number(exam.attempts_used || 0)}/${Number(exam.max_attempts || 0)}</span>
-                        <button type="button" ${disabled ? "disabled" : ""} onclick="startStudentOnlineExam(${Number(exam.id)})" style="padding:10px 15px;border:0;border-radius:11px;background:${disabled ? "rgba(255,255,255,.08)" : "linear-gradient(135deg,#7c3aed,#059669)"};color:#fff;font-weight:800;opacity:${disabled ? ".55" : "1"};">${disabled ? "Urinish tugagan" : "Testni boshlash"}</button>
+                        <button type="button" ${disabled ? "disabled" : ""} onclick="startStudentOnlineExam(${Number(exam.id)}, this)" style="padding:10px 15px;border:0;border-radius:11px;background:${disabled ? "rgba(255,255,255,.08)" : "linear-gradient(135deg,#7c3aed,#059669)"};color:#fff;font-weight:800;opacity:${disabled ? ".55" : "1"};">${disabled ? "Urinish tugagan" : "Testni boshlash"}</button>
                     </div>
                 </div>
             `;
@@ -3844,8 +3855,10 @@ async function loadStudentOnlineExams() {
     }
 }
 
-async function startStudentOnlineExam(examId) {
-    const token = localStorage.getItem("access_token");
+async function startStudentOnlineExam(examId, button) {
+    if (button?.disabled) return;
+    if (button) { button.disabled = true; button.textContent = "Boshlanmoqda..."; }
+    const token/ = localStorage.getItem("access_token");
     if (!token) {
         showPremiumModal("Tizimga kirish kerak","Online testni boshlash uchun avval tizimga kiring.","Kirish");
         return;
