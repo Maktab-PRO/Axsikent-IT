@@ -168,13 +168,15 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
     ).with_for_update().first()
 
     if active:
-        # Eski/noto‘g‘ri urinishlarda deadline_at started_at bilan teng yoki undan
-        # oldin qolgan bo‘lishi mumkin. Bunday holatda test vaqtini qayta tiklaymiz.
+        # Eski urinishlarda deadline_at NULL yoki noto‘g‘ri saqlangan bo‘lishi mumkin.
+        # Bunday holatda test vaqtini started_at dan qayta tiklaymiz.
         if (
-            active.deadline_at and
             active.started_at and
-            active.deadline_at <= active.started_at and
-            exam.time_limit_minutes > 0
+            exam.time_limit_minutes > 0 and
+            (
+                active.deadline_at is None or
+                active.deadline_at <= active.started_at
+            )
         ):
             active.deadline_at = active.started_at + timedelta(minutes=exam.time_limit_minutes)
             db.commit()
