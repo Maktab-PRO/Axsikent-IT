@@ -1,6 +1,16 @@
 async function fetchStudentApi(path, token, options = {}) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
+    const externalSignal = options.signal;
+    const abortFromExternal = () => controller.abort();
+
+    if (externalSignal) {
+        if (externalSignal.aborted) {
+            controller.abort();
+        } else {
+            externalSignal.addEventListener("abort", abortFromExternal, {once: true});
+        }
+    }
 
     try {
         const response = await fetch(API_URL + path, {
@@ -11,7 +21,7 @@ async function fetchStudentApi(path, token, options = {}) {
                 "Authorization": "Bearer " + token
             },
             cache: "no-store",
-            signal: options.signal || controller.signal
+            signal: controller.signal
         });
 
         const text = await response.text();
@@ -28,9 +38,11 @@ async function fetchStudentApi(path, token, options = {}) {
         return {response, data};
     } finally {
         clearTimeout(timeout);
+        if (externalSignal) {
+            externalSignal.removeEventListener("abort", abortFromExternal);
+        }
     }
 }
-
 
 const API_URL = "https://axsikent-it-backend.onrender.com";
 // Student API fetches use a hard timeout so Rewards/Notifications cannot stay on loading forever.
@@ -929,6 +941,13 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
             {method: "POST"}
         );
 
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+
         if (!response.ok) {
             throw new Error(
                 result.detail || "Darsni o‘qilgan deb belgilashda xatolik"
@@ -1254,6 +1273,13 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
                             body: JSON.stringify(answers)
                         }
                     );
+
+                    if (submitResponse.status === 401) {
+                        localStorage.removeItem("access_token");
+                        localStorage.removeItem("user_role");
+                        window.location.href = "index.html";
+                        return;
+                    }
 
                     if (!submitResponse.ok) {
                         throw new Error(
@@ -1898,6 +1924,9 @@ async function buyStudentReward(productId) {
             } finally {
                 studentRewardPurchasesInFlight.delete(Number(productId));
             }
+        },
+        () => {
+            studentRewardPurchasesInFlight.delete(Number(productId));
         }
     );
 }
@@ -2160,6 +2189,13 @@ async function buyStudentReward(productId) {
         }
 
         const {response: submissionsResponse, data: submissions} = await fetchStudentApi("/homework/student/submissions", token);
+
+        if (submissionsResponse.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
 
         if (!submissionsResponse.ok) {
             throw new Error(submissions.detail || "Uy vazifasi natijalarini yuklashda xatolik");
@@ -3003,6 +3039,9 @@ showPremiumModal(
         } finally {
             studentBookPurchasesInFlight.delete(Number(bookId));
         }
+    },
+    () => {
+        studentBookPurchasesInFlight.delete(Number(bookId));
     }
 );
 
@@ -3378,7 +3417,7 @@ function openStudentExams() {
     return escapeHtml(value).replace(/&lt;br\s*\/?&gt;/gi, "<br>").replace(/&lt;(\/?)strong&gt;/gi, "<$1strong>");
 }
 
-function showPremiumModal(title, message, buttonText = "Yopish", onConfirm = null) {
+function showPremiumModal(title, message, buttonText = "Yopish", onConfirm = null, onCancel = null) {
 
 const oldModal = document.getElementById("premiumPurchaseModal");
 
@@ -3544,6 +3583,7 @@ const confirmButton = document.getElementById(
 
 cancelButton.onclick = () => {
     modal.remove();
+    if (onCancel) onCancel();
 };
 
 confirmButton.onclick = async () => {
@@ -3998,6 +4038,109 @@ async function openStudentHomeworkSubmit(homeworkId, buttonLabel) {
 }
 
 let studentNotificationInterval = null;
+let studentNotificationsRequestInFlight = false;
+
+async function loadStudentNotifications() {
+    if (studentNotificationsRequestInFlight) return;
+    const token = localStorage.getItem("access_token");
+    const badge = document.getElementById("studentNotificationBadge");
+    studentNotificationsRequestInFlight = true;
+
+    try {
+        if (!token) {
+            if (badge) badge.hidden = true;
+            return;
+        }
+
+        const {response, data} = await fetchStudentApi(
+            "/students/notifications?ts=" + Date.now(),
+            token,
+            {method:"GET"}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+        if (!response.ok) {
+            throw new Error(data.detail || "Bildirishnomalarni yuklashda xatolik");
+        }
+
+        const unread = Math.max(0, Number(data.unread) || 0);
+        if (badge) {
+            badge.textContent = String(unread);
+            badge.hidden = unread === 0;
+        }
+
+        const body = document.getElementById("studentNotificationsBody");
+        if (body) {
+            const items = Array.isArray(data.notifications) ? data.notifications : [];
+            body.innerHTML = items.length
+                ? items.map(item => `
+                    <div style="padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:${item.is_read ? "rgba(255,255,255,.025)" : "rgba(139,92,246,.08)"};margin-bottom:10px;">
+                        <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">
+                            <strong style="color:#fff;">${escapeHtml(item.title || "Bildirishnoma")}</strong>
+                            ${item.is_read ? "" : `<button type="button" onclick="markStudentNotificationRead(${Number(item.id)})" style="border:0;background:transparent;color:#c4b5fd;font-size:11px;font-weight:800;cursor:pointer;">O‘qildi</button>`}
+                        </div>
+                        <div style="margin-top:6px;color:#cbd5e1;font-size:13px;line-height:1.55;">${escapeHtml(item.message || "")}</div>
+                        <div style="margin-top:7px;color:#64748b;font-size:10px;">${escapeHtml(item.created_at || "")}</div>
+                    </div>
+                `).join("")
+                : '<div style="padding:35px;text-align:center;color:#94a3b8;">Hozircha bildirishnomalar yo‘q.</div>';
+        }
+    } catch (error) {
+        console.error("Student notifications:", error);
+        const body = document.getElementById("studentNotificationsBody");
+        if (body) body.innerHTML = '<div style="padding:18px;color:#f87171;">❌ ' + escapeHtml(error.message || "Bildirishnomalarni yuklab bo‘lmadi.") + '</div>';
+    } finally {
+        studentNotificationsRequestInFlight = false;
+    }
+}
+
+async function markStudentNotificationRead(notificationId) {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    try {
+        const {response, data} = await fetchStudentApi(
+            "/students/notifications/" + Number(notificationId) + "/read",
+            token,
+            {method:"PUT"}
+        );
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+        if (!response.ok) throw new Error(data.detail || "Bildirishnomani o‘qilgan deb belgilab bo‘lmadi");
+        await loadStudentNotifications();
+    } catch (error) {
+        console.error("Notification read:", error);
+    }
+}
+
+async function openStudentNotifications() {
+    document.getElementById("studentNotificationsModal")?.remove();
+
+    const modal = document.createElement("div");
+    modal.id = "studentNotificationsModal";
+    modal.innerHTML =
+        '<div style="position:fixed;inset:0;z-index:2147483646;background:rgba(0,0,0,.84);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:16px;">' +
+            '<div style="width:min(620px,100%);max-height:88vh;overflow:auto;background:linear-gradient(145deg,#111827,#070b12);border:1px solid rgba(139,92,246,.35);border-radius:22px;padding:22px;color:#fff;box-shadow:0 30px 100px rgba(0,0,0,.8);">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;"><h2 style="margin:0;font-size:21px;">Bildirishnomalar</h2><button type="button" id="studentNotificationsClose" style="width:40px;height:40px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;font-size:22px;">×</button></div>' +
+                '<div id="studentNotificationsBody"><div style="padding:30px;text-align:center;color:#94a3b8;">Yuklanmoqda...</div></div>' +
+            '</div>' +
+        '</div>';
+
+    document.body.appendChild(modal);
+    const shell = modal.firstElementChild;
+    document.getElementById("studentNotificationsClose").onclick = () => modal.remove();
+    shell.addEventListener("click", e => { if (e.target === shell) modal.remove(); });
+    await loadStudentNotifications();
+}
 
 function initStudentDashboard() {
     const run = function() {
