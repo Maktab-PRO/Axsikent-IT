@@ -4413,14 +4413,13 @@ async function openStudentHomeworkSubmit(homeworkId, buttonLabel) {
         this.textContent = "Yuborilmoqda...";
 
         try {
-            const response = await fetch(API_URL + "/homework/" + Number(homeworkId) + "/submit?answer=" + encodeURIComponent(answer), {
-                method: "POST",
-                headers: {"Authorization": "Bearer " + token, "Accept": "application/json"},
-                cache: "no-store"
-            });
-            const raw = await response.text();
-            let data = {};
-            try { data = raw ? JSON.parse(raw) : {}; } catch (_) {}
+            const {response, data} = await fetchStudentApi(
+                "/homework/" + Number(homeworkId) + "/submit?answer=" + encodeURIComponent(answer),
+                token,
+                {
+                    method: "POST"
+                }
+            );
             if (!response.ok) throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
 
             close();
