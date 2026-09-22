@@ -148,7 +148,7 @@ def get_teacher(
 ):
     teacher = db.query(Teacher).filter(
         Teacher.id == teacher_id
-    ).first()
+    ).with_for_update().first()
 
     if not teacher:
         raise HTTPException(
@@ -286,12 +286,18 @@ def activate_teacher(
 ):
     teacher = db.query(Teacher).filter(
         Teacher.id == teacher_id
-    ).first()
+    ).with_for_update().first()
 
     if not teacher:
         raise HTTPException(
             status_code=404,
             detail="Ustoz topilmadi"
+        )
+
+    if not teacher.approved_by_admin:
+        raise HTTPException(
+            status_code=400,
+            detail="Tasdiqlanmagan o‘qituvchini faollashtirib bo‘lmaydi."
         )
 
     teacher.is_active = True
