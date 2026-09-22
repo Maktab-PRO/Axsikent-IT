@@ -7,7 +7,7 @@ from app.models.student_group import StudentGroup
 from app.models.student import Student
 from app.models.group import Group
 from app.models.admin import Admin
-from app.core.security import verify_token
+from app.core.security import decode_token
 
 
 router = APIRouter(
@@ -25,9 +25,10 @@ def assign_student_to_group(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    admin_id = verify_token(credentials.credentials)
-
-    if not admin_id:
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "admin":
+        raise HTTPException(status_code=401, detail="Admin token noto'g'ri yoki muddati tugagan")
+    admin_id = payload["user_id"]
         raise HTTPException(
             status_code=401,
             detail="Token noto'g'ri yoki muddati tugagan"
