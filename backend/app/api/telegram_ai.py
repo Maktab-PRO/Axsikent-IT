@@ -76,7 +76,6 @@ async def create_telegram_connect_link(
     if not payload or payload.get("role") != "student":
         raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
     student_id = payload["user_id"]
-        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
 
     student = db.query(Student).filter(Student.id == student_id).first()
 
