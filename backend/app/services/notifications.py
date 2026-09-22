@@ -7,7 +7,7 @@ from app.models.student_group import StudentGroup
 
 def _safe_commit(db: Session):
     try:
-        _safe_commit(db)
+        db.commit()
     except Exception:
         db.rollback()
 
