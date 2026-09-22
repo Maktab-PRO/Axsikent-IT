@@ -1560,7 +1560,7 @@ if (finishButton) {
             console.error(error);
 
             showLessonErrorModal(
-                error?.message || "Server bilan bog‘lanishda xatolik."
+                error?.message || "Amalni bajarib bo‘lmadi. Qayta urinib ko‘ring."
             );
         }
     }
