@@ -51,8 +51,7 @@ def register_student(
     db: Session = Depends(get_db)
 ):
     existing_student = db.query(Student).filter(
-        Student.phone == student.phone,
-        Student.is_active == True
+        Student.phone == student.phone
     ).first()
 
     if existing_student:
