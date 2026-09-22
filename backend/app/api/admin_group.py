@@ -328,9 +328,13 @@ def create_admin_group(
                 detail="Tanlangan level ushbu kursga tegishli yoki faol emas"
             )
 
+    group_name = data.name.strip()
+    if not group_name:
+        raise HTTPException(status_code=400, detail="Guruh nomi bo'sh bo'lishi mumkin emas")
+
     # Bir xil nomdagi faol guruhni oldini olish
     existing = db.query(Group).filter(
-        Group.name == data.name,
+        Group.name == group_name,
         Group.is_active == True
     ).first()
 
@@ -341,7 +345,7 @@ def create_admin_group(
         )
 
     group = Group(
-        name=data.name,
+        name=group_name,
         course_id=data.course_id,
         teacher_id=data.teacher_id,
         level_id=data.level_id,
@@ -400,6 +404,10 @@ def update_admin_group(
         )
 
     if "name" in update_data:
+        update_data["name"] = update_data["name"].strip()
+        if not update_data["name"]:
+            raise HTTPException(status_code=400, detail="Guruh nomi bo'sh bo'lishi mumkin emas")
+
         duplicate = db.query(Group).filter(
             Group.name == update_data["name"],
             Group.id != group_id,
@@ -431,6 +439,9 @@ def update_admin_group(
                     f"Sig'imni bundan past qilib bo'lmaydi."
                 )
             )
+
+    if "status" in update_data:
+        update_data["is_active"] = update_data["status"] == "active"
 
     for field, value in update_data.items():
         setattr(
