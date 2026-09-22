@@ -3419,6 +3419,12 @@ function openStudentOnlineTests(skipLoad = false) {
     .then(result => {
         const response = result.response;
         const data = result.data;
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return Promise.reject(new Error("Sessiya tugagan"));
+        }
         if (!response.ok) throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
         return Array.isArray(data.exams) ? data.exams : [];
     })
