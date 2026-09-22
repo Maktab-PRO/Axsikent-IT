@@ -33,6 +33,9 @@ def create_book(
     if not title:
         raise HTTPException(status_code=400, detail="Kitob nomi bo‘sh bo‘lishi mumkin emas")
 
+    if len(image_url) > 500:
+        raise HTTPException(status_code=400, detail="Rasm URL 500 belgidan oshmasligi kerak")
+
     if price < 0 or coin_price < 0 or stock < 0:
         raise HTTPException(
             status_code=400,
