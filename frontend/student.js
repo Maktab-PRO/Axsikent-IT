@@ -1814,7 +1814,8 @@ async function loadStudentRewards(targetId) {
 
     try {
         if (studentRewardsLoadController) studentRewardsLoadController.abort();
-        const controller = new AbortController();
+        let controller = null;
+        controller = new AbortController();
         studentRewardsLoadController = controller;
         const timer = setTimeout(() => controller.abort(), 10000);
 
@@ -2084,6 +2085,7 @@ async function buyStudentReward(productId) {
     } catch (error) {
 
         console.error(error);
+        if (error?.name === "AbortError") return;
 
         container.innerHTML = `
             <div style="
@@ -2996,6 +2998,7 @@ async function loadStudentBooks() {
 
     } catch (error) {
         console.error(error);
+        if (error?.name === "AbortError") return;
 
         container.innerHTML = `
             <div style="
@@ -3200,7 +3203,7 @@ async function loadStudentTrainings() {
         const {response, data} = await fetchStudentApi(
             "/students/trainings",
             token,
-            {method:"GET"}
+            {method:"GET", signal: controller.signal}
         );
 
         if (response.status === 401) {
@@ -3295,7 +3298,7 @@ async function loadStudentExams() {
         const {response, data} = await fetchStudentApi(
             "/students/exams",
             token,
-            {method:"GET"}
+            {method:"GET", signal: controller.signal}
         );
 
         if (response.status === 401) {
@@ -3464,6 +3467,7 @@ function openStudentOnlineTests(skipLoad = false) {
         ).join("");
     })
     .catch(error => {
+        if (error?.name === "AbortError") return;
         body.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">❌ ' + escapeOnlineExamHtml(error.message || "Online testlarni yuklab bo‘lmadi.") + '</div>';
     })
     .finally(() => {
@@ -3713,7 +3717,8 @@ async function loadStudentOnlineExams() {
 
     try {
         if (studentOnlineExamsLoadController) studentOnlineExamsLoadController.abort();
-        const controller = new AbortController();
+        let controller = null;
+        controller = new AbortController();
         studentOnlineExamsLoadController = controller;
         const {response, data} = await fetchStudentApi(
             "/online-exams/available?ts=" + Date.now(),
@@ -3874,7 +3879,8 @@ async function loadStudentDashboardHomework() {
 
     try {
         if (studentDashboardHomeworkController) studentDashboardHomeworkController.abort();
-        const controller = new AbortController();
+        let controller = null;
+        controller = new AbortController();
         studentDashboardHomeworkController = controller;
         let {response: homeworkResponse, data: homeworks} = await fetchStudentApi(
             "/homework/student?ts=" + Date.now(),
