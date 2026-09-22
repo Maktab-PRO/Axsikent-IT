@@ -546,10 +546,12 @@ def deactivate_homework(
     admin: Admin = Depends(require_admin)
 ):
 
-    homework = get_homework_or_404(
-        homework_id,
-        db
-    )
+    homework = db.query(Homework).filter(
+        Homework.id == homework_id
+    ).with_for_update().first()
+
+    if not homework:
+        raise HTTPException(status_code=404, detail="Uy vazifasi topilmadi.")
 
     homework.status = "inactive"
 
