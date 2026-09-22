@@ -1344,7 +1344,7 @@ if (finishButton) {
     }
 }
     
-        async function completeStudentLesson(courseId, moduleId, lessonId, button) {
+        async async function completeStudentLesson(courseId, moduleId, lessonId, button) {
         let currentCourseId = courseId;
         let currentModuleId = moduleId;
 
@@ -1357,17 +1357,12 @@ if (finishButton) {
 
         try {
 
-            const response = await fetch(
+            const {response, data: result} = await fetchStudentApi(
                 `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/complete`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                }
+                token,
+                {method: "POST"}
             );
 
-            const result = await response.json();
 
             if (!response.ok) {
 
