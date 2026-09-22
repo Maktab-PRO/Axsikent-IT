@@ -10,6 +10,7 @@ from app.models.student_group import StudentGroup
 from app.models.student import Student
 from app.models.course_module import CourseModule
 from app.models.lesson import Lesson
+from app.models.student_lesson import StudentLesson
 from app.models.lesson_quiz import LessonQuiz
 from app.models.grade import Grade
 from app.schemas.teacher import (
@@ -171,6 +172,79 @@ def teacher_dashboard(
             ).count() for cid in course_ids
         )
     }
+
+
+@router.post("/assign-lesson")
+def assign_teacher_lesson(
+    student_id: int = Body(...),
+    course_id: int = Body(...),
+    title: str = Body(...),
+    video_url: str | None = Body(None),
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+    db: Session = Depends(get_db)
+):
+    token_data = decode_token(credentials.credentials)
+    if not token_data or token_data.get("role") != "teacher":
+        raise HTTPException(status_code=403, detail="Faqat o‘qituvchi akkaunti uchun ruxsat berilgan")
+
+    teacher_id = token_data["user_id"]
+    teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id,
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
+    ).first()
+    if not teacher:
+        raise HTTPException(status_code=401, detail="O‘qituvchi sessiyasi noto‘g‘ri yoki akkaunt faol emas")
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="O‘quvchi topilmadi yoki faol emas")
+
+    module = db.query(CourseModule).filter(
+        CourseModule.course_id == course_id,
+        CourseModule.is_active == True
+    ).order_by(CourseModule.sort_order.asc(), CourseModule.id.asc()).first()
+    if not module:
+        raise HTTPException(status_code=404, detail="Kurs uchun faol modul topilmadi")
+
+    group = db.query(Group).join(
+        StudentGroup, StudentGroup.group_id == Group.id
+    ).filter(
+        Group.teacher_id == teacher.id,
+        Group.course_id == course_id,
+        Group.is_active == True,
+        StudentGroup.student_id == student.id,
+        StudentGroup.is_active == True
+    ).first()
+    if not group:
+        raise HTTPException(status_code=403, detail="Bu o‘quvchi va kurs sizga biriktirilmagan")
+
+    title = title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Dars nomi bo‘sh bo‘lishi mumkin emas")
+
+    lesson = Lesson(
+        module_id=module.id,
+        title=title,
+        video_url=video_url.strip() if video_url else None,
+        is_active=True
+    )
+    db.add(lesson)
+    db.flush()
+
+    student_lesson = StudentLesson(
+        student_id=student.id,
+        lesson_id=lesson.id,
+        completed=False
+    )
+    db.add(student_lesson)
+    db.commit()
+    db.refresh(lesson)
+
+    return {"message": "Dars biriktirildi", "id": lesson.id, "student_id": student.id}
 
 
 @router.post("/quiz")
