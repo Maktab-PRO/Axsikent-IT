@@ -3078,6 +3078,13 @@ showPremiumModal(
                 {method:"POST"}
             );
 
+            if (response.status === 401) {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user_role");
+                window.location.href = "index.html";
+                return;
+            }
+
             if (!response.ok) {
                 throw new Error(
                     data.detail || "Kitobni sotib olishda xatolik"
