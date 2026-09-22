@@ -3571,7 +3571,8 @@ async function loadStudentPodcasts() {
         let response;
         try {
             response = await fetch(`${API_URL}/students/podcasts`, {
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: { "Authorization": `Bearer ${token}` },
+            signal: controller.signal
         });
         } finally {
             clearTimeout(timeout);
@@ -3660,10 +3661,15 @@ async function registerStudentTraining(trainingId) {
     }
 
     try {
-        const response = await fetch(`${API_URL}/students/trainings/${trainingId}/register`, {
-            method:"POST",
-            headers:{ "Authorization":`Bearer ${token}` }
-        });
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 12000);
+        let response;
+        try {
+            response = await fetch(`${API_URL}/students/trainings/${trainingId}/register`, {
+                method:"POST",
+                headers:{ "Authorization":`Bearer ${token}` },
+                signal: controller.signal
+            });
         } finally {
             clearTimeout(timeout);
         }
@@ -3695,8 +3701,12 @@ async function loadStudentExams() {
         let response;
         try {
             response = await fetch(`${API_URL}/students/exams`, {
-            headers:{ "Authorization":`Bearer ${token}` }
-        });
+                headers:{ "Authorization":`Bearer ${token}` },
+                signal: controller.signal
+            });
+        } finally {
+            clearTimeout(timeout);
+        }
         const data = await response.json();
 
         if (!response.ok) throw new Error(data.detail || "Imtihonlarni yuklashda xatolik.");
