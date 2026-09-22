@@ -59,7 +59,9 @@ def student_id_from_token(
             detail="Student token noto'g'ri yoki muddati tugagan"
         )
 
-    student_id = payload["user_id"]
+    student_id = payload.get("user_id")
+    if not isinstance(student_id, int):
+        raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
     student = db.query(Student).filter(
         Student.id == student_id,
         Student.is_active == True
@@ -267,6 +269,18 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
         raise HTTPException(status_code=404, detail="Imtihon topilmadi")
     if not exam.is_active:
         raise HTTPException(status_code=403, detail="Bu imtihon hozir faol emas")
+
+    if exam.course_id is not None:
+        enrolled = db.query(StudentCourse.id).join(
+            Course, Course.id == StudentCourse.course_id
+        ).filter(
+            StudentCourse.student_id == student_id,
+            StudentCourse.course_id == exam.course_id,
+            StudentCourse.is_active == True,
+            Course.is_active == True
+        ).first()
+        if not enrolled:
+            raise HTTPException(status_code=403, detail="Bu test siz biriktirilgan kurs uchun mavjud emas")
 
     attempt = db.query(OnlineExamAttempt).filter(
         OnlineExamAttempt.exam_id == exam_id,
