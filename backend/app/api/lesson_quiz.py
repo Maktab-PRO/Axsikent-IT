@@ -71,7 +71,7 @@ def create_lesson_quiz(
     if not all([option_a, option_b, option_c, option_d]):
         raise HTTPException(status_code=400, detail="Barcha javob variantlari to'ldirilishi kerak")
 
-    if correct_answer not in ["A", "B", "C", "D"]
+    if correct_answer not in ["A", "B", "C", "D"]:
         raise HTTPException(
             status_code=400,
             detail="To'g'ri javob faqat A, B, C yoki D bo'lishi kerak"
