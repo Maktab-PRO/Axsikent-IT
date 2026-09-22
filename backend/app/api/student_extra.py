@@ -75,8 +75,16 @@ def register_training(training_id: int, credentials: HTTPAuthorizationCredential
         TrainingRegistration.training_id == training_id,
         TrainingRegistration.student_id == student_id
     ).first()
-    if existing:
+    if existing and existing.status == "registered":
         raise HTTPException(status_code=400, detail="Siz bu treningka allaqachon ro'yxatdan o'tgansiz")
+    if training.end_at is not None and training.end_at <= datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Bu trening allaqachon yakunlangan")
+    if existing:
+        existing.status = "registered"
+        existing.registered_at = datetime.utcnow()
+        db.commit()
+        db.refresh(existing)
+        return {"success": True, "message": "Treningka qayta ro'yxatdan o'tildi", "registration_id": existing.id}
     if training.capacity is not None:
         count = db.query(TrainingRegistration).filter(
             TrainingRegistration.training_id == training_id,
@@ -116,8 +124,16 @@ def register_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depe
         ExamRegistration.exam_id == exam_id,
         ExamRegistration.student_id == student_id
     ).first()
-    if existing:
+    if existing and existing.status == "registered":
         raise HTTPException(status_code=400, detail="Siz bu imtihonga allaqachon ro'yxatdan o'tgansiz")
+    if exam.end_at is not None and exam.end_at <= datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Bu imtihon allaqachon yakunlangan")
+    if existing:
+        existing.status = "registered"
+        existing.registered_at = datetime.utcnow()
+        db.commit()
+        db.refresh(existing)
+        return {"success": True, "message": "Imtihonga qayta ro'yxatdan o'tildi", "registration_id": existing.id}
     if exam.capacity is not None:
         count = db.query(ExamRegistration).filter(
             ExamRegistration.exam_id == exam_id,
