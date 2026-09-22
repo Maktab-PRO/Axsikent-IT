@@ -219,16 +219,10 @@ async function openStudentCourse(courseId) {
 
     try {
 
-        const response = await fetch(
-            `${API_URL}/students/courses/${courseId}/modules`,
-            {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            }
+        const {response, data: modules} = await fetchStudentApi(
+            `/students/courses/${courseId}/modules`,
+            token
         );
-
-        const modules = await response.json();
 
         if (!response.ok) {
             throw new Error("Modullarni yuklashda xatolik");
