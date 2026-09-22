@@ -471,10 +471,11 @@ def activate_group(
     admin: Admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    group = get_group_or_404(
-        group_id,
-        db
-    )
+    group = db.query(Group).filter(
+        Group.id == group_id
+    ).with_for_update().first()
+    if not group:
+        raise HTTPException(status_code=404, detail="Guruh topilmadi")
 
     get_course_or_404(group.course_id, db)
     get_teacher_or_404(group.teacher_id, db)
