@@ -161,9 +161,13 @@ def get_admin_groups(
             Teacher.id == group.teacher_id
         ).first()
 
-        students_count = db.query(StudentGroup).filter(
+        students_count = db.query(StudentGroup).join(
+            Student,
+            Student.id == StudentGroup.student_id
+        ).filter(
             StudentGroup.group_id == group.id,
-            StudentGroup.is_active == True
+            StudentGroup.is_active == True,
+            Student.is_active == True
         ).count()
 
         result.append({
@@ -223,9 +227,13 @@ def get_admin_group(
         Teacher.id == group.teacher_id
     ).first()
 
-    memberships = db.query(StudentGroup).filter(
+    memberships = db.query(StudentGroup).join(
+        Student,
+        Student.id == StudentGroup.student_id
+    ).filter(
         StudentGroup.group_id == group.id,
-        StudentGroup.is_active == True
+        StudentGroup.is_active == True,
+        Student.is_active == True
     ).all()
 
     students = []
@@ -385,9 +393,13 @@ def update_admin_group(
 
     # Sig'imni kamaytirishda mavjud o'quvchilar sonini tekshiramiz
     if "capacity" in update_data:
-        students_count = db.query(StudentGroup).filter(
+        students_count = db.query(StudentGroup).join(
+            Student,
+            Student.id == StudentGroup.student_id
+        ).filter(
             StudentGroup.group_id == group.id,
-            StudentGroup.is_active == True
+            StudentGroup.is_active == True,
+            Student.is_active == True
         ).count()
 
         if update_data["capacity"] < students_count:
