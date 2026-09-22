@@ -168,10 +168,6 @@ def get_all_admin_submissions(
             for submission in submissions
         ]
     }
-# =========================================================
-# 3. GET SINGLE HOMEWORK
-# =========================================================
-
 @router.get("/ai-submissions/{submission_id}")
 def get_admin_ai_submission(
     submission_id: int,
@@ -217,6 +213,12 @@ def get_admin_submission(
         db
     )
 
+
+
+
+# =========================================================
+# 3. GET SINGLE HOMEWORK
+# =========================================================
 
 # =========================================================
 # 10. GRADE SUBMISSION
