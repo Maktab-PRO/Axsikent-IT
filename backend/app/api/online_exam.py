@@ -261,9 +261,13 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
 @router.post("/{exam_id}/submit")
 def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
     student_id = student_id_from_token(credentials, db)
-    exam = db.query(OnlineExam).filter(OnlineExam.id == exam_id).first()
+    exam = db.query(OnlineExam).filter(
+        OnlineExam.id == exam_id
+    ).with_for_update().first()
     if not exam:
         raise HTTPException(status_code=404, detail="Imtihon topilmadi")
+    if not exam.is_active:
+        raise HTTPException(status_code=403, detail="Bu imtihon hozir faol emas")
 
     attempt = db.query(OnlineExamAttempt).filter(
         OnlineExamAttempt.exam_id == exam_id,
