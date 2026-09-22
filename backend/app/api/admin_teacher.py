@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 
 from app.db import get_db
 from app.core.security import require_admin
@@ -115,7 +116,11 @@ def create_teacher(
         is_active=True
     )
     db.add(teacher)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Bu telefon raqam allaqachon ro'yxatdan o'tgan.")
     db.refresh(teacher)
     return {
         "success": True,
