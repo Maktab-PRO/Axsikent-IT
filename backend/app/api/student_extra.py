@@ -42,7 +42,7 @@ def student_id_from_token(
 
 @router.get("/podcasts")
 def get_podcasts(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
-    student_id = student_id_from_token(credentials)
+    student_id = student_id_from_token(credentials, db)
     return [
         {"id": x.id, "title": x.title, "description": x.description, "audio_url": x.audio_url,
          "duration_minutes": x.duration_minutes}
@@ -52,7 +52,7 @@ def get_podcasts(credentials: HTTPAuthorizationCredentials = Depends(security), 
 
 @router.get("/trainings")
 def get_trainings(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
-    student_id = student_id_from_token(credentials)
+    student_id = student_id_from_token(credentials, db)
     registrations = {
         x.training_id: x.status
         for x in db.query(TrainingRegistration).filter(TrainingRegistration.student_id == student_id).all()
@@ -67,7 +67,7 @@ def get_trainings(credentials: HTTPAuthorizationCredentials = Depends(security),
 
 @router.post("/trainings/{training_id}/register")
 def register_training(training_id: int, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
-    student_id = student_id_from_token(credentials)
+    student_id = student_id_from_token(credentials, db)
     training = db.query(Training).filter(Training.id == training_id, Training.is_active == True).first()
     if not training:
         raise HTTPException(status_code=404, detail="Trening topilmadi")
@@ -93,7 +93,7 @@ def register_training(training_id: int, credentials: HTTPAuthorizationCredential
 
 @router.get("/exams")
 def get_exams(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
-    student_id = student_id_from_token(credentials)
+    student_id = student_id_from_token(credentials, db)
     registrations = {
         x.exam_id: x.status
         for x in db.query(ExamRegistration).filter(ExamRegistration.student_id == student_id).all()
@@ -108,7 +108,7 @@ def get_exams(credentials: HTTPAuthorizationCredentials = Depends(security), db:
 
 @router.post("/exams/{exam_id}/register")
 def register_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
-    student_id = student_id_from_token(credentials)
+    student_id = student_id_from_token(credentials, db)
     exam = db.query(Exam).filter(Exam.id == exam_id, Exam.is_active == True).first()
     if not exam:
         raise HTTPException(status_code=404, detail="Imtihon topilmadi")
