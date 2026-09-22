@@ -67,7 +67,8 @@ def get_students(
 
         for enrollment in enrollments:
             course = db.query(Course).filter(
-                Course.id == enrollment.course_id
+                Course.id == enrollment.course_id,
+                Course.is_active == True
             ).first()
 
             if course:
