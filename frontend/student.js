@@ -382,7 +382,7 @@ async function openStudentCourse(courseId) {
                             color:#f8fafc;
                         ">
                             <span class="student-modern-module-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h13a1 1 0 0 1 1 1v15H7a2 2 0 0 0-2 2V4Z"/><path d="M7 20h12M9 8h7M9 12h7"/></svg></span>
-                            <span>${module.title}</span>
+                            <span>${escapeHtml(module.title || "Modul")}</span>
                         </div>
 
                         <div style="
@@ -391,7 +391,7 @@ async function openStudentCourse(courseId) {
                             line-height:1.5;
                             color:#94a3b8;
                         ">
-                            ${module.description || "Modulni ochish va darslarni boshlash"}
+                            ${escapeHtml(module.description || "Modulni ochish va darslarni boshlash")}
                         </div>
 
                         <div style="
@@ -619,7 +619,7 @@ async function openStudentModule(courseId, moduleId) {
                         color:#f8fafc;
                         font-weight:800;
                     ">
-                        ${lesson.title}
+                        ${escapeHtml(lesson.title || "Dars")}
                     </div>
 
                 </div>
