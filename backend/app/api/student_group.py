@@ -55,7 +55,7 @@ def assign_student_to_group(
     group = db.query(Group).filter(
         Group.id == group_id,
         Group.is_active == True
-    ).first()
+    ).with_for_update().first()
 
     if not group:
         raise HTTPException(
