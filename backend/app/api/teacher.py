@@ -423,7 +423,7 @@ def get_teacher_attendance(
             "full_name": student.full_name,
             "group_id": group.id,
             "group_name": group.name,
-            "status": record.status if record else "present"
+            "status": record.status if record else "unmarked"
         })
     return {"date": date, "students": result}
 
