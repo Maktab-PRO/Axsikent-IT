@@ -113,6 +113,12 @@ def login_student(
             detail="Telefon raqam yoki parol noto'g'ri"
         )
 
+    if not user.is_active:
+        raise HTTPException(
+            status_code=403,
+            detail="O'quvchi akkaunti faol emas"
+        )
+
     access_token = create_access_token(
     {
         "sub": str(user.id),
