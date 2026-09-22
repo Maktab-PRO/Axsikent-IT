@@ -183,6 +183,7 @@ async function loadStudentCourses() {
     } catch (error) {
 
         console.error(error);
+        if (error?.name === "AbortError") return;
 
         container.innerHTML = `
             <div style="
@@ -462,6 +463,7 @@ async function openStudentCourse(courseId) {
     } catch (error) {
 
         console.error(error);
+        if (error?.name === "AbortError") return;
 
         container.innerHTML = `
             <div style="
@@ -1872,6 +1874,7 @@ async function loadStudentRewards(targetId) {
             '</div><h3 style="color:#fff;margin:0 0 14px;font-size:17px;">🎁 Mavjud mukofotlar</h3>' + rewardsBlock;
     } catch (error) {
         console.error("Rewards load error:", error);
+        if (error?.name === "AbortError") return;
         const message = error && error.name === "AbortError" ? "Server 10 soniya ichida javob bermadi." : (error.message || "Noma’lum xatolik");
         container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;"><strong>Mukofotlarni yuklab bo‘lmadi.</strong><div style="margin-top:8px;color:#9ca3af;font-size:12px;">' + escapeHtml(message) + '</div><button type="button" onclick="loadStudentRewards(\'studentRewardsModalContent\')" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
     }
@@ -3161,6 +3164,7 @@ async function loadStudentPodcasts() {
         `).join("");
     } catch (error) {
         console.error("Podcastlar:", error);
+        if (error?.name === "AbortError") return;
         body.innerHTML = studentExtraError(error.message || "Podcastlarni yuklashda xatolik.");
     }
 }
@@ -3217,6 +3221,7 @@ async function loadStudentTrainings() {
         `).join("");
     } catch (error) {
         console.error("Treninglar:", error);
+        if (error?.name === "AbortError") return;
         body.innerHTML = studentExtraError(error.message || "Treninglarni yuklashda xatolik.");
     }
 }
@@ -3311,6 +3316,7 @@ async function loadStudentExams() {
         `).join("");
     } catch (error) {
         console.error("Imtihonlar:",error);
+        if (error?.name === "AbortError") return;
         body.innerHTML = studentExtraError(error.message || "Imtihonlarni yuklashda xatolik.");
     }
 }
