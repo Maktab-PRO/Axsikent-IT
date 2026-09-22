@@ -598,6 +598,10 @@ def create_course(
             detail="Faol kategoriya topilmadi"
         )
 
+    course_name = data.name.strip()
+    if not course_name:
+        raise HTTPException(status_code=400, detail="Kurs nomi bo'sh bo'lishi mumkin emas")
+
     existing = db.query(Course).filter(
         Course.name == course_name,
         Course.is_active == True
@@ -608,9 +612,6 @@ def create_course(
             status_code=409,
             detail="Bu nomdagi faol kurs allaqachon mavjud"
         )
-
-    course_name = data.name.strip()
-    if not course_name:
         raise HTTPException(status_code=400, detail="Kurs nomi bo'sh bo'lishi mumkin emas")
 
     if (
@@ -635,7 +636,7 @@ def create_course(
 
     course = Course(
         category_id=data.category_id,
-        name=data.name,
+        name=course_name,
         description=data.description,
 
         age_min=data.age_min,
