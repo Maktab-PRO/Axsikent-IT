@@ -476,58 +476,38 @@ def update_admin_homework(
         db
     )
 
-    if data.group_id is not None:
+    target_group_id = data.group_id if data.group_id is not None else homework.group_id
+    target_teacher_id = data.teacher_id if data.teacher_id is not None else homework.teacher_id
 
-        group = db.query(Group).filter(
-            Group.id == data.group_id,
-            Group.is_active == True
-        ).first()
+    group = db.query(Group).filter(
+        Group.id == target_group_id,
+        Group.is_active == True
+    ).first()
+    if not group:
+        raise HTTPException(
+            status_code=404,
+            detail="Faol guruh topilmadi."
+        )
 
-        if not group:
-            raise HTTPException(
-                status_code=404,
-                detail="Faol guruh topilmadi."
-            )
+    teacher = db.query(Teacher).filter(
+        Teacher.id == target_teacher_id,
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
+    ).first()
+    if not teacher:
+        raise HTTPException(
+            status_code=404,
+            detail="Faol va administrator tasdiqlagan o‘qituvchi topilmadi."
+        )
 
-        homework.group_id = data.group_id
+    if group.teacher_id != teacher.id:
+        raise HTTPException(
+            status_code=400,
+            detail="Tanlangan o‘qituvchi bu guruhga biriktirilmagan."
+        )
 
-        current_teacher = db.query(Teacher).filter(
-            Teacher.id == homework.teacher_id,
-            Teacher.is_active == True,
-            Teacher.approved_by_admin == True
-        ).first()
-        if not current_teacher or group.teacher_id != current_teacher.id:
-            raise HTTPException(
-                status_code=400,
-                detail="Tanlangan guruh uy vazifasining o‘qituvchisiga biriktirilmagan."
-            )
-
-    if data.teacher_id is not None:
-
-        teacher = db.query(Teacher).filter(
-            Teacher.id == data.teacher_id,
-            Teacher.is_active == True,
-            Teacher.approved_by_admin == True
-        ).first()
-
-        if not teacher:
-            raise HTTPException(
-                status_code=404,
-                detail="Faol va administrator tasdiqlagan o‘qituvchi topilmadi."
-            )
-
-        group = db.query(Group).filter(
-            Group.id == homework.group_id,
-            Group.is_active == True
-        ).first()
-
-        if not group or group.teacher_id != teacher.id:
-            raise HTTPException(
-                status_code=400,
-                detail="Tanlangan o‘qituvchi bu guruhga biriktirilmagan."
-            )
-
-        homework.teacher_id = data.teacher_id
+    homework.group_id = target_group_id
+    homework.teacher_id = target_teacher_id
 
     if data.title is not None:
         homework.title = data.title.strip()
