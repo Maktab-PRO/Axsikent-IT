@@ -5,6 +5,13 @@ from passlib.context import CryptContext
 
 from app.db import get_db
 from app.models.teacher import Teacher
+from app.models.group import Group
+from app.models.student_group import StudentGroup
+from app.models.student import Student
+from app.models.course_module import CourseModule
+from app.models.lesson import Lesson
+from app.models.lesson_quiz import LessonQuiz
+from app.models.grade import Grade
 from app.schemas.teacher import (
     TeacherCreate,
     TeacherLogin,
@@ -164,3 +171,124 @@ def teacher_dashboard(
             ).count() for cid in course_ids
         )
     }
+
+
+@router.post("/quiz")
+def create_teacher_quiz(
+    lesson_id: int,
+    question: str,
+    option_a: str,
+    option_b: str,
+    option_c: str,
+    option_d: str,
+    correct_answer: str,
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+    db: Session = Depends(get_db)
+):
+    token_data = decode_token(credentials.credentials)
+    if not token_data or token_data.get("role") != "teacher":
+        raise HTTPException(status_code=403, detail="Faqat o‘qituvchi akkaunti uchun ruxsat berilgan")
+
+    teacher_id = token_data["user_id"]
+    teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id,
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
+    ).first()
+    if not teacher:
+        raise HTTPException(status_code=401, detail="O‘qituvchi sessiyasi noto‘g‘ri yoki akkaunt faol emas")
+
+    lesson = db.query(Lesson).join(CourseModule, Lesson.module_id == CourseModule.id).filter(
+        Lesson.id == lesson_id,
+        Lesson.is_active == True
+    ).first()
+    if not lesson:
+        raise HTTPException(status_code=404, detail="Dars topilmadi yoki faol emas")
+
+    can_manage = db.query(Group).filter(
+        Group.teacher_id == teacher.id,
+        Group.course_id == CourseModule.course_id,
+        Group.is_active == True
+    ).join(CourseModule, CourseModule.course_id == Group.course_id).filter(
+        CourseModule.id == lesson.module_id
+    ).first()
+    if not can_manage:
+        raise HTTPException(status_code=403, detail="Bu dars sizga biriktirilmagan")
+
+    correct_answer = correct_answer.upper().strip()
+    if correct_answer not in {"A", "B", "C", "D"}:
+        raise HTTPException(status_code=400, detail="To‘g‘ri javob A, B, C yoki D bo‘lishi kerak")
+
+    quiz = LessonQuiz(
+        lesson_id=lesson.id,
+        question=question.strip(),
+        option_a=option_a.strip(),
+        option_b=option_b.strip(),
+        option_c=option_c.strip(),
+        option_d=option_d.strip(),
+        correct_answer=correct_answer,
+        is_active=True
+    )
+    db.add(quiz)
+    db.commit()
+    db.refresh(quiz)
+
+    return {"message": "Quiz saqlandi", "id": quiz.id}
+
+
+@router.post("/grades")
+def create_teacher_grade(
+    student_id: int,
+    score: float,
+    comment: str | None = None,
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+    db: Session = Depends(get_db)
+):
+    token_data = decode_token(credentials.credentials)
+    if not token_data or token_data.get("role") != "teacher":
+        raise HTTPException(status_code=403, detail="Faqat o‘qituvchi akkaunti uchun ruxsat berilgan")
+
+    teacher_id = token_data["user_id"]
+    teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id,
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
+    ).first()
+    if not teacher:
+        raise HTTPException(status_code=401, detail="O‘qituvchi sessiyasi noto‘g‘ri yoki akkaunt faol emas")
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="O‘quvchi topilmadi yoki faol emas")
+
+    group = db.query(Group).join(
+        StudentGroup, StudentGroup.group_id == Group.id
+    ).filter(
+        Group.teacher_id == teacher.id,
+        Group.is_active == True,
+        StudentGroup.student_id == student.id,
+        StudentGroup.is_active == True
+    ).order_by(Group.id.asc()).first()
+    if not group:
+        raise HTTPException(status_code=403, detail="Bu o‘quvchi sizga biriktirilmagan")
+
+    if score < 0 or score > 100:
+        raise HTTPException(status_code=400, detail="Baho 0 dan 100 gacha bo‘lishi kerak")
+
+    grade = Grade(
+        student_id=student.id,
+        group_id=group.id,
+        teacher_id=teacher.id,
+        title="Teacher grade",
+        score=score,
+        max_score=100,
+        comment=comment.strip() if comment else None
+    )
+    db.add(grade)
+    db.commit()
+    db.refresh(grade)
+
+    return {"message": "Baho saqlandi", "id": grade.id}
