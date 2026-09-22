@@ -3814,15 +3814,15 @@ async function loadStudentDashboardHomework() {
             {method:"GET"}
         );
 
-        if (!homeworkResponse.ok) {
-            throw new Error(homeworks.detail || ("Server xatosi: HTTP " + homeworkResponse.status));
-        }
-
         if (homeworkResponse.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
             window.location.href = "index.html";
             return;
+        }
+
+        if (!homeworkResponse.ok) {
+            throw new Error(homeworks.detail || ("Server xatosi: HTTP " + homeworkResponse.status));
         }
 
         let {response: submissionsResponse, data: submissions} = await fetchStudentApi(
