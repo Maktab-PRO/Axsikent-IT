@@ -41,7 +41,7 @@ def create_homework(
     teacher_id: int,
     title: str,
     description: str,
-    deadline: str | None = None,
+    deadline: datetime | None = None,
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
