@@ -413,13 +413,20 @@ def create_admin_homework(
 
     teacher = db.query(Teacher).filter(
         Teacher.id == data.teacher_id,
-        Teacher.is_active == True
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
     ).first()
 
     if not teacher:
         raise HTTPException(
             status_code=404,
-            detail="Faol o‘qituvchi topilmadi."
+            detail="Faol va administrator tasdiqlagan o‘qituvchi topilmadi."
+        )
+
+    if group.teacher_id != teacher.id:
+        raise HTTPException(
+            status_code=400,
+            detail="Tanlangan o‘qituvchi bu guruhga biriktirilmagan."
         )
 
     homework = Homework(
@@ -488,13 +495,25 @@ def update_admin_homework(
 
         teacher = db.query(Teacher).filter(
             Teacher.id == data.teacher_id,
-            Teacher.is_active == True
+            Teacher.is_active == True,
+            Teacher.approved_by_admin == True
         ).first()
 
         if not teacher:
             raise HTTPException(
                 status_code=404,
-                detail="Faol o‘qituvchi topilmadi."
+                detail="Faol va administrator tasdiqlagan o‘qituvchi topilmadi."
+            )
+
+        group = db.query(Group).filter(
+            Group.id == homework.group_id,
+            Group.is_active == True
+        ).first()
+
+        if not group or group.teacher_id != teacher.id:
+            raise HTTPException(
+                status_code=400,
+                detail="Tanlangan o‘qituvchi bu guruhga biriktirilmagan."
             )
 
         homework.teacher_id = data.teacher_id
