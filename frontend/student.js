@@ -3706,7 +3706,7 @@ async function loadStudentOnlineExams() {
             : (error?.message || "Online testlarni yuklab bo‘lmadi.");
         content.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">❌ ' + escapeOnlineExamHtml(message) + '</div>';
     } finally {
-        clearTimeout(timeout);
+        // fetchStudentApi manages its own timeout.
     }
 }
 
