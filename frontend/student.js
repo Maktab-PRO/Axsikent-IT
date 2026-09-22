@@ -3864,7 +3864,10 @@ async function startStudentOnlineExam(examId, button) {
 
         studentOnlineAttemptId = data.attempt_id;
         studentOnlineExamId = data.exam_id;
-        studentOnlineDeadline = new Date(data.deadline_at);\n    if (!data.deadline_at || Number.isNaN(studentOnlineDeadline.getTime())) {\n        throw new Error("Test vaqti serverdan noto‘g‘ri keldi. Testni qayta boshlang.");\n    }
+        studentOnlineDeadline = new Date(data.deadline_at);
+        if (!data.deadline_at || Number.isNaN(studentOnlineDeadline.getTime())) {
+            throw new Error("Test vaqti serverdan noto‘g‘ri keldi. Testni qayta boshlang.");
+        }
 
         const section = document.getElementById("studentExamsSection");
         const oldTestSection = document.getElementById("studentOnlineTestSection");
