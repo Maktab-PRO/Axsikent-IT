@@ -120,6 +120,17 @@ function escapeHtml(value) {
         .replace(/'/g, "&#039;");
 }
 
+function safeHttpUrl(value) {
+    if (!value) return "";
+    try {
+        const url = new URL(String(value), window.location.href);
+        if (url.protocol !== "http:" && url.protocol !== "https:") return "";
+        return escapeHtml(url.href);
+    } catch {
+        return "";
+    }
+}
+
 
 function openTeacherCreate(){const f=document.getElementById("teacherCreateForm");if(f){f.hidden=false;f.scrollIntoView({behavior:"smooth",block:"start"});}}
 function closeTeacherCreate(){const f=document.getElementById("teacherCreateForm");if(f)f.hidden=true;const m=document.getElementById("teacherCreateMessage");if(m)m.textContent="";}
@@ -1320,7 +1331,7 @@ async function viewHomeworkSubmission(
                             <div class="admin-detail-block">
                                 <small>Fayl</small>
                                 <a
-                                    href="${escapeHtml(
+                                    href="${safeHttpUrl(
                                         data.file_url
                                     )}"
                                     target="_blank"
