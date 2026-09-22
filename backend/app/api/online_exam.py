@@ -347,7 +347,11 @@ def create_exam(data: ExamCreate, admin: Admin = Depends(require_admin), db: Ses
         if not course:
             raise HTTPException(status_code=404, detail="Faol kurs topilmadi")
 
-    exam = OnlineExam(**data.model_dump())
+    exam_data = data.model_dump()
+    exam_data["title"] = data.title.strip()
+    if not exam_data["title"]:
+        raise HTTPException(status_code=400, detail="Imtihon nomi bo'sh bo'lishi mumkin emas")
+    exam = OnlineExam(**exam_data)
     db.add(exam)
     db.commit()
     db.refresh(exam)
