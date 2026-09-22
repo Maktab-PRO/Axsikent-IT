@@ -3994,6 +3994,13 @@ async function loadStudentDashboardHomework() {
             {method:"GET"}
         );
 
+        if (submissionsResponse.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+
         if (!submissionsResponse.ok) {
             throw new Error(submissions.detail || ("Server xatosi: HTTP " + submissionsResponse.status));
         }
