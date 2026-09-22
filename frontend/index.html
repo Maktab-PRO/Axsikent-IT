@@ -7017,35 +7017,14 @@ async function loginUser() {
         localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("user_role", data.role || "student");
 
-    const studentResponse = await fetch(
-    "https://axsikent-it-backend.onrender.com/students/me",
-    {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${data.access_token}`
-        }
-    }
-);
-
-const studentData = await studentResponse.json();
-
-if (studentResponse.ok) {
-    const dashboardName = document.querySelector(
-        "#studentDashboard .dashboard-header h2"
-    );
-
-    if (dashboardName) {
-        dashboardName.textContent =
-            `Xush kelibsiz, ${studentData.full_name}! 👋`;
-    }
-}
-
         message.textContent = "Muvaffaqiyatli kirildi!";
 
-       setTimeout(() => {
-    closeLoginModal();
-    window.location.href = "student.html";
-}, 700);
+        // Login muvaffaqiyatli bo‘lgach, /students/me ni kutib turmaymiz.
+        // Student panel o‘zining student.js orqali profilni yuklaydi.
+        setTimeout(() => {
+            closeLoginModal();
+            window.location.href = "student.html";
+        }, 300);
 
     } catch (error) {
         message.textContent =
