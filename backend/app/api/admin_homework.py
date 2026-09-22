@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -516,6 +516,11 @@ def update_admin_homework(
         homework.description = data.description.strip()
 
     if data.deadline is not None:
+        check_deadline = data.deadline
+        if check_deadline.tzinfo is None:
+            check_deadline = check_deadline.replace(tzinfo=timezone.utc)
+        if check_deadline <= datetime.now(timezone.utc):
+            raise HTTPException(status_code=400, detail="Uy vazifasi muddati kelajakdagi vaqt bo‘lishi kerak.")
         homework.deadline = data.deadline
 
     db.commit()
