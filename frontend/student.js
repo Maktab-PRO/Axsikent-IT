@@ -221,6 +221,14 @@ async function openStudentCourse(courseId) {
             `/students/courses/${courseId}/modules`,
             token
         );
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+
+
 
         if (!response.ok) {
             throw new Error("Modullarni yuklashda xatolik");
@@ -490,6 +498,14 @@ async function openStudentModule(courseId, moduleId) {
             `/students/courses/${courseId}/modules/${moduleId}/lessons`,
             token
         );
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+
+
 
         if (!response.ok) {
             throw new Error("Darslarni yuklashda xatolik");
@@ -686,6 +702,14 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
             `/students/courses/${courseId}/modules/${moduleId}/lessons`,
             token
         );
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+
+
 
         if (!response.ok) {
             throw new Error(
@@ -1038,6 +1062,14 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
             `/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz`,
             token
         );
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+
+
 
         if (!response.ok) {
             throw new Error(
