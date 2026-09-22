@@ -3348,6 +3348,12 @@ async function registerStudentExam(examId) {
             token,
             {method:"POST"}
         );
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
         if (!response.ok) throw new Error(data.detail || "Imtihonga ro‘yxatdan o‘tishda xatolik.");
 
         showPremiumModal("Ro‘yxatdan o‘tildi",data.message || "Imtihonga muvaffaqiyatli ro‘yxatdan o‘tildi.","Ajoyib!");
