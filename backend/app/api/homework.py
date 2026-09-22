@@ -55,7 +55,8 @@ def create_homework(
 
     teacher = db.query(Teacher).filter(
         Teacher.id == teacher_id,
-        Teacher.is_active == True
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
     ).first()
     if not teacher:
         raise HTTPException(status_code=404, detail="O'qituvchi topilmadi")
@@ -280,7 +281,8 @@ def get_homework_submissions(
 
     teacher = db.query(Teacher).filter(
         Teacher.id == teacher_id,
-        Teacher.is_active == True
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
     ).first()
 
     if not teacher:
