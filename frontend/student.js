@@ -50,14 +50,10 @@ async function loadStudentCourses() {
 
     try {
 
-        const response = await fetch(
-            `${API_URL}/students/courses`,
-            {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            }
+        const {response, data: courses} = await fetchStudentApi(
+            "/students/courses",
+            token,
+            {method: "GET"}
         );
 
         if (response.status === 401) {
