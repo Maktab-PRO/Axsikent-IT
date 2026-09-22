@@ -3520,7 +3520,7 @@ modal.innerHTML = `
                             0 8px 25px rgba(139,92,246,0.28);
                     "
                 >
-                    ${buttonText}
+                    ${escapeHtml(buttonText)}
                 </button>
 
             </div>
