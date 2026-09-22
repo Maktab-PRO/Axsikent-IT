@@ -1034,16 +1034,10 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
         </div>    `;
     try {
 
-        const response = await fetch(
-            `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz`,
-            {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            }
+        const {response, data: quizzes} = await fetchStudentApi(
+            `/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz`,
+            token
         );
-
-        const quizzes = await response.json();
 
         if (!response.ok) {
             throw new Error(
