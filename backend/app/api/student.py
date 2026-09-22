@@ -691,6 +691,12 @@ def submit_lesson_quiz(
     for quiz in quizzes:
         answer = answers.get(str(quiz.id))
 
+        if answer is not None and not isinstance(answer, str):
+            raise HTTPException(
+                status_code=400,
+                detail="Quiz javob formati noto'g'ri"
+            )
+
         if answer and answer.upper() == quiz.correct_answer.upper():
             score += 1
 
