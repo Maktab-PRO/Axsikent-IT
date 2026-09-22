@@ -312,13 +312,20 @@ def add_question(exam_id: int, data: QuestionCreate, admin: Admin = Depends(requ
     exam = db.query(OnlineExam).filter(OnlineExam.id == exam_id).first()
     if not exam:
         raise HTTPException(status_code=404, detail="Imtihon topilmadi")
-    if data.correct_answer >= len(data.options):
+    question_text = data.question.strip()
+    options = [option.strip() for option in data.options]
+
+    if not question_text:
+        raise HTTPException(status_code=400, detail="Savol bo'sh bo'lishi mumkin emas")
+    if any(not option for option in options):
+        raise HTTPException(status_code=400, detail="Javob variantlari bo'sh bo'lishi mumkin emas")
+    if data.correct_answer >= len(options):
         raise HTTPException(status_code=400, detail="To'g'ri javob varianti mavjud emas")
 
     q = OnlineExamQuestion(
         exam_id=exam_id,
-        question=data.question,
-        options=json.dumps(data.options, ensure_ascii=False),
+        question=question_text,
+        options=json.dumps(options, ensure_ascii=False),
         correct_answer=str(data.correct_answer),
         sort_order=data.sort_order,
         is_active=True
