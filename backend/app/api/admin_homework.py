@@ -727,10 +727,11 @@ def update_submission_status(
     admin: Admin = Depends(require_admin)
 ):
 
-    submission = get_submission_or_404(
-        submission_id,
-        db
-    )
+    submission = db.query(HomeworkSubmission).filter(
+        HomeworkSubmission.id == submission_id
+    ).with_for_update().first()
+    if not submission:
+        raise HTTPException(status_code=404, detail="Topshiriq topilmadi")
 
     new_status = data.status.strip().lower()
 
