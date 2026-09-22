@@ -3757,8 +3757,9 @@ async function loadStudentOnlineExams() {
         }).join("");
     } catch (error) {
         console.error("Online test load:", error);
+        if (error?.name === "AbortError") return;
         const message = error?.name === "AbortError"
-            ? "Server javobi 12 soniyada kelmadi. Backend/Render holatini tekshirish kerak."
+            ? "Server javobi 8 soniyada kelmadi. Backend/Render holatini tekshirish kerak."
             : (error?.message || "Online testlarni yuklab bo‘lmadi.");
         content.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">❌ ' + escapeOnlineExamHtml(message) + '</div>';
     } finally {
