@@ -169,7 +169,8 @@ def student_exams(
             "location": exam.location,
             "capacity": exam.capacity,
             "registrations": db.query(ExamRegistration).filter(
-                ExamRegistration.exam_id == exam.id
+                ExamRegistration.exam_id == exam.id,
+                ExamRegistration.status == "registered"
             ).count(),
             "is_registered": bool(registration),
             "registration_status": registration.status if registration else None
