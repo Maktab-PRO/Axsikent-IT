@@ -90,6 +90,12 @@ def create_lead(
             detail="Parol kamida 6 ta belgidan iborat bo‘lishi kerak."
         )
 
+    if not cf_turnstile_response or not verify_turnstile(cf_turnstile_response):
+        raise HTTPException(
+            status_code=400,
+            detail="Tasdiqlash muvaffaqiyatsiz. Iltimos, Turnstile tekshiruvini bajaring."
+        )
+
     lead = Lead(
         full_name=full_name,
         phone=phone,
