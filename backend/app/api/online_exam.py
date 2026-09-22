@@ -81,10 +81,16 @@ def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security
         raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
 
     exams = db.query(OnlineExam).filter(OnlineExam.is_active == True).order_by(OnlineExam.id.desc()).all()
+    from app.models.course import Course
+
     active_course_ids = {
-        row.course_id for row in db.query(StudentCourse.course_id).filter(
+        row.course_id for row in db.query(StudentCourse.course_id).join(
+            Course,
+            Course.id == StudentCourse.course_id
+        ).filter(
             StudentCourse.student_id == student_id,
-            StudentCourse.is_active == True
+            StudentCourse.is_active == True,
+            Course.is_active == True
         ).all()
     }
 
@@ -124,10 +130,16 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
         raise HTTPException(status_code=404, detail="Imtihon topilmadi")
 
     if exam.course_id is not None:
-        enrolled = db.query(StudentCourse.id).filter(
+        from app.models.course import Course
+
+        enrolled = db.query(StudentCourse.id).join(
+            Course,
+            Course.id == StudentCourse.course_id
+        ).filter(
             StudentCourse.student_id == student_id,
             StudentCourse.course_id == exam.course_id,
-            StudentCourse.is_active == True
+            StudentCourse.is_active == True,
+            Course.is_active == True
         ).first()
         if not enrolled:
             raise HTTPException(status_code=403, detail="Bu test siz biriktirilgan kurs uchun mavjud emas")
