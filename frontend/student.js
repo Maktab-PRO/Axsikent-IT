@@ -2868,7 +2868,7 @@ async function loadStudentBooks() {
                 font-size:14px;
                 font-weight:600;
             ">
-                ${book.price.toLocaleString()} so'm
+                ${Number(book.price || 0).toLocaleString()} so'm
             </div>
 
             <div style="
