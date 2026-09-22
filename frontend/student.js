@@ -3566,9 +3566,16 @@ async function loadStudentPodcasts() {
     body.innerHTML = studentExtraLoading("Podcastlar yuklanmoqda...");
 
     try {
-        const response = await fetch(`${API_URL}/students/podcasts`, {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 12000);
+        let response;
+        try {
+            response = await fetch(`${API_URL}/students/podcasts`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
+        } finally {
+            clearTimeout(timeout);
+        }
         const data = await response.json();
 
         if (!response.ok) throw new Error(data.detail || "Podcastlarni yuklashda xatolik.");
@@ -3604,9 +3611,16 @@ async function loadStudentTrainings() {
     body.innerHTML = studentExtraLoading("Treninglar yuklanmoqda...");
 
     try {
-        const response = await fetch(`${API_URL}/students/trainings`, {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 12000);
+        let response;
+        try {
+            response = await fetch(`${API_URL}/students/trainings`, {
             headers: { "Authorization": `Bearer ${token}` }
         });
+        } finally {
+            clearTimeout(timeout);
+        }
         const data = await response.json();
 
         if (!response.ok) throw new Error(data.detail || "Treninglarni yuklashda xatolik.");
@@ -3650,6 +3664,9 @@ async function registerStudentTraining(trainingId) {
             method:"POST",
             headers:{ "Authorization":`Bearer ${token}` }
         });
+        } finally {
+            clearTimeout(timeout);
+        }
         const data = await response.json();
         if (!response.ok) throw new Error(data.detail || "Treningka ro‘yxatdan o‘tishda xatolik.");
 
@@ -3673,7 +3690,11 @@ async function loadStudentExams() {
     body.innerHTML = studentExtraLoading("Imtihonlar yuklanmoqda...");
 
     try {
-        const response = await fetch(`${API_URL}/students/exams`, {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 12000);
+        let response;
+        try {
+            response = await fetch(`${API_URL}/students/exams`, {
             headers:{ "Authorization":`Bearer ${token}` }
         });
         const data = await response.json();
