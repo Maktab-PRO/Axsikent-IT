@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 from passlib.context import CryptContext
 
 from app.db import get_db
@@ -82,7 +83,14 @@ def register_student(
         streak_days=0
     ))
 
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=400,
+            detail="Bu telefon raqam allaqachon ro'yxatdan o'tgan"
+        )
     db.refresh(new_student)
 
     return new_student
