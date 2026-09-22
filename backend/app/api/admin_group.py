@@ -300,6 +300,9 @@ def create_admin_group(
     admin: Admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
+    if data.status not in {"active", "inactive"}:
+        raise HTTPException(status_code=400, detail="Guruh statusi faqat active yoki inactive bo'lishi mumkin")
+
     # Kursni tekshirish
     get_course_or_404(
         data.course_id,
@@ -365,6 +368,9 @@ def update_admin_group(
     update_data = data.model_dump(
         exclude_unset=True
     )
+
+    if "status" in update_data and update_data["status"] not in {"active", "inactive"}:
+        raise HTTPException(status_code=400, detail="Guruh statusi faqat active yoki inactive bo'lishi mumkin")
 
     if "course_id" in update_data:
         get_course_or_404(
