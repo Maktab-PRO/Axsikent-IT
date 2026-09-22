@@ -468,6 +468,9 @@ def activate_group(
         db
     )
 
+    get_course_or_404(group.course_id, db)
+    get_teacher_or_404(group.teacher_id, db)
+
     duplicate = db.query(Group).filter(
         Group.name == group.name,
         Group.id != group.id,
