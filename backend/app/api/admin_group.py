@@ -10,6 +10,7 @@ from app.core.security import require_admin
 from app.models.admin import Admin
 from app.models.group import Group
 from app.models.course import Course
+from app.models.level import Level
 from app.models.teacher import Teacher
 from app.models.student import Student
 from app.models.student_group import StudentGroup
@@ -315,6 +316,18 @@ def create_admin_group(
         db
     )
 
+    if data.level_id is not None:
+        level = db.query(Level).filter(
+            Level.id == data.level_id,
+            Level.course_id == data.course_id,
+            Level.is_active == True
+        ).first()
+        if not level:
+            raise HTTPException(
+                status_code=400,
+                detail="Tanlangan level ushbu kursga tegishli yoki faol emas"
+            )
+
     # Bir xil nomdagi faol guruhni oldini olish
     existing = db.query(Group).filter(
         Group.name == data.name,
@@ -336,7 +349,7 @@ def create_admin_group(
         start_date=data.start_date,
         capacity=data.capacity,
         status=data.status,
-        is_active=True
+        is_active=(data.status == "active")
     )
 
     db.add(group)
