@@ -1046,7 +1046,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
                 padding:30px;
                 color:#f87171;
             ">
-                ❌ ${error.message}
+                ❌ ${escapeHtml(error.message || "Noma’lum xatolik")}
             </div>
         `;
     }
@@ -1300,7 +1300,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
                                 text-align:center;
                                 font-weight:600;
                             ">
-                                🎉 ${result.message}
+                                🎉 ${escapeHtml(result.message || "Tekshiruv yakunlandi")}
                                 <br>
                                 <span style="
                                     display:block;
@@ -1361,7 +1361,7 @@ if (finishButton) {
                                 text-align:center;
                                 font-weight:600;
                             ">
-                                ❌ ${result.message}
+                                ❌ ${escapeHtml(result.message || "Tekshiruv yakunlandi")}
                                 <br>
                                 <span style="
                                     display:block;
@@ -1390,7 +1390,7 @@ if (finishButton) {
                             border-radius:10px;
                             color:#dc2626;
                         ">
-                            ❌ ${error.message}
+                            ❌ ${escapeHtml(error.message || "Noma’lum xatolik")}
                         </div>
                     `;
                 }
@@ -1407,7 +1407,7 @@ if (finishButton) {
                 padding:30px;
                 color:#dc2626;
             ">
-                ❌ ${error.message}
+                ❌ ${escapeHtml(error.message || "Noma’lum xatolik")}
             </div>
         `;
     }
@@ -2422,7 +2422,7 @@ async function buyStudentReward(productId) {
                 border-radius:14px;
                 color:#f87171;
             ">
-                ❌ ${error.message}
+                ❌ ${escapeHtml(error.message || "Noma’lum xatolik")}
             </div>
         `;
     }
@@ -2669,7 +2669,7 @@ async function buyStudentReward(productId) {
                     '<div style="padding:18px;border:1px solid rgba(139,92,246,.30);border-radius:19px;background:linear-gradient(145deg,rgba(139,92,246,.10),rgba(52,211,153,.05));">' +
                         '<div style="font-size:11px;color:#c4b5fd;font-weight:800;">TUG‘ILGAN KUNINGIZ</div>' +
                         '<div style="margin-top:5px;color:#94a3b8;font-size:12px;">Tug‘ilgan sanangizni kiriting</div>' +
-                        '<input id="studentBirthDate" type="date" value="' + savedBirthDate + '" style="width:100%;height:46px;margin-top:13px;padding:0 12px;box-sizing:border-box;border-radius:12px;border:1px solid rgba(167,139,250,.25);background:#090e16;color:#fff;color-scheme:dark;">' +
+                        '<input id="studentBirthDate" type="date" value="' + escapeHtml(savedBirthDate) + '" style="width:100%;height:46px;margin-top:13px;padding:0 12px;box-sizing:border-box;border-radius:12px;border:1px solid rgba(167,139,250,.25);background:#090e16;color:#fff;color-scheme:dark;">' +
                         '<button id="studentBirthDateSave" type="button" style="width:100%;height:44px;margin-top:10px;border:0;border-radius:12px;background:linear-gradient(135deg,#059669,#15803d);color:#fff;font-weight:800;cursor:pointer;">Saqlash</button>' +
                         '<div id="studentBirthDateMessage" style="min-height:17px;margin-top:8px;font-size:12px;"></div>' +
                     '</div>' +
