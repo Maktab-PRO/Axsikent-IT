@@ -534,15 +534,6 @@ def add_student_to_group(
             detail="Faol o'quvchi topilmadi"
         )
 
-    group = db.query(Group).filter(
-        Group.id == group_id
-    ).with_for_update().first()
-    if not group:
-        raise HTTPException(status_code=404, detail="Guruh topilmadi")
-
-    if not group.is_active:
-        raise HTTPException(status_code=400, detail="Deaktiv guruhga o'quvchi qo'shib bo'lmaydi")
-
     current_count = db.query(StudentGroup).join(
         Student,
         Student.id == StudentGroup.student_id
