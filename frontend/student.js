@@ -1896,8 +1896,19 @@ async function buyStudentReward(productId) {
 
     try {
 
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            container.innerHTML = '<div style="text-align:center;padding:30px;color:#ef4444;">Avval Student kabinetiga kiring.</div>';
+            return;
+        }
+
         const response = await fetch(
-            `${API_URL}/students/ranking`
+            `${API_URL}/students/ranking`,
+            {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            }
         );
 
         if (!response.ok) {
@@ -1958,7 +1969,7 @@ async function buyStudentReward(productId) {
                         font-weight:700;
                         font-size:15px;
                     ">
-                        ${student.full_name}
+                        ${escapeHtml(student.full_name || "O‘quvchi")}
                     </div>
 
                     <div style="
@@ -3310,7 +3321,7 @@ async function loadStudentBooks() {
                 font-weight:800;
                 line-height:1.35;
             ">
-                ${book.title}
+                ${escapeHtml(book.title || "Kitob")}
             </h3>
         </div>
 
@@ -3322,7 +3333,7 @@ async function loadStudentBooks() {
         line-height:1.6;
         font-size:14px;
     ">
-        ${book.description || "Tavsif mavjud emas"}
+        ${escapeHtml(book.description || "Tavsif mavjud emas")}
     </p>
 
     <div style="
