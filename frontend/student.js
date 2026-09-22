@@ -3167,18 +3167,11 @@ async function loadStudentPodcasts() {
     body.innerHTML = studentExtraLoading("Podcastlar yuklanmoqda...");
 
     try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000);
-        let response;
-        try {
-            response = await fetch(`${API_URL}/students/podcasts`, {
-            headers: { "Authorization": `Bearer ${token}` },
-            signal: controller.signal
-        });
-        } finally {
-            clearTimeout(timeout);
-        }
-        const data = await response.json();
+        const {response, data} = await fetchStudentApi(
+            "/students/podcasts",
+            token,
+            {method:"GET"}
+        );
 
         if (response.status === 401) {
             localStorage.removeItem("access_token");
