@@ -1358,7 +1358,7 @@ if (finishButton) {
         try {
 
             const {response, data: result} = await fetchStudentApi(
-                `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/complete`,
+                `/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/complete`,
                 token,
                 {method: "POST"}
             );
