@@ -87,7 +87,10 @@ def register_training(training_id: int, credentials: HTTPAuthorizationCredential
     ).first()
     if existing and existing.status == "registered":
         raise HTTPException(status_code=400, detail="Siz bu treningka allaqachon ro'yxatdan o'tgansiz")
-    if training.end_at is not None and training.end_at <= datetime.utcnow():
+    now = datetime.utcnow()
+    if training.start_at is not None and training.start_at <= now:
+        raise HTTPException(status_code=400, detail="Bu trening allaqachon boshlangan")
+    if training.end_at is not None and training.end_at <= now:
         raise HTTPException(status_code=400, detail="Bu trening allaqachon yakunlangan")
     if training.capacity is not None:
         count = db.query(TrainingRegistration).filter(
