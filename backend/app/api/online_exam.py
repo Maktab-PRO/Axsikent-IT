@@ -200,8 +200,7 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
                 selected_ids = []
 
             questions = db.query(OnlineExamQuestion).filter(
-                OnlineExamQuestion.exam_id == exam_id,
-                OnlineExamQuestion.is_active == True
+                OnlineExamQuestion.exam_id == exam_id
             ).all()
             question_map = {q.id: q for q in questions}
             selected = [question_map[qid] for qid in selected_ids if qid in question_map]
