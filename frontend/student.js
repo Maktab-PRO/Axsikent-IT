@@ -1881,6 +1881,7 @@ async function buyStudentReward(productId) {
     const token = localStorage.getItem("access_token");
 
     if (!token) {
+        studentRewardPurchasesInFlight.delete(Number(productId));
         showPremiumModal("Tizimga kirish kerak", "Mukofot sotib olish uchun avval tizimga kiring.", "Kirish");
         return;
     }
