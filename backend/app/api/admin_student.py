@@ -106,7 +106,7 @@ def get_student(
 ):
     student = db.query(Student).filter(
         Student.id == student_id
-    ).first()
+    ).with_for_update().first()
 
     if not student:
         raise HTTPException(
