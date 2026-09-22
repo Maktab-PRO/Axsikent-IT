@@ -264,7 +264,8 @@ def get_student_full_profile(
     # -----------------------------------------------------
 
     student_groups = db.query(StudentGroup).filter(
-        StudentGroup.student_id == student_id
+        StudentGroup.student_id == student_id,
+        StudentGroup.is_active == True
     ).all()
 
     groups = []
