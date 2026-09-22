@@ -141,7 +141,8 @@ def student_exams(
 ):
     student_id = get_student_id(credentials, db)
     exams = db.query(Exam).filter(
-        Exam.is_active == True
+        Exam.is_active == True,
+        Exam.end_at.is_(None) | (Exam.end_at > datetime.utcnow())
     ).order_by(Exam.start_at.asc()).all()
 
     result = []
