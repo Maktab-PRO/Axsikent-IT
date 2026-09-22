@@ -3658,27 +3658,12 @@ async function loadStudentOnlineExams() {
         return;
     }
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 12000);
-
     try {
-        const response = await fetch(API_URL + "/online-exams/available?ts=" + Date.now(), {
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + token,
-                "Accept": "application/json"
-            },
-            cache: "no-store",
-            signal: controller.signal
-        });
-
-        const raw = await response.text();
-        let data = {};
-        try {
-            data = raw ? JSON.parse(raw) : {};
-        } catch (_) {
-            data = {};
-        }
+        const {response, data} = await fetchStudentApi(
+            "/online-exams/available?ts=" + Date.now(),
+            token,
+            {method:"GET"}
+        );
 
         if (response.status === 401) {
             localStorage.removeItem("access_token");
