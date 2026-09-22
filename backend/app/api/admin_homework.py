@@ -436,10 +436,14 @@ def create_admin_homework(
         if check_deadline <= datetime.now(timezone.utc):
             raise HTTPException(status_code=400, detail="Uy vazifasi muddati kelajakdagi vaqt bo‘lishi kerak.")
 
+    title = data.title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Uy vazifasi nomi bo'sh bo'lishi mumkin emas")
+
     homework = Homework(
         group_id=data.group_id,
         teacher_id=data.teacher_id,
-        title=data.title.strip(),
+        title=title,
         description=data.description.strip(),
         deadline=data.deadline,
         status="active"
@@ -518,7 +522,10 @@ def update_admin_homework(
     homework.teacher_id = target_teacher_id
 
     if data.title is not None:
-        homework.title = data.title.strip()
+        title = data.title.strip()
+        if not title:
+            raise HTTPException(status_code=400, detail="Uy vazifasi nomi bo'sh bo'lishi mumkin emas")
+        homework.title = title
 
     if data.description is not None:
         homework.description = data.description.strip()
