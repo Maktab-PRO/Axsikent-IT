@@ -33,6 +33,14 @@ def dt(value):
     except Exception:
         raise HTTPException(status_code=400, detail="Sana vaqti ISO formatda bo'lishi kerak")
 
+
+def validate_event_times(start_at, end_at):
+    start = dt(start_at)
+    end = dt(end_at) if end_at else None
+    if end is not None and end <= start:
+        raise HTTPException(status_code=400, detail="Tugash vaqti boshlanish vaqtidan keyin bo'lishi kerak")
+    return start, end
+
 @router.get("/podcasts")
 def admin_podcasts(db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
     return [{"id": x.id, "title": x.title, "description": x.description, "audio_url": x.audio_url,
@@ -68,8 +76,9 @@ def admin_trainings(db: Session = Depends(get_db), admin: Admin = Depends(requir
 
 @router.post("/trainings")
 def create_training(data: EventData, db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
-    x = Training(title=data.title, description=data.description, start_at=dt(data.start_at),
-                 end_at=dt(data.end_at) if data.end_at else None, location=data.location, capacity=data.capacity)
+    start_at, end_at = validate_event_times(data.start_at, data.end_at)
+    x = Training(title=data.title, description=data.description, start_at=start_at,
+                 end_at=end_at, location=data.location, capacity=data.capacity)
     db.add(x); db.commit(); db.refresh(x)
     notify_all_students(
         db,
@@ -101,8 +110,9 @@ def admin_exams(db: Session = Depends(get_db), admin: Admin = Depends(require_ad
 
 @router.post("/exams")
 def create_exam(data: EventData, db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
-    x = Exam(title=data.title, description=data.description, start_at=dt(data.start_at),
-             end_at=dt(data.end_at) if data.end_at else None, location=data.location, capacity=data.capacity)
+    start_at, end_at = validate_event_times(data.start_at, data.end_at)
+    x = Exam(title=data.title, description=data.description, start_at=start_at,
+             end_at=end_at, location=data.location, capacity=data.capacity)
     db.add(x); db.commit(); db.refresh(x)
     notify_all_students(
         db,
