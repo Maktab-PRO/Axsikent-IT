@@ -13,6 +13,7 @@ from app.models.admin import Admin
 from app.models.student import Student
 from app.models.online_exam import OnlineExam, OnlineExamQuestion, OnlineExamAttempt
 from app.models.student_course import StudentCourse
+from app.models.course import Course
 
 router = APIRouter(prefix="/online-exams", tags=["Online Exams"])
 security = HTTPBearer()
@@ -315,6 +316,14 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
 
 @router.post("/admin/create")
 def create_exam(data: ExamCreate, admin: Admin = Depends(require_admin), db: Session = Depends(get_db)):
+    if data.course_id is not None:
+        course = db.query(Course).filter(
+            Course.id == data.course_id,
+            Course.is_active == True
+        ).first()
+        if not course:
+            raise HTTPException(status_code=404, detail="Faol kurs topilmadi")
+
     exam = OnlineExam(**data.model_dump())
     db.add(exam)
     db.commit()
