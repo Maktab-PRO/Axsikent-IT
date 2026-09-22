@@ -46,6 +46,18 @@ class LessonProgress(Base):
         nullable=False
     )
 
+    quiz_failures = Column(
+        Integer,
+        default=0,
+        nullable=False
+    )
+
+    quiz_blocked = Column(
+        Boolean,
+        default=False,
+        nullable=False
+    )
+
     completed_at = Column(
         DateTime,
         nullable=True
