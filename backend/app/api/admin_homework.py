@@ -491,6 +491,17 @@ def update_admin_homework(
 
         homework.group_id = data.group_id
 
+        current_teacher = db.query(Teacher).filter(
+            Teacher.id == homework.teacher_id,
+            Teacher.is_active == True,
+            Teacher.approved_by_admin == True
+        ).first()
+        if not current_teacher or group.teacher_id != current_teacher.id:
+            raise HTTPException(
+                status_code=400,
+                detail="Tanlangan guruh uy vazifasining o‘qituvchisiga biriktirilmagan."
+            )
+
     if data.teacher_id is not None:
 
         teacher = db.query(Teacher).filter(
