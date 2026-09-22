@@ -49,7 +49,12 @@ def admin_podcasts(db: Session = Depends(get_db), admin: Admin = Depends(require
 
 @router.post("/podcasts")
 def create_podcast(data: PodcastData, db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
-    x = Podcast(**data.model_dump())
+    title = data.title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Podcast nomi bo'sh bo'lishi mumkin emas")
+    payload = data.model_dump()
+    payload["title"] = title
+    x = Podcast(**payload)
     db.add(x); db.commit(); db.refresh(x)
     notify_all_students(
         db,
@@ -79,8 +84,11 @@ def admin_trainings(db: Session = Depends(get_db), admin: Admin = Depends(requir
 
 @router.post("/trainings")
 def create_training(data: EventData, db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
+    title = data.title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Trening nomi bo'sh bo'lishi mumkin emas")
     start_at, end_at = validate_event_times(data.start_at, data.end_at)
-    x = Training(title=data.title, description=data.description, start_at=start_at,
+    x = Training(title=title, description=data.description, start_at=start_at,
                  end_at=end_at, location=data.location, capacity=data.capacity)
     db.add(x); db.commit(); db.refresh(x)
     notify_all_students(
@@ -115,8 +123,11 @@ def admin_exams(db: Session = Depends(get_db), admin: Admin = Depends(require_ad
 
 @router.post("/exams")
 def create_exam(data: EventData, db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
+    title = data.title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Imtihon nomi bo'sh bo'lishi mumkin emas")
     start_at, end_at = validate_event_times(data.start_at, data.end_at)
-    x = Exam(title=data.title, description=data.description, start_at=start_at,
+    x = Exam(title=title, description=data.description, start_at=start_at,
              end_at=end_at, location=data.location, capacity=data.capacity)
     db.add(x); db.commit(); db.refresh(x)
     notify_all_students(
