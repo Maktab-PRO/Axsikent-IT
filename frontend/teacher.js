@@ -33,6 +33,22 @@ async function loadTeacherData(){try{const d=await api("/teachers/me/dashboard")
 function renderStudents(){const c=$("studentsContent");if(!students.length){c.innerHTML='<div class="empty-state"><span>◎</span><strong>'+T[lang].studentsText+'</strong></div>';return}c.innerHTML='<div class="student-table">'+students.map(s=>'<div class="student-row"><div><strong>'+esc(s.full_name)+'</strong><small>'+esc(s.phone)+'</small></div><span class="subject-tag">'+esc(s.subject||teacher.subject)+'</span></div>').join("")+'</div>'}
 function renderCourses(){const c=$("coursesContent");if(!c)return;if(!teacherCourses.length){c.innerHTML='<div class="empty-state"><span>◈</span><strong>'+T[lang].subjectAssigned+'</strong></div>';return}c.innerHTML='<div class="course-list">'+teacherCourses.map(x=>'<div class="course-row"><div><strong>'+esc(x.name)+'</strong><small>Kurs #'+x.id+'</small></div><span class="subject-tag">Faol</span></div>').join("")+'</div>'}
 function fillStudentSelects(courses=[]){["lessonStudent","gradeStudent"].forEach(id=>{const el=$(id);if(!el)return;el.innerHTML='<option value="">'+T[lang].choose+'</option>'+students.map(s=>'<option value="'+s.id+'">'+esc(s.full_name)+'</option>').join("")});const courseEl=$("lessonCourse");if(courseEl)courseEl.innerHTML='<option value="">'+T[lang].choose+'</option>'+courses.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join("")}
+$("unlockQuizBtn").addEventListener("click",async()=>{
+  const btn=$("unlockQuizBtn"), msg=$("unlockQuizMessage");
+  if(btn) btn.disabled=true;
+  if(msg) msg.textContent="";
+  try{
+    await api("/teachers/quiz/unlock",{method:"POST",body:JSON.stringify({
+      student_id:Number($("unlockStudentId").value),
+      lesson_id:Number($("unlockLessonId").value)
+    })});
+    if(msg) msg.textContent="Quiz qayta ochildi.";
+  }catch(e){
+    if(msg) msg.textContent=e.message;
+  }finally{
+    if(btn) btn.disabled=false;
+  }
+});
 $("addQuizBtn").addEventListener("click",async()=>{const btn=$("addQuizBtn");if(btn)btn.disabled=true;try{const q=new URLSearchParams({lesson_id:$("quizLessonId").value,question:$("quizQuestion").value,option_a:$("quizA").value,option_b:$("quizB").value,option_c:$("quizC").value,option_d:$("quizD").value,correct_answer:$("quizCorrect").value});await api("/teachers/quiz?"+q.toString(),{method:"POST"});$("quizMessage").textContent="Quiz saqlandi."}catch(e){$("quizMessage").textContent=e.message}finally{if(btn)btn.disabled=false}});
 $("assignLessonBtn").addEventListener("click",async()=>{const btn=$("assignLessonBtn");if(btn)btn.disabled=true;$("lessonMessage").textContent="";try{await api("/teachers/assign-lesson",{method:"POST",body:JSON.stringify({student_id:Number($("lessonStudent").value),course_id:Number($("lessonCourse").value),title:$("lessonTitle").value,video_url:$("lessonLink").value||null})});$("lessonMessage").textContent="Dars biriktirildi."}catch(e){$("lessonMessage").textContent=e.message}finally{if(btn)btn.disabled=false}});
 $("saveGradeBtn").addEventListener("click",async()=>{const btn=$("saveGradeBtn");if(btn)btn.disabled=true;try{await api("/teachers/grades",{method:"POST",body:JSON.stringify({student_id:Number($("gradeStudent").value),score:Number($("gradeScore").value),comment:$("gradeComment").value||null})});$("gradeMessage").textContent="Baho saqlandi va o‘quvchiga ko‘rinadi."}catch(e){$("gradeMessage").textContent=e.message}finally{if(btn)btn.disabled=false}});
