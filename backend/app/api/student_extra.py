@@ -112,7 +112,7 @@ def get_exams(credentials: HTTPAuthorizationCredentials = Depends(security), db:
     return [
         {"id": x.id, "title": x.title, "description": x.description, "start_at": x.start_at,
          "end_at": x.end_at, "location": x.location, "capacity": x.capacity,
-         "registered": x.id in registrations, "registration_status": registrations.get(x.id)}
+         "registered": registrations.get(x.id) == "registered", "registration_status": registrations.get(x.id)}
         for x in db.query(Exam).filter(
             Exam.is_active == True,
             Exam.end_at.is_(None) | (Exam.end_at > datetime.utcnow())
