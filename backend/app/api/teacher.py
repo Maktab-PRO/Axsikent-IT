@@ -376,6 +376,9 @@ def create_teacher_grade(
     if not teacher:
         raise HTTPException(status_code=401, detail="O‘qituvchi sessiyasi noto‘g‘ri yoki akkaunt faol emas")
 
+    if score < 0 or score > 100:
+        raise HTTPException(status_code=400, detail="Baho 0 dan 100 gacha bo‘lishi kerak")
+
     student = db.query(Student).filter(
         Student.id == student_id,
         Student.is_active == True
