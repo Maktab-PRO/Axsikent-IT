@@ -17,12 +17,19 @@ from app.models.lesson_quiz import LessonQuiz
 from app.models.student_lesson import StudentLesson
 from app.models.lesson_progress import LessonProgress
 from app.schemas.student import StudentCreate, StudentLogin, StudentResponse
-from app.core.security import create_access_token, verify_token
+from app.core.security import create_access_token, decode_token
 
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
 security = HTTPBearer()
+
+
+def get_student_id(credentials: HTTPAuthorizationCredentials):
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "student":
+        raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
+    return payload["user_id"]
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
@@ -118,9 +125,7 @@ def student_exams(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    student_id = verify_token(credentials.credentials)
-    if not student_id:
-        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
+    student_id = get_student_id(credentials)
     exams = db.query(Exam).filter(
         Exam.is_active == True
     ).order_by(Exam.start_at.asc()).all()
@@ -154,15 +159,8 @@ def get_current_student(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    from app.core.security import verify_token
 
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    student_id = get_student_id(credentials)
 
     student = db.query(Student).filter(
         Student.id == student_id
@@ -185,15 +183,8 @@ def get_my_courses(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    from app.core.security import verify_token
 
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    student_id = get_student_id(credentials)
 
     student = db.query(Student).filter(
         Student.id == student_id,
@@ -274,15 +265,8 @@ def get_course_modules(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    from app.core.security import verify_token
 
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    student_id = get_student_id(credentials)
 
     student = db.query(Student).filter(
         Student.id == student_id,
@@ -374,15 +358,8 @@ def get_module_lessons(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    from app.core.security import verify_token
 
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    student_id = get_student_id(credentials)
 
     student = db.query(Student).filter(
         Student.id == student_id,
@@ -463,15 +440,8 @@ def mark_lesson_as_read(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    from app.core.security import verify_token
 
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    student_id = get_student_id(credentials)
 
     student = db.query(Student).filter(
         Student.id == student_id,
@@ -559,15 +529,8 @@ def get_lesson_quiz(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    from app.core.security import verify_token
 
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    student_id = get_student_id(credentials)
 
     student_course = db.query(StudentCourse).filter(
         StudentCourse.student_id == student_id,
@@ -637,15 +600,8 @@ def submit_lesson_quiz(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    from app.core.security import verify_token
 
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    student_id = get_student_id(credentials)
 
     student_course = db.query(StudentCourse).filter(
         StudentCourse.student_id == student_id,
@@ -745,15 +701,8 @@ def complete_lesson(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    from app.core.security import verify_token
 
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    student_id = get_student_id(credentials)
 
     student = db.query(Student).filter(
         Student.id == student_id,
