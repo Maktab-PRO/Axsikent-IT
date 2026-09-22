@@ -165,7 +165,7 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
         OnlineExamAttempt.exam_id == exam_id,
         OnlineExamAttempt.student_id == student_id,
         OnlineExamAttempt.status == "in_progress"
-    ).first()
+    ).with_for_update().first()
 
     if active:
         # SQLite/PostgreSQL sozlamalariga qarab SQLAlchemy datetime qiymatini
