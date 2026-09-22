@@ -311,8 +311,11 @@ def create_teacher_quiz(
         raise HTTPException(status_code=404, detail="Dars topilmadi yoki faol emas")
 
     module = db.query(CourseModule).filter(
-        CourseModule.id == lesson.module_id
+        CourseModule.id == lesson.module_id,
+        CourseModule.is_active == True
     ).first()
+    if not module:
+        raise HTTPException(status_code=404, detail="Darsning moduli topilmadi yoki faol emas")
     can_manage = db.query(Group).filter(
         Group.teacher_id == teacher.id,
         Group.course_id == module.course_id,
