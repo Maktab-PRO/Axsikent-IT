@@ -1783,7 +1783,9 @@ function confirmLogoutStudent() {
         await loadStudentRewards("studentRewardsModalContent");
     }
 
-    async function loadStudentRewards(targetId) {
+    let studentRewardsLoadController = null;
+
+async function loadStudentRewards(targetId) {
     const container = document.getElementById(targetId || "studentRewardsContent");
     if (!container) return;
 
@@ -1796,7 +1798,9 @@ function confirmLogoutStudent() {
     container.innerHTML = '<div style="text-align:center;padding:25px;color:#7b8496;">Mukofotlar yuklanmoqda...</div>';
 
     try {
+        if (studentRewardsLoadController) studentRewardsLoadController.abort();
         const controller = new AbortController();
+        studentRewardsLoadController = controller;
         const timer = setTimeout(() => controller.abort(), 10000);
 
         let response;
@@ -1818,6 +1822,7 @@ function confirmLogoutStudent() {
             }
         } finally {
             clearTimeout(timer);
+            if (studentRewardsLoadController === controller) studentRewardsLoadController = null;
         }
 
         if (response.status === 401) {
@@ -1933,6 +1938,8 @@ async function buyStudentReward(productId) {
 }
 
 
+    let studentRankingLoadController = null;
+
     async function loadStudentRanking() {
 
     const container = document.getElementById("studentRankingList");
@@ -1959,9 +1966,13 @@ async function buyStudentReward(productId) {
             return;
         }
 
+        if (studentRankingLoadController) studentRankingLoadController.abort();
+        const controller = new AbortController();
+        studentRankingLoadController = controller;
         const {response, data: ranking} = await fetchStudentApi(
             "/students/ranking",
-            token
+            token,
+            {signal: controller.signal}
         );
 
         if (response.status === 401) {
@@ -2105,6 +2116,8 @@ async function buyStudentReward(productId) {
     await loadStudentHomework();
 }
 
+    let studentHomeworkLoadController = null;
+
     async function loadStudentHomework() {
 
     const token = localStorage.getItem("access_token");
@@ -2140,7 +2153,10 @@ async function buyStudentReward(productId) {
 
     try {
 
-        const {response, data: homeworks} = await fetchStudentApi("/homework/student", token);
+        if (studentHomeworkLoadController) studentHomeworkLoadController.abort();
+        const controller = new AbortController();
+        studentHomeworkLoadController = controller;
+        const {response, data: homeworks} = await fetchStudentApi("/homework/student", token, {signal: controller.signal});
 
         if (response.status === 401) {
             localStorage.removeItem("access_token");
@@ -2750,6 +2766,8 @@ async function buyStudentReward(productId) {
 }
 
 
+let studentBooksLoadController = null;
+
 async function loadStudentBooks() {
     const token = localStorage.getItem("access_token");
     const container = document.getElementById("studentBooks");
@@ -2762,10 +2780,13 @@ async function loadStudentBooks() {
     }
 
     try {
+        if (studentBooksLoadController) studentBooksLoadController.abort();
+        const controller = new AbortController();
+        studentBooksLoadController = controller;
         const {response, data} = await fetchStudentApi(
             "/students/books?ts=" + Date.now(),
             token,
-            {method:"GET"}
+            {method:"GET", signal: controller.signal}
         );
 
         if (response.status === 401) {
@@ -3094,6 +3115,8 @@ function formatStudentContentDate(value) {
     });
 }
 
+let studentExtraLoadController = null;
+
 async function loadStudentPodcasts() {
     const body = document.getElementById("studentExtraContentBody");
     if (!body) return;
@@ -3106,10 +3129,13 @@ async function loadStudentPodcasts() {
     body.innerHTML = studentExtraLoading("Podcastlar yuklanmoqda...");
 
     try {
+        if (studentExtraLoadController) studentExtraLoadController.abort();
+        const controller = new AbortController();
+        studentExtraLoadController = controller;
         const {response, data} = await fetchStudentApi(
             "/students/podcasts",
             token,
-            {method:"GET"}
+            {method:"GET", signal: controller.signal}
         );
 
         if (response.status === 401) {
@@ -3151,6 +3177,9 @@ async function loadStudentTrainings() {
     body.innerHTML = studentExtraLoading("Treninglar yuklanmoqda...");
 
     try {
+        if (studentExtraLoadController) studentExtraLoadController.abort();
+        const controller = new AbortController();
+        studentExtraLoadController = controller;
         const {response, data} = await fetchStudentApi(
             "/students/trainings",
             token,
@@ -3242,6 +3271,9 @@ async function loadStudentExams() {
     body.innerHTML = studentExtraLoading("Imtihonlar yuklanmoqda...");
 
     try {
+        if (studentExtraLoadController) studentExtraLoadController.abort();
+        const controller = new AbortController();
+        studentExtraLoadController = controller;
         const {response, data} = await fetchStudentApi(
             "/students/exams",
             token,
