@@ -413,6 +413,19 @@ def assign_course_to_student(
             detail="Faol kurs topilmadi"
         )
 
+    # Bir o'quvchiga bir xil kursni parallel biriktirishda duplicate
+    # StudentCourse qatori yaratilmasligi uchun student qatorini qulflaymiz.
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).with_for_update().first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="Faol o'quvchi topilmadi"
+        )
+
     existing = db.query(StudentCourse).filter(
         StudentCourse.student_id == student_id,
         StudentCourse.course_id == course_id
