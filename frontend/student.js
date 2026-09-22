@@ -1390,7 +1390,7 @@ if (finishButton) {
         async function completeStudentLesson(courseId, moduleId, lessonId, button) {
         if (button?.disabled) return;
         if (button) { button.disabled = true; button.textContent = "Yakunlanmoqda..."; }
-        let currentCourseId/ = courseId;
+        let currentCourseId = courseId;
         let currentModuleId = moduleId;
 
         const token = localStorage.getItem("access_token");
@@ -1443,10 +1443,17 @@ if (finishButton) {
 }
         } catch (error) {
 
+            if (button) {
+                button.disabled = false;
+                button.textContent = "✅ Darsni tugatdim";
+                button.style.background = "linear-gradient(135deg,#166534,#22c55e)";
+                button.style.cursor = "pointer";
+            }
+
             console.error(error);
 
             showLessonErrorModal(
-                "Server bilan bog‘lanishda xatolik."
+                error?.message || "Server bilan bog‘lanishda xatolik."
             );
         }
     }
