@@ -485,6 +485,13 @@ def save_teacher_attendance(
     ).first()
     if not membership:
         raise HTTPException(status_code=403, detail="Bu o‘quvchi sizga biriktirilmagan")
+    student_lock = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).with_for_update().first()
+    if not student_lock:
+        raise HTTPException(status_code=404, detail="O'quvchi topilmadi yoki faol emas")
+
     record = db.query(Attendance).filter(
         Attendance.group_id == membership.group_id,
         Attendance.student_id == student_id,
