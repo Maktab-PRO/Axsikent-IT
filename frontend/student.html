@@ -787,7 +787,7 @@
             status.innerHTML = '<span style="color:#c4b5fd;">Telegram ochildi. Botdagi <b>Start</b> tugmasini bosing.</span>';
             button.textContent = "Telegramni qayta ochish →";
         } catch (error) {
-            status.innerHTML = '<span style="color:#f87171;">❌ ' + (error.message || "Xatolik") + '</span>';
+            status.innerHTML = '<span style="color:#f87171;">❌ ' + escapeHtml(error.message || "Xatolik") + '</span>';
             button.textContent = "Qayta urinish →";
         } finally { clearTimeout(timeout); button.disabled = false; }
     }
