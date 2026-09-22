@@ -49,10 +49,6 @@ def get_teachers(
     }
 
 
-# =========================================================
-# 2. TEACHER PROFILE
-# =========================================================
-
 @router.post("/create")
 def create_teacher(
     full_name: str,
@@ -108,6 +104,12 @@ def create_teacher(
             "is_active": teacher.is_active
         }
     }
+
+
+# =========================================================
+# 2. TEACHER PROFILE
+# =========================================================
+
 @router.get("/{teacher_id}")
 def get_teacher(
     teacher_id: int,
