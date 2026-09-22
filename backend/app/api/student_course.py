@@ -10,7 +10,7 @@ from app.models.course_module import CourseModule
 from app.models.lesson import Lesson
 from app.models.lesson_progress import LessonProgress
 from app.models.student_course import StudentCourse
-from app.core.security import verify_token
+from app.core.security import decode_token
 
 
 router = APIRouter(
@@ -25,15 +25,30 @@ def get_current_student(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    student_id = verify_token(credentials.credentials)
+    payload = decode_token(credentials.credentials)
 
-    if not student_id:
+    if not payload or payload.get("role") != "student":
         raise HTTPException(
             status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
+            detail="Student token noto'g'ri yoki muddati tugagan"
         )
 
+    student_id = payload["user_id"]
+
     student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="O'quvchi topilmadi"
+        )
+
+    return student
+
+#
         Student.id == student_id
     ).first()
 
