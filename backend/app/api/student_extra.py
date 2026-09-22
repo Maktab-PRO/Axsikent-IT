@@ -68,7 +68,7 @@ def get_trainings(credentials: HTTPAuthorizationCredentials = Depends(security),
 @router.post("/trainings/{training_id}/register")
 def register_training(training_id: int, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
     student_id = student_id_from_token(credentials, db)
-    training = db.query(Training).filter(Training.id == training_id, Training.is_active == True).first()
+    training = db.query(Training).filter(Training.id == training_id, Training.is_active == True).with_for_update().first()
     if not training:
         raise HTTPException(status_code=404, detail="Trening topilmadi")
     existing = db.query(TrainingRegistration).filter(
@@ -109,7 +109,7 @@ def get_exams(credentials: HTTPAuthorizationCredentials = Depends(security), db:
 @router.post("/exams/{exam_id}/register")
 def register_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
     student_id = student_id_from_token(credentials, db)
-    exam = db.query(Exam).filter(Exam.id == exam_id, Exam.is_active == True).first()
+    exam = db.query(Exam).filter(Exam.id == exam_id, Exam.is_active == True).with_for_update().first()
     if not exam:
         raise HTTPException(status_code=404, detail="Imtihon topilmadi")
     existing = db.query(ExamRegistration).filter(
