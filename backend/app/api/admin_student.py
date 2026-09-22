@@ -263,9 +263,13 @@ def get_student_full_profile(
     # GROUPS
     # -----------------------------------------------------
 
-    student_groups = db.query(StudentGroup).filter(
+    student_groups = db.query(StudentGroup).join(
+        Group,
+        Group.id == StudentGroup.group_id
+    ).filter(
         StudentGroup.student_id == student_id,
-        StudentGroup.is_active == True
+        StudentGroup.is_active == True,
+        Group.is_active == True
     ).all()
 
     groups = []
