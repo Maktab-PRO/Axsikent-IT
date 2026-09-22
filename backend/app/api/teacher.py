@@ -385,9 +385,11 @@ def unlock_student_quiz(
 
     managed = db.query(Group).join(
         StudentGroup, StudentGroup.group_id == Group.id
+    ).join(
+        CourseModule, CourseModule.course_id == Group.course_id
     ).filter(
         Group.teacher_id == teacher.id,
-        Group.course_id == CourseModule.course_id,
+        CourseModule.id == lesson.module_id,
         Group.is_active == True,
         StudentGroup.student_id == student_id,
         StudentGroup.is_active == True
