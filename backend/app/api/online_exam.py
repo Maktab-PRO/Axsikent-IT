@@ -379,7 +379,7 @@ def add_question(exam_id: int, data: QuestionCreate, admin: Admin = Depends(requ
         raise HTTPException(status_code=400, detail="Savol bo'sh bo'lishi mumkin emas")
     if any(not option for option in options):
         raise HTTPException(status_code=400, detail="Javob variantlari bo'sh bo'lishi mumkin emas")
-    if data.correct_answer >= len(options):
+    if data.correct_answer < 0 or data.correct_answer >= len(options):
         raise HTTPException(status_code=400, detail="To'g'ri javob varianti mavjud emas")
 
     q = OnlineExamQuestion(
