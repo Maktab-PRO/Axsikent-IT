@@ -92,6 +92,13 @@ def buy_reward(
         raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
     student_id = payload["user_id"]
 
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).with_for_update().first()
+    if not student:
+        raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
+
     gamification = db.query(StudentGamification).filter(
         StudentGamification.student_id == student_id
     ).with_for_update().first()
