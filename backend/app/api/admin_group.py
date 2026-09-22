@@ -514,9 +514,13 @@ def add_student_to_group(
             detail="Faol o'quvchi topilmadi"
         )
 
-    current_count = db.query(StudentGroup).filter(
+    current_count = db.query(StudentGroup).join(
+        Student,
+        Student.id == StudentGroup.student_id
+    ).filter(
         StudentGroup.group_id == group.id,
-        StudentGroup.is_active == True
+        StudentGroup.is_active == True,
+        Student.is_active == True
     ).count()
 
     if current_count >= group.capacity:
