@@ -61,8 +61,19 @@ def login_admin(
     db: Session = Depends(get_db)
 ):
 
+    phone = (
+        admin.phone
+        .strip()
+        .replace(" ", "")
+        .replace("-", "")
+        .replace("(", "")
+        .replace(")", "")
+    )
+    if phone.startswith("+"):
+        phone = phone[1:]
+
     user = db.query(Admin).filter(
-        Admin.phone == admin.phone
+        Admin.phone == phone
     ).first()
 
     if not user:
