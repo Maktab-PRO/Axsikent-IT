@@ -729,7 +729,7 @@ def submit_lesson_quiz(
     # noto'g'ri javoblar sabab bekor qilib yubormaymiz.
     if passed:
         progress.quiz_passed = True
-    else:
+    elif not progress.quiz_passed:
         progress.quiz_failures = (progress.quiz_failures or 0) + 1
         if progress.quiz_failures >= 3:
             progress.quiz_blocked = True
