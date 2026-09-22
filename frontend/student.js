@@ -3808,7 +3808,7 @@ async function loadStudentDashboardHomework() {
     };
 
     try {
-        const {response: homeworkResponse, data: homeworks} = await fetchStudentApi(
+        let {response: homeworkResponse, data: homeworks} = await fetchStudentApi(
             "/homework/student?ts=" + Date.now(),
             token,
             {method:"GET"}
@@ -3818,7 +3818,7 @@ async function loadStudentDashboardHomework() {
             throw new Error(homeworks.detail || ("Server xatosi: HTTP " + homeworkResponse.status));
         }
 
-        const {response: submissionsResponse, data: submissions} = await fetchStudentApi(
+        let {response: submissionsResponse, data: submissions} = await fetchStudentApi(
             "/homework/student/submissions?ts=" + Date.now(),
             token,
             {method:"GET"}
