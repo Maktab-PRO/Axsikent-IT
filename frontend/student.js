@@ -3995,6 +3995,8 @@ async function openStudentHomeworkSubmit(homeworkId, buttonLabel) {
     };
 }
 
+let studentNotificationInterval = null;
+
 function initStudentDashboard() {
     const run = function() {
         loadStudent();
@@ -4004,7 +4006,8 @@ function initStudentDashboard() {
         loadStudentNotifications();
         loadStudentDashboardHomework();
         loadStudentOnlineExams();
-        setInterval(loadStudentNotifications, 15000);
+        if (studentNotificationInterval) clearInterval(studentNotificationInterval);
+        studentNotificationInterval = setInterval(loadStudentNotifications, 15000);
     };
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", run, {once:true});
