@@ -3718,31 +3718,11 @@ async function startStudentOnlineExam(examId) {
     }
 
     try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 30000);
-
-        let response;
-        let data = {};
-        try {
-            response = await fetch(API_URL + "/online-exams/" + Number(examId) + "/start", {
-                method:"POST",
-                headers:{
-                    "Authorization":"Bearer " + token,
-                    "Accept":"application/json"
-                },
-                cache:"no-store",
-                signal:controller.signal
-            });
-
-            const raw = await response.text();
-            try {
-                data = raw ? JSON.parse(raw) : {};
-            } catch (_) {
-                data = {};
-            }
-        } finally {
-            clearTimeout(timeout);
-        }
+        const {response, data} = await fetchStudentApi(
+            "/online-exams/" + Number(examId) + "/start",
+            token,
+            {method:"POST"}
+        );
 
         if (!response.ok) {
             throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
