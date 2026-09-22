@@ -1,27 +1,3 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-
-from app.db import get_db
-from app.core.security import require_admin
-
-from app.models.admin import Admin
-from app.models.teacher import Teacher
-from app.models.group import Group
-from app.models.course import Course
-from app.models.student import Student
-from app.models.student_group import StudentGroup
-
-
-router = APIRouter(
-    prefix="/admin/teachers",
-    tags=["Admin Teachers"]
-)
-
-
-# =========================================================
-# 1. TEACHERS LIST
-# =========================================================
-
 @router.get("/")
 def get_teachers(
     search: str | None = None,
@@ -77,6 +53,61 @@ def get_teachers(
 # 2. TEACHER PROFILE
 # =========================================================
 
+@router.post("/create")
+def create_teacher(
+    full_name: str,
+    phone: str,
+    password: str,
+    subject: str,
+    birth_date: str | None = None,
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
+):
+    import re
+    from datetime import date
+    from passlib.context import CryptContext
+
+    if len(password) < 8 or not re.search(r"[A-Za-z]", password) or not re.search(r"\d", password) or not re.search(r"[^A-Za-z0-9]", password):
+        raise HTTPException(status_code=400, detail="Parol kamida 8 ta belgi: harf, raqam va maxsus belgi.")
+
+    if not phone.startswith("+") or len(re.sub(r"\D", "", phone)) < 8:
+        raise HTTPException(status_code=400, detail="Telefon raqam + bilan boshlanishi va kamida 8 ta raqamdan iborat bo‘lishi kerak.")
+
+    if db.query(Teacher).filter(Teacher.phone == phone).first():
+        raise HTTPException(status_code=400, detail="Bu telefon raqam allaqachon ro‘yxatdan o‘tgan.")
+
+    birth = None
+    if birth_date:
+        try:
+            birth = date.fromisoformat(birth_date)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Tug‘ilgan sana noto‘g‘ri.")
+
+    pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    teacher = Teacher(
+        full_name=full_name.strip(),
+        phone=phone.strip(),
+        password_hash=pwd.hash(password),
+        subject=subject.strip(),
+        birth_date=birth,
+        approved_by_admin=True,
+        is_active=True
+    )
+    db.add(teacher)
+    db.commit()
+    db.refresh(teacher)
+    return {
+        "success": True,
+        "message": "O‘qituvchi ro‘yxatdan muvaffaqiyatli o‘tkazildi",
+        "teacher": {
+            "id": teacher.id,
+            "full_name": teacher.full_name,
+            "phone": teacher.phone,
+            "subject": teacher.subject,
+            "birth_date": teacher.birth_date,
+            "is_active": teacher.is_active
+        }
+    }
 @router.get("/{teacher_id}")
 def get_teacher(
     teacher_id: int,
@@ -223,59 +254,3 @@ def activate_teacher(
         "teacher_id": teacher.id
     }
 
-
-@router.post("/create")
-def create_teacher(
-    full_name: str,
-    phone: str,
-    password: str,
-    subject: str,
-    birth_date: str | None = None,
-    db: Session = Depends(get_db),
-    admin: Admin = Depends(require_admin)
-):
-    import re
-    from datetime import date
-    from passlib.context import CryptContext
-
-    if len(password) < 8 or not re.search(r"[A-Za-z]", password) or not re.search(r"\d", password) or not re.search(r"[^A-Za-z0-9]", password):
-        raise HTTPException(status_code=400, detail="Parol kamida 8 ta belgi: harf, raqam va maxsus belgi.")
-
-    if not phone.startswith("+") or len(re.sub(r"\D", "", phone)) < 8:
-        raise HTTPException(status_code=400, detail="Telefon raqam + bilan boshlanishi va kamida 8 ta raqamdan iborat bo‘lishi kerak.")
-
-    if db.query(Teacher).filter(Teacher.phone == phone).first():
-        raise HTTPException(status_code=400, detail="Bu telefon raqam allaqachon ro‘yxatdan o‘tgan.")
-
-    birth = None
-    if birth_date:
-        try:
-            birth = date.fromisoformat(birth_date)
-        except ValueError:
-            raise HTTPException(status_code=400, detail="Tug‘ilgan sana noto‘g‘ri.")
-
-    pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    teacher = Teacher(
-        full_name=full_name.strip(),
-        phone=phone.strip(),
-        password_hash=pwd.hash(password),
-        subject=subject.strip(),
-        birth_date=birth,
-        approved_by_admin=True,
-        is_active=True
-    )
-    db.add(teacher)
-    db.commit()
-    db.refresh(teacher)
-    return {
-        "success": True,
-        "message": "O‘qituvchi ro‘yxatdan muvaffaqiyatli o‘tkazildi",
-        "teacher": {
-            "id": teacher.id,
-            "full_name": teacher.full_name,
-            "phone": teacher.phone,
-            "subject": teacher.subject,
-            "birth_date": teacher.birth_date,
-            "is_active": teacher.is_active
-        }
-    }
