@@ -1843,7 +1843,7 @@ async function buyStudentReward(productId) {
 }
 
 
-    async function loadStudentRanking() {
+    async async function loadStudentRanking() {
 
     const container = document.getElementById("studentRankingList");
 
@@ -1869,20 +1869,14 @@ async function buyStudentReward(productId) {
             return;
         }
 
-        const response = await fetch(
-            `${API_URL}/students/ranking`,
-            {
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
-            }
+        const {response, data: ranking} = await fetchStudentApi(
+            "/students/ranking",
+            token
         );
 
         if (!response.ok) {
-            throw new Error("Reytingni yuklab bo'lmadi");
+            throw new Error(ranking.detail || "Reytingni yuklab bo'lmadi");
         }
-
-        const ranking = await response.json();
 
         if (!ranking || ranking.length === 0) {
             container.innerHTML = `
