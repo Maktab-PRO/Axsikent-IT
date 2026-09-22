@@ -63,7 +63,7 @@ def get_lead_or_404(
 ):
     lead = db.query(Lead).filter(
         Lead.id == lead_id
-    ).first()
+    ).with_for_update().first()
 
     if not lead:
         raise HTTPException(
