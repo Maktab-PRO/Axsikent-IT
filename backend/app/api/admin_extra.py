@@ -71,7 +71,10 @@ def admin_trainings(db: Session = Depends(get_db), admin: Admin = Depends(requir
     items = db.query(Training).order_by(Training.start_at.asc()).all()
     return [{"id": x.id, "title": x.title, "description": x.description, "start_at": x.start_at,
              "end_at": x.end_at, "location": x.location, "capacity": x.capacity, "is_active": x.is_active,
-             "registrations": db.query(TrainingRegistration).filter(TrainingRegistration.training_id == x.id).count()}
+             "registrations": db.query(TrainingRegistration).filter(
+                 TrainingRegistration.training_id == x.id,
+                 TrainingRegistration.status == "registered"
+             ).count()}
             for x in items]
 
 @router.post("/trainings")
