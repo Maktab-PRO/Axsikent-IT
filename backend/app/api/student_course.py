@@ -48,17 +48,6 @@ def get_current_student(
 
     return student
 
-#
-        Student.id == student_id
-    ).first()
-
-    if not student:
-        raise HTTPException(
-            status_code=404,
-            detail="O'quvchi topilmadi"
-        )
-
-    return student
 
 
 @router.get("/")
