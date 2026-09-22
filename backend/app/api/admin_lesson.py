@@ -7,6 +7,8 @@ from app.models.admin import Admin
 from app.models.lesson import Lesson
 from app.models.course_module import CourseModule
 from app.models.course import Course
+from app.models.lesson_quiz import LessonQuiz
+from app.models.lesson_progress import LessonProgress
 
 
 router = APIRouter(
@@ -220,6 +222,19 @@ def delete_lesson(
         raise HTTPException(
             status_code=404,
             detail="Dars topilmadi"
+        )
+
+    quiz_count = db.query(LessonQuiz).filter(
+        LessonQuiz.lesson_id == lesson.id
+    ).count()
+    progress_count = db.query(LessonProgress).filter(
+        LessonProgress.lesson_id == lesson.id
+    ).count()
+
+    if quiz_count or progress_count:
+        raise HTTPException(
+            status_code=400,
+            detail="Bu darsda quiz yoki o'quvchi progressi mavjud. Avval ularni o'chiring yoki darsni deaktiv qiling."
         )
 
     db.delete(lesson)
