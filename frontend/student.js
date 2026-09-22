@@ -2928,17 +2928,11 @@ async function loadStudentHomeworkResults() {
 
     try {
 
-        const response = await fetch(
-            `${API_URL}/homework/student/submissions`,
-            {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            }
+        const {response, data} = await fetchStudentApi(
+            "/homework/student/submissions",
+            token,
+            {method: "GET"}
         );
-
-        const data = await response.json();
 
         if (!response.ok) {
             container.innerHTML = `
