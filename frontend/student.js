@@ -3155,6 +3155,7 @@ async function buyStudentBook(bookId) {
 const token = localStorage.getItem("access_token");
 
 if (!token) {
+    studentBookPurchasesInFlight.delete(Number(bookId));
     showPremiumModal(
         "Tizimga kirish kerak",
         "Kitob sotib olish uchun avval tizimga kiring.",
