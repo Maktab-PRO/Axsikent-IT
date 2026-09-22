@@ -142,9 +142,13 @@ def get_student_homework(
     if not group_ids:
         return []
 
-    homeworks = db.query(Homework).filter(
+    homeworks = db.query(Homework).join(
+        Group,
+        Group.id == Homework.group_id
+    ).filter(
         Homework.group_id.in_(group_ids),
-        Homework.status == "active"
+        Homework.status == "active",
+        Group.is_active == True
     ).order_by(
         Homework.id.desc()
     ).all()
@@ -190,9 +194,13 @@ def submit_homework(
             detail="O'quvchi topilmadi"
         )
 
-    homework = db.query(Homework).filter(
+    homework = db.query(Homework).join(
+        Group,
+        Group.id == Homework.group_id
+    ).filter(
         Homework.id == homework_id,
-        Homework.status == "active"
+        Homework.status == "active",
+        Group.is_active == True
     ).first()
 
     if not homework:
