@@ -483,7 +483,7 @@ def mark_lesson_as_read(
         StudentCourse.student_id == student_id,
         StudentCourse.course_id == course_id,
         StudentCourse.is_active == True
-    ).first()
+    ).with_for_update().first()
 
     if not student_course:
         raise HTTPException(
