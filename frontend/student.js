@@ -3688,11 +3688,11 @@ async function registerStudentExam(examId) {
     }
 
     try {
-        const response = await fetch(`${API_URL}/students/exams/${examId}/register`, {
-            method:"POST",
-            headers:{ "Authorization":`Bearer ${token}` }
-        });
-        const data = await response.json();
+        const {response, data} = await fetchStudentApi(
+            "/students/exams/" + Number(examId) + "/register",
+            token,
+            {method:"POST"}
+        );
         if (!response.ok) throw new Error(data.detail || "Imtihonga ro‘yxatdan o‘tishda xatolik.");
 
         showPremiumModal("Ro‘yxatdan o‘tildi",data.message || "Imtihonga muvaffaqiyatli ro‘yxatdan o‘tildi.","Ajoyib!");
