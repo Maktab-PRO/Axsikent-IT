@@ -110,6 +110,12 @@ def create_group(
             detail="Guruh sig‘imi 1 dan 100 gacha bo‘lishi kerak"
         )
 
+    if status not in {"active", "inactive"}:
+        raise HTTPException(
+            status_code=400,
+            detail="Guruh statusi faqat active yoki inactive bo'lishi kerak"
+        )
+
     course = db.query(Course).filter(
         Course.id == course_id,
         Course.is_active == True
