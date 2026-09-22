@@ -1783,7 +1783,7 @@ function confirmLogoutStudent() {
                     "Accept": "application/json"
                 },
                 cache: "no-store",
-                signal: options.signal || controller.signal
+                signal: controller.signal
             });
 
             const text = await response.text();
