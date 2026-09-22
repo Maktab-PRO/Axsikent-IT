@@ -2040,6 +2040,13 @@ async function buyStudentReward(productId) {
 
         const {response, data: homeworks} = await fetchStudentApi("/homework/student", token);
 
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+
         if (!response.ok) {
             throw new Error(
                 homeworks.detail ||
