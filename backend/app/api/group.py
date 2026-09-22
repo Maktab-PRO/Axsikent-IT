@@ -52,9 +52,10 @@ def get_group(
     ).first()
 
     if not group:
-        return {
-            "message": "Guruh topilmadi"
-        }
+        raise HTTPException(
+            status_code=404,
+            detail="Guruh topilmadi"
+        )
 
     return {
         "id": group.id,
