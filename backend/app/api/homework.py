@@ -201,7 +201,7 @@ def submit_homework(
         Homework.id == homework_id,
         Homework.status == "active",
         Group.is_active == True
-    ).first()
+    ).with_for_update().first()
 
     if not homework:
         raise HTTPException(
