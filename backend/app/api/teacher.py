@@ -376,7 +376,7 @@ def create_teacher_grade(
     student = db.query(Student).filter(
         Student.id == student_id,
         Student.is_active == True
-    ).first()
+    ).with_for_update().first()
     if not student:
         raise HTTPException(status_code=404, detail="O‘quvchi topilmadi yoki faol emas")
 
