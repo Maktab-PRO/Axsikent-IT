@@ -46,7 +46,10 @@ def get_notifications(
         Notification.id.desc()
     ).limit(30).all()
 
-    unread = sum(1 for item in items if not item.is_read)
+    unread = db.query(Notification).filter(
+        Notification.student_id == student_id,
+        Notification.is_read == False
+    ).count()
 
     return {
         "unread": unread,
