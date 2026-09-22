@@ -162,7 +162,7 @@ def deactivate_student(
 ):
     student = db.query(Student).filter(
         Student.id == student_id
-    ).first()
+    ).with_for_update().first()
 
     if not student:
         raise HTTPException(
@@ -193,7 +193,7 @@ def activate_student(
 ):
     student = db.query(Student).filter(
         Student.id == student_id
-    ).first()
+    ).with_for_update().first()
 
     if not student:
         raise HTTPException(
