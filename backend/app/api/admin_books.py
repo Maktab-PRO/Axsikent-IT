@@ -29,6 +29,10 @@ def create_book(
     db: Session = Depends(get_db),
     admin: Admin = Depends(require_admin)
 ):
+    title = title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Kitob nomi bo‘sh bo‘lishi mumkin emas")
+
     if price < 0 or coin_price < 0 or stock < 0:
         raise HTTPException(
             status_code=400,
