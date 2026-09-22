@@ -735,12 +735,16 @@
 </div>
 
     <script>
+    let studentTelegramStatusController = null;
+
     async function loadStudentTelegramStatus() {
+        if (studentTelegramStatusController) studentTelegramStatusController.abort();
+        const controller = new AbortController();
+        studentTelegramStatusController = controller;
         const token = localStorage.getItem("access_token");
         const status = document.getElementById("studentTelegramStatus");
         const button = document.getElementById("studentTelegramConnectButton");
         if (!token || !status || !button) return;
-        const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 10000);
         try {
             const response = await fetch("https://axsikent-it-backend.onrender.com/telegram/connect", { headers: { "Authorization": "Bearer " + token }, signal: controller.signal });
@@ -762,6 +766,7 @@
             status.textContent = error.name === "AbortError" ? "Telegram serveri vaqtida javob bermadi." : "Telegram ulanishini tekshirib bo‘lmadi."; console.error(error);
         } finally {
             clearTimeout(timeout);
+            if (studentTelegramStatusController === controller) studentTelegramStatusController = null;
         }
     }
 
