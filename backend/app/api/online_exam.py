@@ -222,7 +222,7 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
                 "exam_id": exam.id,
                 "title": exam.title,
                 "time_limit_minutes": exam.time_limit_minutes,
-                "deadline_at": active.deadline_at.isoformat(),
+                "deadline_at": active_deadline.isoformat() if active_deadline else None,
                 "pass_score": exam.pass_score,
                 "resumed": True,
                 "questions": [{
@@ -243,6 +243,9 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
     random.shuffle(selected)
     if exam.question_limit:
         selected = selected[:min(exam.question_limit, len(selected))]
+
+    if not exam.time_limit_minutes or exam.time_limit_minutes <= 0:
+        raise HTTPException(status_code=400, detail="Bu testning vaqt limiti noto‘g‘ri. Admin paneldan test vaqtini 1 daqiqadan kam bo‘lmagan qiymatga o‘rnating.")
 
     started_at = datetime.now(timezone.utc)
     deadline_at = started_at + timedelta(minutes=exam.time_limit_minutes)
