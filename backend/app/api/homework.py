@@ -251,6 +251,12 @@ def submit_homework(
     ).first()
 
     if existing_submission:
+        if existing_submission.status == "checked":
+            raise HTTPException(
+                status_code=409,
+                detail="Bu uy vazifasi allaqachon baholangan. Qayta topshirish uchun yangi vazifa kerak."
+            )
+
         existing_submission.answer = answer
         existing_submission.submitted_at = datetime.utcnow()
         existing_submission.status = submission_status
