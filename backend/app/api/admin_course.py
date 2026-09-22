@@ -907,9 +907,18 @@ def update_module(
         db
     )
 
+    course = get_course_or_404(course_id, db)
+    if not course.is_active:
+        raise HTTPException(status_code=400, detail="Deaktiv kursdagi modulni yangilab bo'lmaydi")
+
     update_data = data.model_dump(
         exclude_unset=True
     )
+
+    if "title" in update_data:
+        update_data["title"] = update_data["title"].strip()
+        if not update_data["title"]:
+            raise HTTPException(status_code=400, detail="Modul nomi bo'sh bo'lishi mumkin emas")
 
     for field, value in update_data.items():
         setattr(
