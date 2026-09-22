@@ -65,8 +65,6 @@ async function loadStudentCourses() {
             return;
         }
 
-        const courses = await response.json();
-
         if (!response.ok) {
 
             container.innerHTML = `
