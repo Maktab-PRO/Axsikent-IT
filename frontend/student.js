@@ -1344,7 +1344,7 @@ if (finishButton) {
     }
 }
     
-        async async function completeStudentLesson(courseId, moduleId, lessonId, button) {
+        async function completeStudentLesson(courseId, moduleId, lessonId, button) {
         let currentCourseId = courseId;
         let currentModuleId = moduleId;
 
@@ -1841,7 +1841,7 @@ async function buyStudentReward(productId) {
 }
 
 
-    async async function loadStudentRanking() {
+    async function loadStudentRanking() {
 
     const container = document.getElementById("studentRankingList");
 
