@@ -7,6 +7,7 @@ from datetime import date
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.models.admin import Admin
 from app.models.course import Course
+from app.models.level import Level
 from app.models.teacher import Teacher
 from app.core.security import decode_token
 
@@ -123,6 +124,15 @@ def create_group(
     if not course:
         raise HTTPException(status_code=404, detail="Faol kurs topilmadi")
 
+    if level_id is not None:
+        level = db.query(Level).filter(
+            Level.id == level_id,
+            Level.course_id == course_id,
+            Level.is_active == True
+        ).first()
+        if not level:
+            raise HTTPException(status_code=404, detail="Tanlangan level bu kursga tegishli yoki faol emas")
+
     teacher = db.query(Teacher).filter(
         Teacher.id == teacher_id,
         Teacher.is_active == True,
@@ -140,7 +150,7 @@ def create_group(
         start_date=start_date,
         capacity=capacity,
         status=status,
-        is_active=True
+        is_active=(status == "active")
     )
 
     db.add(group)
