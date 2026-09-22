@@ -77,7 +77,7 @@ def mark_notification_read(
     item = db.query(Notification).filter(
         Notification.id == notification_id,
         Notification.student_id == student_id,
-    ).first()
+    ).with_for_update().first()
 
     if not item:
         raise HTTPException(status_code=404, detail="Bildirishnoma topilmadi")
