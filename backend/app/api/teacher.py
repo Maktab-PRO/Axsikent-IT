@@ -417,6 +417,7 @@ def get_teacher_attendance(
 @router.post("/attendance")
 def save_teacher_attendance(
     student_id: int = Body(...),
+    group_id: int = Body(...),
     date: date = Body(...),
     status: str = Body(...),
     note: str | None = Body(None),
@@ -437,6 +438,7 @@ def save_teacher_attendance(
     if status not in {"present", "absent", "late"}:
         raise HTTPException(status_code=400, detail="Davomat holati noto‘g‘ri")
     membership = db.query(StudentGroup).join(Group, Group.id == StudentGroup.group_id).filter(
+        StudentGroup.group_id == group_id,
         Group.teacher_id == teacher.id,
         Group.is_active == True,
         StudentGroup.student_id == student_id,
