@@ -426,7 +426,6 @@ def assign_course_to_student(
             )
 
         existing.is_active = True
-        existing.progress = 0
 
         db.commit()
 
