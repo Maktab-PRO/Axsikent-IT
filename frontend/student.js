@@ -1,6 +1,6 @@
 async function fetchStudentApi(path, token, options = {}) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    const timeout = setTimeout(() => controller.abort(), 30000);
     const externalSignal = options.signal;
     const abortFromExternal = () => controller.abort();
 
@@ -3864,7 +3864,7 @@ async function startStudentOnlineExam(examId, button) {
 
         studentOnlineAttemptId = data.attempt_id;
         studentOnlineExamId = data.exam_id;
-        studentOnlineDeadline = new Date(data.deadline_at);
+        studentOnlineDeadline = new Date(data.deadline_at);\n    if (!data.deadline_at || Number.isNaN(studentOnlineDeadline.getTime())) {\n        throw new Error("Test vaqti serverdan noto‘g‘ri keldi. Testni qayta boshlang.");\n    }
 
         const section = document.getElementById("studentExamsSection");
         const oldTestSection = document.getElementById("studentOnlineTestSection");
