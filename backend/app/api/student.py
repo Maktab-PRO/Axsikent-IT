@@ -25,11 +25,19 @@ router = APIRouter(prefix="/students", tags=["Students"])
 security = HTTPBearer()
 
 
-def get_student_id(credentials: HTTPAuthorizationCredentials):
+def get_student_id(credentials: HTTPAuthorizationCredentials, db: Session):
     payload = decode_token(credentials.credentials)
     if not payload or payload.get("role") != "student":
         raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
-    return payload["user_id"]
+
+    student = db.query(Student).filter(
+        Student.id == payload["user_id"],
+        Student.is_active == True
+    ).first()
+    if not student:
+        raise HTTPException(status_code=403, detail="O'quvchi akkaunti faol emas")
+
+    return student.id
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
@@ -126,7 +134,7 @@ def student_exams(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    student_id = get_student_id(credentials)
+    student_id = get_student_id(credentials, db)
     exams = db.query(Exam).filter(
         Exam.is_active == True
     ).order_by(Exam.start_at.asc()).all()
@@ -161,7 +169,7 @@ def get_current_student(
     db: Session = Depends(get_db)
 ):
 
-    student_id = get_student_id(credentials)
+    student_id = get_student_id(credentials, db)
 
     student = db.query(Student).filter(
         Student.id == student_id
@@ -185,7 +193,7 @@ def get_my_courses(
     db: Session = Depends(get_db)
 ):
 
-    student_id = get_student_id(credentials)
+    student_id = get_student_id(credentials, db)
 
     student = db.query(Student).filter(
         Student.id == student_id,
@@ -267,7 +275,7 @@ def get_course_modules(
     db: Session = Depends(get_db)
 ):
 
-    student_id = get_student_id(credentials)
+    student_id = get_student_id(credentials, db)
 
     student = db.query(Student).filter(
         Student.id == student_id,
@@ -360,7 +368,7 @@ def get_module_lessons(
     db: Session = Depends(get_db)
 ):
 
-    student_id = get_student_id(credentials)
+    student_id = get_student_id(credentials, db)
 
     student = db.query(Student).filter(
         Student.id == student_id,
@@ -442,7 +450,7 @@ def mark_lesson_as_read(
     db: Session = Depends(get_db)
 ):
 
-    student_id = get_student_id(credentials)
+    student_id = get_student_id(credentials, db)
 
     student = db.query(Student).filter(
         Student.id == student_id,
@@ -531,7 +539,7 @@ def get_lesson_quiz(
     db: Session = Depends(get_db)
 ):
 
-    student_id = get_student_id(credentials)
+    student_id = get_student_id(credentials, db)
 
     student_course = db.query(StudentCourse).filter(
         StudentCourse.student_id == student_id,
@@ -602,7 +610,7 @@ def submit_lesson_quiz(
     db: Session = Depends(get_db)
 ):
 
-    student_id = get_student_id(credentials)
+    student_id = get_student_id(credentials, db)
 
     student_course = db.query(StudentCourse).filter(
         StudentCourse.student_id == student_id,
@@ -703,7 +711,7 @@ def complete_lesson(
     db: Session = Depends(get_db)
 ):
 
-    student_id = get_student_id(credentials)
+    student_id = get_student_id(credentials, db)
 
     student = db.query(Student).filter(
         Student.id == student_id,
