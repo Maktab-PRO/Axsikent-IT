@@ -3427,8 +3427,17 @@ function openStudentOnlineTests(skipLoad = false) {
         '</div>';
 
     document.body.appendChild(modal);
-    document.getElementById("studentOnlineTestWindowClose").onclick = () => modal.remove();
-    modal.addEventListener("click", e => { if (e.target === modal) modal.remove(); });
+    const closeOnlineTestWindow = () => {
+        if (studentOnlineTimer) clearInterval(studentOnlineTimer);
+        studentOnlineTimer = null;
+        studentOnlineAttemptId = null;
+        studentOnlineExamId = null;
+        studentOnlineDeadline = null;
+        markStudentExamPageVisible(false);
+        modal.remove();
+    };
+    document.getElementById("studentOnlineTestWindowClose").onclick = closeOnlineTestWindow;
+    modal.addEventListener("click", e => { if (e.target === modal) closeOnlineTestWindow(); });
 
     const body = document.getElementById("studentOnlineWindowBody");
     body.innerHTML = '<div style="padding:35px;text-align:center;color:#aab3c2;">⏳ Online testlar yuklanmoqda...</div>';
@@ -4125,7 +4134,12 @@ function startStudentExamTimer() {
         if (left <= 0) {
             clearInterval(studentOnlineTimer);
             studentOnlineTimer = null;
+            studentOnlineAttemptId = null;
+            studentOnlineExamId = null;
+            studentOnlineDeadline = null;
             markStudentExamPageVisible(false);
+            const submitButton = document.getElementById("studentOnlineSubmit");
+            if (submitButton) submitButton.disabled = true;
             showPremiumModal("Vaqt tugadi","Test vaqti tugadi. Natijani server tekshiradi.","Yopish");
         }
     };
