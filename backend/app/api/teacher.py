@@ -10,7 +10,7 @@ from app.schemas.teacher import (
     TeacherLogin,
     TeacherResponse
 )
-from app.core.security import create_access_token
+from app.core.security import create_access_token, decode_token
 
 
 router = APIRouter(
@@ -105,15 +105,18 @@ def teacher_dashboard(
     credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
     db: Session = Depends(get_db)
 ):
-    from app.core.security import verify_token
-    from app.models.student_group import StudentGroup
+        from app.models.student_group import StudentGroup
     from app.models.group import Group
     from app.models.student import Student
     from app.models.course import Course
     from app.models.lesson import Lesson
     from app.models.course_module import CourseModule
 
-    teacher_id = verify_token(credentials.credentials)
+    token_data = decode_token(credentials.credentials)
+    if not token_data or token_data.get("role") != "teacher":
+        raise HTTPException(status_code=403, detail="Faqat o‘qituvchi akkaunti uchun ruxsat berilgan")
+
+    teacher_id = token_data["user_id"]
     teacher = db.query(Teacher).filter(
         Teacher.id == teacher_id,
         Teacher.is_active == True,
