@@ -81,6 +81,13 @@ def create_homework(
     if not group:
         raise HTTPException(status_code=404, detail="Faol guruh topilmadi")
 
+    if deadline is not None:
+        check_deadline = deadline
+        if check_deadline.tzinfo is None:
+            check_deadline = check_deadline.replace(tzinfo=timezone.utc)
+        if check_deadline <= datetime.now(timezone.utc):
+            raise HTTPException(status_code=400, detail="Uy vazifasi muddati kelajakdagi vaqt bo‘lishi kerak")
+
     if role == "teacher" and group.teacher_id != teacher_id:
         raise HTTPException(status_code=403, detail="Bu guruh sizga biriktirilmagan")
 
