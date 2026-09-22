@@ -360,10 +360,12 @@ def update_admin_group(
     admin: Admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    group = get_group_or_404(
-        group_id,
-        db
-    )
+    group = db.query(Group).filter(
+        Group.id == group_id
+    ).with_for_update().first()
+
+    if not group:
+        raise HTTPException(status_code=404, detail="Guruh topilmadi")
 
     update_data = data.model_dump(
         exclude_unset=True
