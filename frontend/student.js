@@ -2947,17 +2947,11 @@ showPremiumModal(
 
         try {
 
-            const response = await fetch(
-                `${API_URL}/students/books/${bookId}/buy`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
-                }
+            const {response, data} = await fetchStudentApi(
+                "/students/books/" + Number(bookId) + "/buy",
+                token,
+                {method:"POST"}
             );
-
-            const data = await response.json();
 
             if (!response.ok) {
                 throw new Error(
