@@ -188,6 +188,60 @@ async function loadStudentCourses() {
         console.error(error);
         if (error?.name === "AbortError") return;
 
+        // Render/Internet qisqa uzilishida bir marta qayta urinib ko‘ramiz.
+        // Doimiy xatolik bo‘lsa, foydalanuvchiga xabar chiqariladi.
+        try {
+            await new Promise(resolve => setTimeout(resolve, 800));
+            const retryController = new AbortController();
+            studentCoursesLoadController = retryController;
+            const {response: retryResponse, data: retryCourses} = await fetchStudentApi(
+                "/students/courses",
+                token,
+                {method: "GET", signal: retryController.signal}
+            );
+
+            if (retryResponse.status === 401) {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user_role");
+                window.location.href = "index.html";
+                return;
+            }
+
+            if (retryResponse.ok && Array.isArray(retryCourses)) {
+                if (!retryCourses.length) {
+                    container.innerHTML = `
+                        <div style="text-align:center;padding:25px;color:#7b8496;">
+                            Hozircha kurs biriktirilmagan
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = retryCourses.map(course => {
+                    const progress = Math.min(100, Math.max(0, Number(course.progress) || 0));
+                    return `
+                        <div class="course" onclick="openStudentCourse(${course.id})" style="cursor:pointer;">
+                            <div class="course-top">
+                                <div class="course-icon student-modern-course-icon">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="11" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+                                </div>
+                                <div>
+                                    <div class="course-name">${escapeHtml(course.name || "Kurs")}</div>
+                                    <div class="course-info">Kurs davom etmoqda</div>
+                                </div>
+                            </div>
+                            <div class="progress"><div class="progress-bar" style="width:${progress}%"></div></div>
+                            <div class="progress-text"><span>Jarayon</span><span>${progress}%</span></div>
+                        </div>
+                    `;
+                }).join("");
+                return;
+            }
+        } catch (retryError) {
+            console.error("Student courses retry:", retryError);
+            if (retryError?.name === "AbortError") return;
+        }
+
         container.innerHTML = `
             <div style="
                 text-align:center;
