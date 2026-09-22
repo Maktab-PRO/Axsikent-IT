@@ -1,4 +1,5 @@
 from datetime import datetime, timezone, timedelta
+from math import ceil
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
@@ -604,6 +605,13 @@ def get_lesson_quiz(
             detail="Bu dars uchun tekshiruv hali qo'shilmagan"
         )
 
+    progress = db.query(LessonProgress).filter(
+        LessonProgress.student_id == student_id,
+        LessonProgress.lesson_id == lesson_id
+    ).first()
+    quiz_failures = progress.quiz_failures if progress else 0
+    quiz_blocked = bool(progress.quiz_blocked) if progress else False
+
     return [
         {
             "id": quiz.id,
@@ -611,7 +619,9 @@ def get_lesson_quiz(
             "option_a": quiz.option_a,
             "option_b": quiz.option_b,
             "option_c": quiz.option_c,
-            "option_d": quiz.option_d
+            "option_d": quiz.option_d,
+            "quiz_failures": quiz_failures,
+            "quiz_blocked": quiz_blocked
         }
         for quiz in quizzes
     ]
@@ -675,6 +685,12 @@ def submit_lesson_quiz(
             detail="Avval darsni o'qib chiqing"
         )
 
+    if progress.quiz_blocked:
+        raise HTTPException(
+            status_code=403,
+            detail="Quiz 3 marta muvaffaqiyatsiz topshirildi. O'qituvchi tomonidan qayta ochilishi kerak."
+        )
+
     quizzes = db.query(LessonQuiz).filter(
         LessonQuiz.lesson_id == lesson_id,
         LessonQuiz.is_active == True
@@ -707,14 +723,19 @@ def submit_lesson_quiz(
 
     total = len(quizzes)
 
-    passed = score >= max(1, round(total * 0.8))
+    passed = score >= max(1, ceil(total * 0.8))
 
     # Bir marta muvaffaqiyatli o'tilgan test holatini qayta urinishda
     # noto'g'ri javoblar sabab bekor qilib yubormaymiz.
     if passed:
         progress.quiz_passed = True
+    else:
+        progress.quiz_failures = (progress.quiz_failures or 0) + 1
+        if progress.quiz_failures >= 3:
+            progress.quiz_blocked = True
 
     current_quiz_passed = bool(progress.quiz_passed)
+    current_quiz_blocked = bool(progress.quiz_blocked)
 
     db.commit()
 
@@ -722,6 +743,8 @@ def submit_lesson_quiz(
         "passed": current_quiz_passed,
         "score": score,
         "total": total,
+        "quiz_failures": progress.quiz_failures or 0,
+        "quiz_blocked": current_quiz_blocked,
         "message": (
             "✅ Tekshiruvdan muvaffaqiyatli o'tdingiz"
             if current_quiz_passed
