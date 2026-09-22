@@ -155,6 +155,14 @@ async def telegram_webhook(
                     Student.is_active == True
                 ).with_for_update().first()
 
+                linked_chat = db.query(Student).filter(
+                    Student.telegram_chat_id == str(chat_id)
+                ).first()
+
+                if linked_chat and (not student or linked_chat.id != student.id):
+                    await send_telegram_message(str(chat_id), "⚠️ Bu Telegram hisob boshqa o‘quvchi akkauntiga ulangan.")
+                    return {"ok": True}
+
                 if student and not student.telegram_chat_id:
                     student.telegram_chat_id = str(chat_id)
                     db.commit()
@@ -205,9 +213,16 @@ async def telegram_webhook(
         await send_telegram_message(str(chat_id), "Topshiriq va javobni to'liq yuboring.")
         return {"ok": True}
 
-    student = db.query(Student).filter(Student.telegram_chat_id == str(chat_id)).first()
+    if len(task) > 10000 or len(answer) > 10000:
+        await send_telegram_message(str(chat_id), "Topshiriq va javob juda uzun. Har birini 10 000 belgidan oshirmang.")
+        return {"ok": True}
+
+    student = db.query(Student).filter(
+        Student.telegram_chat_id == str(chat_id),
+        Student.is_active == True
+    ).first()
     if not student:
-        await send_telegram_message(str(chat_id), "Avval Student paneldagi AKHSIKENT AI bo‘limidan Telegramni ulang.")
+        await send_telegram_message(str(chat_id), "Avval faol Student akkauntingizni Telegram bilan ulang.")
         return {"ok": True}
 
     try:
@@ -237,11 +252,18 @@ score 0-100. 80 va yuqori passed=true.
         )
         result = json.loads(response.choices[0].message.content)
 
-        score = max(0, min(100, int(result.get("score", 0))))
+        raw_score = result.get("score", 0)
+        try:
+            score = int(raw_score)
+        except (TypeError, ValueError):
+            score = 0
+        score = max(0, min(100, score))
         raw_mistakes = result.get("mistakes") or []
         if not isinstance(raw_mistakes, list):
             raw_mistakes = [raw_mistakes]
         mistakes = [str(item) for item in raw_mistakes if str(item).strip()]
+        explanation = str(result.get("explanation", "") or "")
+        recommendation = str(result.get("recommendation", "") or "")
 
         ai_submission = AITelegramSubmission(
             student_id=student.id,
@@ -251,8 +273,8 @@ score 0-100. 80 va yuqori passed=true.
             score=score,
             passed="true" if score >= 80 else "false",
             mistakes=json.dumps(mistakes, ensure_ascii=False),
-            explanation=str(result.get("explanation", "")),
-            recommendation=str(result.get("recommendation", "")),
+            explanation=explanation,
+            recommendation=recommendation,
             status="checked",
             checked_at=__import__("datetime").datetime.utcnow()
         )
@@ -265,8 +287,8 @@ score 0-100. 80 va yuqori passed=true.
             f"📊 Baho: {score}%\n"
             f"{'✅ Keyingi dars ochiladi' if score >= 80 else '🔒 Keyingi dars ochilmaydi'}\n\n"
             f"❌ Xatolar:\n{mistakes_text}\n\n"
-            f"💡 Izoh: {result.get('explanation', '')}\n"
-            f"🎯 Tavsiya: {result.get('recommendation', '')}"
+            f"💡 Izoh: {explanation}\n"
+            f"🎯 Tavsiya: {recommendation}"
         )
         await send_telegram_message(str(chat_id), reply)
 
