@@ -1211,6 +1211,13 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
 
                 event.preventDefault();
 
+                const submitButton = event.submitter;
+                if (submitButton?.disabled) return;
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.textContent = "Tekshirilmoqda...";
+                }
+
                 const answers = {};
 
                 quizzes.forEach(quiz => {
@@ -1343,6 +1350,11 @@ if (finishButton) {
                     }
 
                 } catch (error) {
+
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.textContent = "Javoblarni tekshirish";
+                    }
 
                     console.error(error);
 
@@ -2383,6 +2395,9 @@ async function buyStudentReward(productId) {
         return;
     }
 
+    const submitButton = textarea.closest("div")?.querySelector("button");
+    if (submitButton?.disabled) return;
+
     const answer = textarea.value.trim();
 
     if (!answer) {
@@ -2395,6 +2410,11 @@ async function buyStudentReward(productId) {
     }
 
     try {
+
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "Yuborilmoqda...";
+        }
 
         const {response, data} = await fetchStudentApi(
             "/homework/" + Number(homeworkId) + "/submit?answer=" + encodeURIComponent(answer),
@@ -2428,6 +2448,11 @@ async function buyStudentReward(productId) {
         await loadStudentDashboardHomework();
 
     } catch (error) {
+
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "🚀 Javobni topshirish";
+        }
 
         console.error(error);
 
@@ -2870,12 +2895,8 @@ async function buyStudentReward(productId) {
    START STUDENT CABINET
 ========================= */
 
-loadStudent();
-loadStudentCourses();
-loadStudentRanking();
-loadStudentBooks();
-loadStudentNotifications();
-setInterval(loadStudentNotifications, 15000);
+/* Initial loading is handled by initStudentDashboard() below.
+   Keeping a single boot path prevents duplicate API requests. */
 
     function openStudentBooksMenu(element) {
     selectMenu(element);
@@ -3328,8 +3349,15 @@ async function loadStudentTrainings() {
 }
 
 async function registerStudentTraining(trainingId) {
+    const button = document.querySelector(`button[onclick="registerStudentTraining(${Number(trainingId)})"]`);
+    if (button?.disabled) return;
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Yozilmoqda...";
+    }
     const token = localStorage.getItem("access_token");
     if (!token) {
+        if (button) button.disabled = false;
         showPremiumModal("Tizimga kirish kerak","Treningka yozilish uchun avval tizimga kiring.","Kirish");
         return;
     }
@@ -3353,6 +3381,8 @@ async function registerStudentTraining(trainingId) {
     } catch (error) {
         console.error("Trening ro‘yxatdan o‘tish:",error);
         showPremiumModal("Xatolik yuz berdi",error.message,"Yopish");
+    } finally {
+        if (button) button.disabled = false;
     }
 }
 
@@ -3410,8 +3440,15 @@ async function loadStudentExams() {
 }
 
 async function registerStudentExam(examId) {
+    const button = document.querySelector(`button[onclick="registerStudentExam(${Number(examId)})"]`);
+    if (button?.disabled) return;
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Yozilmoqda...";
+    }
     const token = localStorage.getItem("access_token");
     if (!token) {
+        if (button) button.disabled = false;
         showPremiumModal("Tizimga kirish kerak","Imtihonga yozilish uchun avval tizimga kiring.","Kirish");
         return;
     }
@@ -3435,6 +3472,8 @@ async function registerStudentExam(examId) {
     } catch (error) {
         console.error("Imtihon ro‘yxatdan o‘tish:",error);
         showPremiumModal("Xatolik yuz berdi",error.message,"Yopish");
+    } finally {
+        if (button) button.disabled = false;
     }
 }
 
@@ -4137,8 +4176,12 @@ function initStudentDashboard() {
     const run = function() {
         loadStudent();
         loadStudentCourses();
+        loadStudentRanking();
+        loadStudentBooks();
+        loadStudentNotifications();
         loadStudentDashboardHomework();
         loadStudentOnlineExams();
+        setInterval(loadStudentNotifications, 15000);
     };
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", run, {once:true});
