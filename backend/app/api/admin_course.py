@@ -781,6 +781,16 @@ def activate_course(
         db
     )
 
+    category = db.query(Category).filter(
+        Category.id == course.category_id,
+        Category.is_active == True
+    ).first()
+    if not category:
+        raise HTTPException(
+            status_code=400,
+            detail="Kursni faollashtirish uchun uning kategoriyasi faol bo‘lishi kerak"
+        )
+
     course.is_active = True
 
     db.commit()
