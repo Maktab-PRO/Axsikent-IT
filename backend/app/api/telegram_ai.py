@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from app.core.config import settings
-from app.core.security import verify_token
+from app.core.security import decode_token
 from app.models.student import Student
 from app.models.ai_telegram_submission import AITelegramSubmission
 from app.db import get_db
@@ -72,9 +72,10 @@ async def create_telegram_connect_link(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "student":
+        raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
+    student_id = payload["user_id"]
         raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
 
     student = db.query(Student).filter(Student.id == student_id).first()
