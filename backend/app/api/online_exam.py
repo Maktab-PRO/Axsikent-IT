@@ -97,6 +97,12 @@ def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security
 
     result = []
     for exam in exams:
+        active_question_count = db.query(OnlineExamQuestion.id).filter(
+            OnlineExamQuestion.exam_id == exam.id,
+            OnlineExamQuestion.is_active == True
+        ).count()
+        if active_question_count == 0:
+            continue
         # course_id berilgan test faqat shu kursga faol biriktirilgan
         # o‘quvchiga ko‘rinadi. course_id=None esa umumiy test hisoblanadi.
         if exam.course_id is not None and exam.course_id not in active_course_ids:
