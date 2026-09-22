@@ -306,6 +306,9 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
             question_ids = []
     except (TypeError, ValueError, json.JSONDecodeError):
         question_ids = []
+    if not question_ids:
+        raise HTTPException(status_code=409, detail="Bu test urinishida savollar saqlanmagan")
+
     questions = db.query(OnlineExamQuestion).filter(
         OnlineExamQuestion.id.in_(question_ids),
         OnlineExamQuestion.exam_id == exam_id
