@@ -8,6 +8,8 @@ from app.core.security import decode_token
 from app.db import get_db
 from app.models.student import Student
 from app.models.homework import Homework
+from app.models.student_group import StudentGroup
+from app.models.group import Group
 from openai import OpenAI
 import json
 
@@ -58,9 +60,20 @@ def check_homework(
         raise HTTPException(status_code=400, detail="Topshiriq va javob bo'sh bo'lmasligi kerak")
 
     if payload.homework_id:
-        homework = db.query(Homework).filter(Homework.id == payload.homework_id).first()
-        if homework:
-            task = f"{homework.title}\n{homework.description}"
+        homework = db.query(Homework).join(
+            Group, Group.id == Homework.group_id
+        ).join(
+            StudentGroup, StudentGroup.group_id == Group.id
+        ).filter(
+            Homework.id == payload.homework_id,
+            Homework.status == "active",
+            Group.is_active == True,
+            StudentGroup.student_id == student.id,
+            StudentGroup.is_active == True
+        ).first()
+        if not homework:
+            raise HTTPException(status_code=403, detail="Bu uy vazifasi sizga biriktirilmagan")
+        task = f"{homework.title}\n{homework.description}"
 
     client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
