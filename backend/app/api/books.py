@@ -77,6 +77,16 @@ def buy_book(
     if not student:
         raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
 
+    # Xarid vaqtida studentning faol holatini ham transaction ichida qulflaymiz.
+    # Aks holda admin parallel ravishda studentni deaktiv qilsa, xarid davom etishi mumkin.
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).with_for_update().first()
+
+    if not student:
+        raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
+
     book = db.query(Book).filter(
         Book.id == book_id,
         Book.is_active == True
