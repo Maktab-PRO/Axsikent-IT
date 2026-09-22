@@ -140,7 +140,7 @@ def require_admin(
 
     return admin
 
-    
+
 def require_superadmin(
     admin: Admin = Depends(get_current_admin)
 ):
