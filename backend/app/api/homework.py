@@ -91,6 +91,15 @@ def create_homework(
     if role == "teacher" and group.teacher_id != teacher_id:
         raise HTTPException(status_code=403, detail="Bu guruh sizga biriktirilmagan")
 
+    title = title.strip()
+    description = description.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Uy vazifasi nomi bo'sh bo'lishi mumkin emas")
+    if not description:
+        raise HTTPException(status_code=400, detail="Uy vazifasi tavsifi bo'sh bo'lishi mumkin emas")
+    if len(title) > 200:
+        raise HTTPException(status_code=400, detail="Uy vazifasi nomi 200 belgidan oshmasligi kerak")
+
     homework = Homework(
         group_id=group_id,
         teacher_id=teacher_id,
@@ -382,7 +391,7 @@ def grade_homework_submission(
 
     submission = db.query(HomeworkSubmission).filter(
         HomeworkSubmission.id == submission_id
-    ).first()
+    ).with_for_update().first()
 
     if not submission:
         raise HTTPException(
