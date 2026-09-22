@@ -1116,6 +1116,24 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
             );
         }
 
+        if (quizzes[0]?.quiz_blocked) {
+            container.innerHTML = `
+                <div style="max-width:700px;margin:0 auto;">
+                    <button type="button" onclick="openStudentModule(${courseId}, ${moduleId})"
+                        style="border:none;background:#eef2f7;padding:9px 14px;border-radius:10px;cursor:pointer;margin-bottom:18px;">
+                        ← Darsga qaytish
+                    </button>
+                    <div style="background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(239,68,68,.35);border-radius:22px;padding:28px;text-align:center;color:#f8fafc;">
+                        <div style="font-size:42px;">🔒</div>
+                        <h2 style="margin:10px 0;color:#f8fafc;">Quiz vaqtincha yopildi</h2>
+                        <p style="color:#cbd5e1;line-height:1.6;">Quiz 3 marta muvaffaqiyatsiz topshirildi. Qayta ochish uchun o'qituvchingizga murojaat qiling.</p>
+                        <div style="margin-top:12px;color:#fca5a5;font-weight:700;">Muvaffaqiyatsiz urinishlar: ${Number(quizzes[0]?.quiz_failures || 0)}</div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
         container.innerHTML = `
             <div style="
                 max-width:700px;
@@ -1301,6 +1319,17 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
                             result.detail ||
                             "Javoblarni tekshirishda xatolik"
                         );
+                    }
+
+                    if (result.quiz_blocked) {
+                        resultBox.innerHTML = `
+                            <div style="padding:18px;background:#fff1f2;border:1px solid #fda4af;border-radius:12px;color:#9f1239;text-align:center;font-weight:600;">
+                                🔒 Quiz 3 marta muvaffaqiyatsiz topshirildi.
+                                <br>
+                                <span style="display:block;margin-top:6px;font-size:14px;font-weight:500;">Qayta ochish uchun o'qituvchingizga murojaat qiling.</span>
+                            </div>
+                        `;
+                        return;
                     }
 
                     if (result.passed) {
