@@ -8,6 +8,7 @@ from app.core.security import require_admin
 from app.models.admin import Admin
 from app.models.lead import Lead
 from app.models.student import Student
+from app.models.gamification import StudentGamification
 from passlib.context import CryptContext
 
 
@@ -252,6 +253,15 @@ def update_lead_status(
                 is_active=True
             )
             db.add(student)
+            db.flush()
+            db.add(StudentGamification(
+                student_id=student.id,
+                xp=0,
+                level=1,
+                coins=0,
+                crystals=0,
+                streak_days=0
+            ))
         elif not student.is_active:
             student.is_active = True
 
