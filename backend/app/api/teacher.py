@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
@@ -239,9 +239,9 @@ def create_teacher_quiz(
 
 @router.post("/grades")
 def create_teacher_grade(
-    student_id: int,
-    score: float,
-    comment: str | None = None,
+    student_id: int = Body(...),
+    score: float = Body(...),
+    comment: str | None = Body(None),
     credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
     db: Session = Depends(get_db)
 ):
