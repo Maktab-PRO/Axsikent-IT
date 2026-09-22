@@ -13,6 +13,8 @@ from app.models.student import Student
 from app.models.student_course import StudentCourse
 from app.models.course_module import CourseModule
 from app.models.lesson import Lesson
+from app.models.lesson_quiz import LessonQuiz
+from app.models.lesson_progress import LessonProgress
 
 
 router = APIRouter(
@@ -1228,6 +1230,19 @@ def delete_lesson(
         lesson_id,
         db
     )
+
+    quiz_count = db.query(LessonQuiz).filter(
+        LessonQuiz.lesson_id == lesson.id
+    ).count()
+    progress_count = db.query(LessonProgress).filter(
+        LessonProgress.lesson_id == lesson.id
+    ).count()
+
+    if quiz_count or progress_count:
+        raise HTTPException(
+            status_code=400,
+            detail="Bu darsda quiz yoki o'quvchi progressi mavjud. Avval ularni o'chiring yoki darsni deaktiv qiling."
+        )
 
     db.delete(lesson)
     db.commit()
