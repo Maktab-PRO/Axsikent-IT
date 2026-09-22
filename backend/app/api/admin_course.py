@@ -928,6 +928,16 @@ def activate_module(
         db
     )
 
+    course = get_course_or_404(
+        course_id,
+        db
+    )
+    if not course.is_active:
+        raise HTTPException(
+            status_code=400,
+            detail="Deaktiv kursdagi modulni faollashtirib bo'lmaydi"
+        )
+
     module.is_active = True
 
     db.commit()
