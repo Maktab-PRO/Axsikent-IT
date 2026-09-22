@@ -1842,7 +1842,7 @@ function confirmLogoutStudent() {
     } catch (error) {
         console.error("Rewards load error:", error);
         const message = error && error.name === "AbortError" ? "Server 10 soniya ichida javob bermadi." : (error.message || "Noma’lum xatolik");
-        container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;"><strong>Mukofotlarni yuklab bo‘lmadi.</strong><div style="margin-top:8px;color:#9ca3af;font-size:12px;">' + escapeHtml(message) + '</div><button type="button" onclick="loadStudentRewards('studentRewardsModalContent')" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
+        container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;"><strong>Mukofotlarni yuklab bo‘lmadi.</strong><div style="margin-top:8px;color:#9ca3af;font-size:12px;">' + escapeHtml(message) + '</div><button type="button" onclick="loadStudentRewards(\'studentRewardsModalContent\')" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
     }
 }
 
