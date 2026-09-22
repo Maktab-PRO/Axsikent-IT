@@ -157,7 +157,8 @@ def student_exams(
     for exam in exams:
         registration = db.query(ExamRegistration).filter(
             ExamRegistration.exam_id == exam.id,
-            ExamRegistration.student_id == student_id
+            ExamRegistration.student_id == student_id,
+            ExamRegistration.status == "registered"
         ).first()
         result.append({
             "id": exam.id,
