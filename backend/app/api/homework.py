@@ -9,7 +9,7 @@ from app.models.homework import Homework, HomeworkSubmission
 from app.models.teacher import Teacher
 from app.models.admin import Admin
 from app.models.group import Group
-from app.core.security import verify_token, decode_token
+from app.core.security import decode_token
 from app.services.notifications import notify_student
 
 
@@ -21,18 +21,19 @@ router = APIRouter(
 security = HTTPBearer()
 
 
-def get_current_user_id(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
-):
-    user_id = verify_token(credentials.credentials)
 
-    if not user_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+def get_student_id(credentials: HTTPAuthorizationCredentials):
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "student":
+        raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
+    return payload["user_id"]
 
-    return user_id
+
+def get_teacher_id(credentials: HTTPAuthorizationCredentials):
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "teacher":
+        raise HTTPException(status_code=401, detail="Teacher token noto'g'ri yoki muddati tugagan")
+    return payload["user_id"]
 
 
 @router.post("/")
@@ -326,13 +327,7 @@ def grade_homework_submission(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    teacher_id = verify_token(credentials.credentials)
-
-    if not teacher_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    teacher_id = get_teacher_id(credentials)
 
     teacher = db.query(Teacher).filter(
         Teacher.id == teacher_id,
@@ -410,13 +405,7 @@ def get_student_submissions(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    student_id = get_student_id(credentials)
 
     from app.models.student import Student
 
