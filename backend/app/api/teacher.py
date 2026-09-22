@@ -13,6 +13,8 @@ from app.models.lesson import Lesson
 from app.models.student_lesson import StudentLesson
 from app.models.lesson_quiz import LessonQuiz
 from app.models.grade import Grade
+from app.models.attendance import Attendance
+from datetime import date
 from app.schemas.teacher import (
     TeacherCreate,
     TeacherLogin,
@@ -367,3 +369,96 @@ def create_teacher_grade(
     db.refresh(grade)
 
     return {"message": "Baho saqlandi", "id": grade.id}
+
+@router.get("/attendance")
+def get_teacher_attendance(
+    date: date,
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+    db: Session = Depends(get_db)
+):
+    token_data = decode_token(credentials.credentials)
+    if not token_data or token_data.get("role") != "teacher":
+        raise HTTPException(status_code=403, detail="Faqat o‘qituvchi akkaunti uchun ruxsat berilgan")
+    teacher_id = token_data["user_id"]
+    teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id,
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
+    ).first()
+    if not teacher:
+        raise HTTPException(status_code=401, detail="O‘qituvchi sessiyasi noto‘g‘ri yoki akkaunt faol emas")
+    rows = db.query(StudentGroup, Group, Student).join(
+        Group, Group.id == StudentGroup.group_id
+    ).join(
+        Student, Student.id == StudentGroup.student_id
+    ).filter(
+        Group.teacher_id == teacher.id,
+        Group.is_active == True,
+        StudentGroup.is_active == True,
+        Student.is_active == True
+    ).all()
+    result = []
+    for membership, group, student in rows:
+        record = db.query(Attendance).filter(
+            Attendance.group_id == group.id,
+            Attendance.student_id == student.id,
+            Attendance.date == date
+        ).first()
+        result.append({
+            "id": student.id,
+            "full_name": student.full_name,
+            "group_id": group.id,
+            "group_name": group.name,
+            "status": record.status if record else "present"
+        })
+    return {"date": date, "students": result}
+
+
+@router.post("/attendance")
+def save_teacher_attendance(
+    student_id: int = Body(...),
+    date: date = Body(...),
+    status: str = Body(...),
+    note: str | None = Body(None),
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+    db: Session = Depends(get_db)
+):
+    token_data = decode_token(credentials.credentials)
+    if not token_data or token_data.get("role") != "teacher":
+        raise HTTPException(status_code=403, detail="Faqat o‘qituvchi akkaunti uchun ruxsat berilgan")
+    teacher_id = token_data["user_id"]
+    teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id,
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
+    ).first()
+    if not teacher:
+        raise HTTPException(status_code=401, detail="O‘qituvchi sessiyasi noto‘g‘ri yoki akkaunt faol emas")
+    if status not in {"present", "absent", "late"}:
+        raise HTTPException(status_code=400, detail="Davomat holati noto‘g‘ri")
+    membership = db.query(StudentGroup).join(Group, Group.id == StudentGroup.group_id).filter(
+        Group.teacher_id == teacher.id,
+        Group.is_active == True,
+        StudentGroup.student_id == student_id,
+        StudentGroup.is_active == True
+    ).first()
+    if not membership:
+        raise HTTPException(status_code=403, detail="Bu o‘quvchi sizga biriktirilmagan")
+    record = db.query(Attendance).filter(
+        Attendance.group_id == membership.group_id,
+        Attendance.student_id == student_id,
+        Attendance.date == date
+    ).first()
+    if record:
+        record.status = status
+        record.note = note.strip() if note else None
+    else:
+        db.add(Attendance(
+            group_id=membership.group_id,
+            student_id=student_id,
+            date=date,
+            status=status,
+            note=note.strip() if note else None
+        ))
+    db.commit()
+    return {"message": "Davomat saqlandi", "student_id": student_id, "date": date, "status": status}
