@@ -111,10 +111,22 @@ Xatolarni aniq va o'quvchiga tushunarli qilib ko'rsating.
             response_format={"type": "json_object"}
         )
         result = json.loads(response.choices[0].message.content)
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"AI tekshiruv xatosi: {exc}")
+    except Exception:
+        raise HTTPException(status_code=502, detail="AI tekshiruvda vaqtinchalik xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.")
 
-    score = max(0, min(100, int(result.get("score", 0))))
+    raw_score = result.get("score", 0)
+    try:
+        score = int(raw_score)
+    except (TypeError, ValueError):
+        score = 0
+    score = max(0, min(100, score))
+
+    for key in ("correct_points", "mistakes"):
+        value = result.get(key) or []
+        if not isinstance(value, list):
+            value = [value]
+        result[key] = [str(item) for item in value if str(item).strip()]
+
     result["score"] = score
     result["passed"] = score >= 80
 
