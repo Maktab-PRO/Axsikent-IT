@@ -1,3 +1,27 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from app.db import get_db
+from app.core.security import require_admin
+
+from app.models.admin import Admin
+from app.models.teacher import Teacher
+from app.models.group import Group
+from app.models.course import Course
+from app.models.student import Student
+from app.models.student_group import StudentGroup
+
+
+router = APIRouter(
+    prefix="/admin/teachers",
+    tags=["Admin Teachers"]
+)
+
+
+# =========================================================
+# 1. TEACHERS LIST
+# =========================================================
+
 @router.get("/")
 def get_teachers(
     search: str | None = None,
