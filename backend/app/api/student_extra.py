@@ -60,7 +60,7 @@ def get_trainings(credentials: HTTPAuthorizationCredentials = Depends(security),
     return [
         {"id": x.id, "title": x.title, "description": x.description, "start_at": x.start_at,
          "end_at": x.end_at, "location": x.location, "capacity": x.capacity,
-         "registered": x.id in registrations, "registration_status": registrations.get(x.id)}
+         "registered": registrations.get(x.id) == "registered", "registration_status": registrations.get(x.id)}
         for x in db.query(Training).filter(
             Training.is_active == True,
             Training.end_at.is_(None) | (Training.end_at > datetime.utcnow())
