@@ -83,10 +83,6 @@ def create_group(
     if not payload or payload.get("role") != "admin":
         raise HTTPException(status_code=401, detail="Admin token noto'g'ri yoki muddati tugagan")
     admin_id = payload["user_id"]
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
 
     admin = db.query(Admin).filter(
         Admin.id == admin_id,
