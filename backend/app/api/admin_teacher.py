@@ -225,8 +225,6 @@ def activate_teacher(
 
 
 @router.post("/create")
-@router.api_route("", methods=["POST"])
-@router.api_route("/", methods=["POST"])
 def create_teacher(
     full_name: str,
     phone: str,
