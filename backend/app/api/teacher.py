@@ -289,9 +289,13 @@ def create_teacher_quiz(
     if not teacher:
         raise HTTPException(status_code=401, detail="O‘qituvchi sessiyasi noto‘g‘ri yoki akkaunt faol emas")
 
-    lesson = db.query(Lesson).join(CourseModule, Lesson.module_id == CourseModule.id).filter(
+    lesson = db.query(Lesson).join(CourseModule, Lesson.module_id == CourseModule.id).join(
+        Course, Course.id == CourseModule.course_id
+    ).filter(
         Lesson.id == lesson_id,
-        Lesson.is_active == True
+        Lesson.is_active == True,
+        CourseModule.is_active == True,
+        Course.is_active == True
     ).first()
 
     question = question.strip()
