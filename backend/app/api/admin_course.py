@@ -661,13 +661,14 @@ def update_course(
 
     if "category_id" in update_data:
         category = db.query(Category).filter(
-            Category.id == update_data["category_id"]
+            Category.id == update_data["category_id"],
+            Category.is_active == True
         ).first()
 
         if not category:
             raise HTTPException(
                 status_code=404,
-                detail="Kategoriya topilmadi"
+                detail="Faol kategoriya topilmadi"
             )
 
     if "name" in update_data:
