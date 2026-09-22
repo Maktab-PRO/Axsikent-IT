@@ -2075,6 +2075,10 @@ async function buyStudentReward(productId) {
 
         const {response: submissionsResponse, data: submissions} = await fetchStudentApi("/homework/student/submissions", token);
 
+        if (!submissionsResponse.ok) {
+            throw new Error(submissions.detail || "Uy vazifasi natijalarini yuklashda xatolik");
+        }
+
         container.innerHTML = homeworks.map(homework => {
 
             const submission =
@@ -2842,6 +2846,15 @@ async function loadStudentBooks() {
             {method:"GET"}
         );
 
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+        if (!response.ok) {
+            throw new Error(data.detail || "Kitoblarni yuklashda xatolik");
+        }
         if (!data.books || data.books.length === 0) {
             container.innerHTML = `
                 <div style="
@@ -3167,6 +3180,12 @@ async function loadStudentPodcasts() {
         }
         const data = await response.json();
 
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
         if (!response.ok) throw new Error(data.detail || "Podcastlarni yuklashda xatolik.");
 
         if (!Array.isArray(data) || !data.length) {
@@ -3213,6 +3232,12 @@ async function loadStudentTrainings() {
         }
         const data = await response.json();
 
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
         if (!response.ok) throw new Error(data.detail || "Treninglarni yuklashda xatolik.");
 
         if (!Array.isArray(data) || !data.length) {
@@ -3290,6 +3315,12 @@ async function loadStudentExams() {
         }
         const data = await response.json();
 
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
         if (!response.ok) throw new Error(data.detail || "Imtihonlarni yuklashda xatolik.");
 
         if (!Array.isArray(data) || !data.length) {
@@ -3671,7 +3702,10 @@ async function loadStudentOnlineExams() {
         }
 
         if (response.status === 401) {
-            throw new Error("Sessiya tugagan. Student kabinetiga qayta kiring.");
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
         }
         if (!response.ok) {
             throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
@@ -3830,41 +3864,24 @@ async function loadStudentDashboardHomework() {
     };
 
     try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 20000);
+        const {response: homeworkResponse, data: homeworks} = await fetchStudentApi(
+            "/homework/student?ts=" + Date.now(),
+            token,
+            {method:"GET"}
+        );
 
-        let homeworkResponse;
-        let homeworks = [];
-        let submissions = [];
+        if (!homeworkResponse.ok) {
+            throw new Error(homeworks.detail || ("Server xatosi: HTTP " + homeworkResponse.status));
+        }
 
-        try {
-            homeworkResponse = await fetch(API_URL + "/homework/student?ts=" + Date.now(), {
-                method:"GET",
-                headers:{"Authorization":"Bearer " + token,"Accept":"application/json"},
-                cache:"no-store",
-                signal:controller.signal
-            });
-            const raw = await homeworkResponse.text();
-            try { homeworks = raw ? JSON.parse(raw) : []; } catch (_) { homeworks = []; }
+        const {response: submissionsResponse, data: submissions} = await fetchStudentApi(
+            "/homework/student/submissions?ts=" + Date.now(),
+            token,
+            {method:"GET"}
+        );
 
-            if (!homeworkResponse.ok) {
-                throw new Error(homeworks.detail || ("Server xatosi: HTTP " + homeworkResponse.status));
-            }
-
-            const submissionsResponse = await fetch(API_URL + "/homework/student/submissions?ts=" + Date.now(), {
-                method:"GET",
-                headers:{"Authorization":"Bearer " + token,"Accept":"application/json"},
-                cache:"no-store",
-                signal:controller.signal
-            });
-            const submissionsRaw = await submissionsResponse.text();
-            try { submissions = submissionsRaw ? JSON.parse(submissionsRaw) : []; } catch (_) { submissions = []; }
-
-            if (!submissionsResponse.ok) {
-                throw new Error(submissions.detail || ("Server xatosi: HTTP " + submissionsResponse.status));
-            }
-        } finally {
-            clearTimeout(timeout);
+        if (!submissionsResponse.ok) {
+            throw new Error(submissions.detail || ("Server xatosi: HTTP " + submissionsResponse.status));
         }
 
         if (!Array.isArray(homeworks)) homeworks = [];
@@ -4145,16 +4162,16 @@ async function submitStudentOnlineExam() {
             }
         );
 
-        markStudentExamPageVisible(false);
-        if (studentOnlineTimer) clearInterval(studentOnlineTimer);
-        studentOnlineTimer = null;
-
         if (!response.ok) {
             const detail = data && data.detail
                 ? data.detail
                 : ("Server xatosi: HTTP " + response.status);
             throw new Error(detail);
         }
+
+        markStudentExamPageVisible(false);
+        if (studentOnlineTimer) clearInterval(studentOnlineTimer);
+        studentOnlineTimer = null;
 
         const passedText = data.passed ? "✅ O‘tdingiz" : "❌ O‘tmadingiz";
         showPremiumModal(
@@ -4178,6 +4195,11 @@ async function submitStudentOnlineExam() {
         if (submitButton) {
             submitButton.disabled = false;
             submitButton.textContent = "Testni topshirish";
+        }
+
+        if (studentOnlineDeadline && Date.now() < studentOnlineDeadline.getTime()) {
+            markStudentExamPageVisible(true);
+            startStudentExamTimer();
         }
 
         const message = error && error.name === "AbortError"
