@@ -2328,7 +2328,7 @@ async function buyStudentReward(productId) {
                                         resize:vertical;
                                     "
                                 >${
-                                    submission?.answer || ""
+                                    escapeHtml(submission?.answer || "")
                                 }</textarea>
 
                                 <button
