@@ -59,9 +59,19 @@ def create_lesson_quiz(
             detail="Quiz qo'shish uchun kurs faol bo'lishi kerak"
         )
 
-    correct_answer = correct_answer.upper()
+    question = question.strip()
+    option_a = option_a.strip()
+    option_b = option_b.strip()
+    option_c = option_c.strip()
+    option_d = option_d.strip()
+    correct_answer = correct_answer.strip().upper()
 
-    if correct_answer not in ["A", "B", "C", "D"]:
+    if not question:
+        raise HTTPException(status_code=400, detail="Savol bo'sh bo'lishi mumkin emas")
+    if not all([option_a, option_b, option_c, option_d]):
+        raise HTTPException(status_code=400, detail="Barcha javob variantlari to'ldirilishi kerak")
+
+    if correct_answer not in ["A", "B", "C", "D"]
         raise HTTPException(
             status_code=400,
             detail="To'g'ri javob faqat A, B, C yoki D bo'lishi kerak"
