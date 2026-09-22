@@ -44,16 +44,19 @@ async function loadAttendance(){
     const d=await api("/teachers/attendance?date="+encodeURIComponent(date));
     const c=$("attendanceContent");
     if(!c)return;
+    const total=d.students?.length||0;
+    const present=d.students?.filter(s=>s.status==="present").length||0;
+    $("statAttendance").textContent=total?Math.round(present/total*100)+"%":"—";
     if(!d.students?.length){
       c.innerHTML='<div class="empty-state"><span>◷</span><strong>'+T[lang].attendanceText+'</strong></div>';
       return;
     }
-    c.innerHTML='<div class="attendance-list">'+d.students.map(s=>'<div class="attendance-row" data-student-id="'+s.id+'"><div><strong>'+esc(s.full_name)+'</strong><small>'+esc(s.group_name||"")+'</small></div><select class="attendance-status"><option value="present" '+(s.status==="present"?"selected":"")+'>Keldi</option><option value="absent" '+(s.status==="absent"?"selected":"")+'>Kelmadi</option><option value="late" '+(s.status==="late"?"selected":"")+'>Kechikdi</option></select><button type="button" class="premium-btn ghost attendance-save">Saqlash</button></div>').join("")+'</div>';
+    c.innerHTML='<div class="attendance-list">'+d.students.map(s=>'<div class="attendance-row" data-student-id="'+s.id+'" data-group-id="'+s.group_id+'"><div><strong>'+esc(s.full_name)+'</strong><small>'+esc(s.group_name||"")+'</small></div><select class="attendance-status"><option value="present" '+(s.status==="present"?"selected":"")+'>Keldi</option><option value="absent" '+(s.status==="absent"?"selected":"")+'>Kelmadi</option><option value="late" '+(s.status==="late"?"selected":"")+'>Kechikdi</option></select><button type="button" class="premium-btn ghost attendance-save">Saqlash</button></div>').join("")+'</div>';
     c.querySelectorAll(".attendance-save").forEach(btn=>btn.addEventListener("click",async()=>{
       const row=btn.closest(".attendance-row");
       try{
         btn.disabled=true;
-        await api("/teachers/attendance",{method:"POST",body:JSON.stringify({student_id:Number(row.dataset.studentId),date,status:row.querySelector(".attendance-status").value})});
+        await api("/teachers/attendance",{method:"POST",body:JSON.stringify({student_id:Number(row.dataset.studentId),group_id:Number(row.dataset.groupId),date,status:row.querySelector(".attendance-status").value})});
         btn.textContent="✓ Saqlandi";
         setTimeout(()=>{btn.textContent="Saqlash";btn.disabled=false},900);
       }catch(e){btn.disabled=false;alert(e.message)}
