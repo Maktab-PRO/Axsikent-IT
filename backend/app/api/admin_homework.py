@@ -1,3 +1,134 @@
+from datetime import datetime
+import json
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
+
+from app.db import get_db
+from app.core.security import require_admin
+
+from app.models.admin import Admin
+from app.models.homework import Homework, HomeworkSubmission
+from app.models.group import Group
+from app.models.teacher import Teacher
+from app.models.student import Student
+from app.models.ai_telegram_submission import AITelegramSubmission
+from app.services.notifications import notify_group_students, notify_student
+
+
+router = APIRouter(
+    prefix="/admin/homework",
+    tags=["Admin Homework"]
+)
+
+
+# =========================================================
+# SCHEMAS
+# =========================================================
+
+class HomeworkCreate(BaseModel):
+    group_id: int
+    teacher_id: int
+    title: str = Field(min_length=2, max_length=200)
+    description: str = Field(min_length=1)
+    deadline: datetime | None = None
+
+
+class HomeworkUpdate(BaseModel):
+    group_id: int | None = None
+    teacher_id: int | None = None
+    title: str | None = Field(default=None, min_length=2, max_length=200)
+    description: str | None = None
+    deadline: datetime | None = None
+
+
+class SubmissionGrade(BaseModel):
+    score: int = Field(ge=0, le=100)
+    teacher_comment: str | None = None
+
+
+class SubmissionStatusUpdate(BaseModel):
+    status: str = Field(min_length=2, max_length=30)
+
+
+# =========================================================
+# CONSTANTS
+# =========================================================
+
+ALLOWED_HOMEWORK_STATUSES = {"active", "inactive"}
+ALLOWED_SUBMISSION_STATUSES = {"submitted", "checked", "late", "rejected"}
+
+
+# =========================================================
+# HELPERS
+# =========================================================
+
+def get_homework_or_404(homework_id: int, db: Session):
+    homework = db.query(Homework).filter(Homework.id == homework_id).first()
+    if not homework:
+        raise HTTPException(status_code=404, detail="Uy vazifasi topilmadi.")
+    return homework
+
+
+def get_submission_or_404(submission_id: int, db: Session):
+    submission = db.query(HomeworkSubmission).filter(
+        HomeworkSubmission.id == submission_id
+    ).first()
+    if not submission:
+        raise HTTPException(status_code=404, detail="Topshiriq topilmadi.")
+    return submission
+
+
+def homework_to_dict(homework: Homework, db: Session):
+    group = db.query(Group).filter(Group.id == homework.group_id).first()
+    teacher = db.query(Teacher).filter(Teacher.id == homework.teacher_id).first()
+    submission_count = db.query(HomeworkSubmission).filter(
+        HomeworkSubmission.homework_id == homework.id
+    ).count()
+    checked_count = db.query(HomeworkSubmission).filter(
+        HomeworkSubmission.homework_id == homework.id,
+        HomeworkSubmission.status == "checked"
+    ).count()
+    return {
+        "id": homework.id,
+        "group_id": homework.group_id,
+        "group_name": group.name if group else None,
+        "teacher_id": homework.teacher_id,
+        "teacher_name": teacher.full_name if teacher else None,
+        "title": homework.title,
+        "description": homework.description,
+        "deadline": homework.deadline,
+        "created_at": homework.created_at,
+        "status": homework.status,
+        "submission_count": submission_count,
+        "checked_count": checked_count
+    }
+
+
+def submission_to_dict(submission: HomeworkSubmission, db: Session):
+    student = db.query(Student).filter(Student.id == submission.student_id).first()
+    homework = db.query(Homework).filter(Homework.id == submission.homework_id).first()
+    return {
+        "id": submission.id,
+        "homework_id": submission.homework_id,
+        "homework_title": homework.title if homework else None,
+        "student_id": submission.student_id,
+        "student_name": student.full_name if student else None,
+        "answer": submission.answer,
+        "file_url": submission.file_url,
+        "status": submission.status,
+        "score": submission.score,
+        "teacher_comment": submission.teacher_comment,
+        "submitted_at": submission.submitted_at,
+        "checked_at": submission.checked_at
+    }
+
+
+# =========================================================
+# 1. GET ALL HOMEWORK
+# =========================================================
+
 @router.get("/")
 def get_admin_homeworks(
     search: str | None = Query(
