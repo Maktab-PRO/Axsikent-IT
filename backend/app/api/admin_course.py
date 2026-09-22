@@ -180,8 +180,12 @@ def create_category(
     admin: Admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
+    category_name = data.name.strip()
+    if not category_name:
+        raise HTTPException(status_code=400, detail="Kategoriya nomi bo'sh bo'lishi mumkin emas")
+
     existing = db.query(Category).filter(
-        Category.name == data.name
+        Category.name == category_name
     ).first()
 
     if existing:
@@ -191,7 +195,7 @@ def create_category(
         )
 
     category = Category(
-        name=course_name,
+        name=category_name,
         icon=data.icon,
         sort_order=data.sort_order,
         is_active=True
@@ -235,6 +239,9 @@ def update_category(
     )
 
     if "name" in update_data:
+        update_data["name"] = update_data["name"].strip()
+        if not update_data["name"]:
+            raise HTTPException(status_code=400, detail="Kategoriya nomi bo'sh bo'lishi mumkin emas")
         duplicate = db.query(Category).filter(
             Category.name == update_data["name"],
             Category.id != category_id
@@ -1141,6 +1148,11 @@ def update_lesson(
     update_data = data.model_dump(
         exclude_unset=True
     )
+
+    if "title" in update_data:
+        update_data["title"] = update_data["title"].strip()
+        if not update_data["title"]:
+            raise HTTPException(status_code=400, detail="Dars nomi bo'sh bo'lishi mumkin emas")
 
     for field, value in update_data.items():
         setattr(
