@@ -278,6 +278,20 @@ def create_teacher_quiz(
         Lesson.id == lesson_id,
         Lesson.is_active == True
     ).first()
+
+    question = question.strip()
+    option_a = option_a.strip()
+    option_b = option_b.strip()
+    option_c = option_c.strip()
+    option_d = option_d.strip()
+    correct_answer = correct_answer.strip().upper()
+
+    if not question:
+        raise HTTPException(status_code=400, detail="Savol bo'sh bo'lishi mumkin emas")
+    if not all([option_a, option_b, option_c, option_d]):
+        raise HTTPException(status_code=400, detail="Barcha javob variantlari to'ldirilishi kerak")
+    if correct_answer not in {"A", "B", "C", "D"}:
+        raise HTTPException(status_code=400, detail="To'g'ri javob A, B, C yoki D bo'lishi kerak")
     if not lesson:
         raise HTTPException(status_code=404, detail="Dars topilmadi yoki faol emas")
 
