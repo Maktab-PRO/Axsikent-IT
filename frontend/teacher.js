@@ -74,7 +74,7 @@ $("attendanceDate")?.addEventListener("change",loadAttendance);
 async function boot(){
   if(!token){location.href="teacher-login.html";return}
   $("teacherApp").hidden=false;
-  if(!$("attendanceDate").value)$("attendanceDate").value=new Date().toISOString().slice(0,10);
+  if(!$("attendanceDate").value){const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());$("attendanceDate").value=now.toISOString().slice(0,10);}
   await loadTeacherData()
 }
 boot();
