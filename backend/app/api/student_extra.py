@@ -71,6 +71,13 @@ def get_trainings(credentials: HTTPAuthorizationCredentials = Depends(security),
 @router.post("/trainings/{training_id}/register")
 def register_training(training_id: int, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
     student_id = student_id_from_token(credentials, db)
+
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).with_for_update().first()
+    if not student:
+        raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
     training = db.query(Training).filter(Training.id == training_id, Training.is_active == True).with_for_update().first()
     if not training:
         raise HTTPException(status_code=404, detail="Trening topilmadi")
