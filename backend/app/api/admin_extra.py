@@ -79,17 +79,17 @@ def create_training(data: EventData, db: Session = Depends(get_db), admin: Admin
     )
     return {"success": True, "training": {"id": x.id, "title": x.title}}
 
+@router.get("/trainings/registrations")
+def training_registrations(db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
+    return [{"id": x.id, "training_id": x.training_id, "student_id": x.student_id, "status": x.status, "registered_at": x.registered_at}
+            for x in db.query(TrainingRegistration).order_by(TrainingRegistration.id.desc()).all()]
+
 @router.put("/trainings/{training_id}/toggle")
 def toggle_training(training_id: int, db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
     x = db.query(Training).filter(Training.id == training_id).first()
     if not x: raise HTTPException(status_code=404, detail="Trening topilmadi")
     x.is_active = not x.is_active; db.commit()
     return {"success": True, "is_active": x.is_active}
-
-@router.get("/trainings/registrations")
-def training_registrations(db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
-    return [{"id": x.id, "training_id": x.training_id, "student_id": x.student_id, "status": x.status, "registered_at": x.registered_at}
-            for x in db.query(TrainingRegistration).order_by(TrainingRegistration.id.desc()).all()]
 
 @router.get("/exams")
 def admin_exams(db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
@@ -112,14 +112,14 @@ def create_exam(data: EventData, db: Session = Depends(get_db), admin: Admin = D
     )
     return {"success": True, "exam": {"id": x.id, "title": x.title}}
 
+@router.get("/exams/registrations")
+def exam_registrations(db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
+    return [{"id": x.id, "exam_id": x.exam_id, "student_id": x.student_id, "status": x.status, "registered_at": x.registered_at}
+            for x in db.query(ExamRegistration).order_by(ExamRegistration.id.desc()).all()]
+
 @router.put("/exams/{exam_id}/toggle")
 def toggle_exam(exam_id: int, db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
     x = db.query(Exam).filter(Exam.id == exam_id).first()
     if not x: raise HTTPException(status_code=404, detail="Imtihon topilmadi")
     x.is_active = not x.is_active; db.commit()
     return {"success": True, "is_active": x.is_active}
-
-@router.get("/exams/registrations")
-def exam_registrations(db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
-    return [{"id": x.id, "exam_id": x.exam_id, "student_id": x.student_id, "status": x.status, "registered_at": x.registered_at}
-            for x in db.query(ExamRegistration).order_by(ExamRegistration.id.desc()).all()]
