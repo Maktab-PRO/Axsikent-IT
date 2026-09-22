@@ -261,7 +261,7 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
         OnlineExamAttempt.exam_id == exam_id,
         OnlineExamAttempt.student_id == student_id,
         OnlineExamAttempt.status == "in_progress"
-    ).first()
+    ).with_for_update().first()
     if not attempt:
         raise HTTPException(status_code=404, detail="Faol imtihon urinishi topilmadi")
 
