@@ -843,9 +843,12 @@
                 return;
             }
 
+            var profileController = new AbortController();
+            var profileTimeout = setTimeout(function () { profileController.abort(); }, 8000);
             fetch("https://axsikent-it-backend.onrender.com/students/me", {
-                headers: { "Authorization": "Bearer " + token }
-            })
+                headers: { "Authorization": "Bearer " + token },
+                signal: profileController.signal
+            }).finally(function () { clearTimeout(profileTimeout); })
             .then(function (response) {
                 return response.json().then(function (data) {
                     if (response.status === 401) {
