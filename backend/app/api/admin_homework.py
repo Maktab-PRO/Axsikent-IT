@@ -574,6 +574,21 @@ def activate_homework(
         db
     )
 
+    group = db.query(Group).filter(
+        Group.id == homework.group_id,
+        Group.is_active == True
+    ).first()
+    teacher = db.query(Teacher).filter(
+        Teacher.id == homework.teacher_id,
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
+    ).first()
+    if not group or not teacher or group.teacher_id != teacher.id:
+        raise HTTPException(
+            status_code=400,
+            detail="Uy vazifasining guruhi yoki o‘qituvchisi faol emas yoki bir-biriga mos emas."
+        )
+
     homework.status = "active"
 
     db.commit()
