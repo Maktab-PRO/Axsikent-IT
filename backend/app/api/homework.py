@@ -26,7 +26,10 @@ def get_student_id(credentials: HTTPAuthorizationCredentials):
     payload = decode_token(credentials.credentials)
     if not payload or payload.get("role") != "student":
         raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
-    return payload["user_id"]
+    user_id = payload.get("user_id")
+    if not isinstance(user_id, int):
+        raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
+    return user_id
 
 
 def get_teacher_id(credentials: HTTPAuthorizationCredentials):
