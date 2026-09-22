@@ -92,7 +92,8 @@ def get_teacher_or_404(
 ):
     teacher = db.query(Teacher).filter(
         Teacher.id == teacher_id,
-        Teacher.is_active == True
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
     ).first()
 
     if not teacher:
