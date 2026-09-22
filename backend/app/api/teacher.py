@@ -14,6 +14,7 @@ from app.models.course import Course
 from app.models.lesson import Lesson
 from app.models.student_lesson import StudentLesson
 from app.models.lesson_quiz import LessonQuiz
+from app.models.lesson_progress import LessonProgress
 from app.models.grade import Grade
 from app.models.attendance import Attendance
 from datetime import date
@@ -350,6 +351,67 @@ def create_teacher_quiz(
     db.refresh(quiz)
 
     return {"message": "Quiz saqlandi", "id": quiz.id}
+
+
+@router.post("/quiz/unlock")
+def unlock_student_quiz(
+    student_id: int = Body(...),
+    lesson_id: int = Body(...),
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+    db: Session = Depends(get_db)
+):
+    token_data = decode_token(credentials.credentials)
+    if not token_data or token_data.get("role") != "teacher":
+        raise HTTPException(status_code=403, detail="Faqat o'qituvchi akkaunti uchun ruxsat berilgan")
+
+    teacher_id = token_data["user_id"]
+    teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id,
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
+    ).first()
+    if not teacher:
+        raise HTTPException(status_code=401, detail="O'qituvchi sessiyasi noto'g'ri yoki akkaunt faol emas")
+
+    lesson = db.query(Lesson).join(
+        CourseModule, CourseModule.id == Lesson.module_id
+    ).filter(
+        Lesson.id == lesson_id,
+        Lesson.is_active == True,
+        CourseModule.is_active == True
+    ).first()
+    if not lesson:
+        raise HTTPException(status_code=404, detail="Faol dars topilmadi")
+
+    managed = db.query(Group).join(
+        StudentGroup, StudentGroup.group_id == Group.id
+    ).filter(
+        Group.teacher_id == teacher.id,
+        Group.course_id == CourseModule.course_id,
+        Group.is_active == True,
+        StudentGroup.student_id == student_id,
+        StudentGroup.is_active == True
+    ).first()
+    if not managed:
+        raise HTTPException(status_code=403, detail="Bu o'quvchi sizga ushbu dars kursi bo'yicha biriktirilmagan")
+
+    progress = db.query(LessonProgress).filter(
+        LessonProgress.student_id == student_id,
+        LessonProgress.lesson_id == lesson_id
+    ).with_for_update().first()
+    if not progress:
+        raise HTTPException(status_code=404, detail="O'quvchining bu dars bo'yicha progressi topilmadi")
+
+    progress.quiz_failures = 0
+    progress.quiz_blocked = False
+    progress.quiz_passed = False
+    db.commit()
+
+    return {
+        "message": "Quiz qayta ochildi",
+        "student_id": student_id,
+        "lesson_id": lesson_id
+    }
 
 
 @router.post("/grades")
