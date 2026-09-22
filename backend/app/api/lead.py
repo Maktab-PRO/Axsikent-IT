@@ -4,6 +4,9 @@ import urllib.parse
 import urllib.request
 
 from fastapi import APIRouter, Depends, HTTPException
+
+from app.core.security import require_admin
+from app.models.admin import Admin
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
@@ -135,7 +138,8 @@ def get_lead_status(
 
 @router.get("/")
 def get_leads(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
 ):
     leads = db.query(Lead).order_by(
         Lead.created_at.desc()
