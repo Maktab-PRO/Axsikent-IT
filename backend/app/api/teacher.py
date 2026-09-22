@@ -150,7 +150,10 @@ def teacher_dashboard(
     ).all() if student_ids else []
 
     course_ids = list(dict.fromkeys([g.course_id for g in groups]))
-    courses = db.query(Course).filter(Course.id.in_(course_ids)).all() if course_ids else []
+    courses = db.query(Course).filter(
+        Course.id.in_(course_ids),
+        Course.is_active == True
+    ).all() if course_ids else []
     course_map = {x.id:x.name for x in courses}
 
     return {
