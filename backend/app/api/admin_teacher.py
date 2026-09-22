@@ -54,7 +54,8 @@ def get_teachers(
     for teacher in teachers:
 
         groups = db.query(Group).filter(
-            Group.teacher_id == teacher.id
+            Group.teacher_id == teacher.id,
+            Group.is_active == True
         ).all()
 
         result.append({
@@ -164,9 +165,13 @@ def get_teacher(
             Course.id == group.course_id
         ).first()
 
-        student_links = db.query(StudentGroup).filter(
+        student_links = db.query(StudentGroup).join(
+            Student,
+            Student.id == StudentGroup.student_id
+        ).filter(
             StudentGroup.group_id == group.id,
-            StudentGroup.is_active == True
+            StudentGroup.is_active == True,
+            Student.is_active == True
         ).all()
 
         students = []
