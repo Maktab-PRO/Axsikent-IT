@@ -1205,20 +1205,17 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
 
                 try {
 
-                    const submitResponse = await fetch(
-                        `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz`,
+                    const {response: submitResponse, data: result} = await fetchStudentApi(
+                        `/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz`,
+                        token,
                         {
                             method: "POST",
                             headers: {
-                                "Authorization": `Bearer ${token}`,
                                 "Content-Type": "application/json"
                             },
                             body: JSON.stringify(answers)
                         }
                     );
-
-                    const result =
-                        await submitResponse.json();
 
                     if (!submitResponse.ok) {
                         throw new Error(
