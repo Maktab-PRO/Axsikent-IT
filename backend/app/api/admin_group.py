@@ -345,7 +345,7 @@ def create_admin_group(
         )
 
     group = Group(
-        name=group_name,
+        name=data.name,
         course_id=data.course_id,
         teacher_id=data.teacher_id,
         level_id=data.level_id,
@@ -439,9 +439,6 @@ def update_admin_group(
                     f"Sig'imni bundan past qilib bo'lmaydi."
                 )
             )
-
-    if "status" in update_data:
-        update_data["is_active"] = update_data["status"] == "active"
 
     for field, value in update_data.items():
         setattr(
