@@ -667,7 +667,7 @@ def submit_lesson_quiz(
     progress = db.query(LessonProgress).filter(
         LessonProgress.student_id == student_id,
         LessonProgress.lesson_id == lesson_id
-    ).first()
+    ).with_for_update().first()
 
     if not progress or not progress.is_read:
         raise HTTPException(
