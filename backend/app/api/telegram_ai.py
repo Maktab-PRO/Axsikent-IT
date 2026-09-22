@@ -150,7 +150,10 @@ async def telegram_webhook(
             student_id = verify_student_link_code(parts[1].strip())
 
             if student_id:
-                student = db.query(Student).filter(Student.id == student_id).first()
+                student = db.query(Student).filter(
+                    Student.id == student_id,
+                    Student.is_active == True
+                ).first()
 
                 if student:
                     student.telegram_chat_id = str(chat_id)
