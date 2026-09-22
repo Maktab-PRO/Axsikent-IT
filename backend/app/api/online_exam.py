@@ -339,6 +339,15 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
 
 @router.post("/admin/create")
 def create_exam(data: ExamCreate, admin: Admin = Depends(require_admin), db: Session = Depends(get_db)):
+    if data.time_limit_minutes <= 0:
+        raise HTTPException(status_code=400, detail="Test vaqti 0 dan katta bo'lishi kerak")
+    if not 0 <= data.pass_score <= 100:
+        raise HTTPException(status_code=400, detail="O'tish bali 0 dan 100 gacha bo'lishi kerak")
+    if data.max_attempts <= 0:
+        raise HTTPException(status_code=400, detail="Urinishlar soni 0 dan katta bo'lishi kerak")
+    if data.question_limit is not None and data.question_limit <= 0:
+        raise HTTPException(status_code=400, detail="Savollar soni 0 dan katta bo'lishi kerak")
+
     if data.course_id is not None:
         course = db.query(Course).filter(
             Course.id == data.course_id,
