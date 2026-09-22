@@ -3828,7 +3828,7 @@ async function loadStudentOnlineExams() {
     } catch (error) {
         console.error("Online test load:", error);
         if (error?.name === "AbortError") return;
-        const message = error?.message || "Online testlarni yuklab bo‘lmadi.";
+        const message = "Online testlarni yuklab bo‘lmadi. Qayta urinib ko‘ring.";
         content.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">❌ ' + escapeOnlineExamHtml(message) + '</div>';
     } finally {
         if (studentOnlineExamsLoadController === controller) studentOnlineExamsLoadController = null;
@@ -4018,7 +4018,7 @@ async function submitStudentOnlineExam(forceTimeout = false) {
 
         const message = error && error.name === "AbortError"
             ? "Server javobi kutilgan vaqtda kelmadi. Qayta urinib ko‘ring."
-            : (error && error.message ? error.message : "Server bilan bog‘lanib bo‘lmadi. Internet/API ulanishini tekshiring.");
+            : "Testni topshirib bo‘lmadi. Qayta urinib ko‘ring.";
 
         showPremiumModal("Xatolik yuz berdi", escapeOnlineExamHtml(message), "Yopish");
     }
