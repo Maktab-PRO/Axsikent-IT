@@ -3818,6 +3818,13 @@ async function loadStudentDashboardHomework() {
             throw new Error(homeworks.detail || ("Server xatosi: HTTP " + homeworkResponse.status));
         }
 
+        if (homeworkResponse.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+
         let {response: submissionsResponse, data: submissions} = await fetchStudentApi(
             "/homework/student/submissions?ts=" + Date.now(),
             token,
