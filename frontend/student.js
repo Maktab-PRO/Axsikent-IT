@@ -682,16 +682,10 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
 
     try {
 
-        const response = await fetch(
-            `${API_URL}/students/courses/${courseId}/modules/${moduleId}/lessons`,
-            {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            }
+        const {response, data: lessons} = await fetchStudentApi(
+            `/students/courses/${courseId}/modules/${moduleId}/lessons`,
+            token
         );
-
-        const lessons = await response.json();
 
         if (!response.ok) {
             throw new Error(
