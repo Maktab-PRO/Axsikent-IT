@@ -912,7 +912,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
     if (button?.disabled) return;
     if (button) { button.disabled = true; button.textContent = "Yuklanmoqda..."; }
 
-    const token/ = localStorage.getItem("access_token");
+    const token = localStorage.getItem("access_token");
 
     if (!token) {
         window.location.href = "index.html";
@@ -3552,7 +3552,7 @@ function openStudentOnlineTests(skipLoad = false) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 12000);
 
-    fetchStudentApi("/online-exams/available?ts=" + Date.now(), token)
+    fetchStudentApi("/online-exams/available?ts=" + Date.now(), token, {signal: controller.signal})
     .then(result => {
         const response = result.response;
         const data = result.data;
@@ -3866,8 +3866,9 @@ async function loadStudentOnlineExams() {
 async function startStudentOnlineExam(examId, button) {
     if (button?.disabled) return;
     if (button) { button.disabled = true; button.textContent = "Boshlanmoqda..."; }
-    const token/ = localStorage.getItem("access_token");
+    const token = localStorage.getItem("access_token");
     if (!token) {
+        if (button) { button.disabled = false; button.textContent = "Testni boshlash"; }
         showPremiumModal("Tizimga kirish kerak","Online testni boshlash uchun avval tizimga kiring.","Kirish");
         return;
     }
@@ -3948,6 +3949,7 @@ async function startStudentOnlineExam(examId, button) {
         startStudentExamTimer();
     } catch (error) {
         console.error("Online test start:", error);
+        if (button) { button.disabled = false; button.textContent = "Testni boshlash"; }
         showPremiumModal("Testni boshlashda xatolik",escapeOnlineExamHtml(error.message),"Yopish");
     }
 }
