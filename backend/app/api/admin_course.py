@@ -791,6 +791,17 @@ def activate_course(
             detail="Kursni faollashtirish uchun uning kategoriyasi faol bo‘lishi kerak"
         )
 
+    duplicate = db.query(Course).filter(
+        Course.name == course.name,
+        Course.id != course.id,
+        Course.is_active == True
+    ).first()
+    if duplicate:
+        raise HTTPException(
+            status_code=409,
+            detail="Bu nomdagi faol kurs allaqachon mavjud"
+        )
+
     course.is_active = True
 
     db.commit()
