@@ -3,7 +3,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.core.security import verify_token
+from app.core.security import decode_token
 from app.models.book import Book, BookOrder
 from app.models.gamification import StudentGamification
 from app.models.student import Student
@@ -64,9 +64,10 @@ def buy_book(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "student":
+        raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
+    student_id = payload["user_id"]
         raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
 
     student = db.query(Student).filter(
