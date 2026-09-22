@@ -3933,7 +3933,7 @@ async function loadStudentDashboardHomework() {
         }
     } catch (error) {
         console.error("Student dashboard homework/activity:", error);
-        setError(error && error.name === "AbortError" ? "Server 20 soniyada javob bermadi." : (error.message || "Ma’lumotlarni yuklashda xatolik."));
+        setError(error && error.name === "AbortError" ? "Server 8 soniyada javob bermadi." : (error.message || "Ma’lumotlarni yuklashda xatolik."));
     }
 }
 
