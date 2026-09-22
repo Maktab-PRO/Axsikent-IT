@@ -68,8 +68,7 @@ def get_student_ranking(
         })
 
     ranking.sort(
-        key=lambda item: item["xp"],
-        reverse=True
+        key=lambda item: (-item["xp"], -item["level"], -item["coins"], item["student_id"])
     )
 
     for index, student in enumerate(ranking, start=1):
