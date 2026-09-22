@@ -455,6 +455,18 @@ def activate_group(
         db
     )
 
+    duplicate = db.query(Group).filter(
+        Group.name == group.name,
+        Group.id != group.id,
+        Group.is_active == True
+    ).first()
+
+    if duplicate:
+        raise HTTPException(
+            status_code=409,
+            detail="Bu nomdagi faol guruh allaqachon mavjud"
+        )
+
     group.is_active = True
 
     if group.status == "inactive":
