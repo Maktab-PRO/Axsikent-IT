@@ -365,7 +365,7 @@ def delete_product(
 ):
     product = db.query(ShopProduct).filter(
         ShopProduct.id == product_id
-    ).first()
+    ).with_for_update().first()
 
     if not product:
         raise HTTPException(
@@ -478,6 +478,19 @@ def update_order_status(
         raise HTTPException(
             status_code=404,
             detail="Buyurtma topilmadi"
+        )
+
+    current_status = order.status
+    allowed_transitions = {
+        "pending": {"processing", "completed", "cancelled"},
+        "processing": {"completed", "cancelled"},
+        "completed": set(),
+        "cancelled": set(),
+    }
+    if data.status != current_status and data.status not in allowed_transitions.get(current_status, set()):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Buyurtma statusini {current_status} dan {data.status} ga o‘zgartirib bo‘lmaydi."
         )
 
     order.status = data.status
@@ -631,7 +644,7 @@ def activate_reward_rule(
 ):
     rule = db.query(RewardRule).filter(
         RewardRule.id == rule_id
-    ).first()
+    ).with_for_update().first()
 
     if not rule:
         raise HTTPException(
@@ -659,7 +672,7 @@ def deactivate_reward_rule(
 ):
     rule = db.query(RewardRule).filter(
         RewardRule.id == rule_id
-    ).first()
+    ).with_for_update().first()
 
     if not rule:
         raise HTTPException(
