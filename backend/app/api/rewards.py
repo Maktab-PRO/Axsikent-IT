@@ -22,13 +22,10 @@ def get_student_rewards(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "student":
+        raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
+    student_id = payload["user_id"]
 
     student = db.query(Student).filter(
         Student.id == student_id,
@@ -94,7 +91,6 @@ def buy_reward(
     if not payload or payload.get("role") != "student":
         raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
     student_id = payload["user_id"]
-        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
 
     gamification = db.query(StudentGamification).filter(
         StudentGamification.student_id == student_id
