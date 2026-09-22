@@ -95,6 +95,12 @@ def create_group(
             detail="Admin topilmadi"
         )
 
+    if teacher_id is None:
+        raise HTTPException(
+            status_code=400,
+            detail="Guruh uchun o‘qituvchi tanlanishi shart"
+        )
+
     group = Group(
         name=name,
         course_id=course_id,
