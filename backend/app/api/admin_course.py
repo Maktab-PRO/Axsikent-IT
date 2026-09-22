@@ -244,10 +244,6 @@ def get_admin_courses(
     }
 
 
-# =========================================================
-# COURSE DETAIL / COMMAND CENTER
-# =========================================================
-
 @router.post("/assign")
 def assign_course_to_student(
     student_id: int,
@@ -319,6 +315,12 @@ def assign_course_to_student(
         "course_id": course_id,
         "student_course_id": student_course.id
     }
+
+
+# =========================================================
+# COURSE DETAIL / COMMAND CENTER
+# =========================================================
+
 @router.get("/{course_id}")
 def get_admin_course(
     course_id: int,
