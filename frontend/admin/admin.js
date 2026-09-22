@@ -1,6 +1,6 @@
 "use strict";
 
-const API_BASE = "https://axsikent-it-4.onrender.com";
+const API_BASE = "https://axsikent-it-backend.onrender.com";
 const TOKEN_KEY = "axsikent_admin_token";
 const ADMIN_KEY = "axsikent_admin";
 const SESSION_KEY = "axsikent_admin_session";
