@@ -205,12 +205,13 @@ def create_teacher_quiz(
     if not lesson:
         raise HTTPException(status_code=404, detail="Dars topilmadi yoki faol emas")
 
+    module = db.query(CourseModule).filter(
+        CourseModule.id == lesson.module_id
+    ).first()
     can_manage = db.query(Group).filter(
         Group.teacher_id == teacher.id,
-        Group.course_id == CourseModule.course_id,
+        Group.course_id == module.course_id,
         Group.is_active == True
-    ).join(CourseModule, CourseModule.course_id == Group.course_id).filter(
-        CourseModule.id == lesson.module_id
     ).first()
     if not can_manage:
         raise HTTPException(status_code=403, detail="Bu dars sizga biriktirilmagan")
