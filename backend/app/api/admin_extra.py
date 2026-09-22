@@ -97,6 +97,8 @@ def training_registrations(db: Session = Depends(get_db), admin: Admin = Depends
 def toggle_training(training_id: int, db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
     x = db.query(Training).filter(Training.id == training_id).first()
     if not x: raise HTTPException(status_code=404, detail="Trening topilmadi")
+    if not x.is_active and x.end_at is not None and x.end_at <= __import__("datetime").datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Muddati tugagan treningni qayta faollashtirib bo‘lmaydi")
     x.is_active = not x.is_active; db.commit()
     return {"success": True, "is_active": x.is_active}
 
