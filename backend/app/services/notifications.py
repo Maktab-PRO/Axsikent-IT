@@ -5,6 +5,13 @@ from app.models.notification import Notification
 from app.models.student_group import StudentGroup
 
 
+def _safe_commit(db: Session):
+    try:
+        _safe_commit(db)
+    except Exception:
+        db.rollback()
+
+
 def notify_all_students(
     db: Session,
     title: str,
@@ -26,7 +33,7 @@ def notify_all_students(
             )
         )
 
-    db.commit()
+    _safe_commit(db)
 
 
 def notify_group_students(
@@ -56,7 +63,7 @@ def notify_group_students(
             )
         )
 
-    db.commit()
+    _safe_commit(db)
 
 
 def notify_student(
@@ -80,4 +87,4 @@ def notify_student(
         notification_type=notification_type,
         is_read=False,
     ))
-    db.commit()
+    _safe_commit(db)
