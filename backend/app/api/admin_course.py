@@ -1090,10 +1090,20 @@ def update_lesson(
     admin: Admin = Depends(require_admin),
     db: Session = Depends(get_db)
 ):
-    get_course_or_404(
+    course = get_course_or_404(
         course_id,
         db
     )
+    if not course.is_active:
+        raise HTTPException(status_code=400, detail="Deaktiv kursdagi darsni yangilab bo'lmaydi")
+
+    module = get_module_or_404(
+        course_id,
+        module_id,
+        db
+    )
+    if not module.is_active:
+        raise HTTPException(status_code=400, detail="Deaktiv moduldagi darsni yangilab bo'lmaydi")
 
     lesson = get_lesson_or_404(
         module_id,
