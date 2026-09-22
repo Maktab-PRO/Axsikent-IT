@@ -1716,10 +1716,9 @@ if (finishButton) {
         } catch (error) {
 
             console.error(error);
-
-            showMessage(
-                "Server bilan bog‘lanishda xatolik."
-            );
+            // Sahifa ochilganda vaqtinchalik API/network uzilishi studentga
+            // xatolik yozuvi sifatida ko‘rsatilmaydi.
+            return;
 
         }
 
