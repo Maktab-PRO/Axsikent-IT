@@ -906,7 +906,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
                 padding:30px;
                 color:#f87171;
             ">
-                ❌ ${error.message}
+                ❌ ${escapeHtml(error.message || "Noma’lum xatolik")}
             </div>
         `;
     }
@@ -2641,7 +2641,7 @@ async function buyStudentReward(productId) {
             };
         })
         .catch(function(error) {
-            body.innerHTML = '<div style="padding:18px;border:1px solid rgba(248,113,113,.2);border-radius:15px;color:#f87171;background:rgba(248,113,113,.06);">❌ ' + (error.message || "Profilni yuklashda xatolik") + '</div>';
+            body.innerHTML = '<div style="padding:18px;border:1px solid rgba(248,113,113,.2);border-radius:15px;color:#f87171;background:rgba(248,113,113,.06);">❌ ' + escapeHtml(error.message || "Profilni yuklashda xatolik") + '</div>';
         });
     }
 
@@ -3007,7 +3007,7 @@ async function loadStudentHomeworkResults() {
                     border-radius:14px;
                     color:#b91c1c;
                 ">
-                    ${data.detail || "Uy vazifalarini yuklab bo'lmadi."}
+                    ${escapeHtml(data.detail || "Uy vazifalarini yuklab bo'lmadi.")}
                 </div>
             `;
             return;
