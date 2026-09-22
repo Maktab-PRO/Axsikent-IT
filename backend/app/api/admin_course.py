@@ -1,3 +1,143 @@
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
+
+from app.db import get_db
+from app.core.security import require_admin
+
+from app.models.admin import Admin
+from app.models.category import Category
+from app.models.course import Course
+from app.models.student import Student
+from app.models.student_course import StudentCourse
+from app.models.course_module import CourseModule
+from app.models.lesson import Lesson
+
+
+router = APIRouter(
+    prefix="/admin/courses",
+    tags=["Admin Courses"]
+)
+
+
+# =========================================================
+# SCHEMAS
+# =========================================================
+
+class CategoryCreate(BaseModel):
+    name: str = Field(min_length=2, max_length=100)
+    icon: str | None = Field(default=None, max_length=20)
+    sort_order: int = Field(default=0, ge=0)
+
+
+class CategoryUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=2, max_length=100)
+    icon: str | None = Field(default=None, max_length=20)
+    sort_order: int | None = Field(default=None, ge=0)
+
+
+class CourseCreate(BaseModel):
+    category_id: int
+    name: str = Field(min_length=2, max_length=150)
+    description: str | None = Field(default=None, max_length=1000)
+
+    age_min: int | None = Field(default=None, ge=0, le=100)
+    age_max: int | None = Field(default=None, ge=0, le=100)
+
+    lesson_minutes: int | None = Field(default=None, ge=1, le=300)
+    lessons_per_week: int | None = Field(default=None, ge=1, le=14)
+
+    price_min: int | None = Field(default=None, ge=0)
+    price_max: int | None = Field(default=None, ge=0)
+
+    sort_order: int = Field(default=0, ge=0)
+
+
+class CourseUpdate(BaseModel):
+    category_id: int | None = None
+    name: str | None = Field(default=None, min_length=2, max_length=150)
+    description: str | None = Field(default=None, max_length=1000)
+
+    age_min: int | None = Field(default=None, ge=0, le=100)
+    age_max: int | None = Field(default=None, ge=0, le=100)
+
+    lesson_minutes: int | None = Field(default=None, ge=1, le=300)
+    lessons_per_week: int | None = Field(default=None, ge=1, le=14)
+
+    price_min: int | None = Field(default=None, ge=0)
+    price_max: int | None = Field(default=None, ge=0)
+
+    sort_order: int | None = Field(default=None, ge=0)
+
+
+class ModuleCreate(BaseModel):
+    title: str = Field(min_length=2, max_length=200)
+    description: str | None = None
+    sort_order: int = Field(default=0, ge=0)
+
+
+class ModuleUpdate(BaseModel):
+    title: str | None = Field(default=None, min_length=2, max_length=200)
+    description: str | None = None
+    sort_order: int | None = Field(default=None, ge=0)
+
+
+class LessonCreate(BaseModel):
+    title: str = Field(min_length=2, max_length=200)
+    content: str | None = None
+    video_url: str | None = Field(default=None, max_length=500)
+    sort_order: int = Field(default=0, ge=0)
+
+
+class LessonUpdate(BaseModel):
+    title: str | None = Field(default=None, min_length=2, max_length=200)
+    content: str | None = None
+    video_url: str | None = Field(default=None, max_length=500)
+    sort_order: int | None = Field(default=None, ge=0)
+
+
+# =========================================================
+# HELPERS
+# =========================================================
+
+def get_category_or_404(category_id: int, db: Session):
+    category = db.query(Category).filter(Category.id == category_id).first()
+    if not category:
+        raise HTTPException(status_code=404, detail="Kategoriya topilmadi")
+    return category
+
+
+def get_course_or_404(course_id: int, db: Session):
+    course = db.query(Course).filter(Course.id == course_id).first()
+    if not course:
+        raise HTTPException(status_code=404, detail="Kurs topilmadi")
+    return course
+
+
+def get_module_or_404(course_id: int, module_id: int, db: Session):
+    module = db.query(CourseModule).filter(
+        CourseModule.id == module_id,
+        CourseModule.course_id == course_id
+    ).first()
+    if not module:
+        raise HTTPException(status_code=404, detail="Modul topilmadi yoki ushbu kursga tegishli emas")
+    return module
+
+
+def get_lesson_or_404(module_id: int, lesson_id: int, db: Session):
+    lesson = db.query(Lesson).filter(
+        Lesson.id == lesson_id,
+        Lesson.module_id == module_id
+    ).first()
+    if not lesson:
+        raise HTTPException(status_code=404, detail="Dars topilmadi yoki ushbu modulga tegishli emas")
+    return lesson
+
+
+# =========================================================
+# CATEGORY MANAGEMENT
+# =========================================================
+
 @router.get("/categories")
 def get_admin_categories(
     active_only: bool = False,
