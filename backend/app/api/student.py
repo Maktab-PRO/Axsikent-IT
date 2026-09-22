@@ -828,7 +828,7 @@ def complete_lesson(
     # Shu sabab qayta bosish/race holatida XP takroran berilmaydi.
     gamification = db.query(StudentGamification).filter(
         StudentGamification.student_id == student_id
-    ).first()
+    ).with_for_update().first()
     if not gamification:
         gamification = StudentGamification(
             student_id=student_id,
