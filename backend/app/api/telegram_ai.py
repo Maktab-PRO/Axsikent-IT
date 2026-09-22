@@ -238,7 +238,10 @@ score 0-100. 80 va yuqori passed=true.
         result = json.loads(response.choices[0].message.content)
 
         score = max(0, min(100, int(result.get("score", 0))))
-        mistakes = result.get("mistakes") or []
+        raw_mistakes = result.get("mistakes") or []
+        if not isinstance(raw_mistakes, list):
+            raw_mistakes = [raw_mistakes]
+        mistakes = [str(item) for item in raw_mistakes if str(item).strip()]
 
         ai_submission = AITelegramSubmission(
             student_id=student.id,
@@ -267,7 +270,11 @@ score 0-100. 80 va yuqori passed=true.
         )
         await send_telegram_message(str(chat_id), reply)
 
-    except Exception as exc:
-        await send_telegram_message(str(chat_id), f"❌ AI tekshiruvda xatolik: {exc}")
+    except Exception:
+        db.rollback()
+        await send_telegram_message(
+            str(chat_id),
+            "❌ AI tekshiruvda xatolik yuz berdi. Iltimos, birozdan keyin qayta urinib ko‘ring."
+        )
 
     return {"ok": True}
