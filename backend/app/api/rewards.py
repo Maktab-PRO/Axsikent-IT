@@ -25,9 +25,7 @@ def get_student_rewards(
     payload = decode_token(credentials.credentials)
     if not payload or payload.get("role") != "student":
         raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
-    student_id = payload.get("user_id")
-    if not isinstance(student_id, int):
-        raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
+    student_id = payload["user_id"]
 
     student = db.query(Student).filter(
         Student.id == student_id,
