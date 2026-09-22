@@ -838,6 +838,7 @@ def complete_lesson(
         current_progress = round(completed_lessons / total_lessons * 100) if total_lessons else 0
         current_progress = max(0, min(100, current_progress))
         student_course.progress = current_progress
+        db.commit()
         return {
             "message": "Dars allaqachon tugallangan",
             "lesson_id": lesson_id,
