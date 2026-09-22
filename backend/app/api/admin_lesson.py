@@ -53,6 +53,10 @@ def create_lesson(
             detail="Dars qo'shish uchun kurs faol bo'lishi kerak"
         )
 
+    title = title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Dars nomi bo‘sh bo‘lishi mumkin emas")
+
     lesson = Lesson(
         module_id=module_id,
         title=title,
@@ -171,6 +175,10 @@ def update_lesson(
             status_code=404,
             detail="Dars topilmadi"
         )
+
+    title = title.strip()
+    if not title:
+        raise HTTPException(status_code=400, detail="Dars nomi bo‘sh bo‘lishi mumkin emas")
 
     if is_active:
         module = db.query(CourseModule).filter(
