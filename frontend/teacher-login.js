@@ -1,4 +1,4 @@
-const API="https://axsikent-it-4.onrender.com";
+const API="https://axsikent-it-backend.onrender.com";
 const T={
 uz:{loginTitle:"O‘qituvchi paneliga kirish",loginText:"Kirish ma’lumotlaringizni kiriting. Yangi o‘qituvchini faqat administrator ro‘yxatdan o‘tkazadi.",phone:"Telefon raqam",password:"Parol",enter:"Kirish",adminOnly:"Yangi o‘qituvchi akkaunti administrator tomonidan yaratiladi."},
 ru:{loginTitle:"Вход в панель преподавателя",loginText:"Введите данные для входа. Нового преподавателя регистрирует только администратор.",phone:"Номер телефона",password:"Пароль",enter:"Войти",adminOnly:"Новый аккаунт преподавателя создаёт администратор."},
