@@ -153,7 +153,7 @@ async def telegram_webhook(
                 student = db.query(Student).filter(
                     Student.id == student_id,
                     Student.is_active == True
-                ).first()
+                ).with_for_update().first()
 
                 if student and not student.telegram_chat_id:
                     student.telegram_chat_id = str(chat_id)
