@@ -3000,6 +3000,8 @@ showPremiumModal(
                 error.message,
                 "Yopish"
             );
+        } finally {
+            studentBookPurchasesInFlight.delete(Number(bookId));
         }
     }
 );
