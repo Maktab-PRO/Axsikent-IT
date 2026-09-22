@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.core.security import decode_token
 from app.models.student import Student
+from app.models.admin import Admin
 from app.models.gamification import StudentGamification
 
 router = APIRouter(
@@ -21,15 +22,26 @@ def get_student_ranking(
     db: Session = Depends(get_db)
 ):
     payload = decode_token(credentials.credentials)
-    if not payload or payload.get("role") != "student":
-        raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
+    if not payload:
+        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
 
-    student = db.query(Student).filter(
-        Student.id == payload["user_id"],
-        Student.is_active == True
-    ).first()
-    if not student:
-        raise HTTPException(status_code=403, detail="O'quvchi akkaunti faol emas")
+    role = payload.get("role")
+    if role == "student":
+        student = db.query(Student).filter(
+            Student.id == payload["user_id"],
+            Student.is_active == True
+        ).first()
+        if not student:
+            raise HTTPException(status_code=403, detail="O'quvchi akkaunti faol emas")
+    elif role == "admin":
+        admin = db.query(Admin).filter(
+            Admin.id == payload["user_id"],
+            Admin.is_active == True
+        ).first()
+        if not admin:
+            raise HTTPException(status_code=403, detail="Administrator akkaunti faol emas")
+    else:
+        raise HTTPException(status_code=401, detail="Bu endpoint uchun ruxsat berilmagan")
     students = db.query(
         Student,
         StudentGamification
