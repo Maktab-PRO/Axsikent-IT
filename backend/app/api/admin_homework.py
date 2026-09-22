@@ -429,6 +429,13 @@ def create_admin_homework(
             detail="Tanlangan o‘qituvchi bu guruhga biriktirilmagan."
         )
 
+    if data.deadline is not None:
+        check_deadline = data.deadline
+        if check_deadline.tzinfo is None:
+            check_deadline = check_deadline.replace(tzinfo=timezone.utc)
+        if check_deadline <= datetime.now(timezone.utc):
+            raise HTTPException(status_code=400, detail="Uy vazifasi muddati kelajakdagi vaqt bo‘lishi kerak.")
+
     homework = Homework(
         group_id=data.group_id,
         teacher_id=data.teacher_id,
