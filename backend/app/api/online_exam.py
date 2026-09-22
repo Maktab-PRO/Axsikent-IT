@@ -360,13 +360,6 @@ def create_exam(data: ExamCreate, admin: Admin = Depends(require_admin), db: Ses
 
 @router.post("/admin/{exam_id}/questions")
 def add_question(exam_id: int, data: QuestionCreate, admin: Admin = Depends(require_admin), db: Session = Depends(get_db)):
-    question_text = data.question.strip()
-    if not question_text:
-        raise HTTPException(status_code=400, detail="Savol bo'sh bo'lishi mumkin emas")
-    options = [str(option).strip() for option in data.options]
-    if any(not option for option in options):
-        raise HTTPException(status_code=400, detail="Variantlar bo'sh bo'lishi mumkin emas")
-
     exam = db.query(OnlineExam).filter(OnlineExam.id == exam_id).first()
     if not exam:
         raise HTTPException(status_code=404, detail="Imtihon topilmadi")
