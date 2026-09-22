@@ -677,10 +677,11 @@ def grade_submission(
     admin: Admin = Depends(require_admin)
 ):
 
-    submission = get_submission_or_404(
-        submission_id,
-        db
-    )
+    submission = db.query(HomeworkSubmission).filter(
+        HomeworkSubmission.id == submission_id
+    ).with_for_update().first()
+    if not submission:
+        raise HTTPException(status_code=404, detail="Topshiriq topilmadi")
 
     submission.score = data.score
     submission.teacher_comment = data.teacher_comment
