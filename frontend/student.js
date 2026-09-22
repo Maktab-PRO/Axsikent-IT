@@ -138,7 +138,7 @@ async function loadStudentCourses() {
 
                         <div>
                             <div class="course-name">
-                                ${course.name}
+                                ${escapeHtml(course.name || "Kurs")}
                             </div>
                             
                           <div class="course-info">
@@ -3064,7 +3064,7 @@ async function loadStudentHomeworkResults() {
                         </div>
 
                         <div>
-                            ${item.answer || "Javob yo'q"}
+                            ${escapeHtml(item.answer || "Javob yo'q")}
                         </div>
                     </div>
 
