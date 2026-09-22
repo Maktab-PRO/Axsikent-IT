@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from app.db import get_db
-from app.core.security import verify_token
+from app.core.security import decode_token
 from app.models.student import Student
 from app.models.podcast import Podcast
 from app.models.training import Training, TrainingRegistration
