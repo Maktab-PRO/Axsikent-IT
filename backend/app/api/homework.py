@@ -231,6 +231,9 @@ def submit_homework(
         existing_submission.answer = answer
         existing_submission.submitted_at = datetime.utcnow()
         existing_submission.status = submission_status
+        existing_submission.score = None
+        existing_submission.teacher_comment = None
+        existing_submission.checked_at = None
 
         db.commit()
         db.refresh(existing_submission)
