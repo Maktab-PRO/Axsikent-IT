@@ -3372,7 +3372,11 @@ function openStudentExams() {
     loadStudentExams();
 }
 
-   function showPremiumModal(title, message, buttonText = "Yopish", onConfirm = null) {
+   function premiumMessageHtml(value) {
+    return escapeHtml(value).replace(/&lt;br\s*\/?&gt;/gi, "<br>").replace(/&lt;(\/?)strong&gt;/gi, "<$1strong>");
+}
+
+function showPremiumModal(title, message, buttonText = "Yopish", onConfirm = null) {
 
 const oldModal = document.getElementById("premiumPurchaseModal");
 
@@ -3462,7 +3466,7 @@ modal.innerHTML = `
                 letter-spacing:-0.3px;
                 color:#FFFFFF;
             ">
-                ${title}
+                ${escapeHtml(title)}
             </h2>
 
             <div style="
@@ -3471,7 +3475,7 @@ modal.innerHTML = `
                 line-height:1.65;
                 margin-bottom:25px;
             ">
-                ${message}
+                ${premiumMessageHtml(message)}
             </div>
 
             <div style="
