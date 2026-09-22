@@ -3798,7 +3798,7 @@ async function loadStudentOnlineExams() {
             return;
         }
         if (!response.ok) {
-            throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
+            throw new Error(data.detail || "Online testlarni yuklab bo‘lmadi. Qayta urinib ko‘ring.");
         }
 
         const exams = Array.isArray(data.exams) ? data.exams : [];
@@ -3859,7 +3859,7 @@ async function startStudentOnlineExam(examId, button) {
             return;
         }
         if (!response.ok) {
-            throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
+            throw new Error(data.detail || "Online testni boshlab bo‘lmadi. Qayta urinib ko‘ring.");
         }
 
         studentOnlineAttemptId = data.attempt_id;
@@ -4305,7 +4305,10 @@ async function openStudentNotifications() {
 
 function initStudentDashboard() {
     const run = function() {
-        loadStudent();
+        // loadStudent funksiyasi bu faylda mavjud emas; mavjud bo‘lmasa init oqimini to‘xtatmaymiz.
+        if (typeof loadStudent === "function") {
+            loadStudent();
+        }
         loadStudentCourses();
         loadStudentRanking();
         loadStudentBooks();
