@@ -170,19 +170,20 @@ def update_lesson(
             detail="Dars topilmadi"
         )
 
-    module = db.query(CourseModule).filter(
-        CourseModule.id == lesson.module_id,
-        CourseModule.is_active == True
-    ).first()
-    if not module:
-        raise HTTPException(status_code=400, detail="Deaktiv moduldagi darsni faollashtirib bo'lmaydi")
+    if is_active:
+        module = db.query(CourseModule).filter(
+            CourseModule.id == lesson.module_id,
+            CourseModule.is_active == True
+        ).first()
+        if not module:
+            raise HTTPException(status_code=400, detail="Deaktiv moduldagi darsni faollashtirib bo'lmaydi")
 
-    course = db.query(Course).filter(
-        Course.id == module.course_id,
-        Course.is_active == True
-    ).first()
-    if not course:
-        raise HTTPException(status_code=400, detail="Deaktiv kursdagi darsni faollashtirib bo'lmaydi")
+        course = db.query(Course).filter(
+            Course.id == module.course_id,
+            Course.is_active == True
+        ).first()
+        if not course:
+            raise HTTPException(status_code=400, detail="Deaktiv kursdagi darsni faollashtirib bo'lmaydi")
 
     lesson.title = title
     lesson.content = content
