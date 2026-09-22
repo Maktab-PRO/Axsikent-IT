@@ -175,6 +175,7 @@ def teacher_dashboard(
         "lessons_count": sum(
             db.query(Lesson).join(CourseModule, Lesson.module_id == CourseModule.id).filter(
                 CourseModule.course_id == cid,
+                CourseModule.is_active == True,
                 Lesson.is_active == True
             ).count() for cid in course_ids
         )
