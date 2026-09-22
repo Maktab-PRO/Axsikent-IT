@@ -2985,7 +2985,7 @@ showPremiumModal(
                 "Xarid muvaffaqiyatli!",
                 `🎉 ${data.message}<br><br>` +
                 `Buyurtma №${data.order_id}<br>` +
-                `🪙 Qolgan Coin: ${data.student.coins}`,
+                `🪙 Qolgan Coin: ${Number((data.student || {}).coins || 0)}`,
                 "Ajoyib!"
             );
 
