@@ -265,6 +265,19 @@ def update_lead_status(
         elif not student.is_active:
             student.is_active = True
 
+        gamification = db.query(StudentGamification).filter(
+            StudentGamification.student_id == student.id
+        ).first()
+        if not gamification:
+            db.add(StudentGamification(
+                student_id=student.id,
+                xp=0,
+                level=1,
+                coins=0,
+                crystals=0,
+                streak_days=0
+            ))
+
     lead.status = new_status
 
     db.commit()
