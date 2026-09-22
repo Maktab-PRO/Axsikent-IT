@@ -314,6 +314,11 @@
 
                 if (response.ok) {
 
+                    sessionStorage.setItem(
+                        "axsikent_admin_session",
+                        "active"
+                    );
+
                     window.location.replace(
                         "index.html"
                     );
