@@ -61,11 +61,14 @@ async function loadStudentCourses() {
     const container = document.getElementById("studentCourses");
 
     try {
+        if (studentCoursesLoadController) studentCoursesLoadController.abort();
+        const controller = new AbortController();
+        studentCoursesLoadController = controller;
 
         const {response, data: courses} = await fetchStudentApi(
             "/students/courses",
             token,
-            {method: "GET"}
+            {method: "GET", signal: controller.signal}
         );
 
         if (response.status === 401) {
@@ -229,10 +232,14 @@ async function openStudentCourse(courseId) {
     `;
 
     try {
+        if (studentOpenCourseController) studentOpenCourseController.abort();
+        const controller = new AbortController();
+        studentOpenCourseController = controller;
 
         const {response, data: modules} = await fetchStudentApi(
             `/students/courses/${courseId}/modules`,
-            token
+            token,
+            {signal: controller.signal}
         );
         if (response.status === 401) {
             localStorage.removeItem("access_token");
@@ -665,6 +672,7 @@ async function openStudentModule(courseId, moduleId) {
     } catch (error) {
 
         console.error(error);
+        if (error?.name === "AbortError") return;
 
         container.innerHTML = `
             <div style="
@@ -711,10 +719,14 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
     `;
 
     try {
+        if (studentOpenLessonController) studentOpenLessonController.abort();
+        const controller = new AbortController();
+        studentOpenLessonController = controller;
 
         const {response, data: lessons} = await fetchStudentApi(
             `/students/courses/${courseId}/modules/${moduleId}/lessons`,
-            token
+            token,
+            {signal: controller.signal}
         );
         if (response.status === 401) {
             localStorage.removeItem("access_token");
@@ -909,6 +921,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
     } catch (error) {
 
         console.error(error);
+        if (error?.name === "AbortError") return;
 
         container.innerHTML = `
             <div style="
@@ -3388,6 +3401,7 @@ function openStudentOnlineTests(skipLoad = false) {
 
     document.body.appendChild(modal);
     const closeOnlineTestWindow = () => {
+        if (studentOnlineTestsLoadController) studentOnlineTestsLoadController.abort();
         if (studentOnlineTimer) clearInterval(studentOnlineTimer);
         studentOnlineTimer = null;
         studentOnlineAttemptId = null;
@@ -3412,8 +3426,10 @@ function openStudentOnlineTests(skipLoad = false) {
         return;
     }
 
+    if (studentOnlineTestsLoadController) studentOnlineTestsLoadController.abort();
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 12000);
+    studentOnlineTestsLoadController = controller;
+    const timeout = setTimeout(() => controller.abort(), 8000);
 
     fetchStudentApi("/online-exams/available?ts=" + Date.now(), token, {signal: controller.signal})
     .then(result => {
@@ -3450,7 +3466,10 @@ function openStudentOnlineTests(skipLoad = false) {
     .catch(error => {
         body.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">❌ ' + escapeOnlineExamHtml(error.message || "Online testlarni yuklab bo‘lmadi.") + '</div>';
     })
-    .finally(() => clearTimeout(timeout));
+    .finally(() => {
+        clearTimeout(timeout);
+        if (studentOnlineTestsLoadController === controller) studentOnlineTestsLoadController = null;
+    });
 }
 
 function openStudentExams() {
@@ -3648,6 +3667,13 @@ confirmButton.onclick = async () => {
    ONLINE TEST — STUDENT
 ========================= */
 
+let studentOnlineTestsLoadController = null;
+let studentOnlineExamsLoadController = null;
+let studentDashboardHomeworkController = null;
+let studentCoursesLoadController = null;
+let studentOpenCourseController = null;
+let studentOpenLessonController = null;
+
 let studentOnlineAttemptId = null;
 let studentOnlineExamId = null;
 let studentOnlineDeadline = null;
@@ -3686,10 +3712,13 @@ async function loadStudentOnlineExams() {
     }
 
     try {
+        if (studentOnlineExamsLoadController) studentOnlineExamsLoadController.abort();
+        const controller = new AbortController();
+        studentOnlineExamsLoadController = controller;
         const {response, data} = await fetchStudentApi(
             "/online-exams/available?ts=" + Date.now(),
             token,
-            {method:"GET"}
+            {method:"GET", signal: controller.signal}
         );
 
         if (response.status === 401) {
@@ -3733,7 +3762,7 @@ async function loadStudentOnlineExams() {
             : (error?.message || "Online testlarni yuklab bo‘lmadi.");
         content.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">❌ ' + escapeOnlineExamHtml(message) + '</div>';
     } finally {
-        // fetchStudentApi manages its own timeout.
+        if (studentOnlineExamsLoadController === controller) studentOnlineExamsLoadController = null;
     }
 }
 
@@ -3845,10 +3874,13 @@ async function loadStudentDashboardHomework() {
     };
 
     try {
+        if (studentDashboardHomeworkController) studentDashboardHomeworkController.abort();
+        const controller = new AbortController();
+        studentDashboardHomeworkController = controller;
         let {response: homeworkResponse, data: homeworks} = await fetchStudentApi(
             "/homework/student?ts=" + Date.now(),
             token,
-            {method:"GET"}
+            {method:"GET", signal: controller.signal}
         );
 
         if (homeworkResponse.status === 401) {
@@ -3865,7 +3897,7 @@ async function loadStudentDashboardHomework() {
         let {response: submissionsResponse, data: submissions} = await fetchStudentApi(
             "/homework/student/submissions?ts=" + Date.now(),
             token,
-            {method:"GET"}
+            {method:"GET", signal: controller.signal}
         );
 
         if (submissionsResponse.status === 401) {
@@ -3888,9 +3920,11 @@ async function loadStudentDashboardHomework() {
                     const sub = submissions.find(function(item){ return Number(item.homework_id) === Number(hw.id); });
                     const status = sub ? (sub.status === "checked" ? "✅ Tekshirildi" : sub.status === "late" ? "⚠️ Kech topshirilgan" : "⏳ Topshirilgan") : "🆕 Yangi";
                     const color = sub && sub.status === "checked" ? "#4ade80" : sub ? "#facc15" : "#60a5fa";
-                    const submitButton = sub
-                        ? '<button type="button" onclick="openStudentHomeworkSubmit(' + Number(hw.id) + ', \'Qayta topshirish\')" style="margin-top:12px;width:100%;padding:11px 14px;border:1px solid rgba(139,92,246,.25);border-radius:12px;background:rgba(139,92,246,.10);color:#c4b5fd;font-weight:800;cursor:pointer;">Qayta topshirish</button>'
-                        : '<button type="button" onclick="openStudentHomeworkSubmit(' + Number(hw.id) + ', \'Topshirish\')" style="margin-top:12px;width:100%;padding:11px 14px;border:0;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#059669);color:#fff;font-weight:800;cursor:pointer;">Vazifani topshirish</button>';
+                    const submitButton = sub && sub.status === "checked"
+                        ? '<div style="margin-top:12px;padding:10px 12px;border-radius:12px;background:rgba(74,222,128,.08);color:#86efac;font-size:12px;font-weight:800;text-align:center;">✅ Baholangan</div>'
+                        : sub
+                            ? '<button type="button" onclick="openStudentHomeworkSubmit(' + Number(hw.id) + ', \'Qayta topshirish\')" style="margin-top:12px;width:100%;padding:11px 14px;border:1px solid rgba(139,92,246,.25);border-radius:12px;background:rgba(139,92,246,.10);color:#c4b5fd;font-weight:800;cursor:pointer;">Qayta topshirish</button>'
+                            : '<button type="button" onclick="openStudentHomeworkSubmit(' + Number(hw.id) + ', \'Topshirish\')" style="margin-top:12px;width:100%;padding:11px 14px;border:0;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#059669);color:#fff;font-weight:800;cursor:pointer;">Vazifani topshirish</button>';
                     return '<div style="padding:15px;margin-bottom:10px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07);">' +
                         '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">' +
                         '<strong style="color:#fff;font-size:14px;">' + escapeHtml(hw.title || "Uy vazifasi") + '</strong>' +
@@ -4020,7 +4054,10 @@ async function loadStudentDashboardHomework() {
         }
     } catch (error) {
         console.error("Student dashboard homework/activity:", error);
-        setError(error && error.name === "AbortError" ? "Server 8 soniyada javob bermadi." : (error.message || "Ma’lumotlarni yuklashda xatolik."));
+        if (error?.name === "AbortError") return;
+        setError(error.message || "Ma’lumotlarni yuklashda xatolik.");
+    } finally {
+        if (studentDashboardHomeworkController === controller) studentDashboardHomeworkController = null;
     }
 }
 
@@ -4084,9 +4121,12 @@ async function openStudentHomeworkSubmit(homeworkId, buttonLabel) {
 
 let studentNotificationInterval = null;
 let studentNotificationsRequestInFlight = false;
+let studentNotificationsWaiters = [];
 
 async function loadStudentNotifications() {
-    if (studentNotificationsRequestInFlight) return;
+    if (studentNotificationsRequestInFlight) {
+        return new Promise(resolve => studentNotificationsWaiters.push(resolve));
+    }
     const token = localStorage.getItem("access_token");
     const badge = document.getElementById("studentNotificationBadge");
     studentNotificationsRequestInFlight = true;
@@ -4141,6 +4181,9 @@ async function loadStudentNotifications() {
         if (body) body.innerHTML = '<div style="padding:18px;color:#f87171;">❌ ' + escapeHtml(error.message || "Bildirishnomalarni yuklab bo‘lmadi.") + '</div>';
     } finally {
         studentNotificationsRequestInFlight = false;
+        const waiters = studentNotificationsWaiters;
+        studentNotificationsWaiters = [];
+        waiters.forEach(resolve => resolve());
     }
 }
 
