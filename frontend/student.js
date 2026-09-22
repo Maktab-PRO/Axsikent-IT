@@ -666,7 +666,18 @@ async function openStudentModule(courseId, moduleId) {
     }
 }
 
-        async function openStudentLesson(courseId, moduleId, lessonId) {
+        function safeLessonUrl(url) {
+    try {
+        const parsed = new URL(String(url || ""), window.location.origin);
+        if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+            return parsed.href;
+        }
+    } catch (_) {}
+    return "#";
+}
+
+
+async function openStudentLesson(courseId, moduleId, lessonId) {
 
     const token = localStorage.getItem("access_token");
 
@@ -768,7 +779,7 @@ async function openStudentModule(courseId, moduleId) {
                         font-size:26px;
                         color:#f8fafc;
                     ">
-                        ${lesson.title}
+                        ${escapeHtml(lesson.title || "Dars")}
                     </h1>
 
 
@@ -805,7 +816,7 @@ async function openStudentModule(courseId, moduleId) {
                                 margin-top:20px;
                             ">
                                 <a
-                                    href="${lesson.video_url}"
+                                    href="${safeLessonUrl(lesson.video_url)}"
                                     target="_blank"
                                     style="
                                         display:block;
