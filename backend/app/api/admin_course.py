@@ -191,7 +191,7 @@ def create_category(
         )
 
     category = Category(
-        name=data.name,
+        name=course_name,
         icon=data.icon,
         sort_order=data.sort_order,
         is_active=True
@@ -599,7 +599,7 @@ def create_course(
         )
 
     existing = db.query(Course).filter(
-        Course.name == data.name,
+        Course.name == course_name,
         Course.is_active == True
     ).first()
 
@@ -608,6 +608,10 @@ def create_course(
             status_code=409,
             detail="Bu nomdagi faol kurs allaqachon mavjud"
         )
+
+    course_name = data.name.strip()
+    if not course_name:
+        raise HTTPException(status_code=400, detail="Kurs nomi bo'sh bo'lishi mumkin emas")
 
     if (
         data.age_min is not None
@@ -677,6 +681,11 @@ def update_course(
     update_data = data.model_dump(
         exclude_unset=True
     )
+
+    if "name" in update_data:
+        update_data["name"] = update_data["name"].strip()
+        if not update_data["name"]:
+            raise HTTPException(status_code=400, detail="Kurs nomi bo'sh bo'lishi mumkin emas")
 
     if "category_id" in update_data:
         category = db.query(Category).filter(
