@@ -3497,7 +3497,7 @@ function openStudentOnlineTests(skipLoad = false) {
     if (studentOnlineTestsLoadController) studentOnlineTestsLoadController.abort();
     const controller = new AbortController();
     studentOnlineTestsLoadController = controller;
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    const timeout = setTimeout(() => controller.abort(), 30000);
 
     fetchStudentApi("/online-exams/available?ts=" + Date.now(), token, {signal: controller.signal})
     .then(result => {
@@ -3509,7 +3509,7 @@ function openStudentOnlineTests(skipLoad = false) {
             window.location.href = "index.html";
             return Promise.reject(new Error("Sessiya tugagan"));
         }
-        if (!response.ok) throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
+        if (!response.ok) throw new Error(data.detail || "Online testlarni yuklab bo‘lmadi. Qayta urinib ko‘ring.");
         return Array.isArray(data.exams) ? data.exams : [];
     })
     .then(exams => {
@@ -4416,7 +4416,7 @@ async function submitStudentOnlineExam(forceTimeout = false) {
             }
             const detail = data && data.detail
                 ? data.detail
-                : ("Server xatosi: HTTP " + response.status);
+                : "Testni topshirib bo‘lmadi. Qayta urinib ko‘ring.";
             throw new Error(detail);
         }
 
@@ -4454,7 +4454,7 @@ async function submitStudentOnlineExam(forceTimeout = false) {
         }
 
         const message = error && error.name === "AbortError"
-            ? "Server javobi 8 soniyada kelmadi."
+            ? "Server javobi kutilgan vaqtda kelmadi. Qayta urinib ko‘ring."
             : (error && error.message ? error.message : "Server bilan bog‘lanib bo‘lmadi. Internet/API ulanishini tekshiring.");
 
         showPremiumModal("Xatolik yuz berdi", escapeOnlineExamHtml(message), "Yopish");
