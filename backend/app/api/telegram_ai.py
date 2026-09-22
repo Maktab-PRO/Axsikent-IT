@@ -155,7 +155,7 @@ async def telegram_webhook(
                     Student.is_active == True
                 ).first()
 
-                if student:
+                if student and not student.telegram_chat_id:
                     student.telegram_chat_id = str(chat_id)
                     db.commit()
 
@@ -169,6 +169,9 @@ async def telegram_webhook(
                         "TOPSHIRIQ: ...\n"
                         "JAVOB: ..."
                     )
+                    return {"ok": True}
+                if student and student.telegram_chat_id:
+                    await send_telegram_message(str(chat_id), "⚠️ Bu o‘quvchi Telegram hisobini allaqachon ulagan.")
                     return {"ok": True}
 
         await send_telegram_message(
