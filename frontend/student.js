@@ -1812,16 +1812,14 @@ async function buyStudentReward(productId) {
         "Sotib olish",
         async () => {
             try {
-                const response = await fetch(API_URL + "/students/rewards/" + Number(productId) + "/buy", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": "Bearer " + token,
-                        "Accept": "application/json"
+                const {response, data} = await fetchStudentApi(
+                    "/students/rewards/" + Number(productId) + "/buy",
+                    token,
+                    {
+                        method: "POST",
+                        headers: {"Accept": "application/json"}
                     }
-                });
-
-                let data = {};
-                try { data = await response.json(); } catch (_) {}
+                );
 
                 if (!response.ok) {
                     throw new Error(data.detail || "Mukofotni sotib olishda xatolik");
