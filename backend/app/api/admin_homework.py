@@ -569,20 +569,21 @@ def activate_homework(
     admin: Admin = Depends(require_admin)
 ):
 
-    homework = get_homework_or_404(
-        homework_id,
-        db
-    )
+    homework = db.query(Homework).filter(
+        Homework.id == homework_id
+    ).with_for_update().first()
+    if not homework:
+        raise HTTPException(status_code=404, detail="Uy vazifasi topilmadi.")
 
     group = db.query(Group).filter(
         Group.id == homework.group_id,
         Group.is_active == True
-    ).first()
+    ).with_for_update().first()
     teacher = db.query(Teacher).filter(
         Teacher.id == homework.teacher_id,
         Teacher.is_active == True,
         Teacher.approved_by_admin == True
-    ).first()
+    ).with_for_update().first()
     if not group or not teacher or group.teacher_id != teacher.id:
         raise HTTPException(
             status_code=400,
