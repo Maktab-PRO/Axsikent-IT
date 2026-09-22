@@ -61,7 +61,7 @@ def create_podcast(data: PodcastData, db: Session = Depends(get_db), admin: Admi
 
 @router.put("/podcasts/{podcast_id}/toggle")
 def toggle_podcast(podcast_id: int, db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
-    x = db.query(Podcast).filter(Podcast.id == podcast_id).first()
+    x = db.query(Podcast).filter(Podcast.id == podcast_id).with_for_update().first()
     if not x: raise HTTPException(status_code=404, detail="Podcast topilmadi")
     x.is_active = not x.is_active; db.commit()
     return {"success": True, "is_active": x.is_active}
