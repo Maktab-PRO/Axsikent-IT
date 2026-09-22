@@ -111,13 +111,10 @@ def get_student_homework(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "student":
+        raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
+    student_id = payload["user_id"]
 
     from app.models.student import Student
     from app.models.student_group import StudentGroup
@@ -175,13 +172,10 @@ def submit_homework(
     from app.models.student_group import StudentGroup
     from app.models.homework import HomeworkSubmission
 
-    student_id = verify_token(credentials.credentials)
-
-    if not student_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "student":
+        raise HTTPException(status_code=401, detail="Student token noto'g'ri yoki muddati tugagan")
+    student_id = payload["user_id"]
 
     student = db.query(Student).filter(
         Student.id == student_id,
@@ -275,13 +269,10 @@ def get_homework_submissions(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
-    teacher_id = verify_token(credentials.credentials)
-
-    if not teacher_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Token noto'g'ri yoki muddati tugagan"
-        )
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "teacher":
+        raise HTTPException(status_code=401, detail="Teacher token noto'g'ri yoki muddati tugagan")
+    teacher_id = payload["user_id"]
 
     teacher = db.query(Teacher).filter(
         Teacher.id == teacher_id,
