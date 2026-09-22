@@ -63,25 +63,41 @@ def assign_student_to_group(
             detail="Guruh topilmadi"
         )
 
-    existing = db.query(StudentGroup).filter(
-        StudentGroup.student_id == student_id,
+    current_count = db.query(StudentGroup).filter(
         StudentGroup.group_id == group_id,
         StudentGroup.is_active == True
+    ).count()
+
+    existing = db.query(StudentGroup).filter(
+        StudentGroup.student_id == student_id,
+        StudentGroup.group_id == group_id
     ).first()
 
     if existing:
-        raise HTTPException(
-            status_code=400,
-            detail="O'quvchi bu guruhga allaqachon biriktirilgan"
+        if existing.is_active:
+            raise HTTPException(
+                status_code=409,
+                detail="O'quvchi bu guruhga allaqachon biriktirilgan"
+            )
+        if current_count >= group.capacity:
+            raise HTTPException(
+                status_code=400,
+                detail="Guruhda bo'sh joy qolmagan"
+            )
+        existing.is_active = True
+        student_group = existing
+    else:
+        if current_count >= group.capacity:
+            raise HTTPException(
+                status_code=400,
+                detail="Guruhda bo'sh joy qolmagan"
+            )
+        student_group = StudentGroup(
+            student_id=student_id,
+            group_id=group_id,
+            is_active=True
         )
-
-    student_group = StudentGroup(
-        student_id=student_id,
-        group_id=group_id,
-        is_active=True
-    )
-
-    db.add(student_group)
+        db.add(student_group)
     db.commit()
     db.refresh(student_group)
 
