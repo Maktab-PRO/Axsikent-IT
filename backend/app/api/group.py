@@ -108,6 +108,12 @@ def create_group(
     name = name.strip()
     if not name:
         raise HTTPException(status_code=400, detail="Guruh nomi bo'sh bo'lishi mumkin emas")
+    if len(name) > 100:
+        raise HTTPException(status_code=400, detail="Guruh nomi 100 belgidan oshmasligi kerak")
+    if room is not None:
+        room = room.strip()
+        if len(room) > 50:
+            raise HTTPException(status_code=400, detail="Xona nomi 50 belgidan oshmasligi kerak")
 
     if capacity < 1 or capacity > 100:
         raise HTTPException(
