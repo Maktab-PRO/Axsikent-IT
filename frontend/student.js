@@ -3617,7 +3617,7 @@ async function loadStudentTrainings() {
     }
 }
 
-async async function registerStudentTraining(trainingId) {
+async function registerStudentTraining(trainingId) {
     const token = localStorage.getItem("access_token");
     if (!token) {
         showPremiumModal("Tizimga kirish kerak","Treningka yozilish uchun avval tizimga kiring.","Kirish");
