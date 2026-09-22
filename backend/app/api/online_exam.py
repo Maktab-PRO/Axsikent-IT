@@ -8,7 +8,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.core.security import require_admin, verify_token
+from app.core.security import require_admin, decode_token
 from app.models.admin import Admin
 from app.models.student import Student
 from app.models.online_exam import OnlineExam, OnlineExamQuestion, OnlineExamAttempt
@@ -47,16 +47,35 @@ def parse_options(raw_options):
         return []
 
 
-def student_id_from_token(credentials):
-    student_id = verify_token(credentials.credentials)
-    if not student_id:
-        raise HTTPException(status_code=401, detail="Token noto'g'ri yoki muddati tugagan")
+def student_id_from_token(
+    credentials,
+    db: Session
+):
+    payload = decode_token(credentials.credentials)
+    if not payload or payload.get("role") != "student":
+        raise HTTPException(
+            status_code=401,
+            detail="Student token noto'g'ri yoki muddati tugagan"
+        )
+
+    student_id = payload["user_id"]
+    student = db.query(Student).filter(
+        Student.id == student_id,
+        Student.is_active == True
+    ).first()
+
+    if not student:
+        raise HTTPException(
+            status_code=404,
+            detail="O'quvchi topilmadi"
+        )
+
     return student_id
 
 
 @router.get("/available")
 def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
-    student_id = student_id_from_token(credentials)
+    student_id = student_id_from_token(credentials, db)
     student = db.query(Student).filter(Student.id == student_id, Student.is_active == True).first()
     if not student:
         raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
@@ -96,7 +115,7 @@ def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security
 
 @router.post("/{exam_id}/start")
 def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
-    student_id = student_id_from_token(credentials)
+    student_id = student_id_from_token(credentials, db)
     exam = db.query(OnlineExam).filter(OnlineExam.id == exam_id, OnlineExam.is_active == True).first()
     if not exam:
         raise HTTPException(status_code=404, detail="Imtihon topilmadi")
@@ -217,7 +236,7 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
 
 @router.post("/{exam_id}/submit")
 def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
-    student_id = student_id_from_token(credentials)
+    student_id = student_id_from_token(credentials, db)
     exam = db.query(OnlineExam).filter(OnlineExam.id == exam_id).first()
     if not exam:
         raise HTTPException(status_code=404, detail="Imtihon topilmadi")
