@@ -3578,7 +3578,8 @@ async function loadStudentTrainings() {
         let response;
         try {
             response = await fetch(`${API_URL}/students/trainings`, {
-            headers: { "Authorization": `Bearer ${token}` }
+            headers: { "Authorization": `Bearer ${token}` },
+            signal: controller.signal
         });
         } finally {
             clearTimeout(timeout);
