@@ -1512,7 +1512,6 @@ if (finishButton) {
             }
 
 
-            const data = await response.json();
 
 
             if (!response.ok) {
@@ -2339,7 +2338,7 @@ async function buyStudentReward(productId) {
             {method: "POST"}
         );
 
-        const result = await response.json();
+        const result = data;
 
         if (!response.ok) {
             throw new Error(
@@ -3391,10 +3390,9 @@ function openStudentOnlineTests(skipLoad = false) {
     const timeout = setTimeout(() => controller.abort(), 12000);
 
     fetchStudentApi("/online-exams/available?ts=" + Date.now(), token)
-    .then(async response => {
-        const raw = await response.text();
-        let data = {};
-        try { data = raw ? JSON.parse(raw) : {}; } catch (_) {}
+    .then(result => {
+        const response = result.response;
+        const data = result.data;
         if (!response.ok) throw new Error(data.detail || ("Server xatosi: HTTP " + response.status));
         return Array.isArray(data.exams) ? data.exams : [];
     })
