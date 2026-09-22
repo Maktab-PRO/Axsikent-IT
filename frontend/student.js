@@ -2201,7 +2201,7 @@ async function buyStudentReward(productId) {
                                 font-size:17px;
                                 font-weight:800;
                             ">
-                                ${homework.title}
+                                ${escapeHtml(homework.title || "Uy vazifasi")}
                             </div>
                         </div>
 
@@ -2243,7 +2243,7 @@ async function buyStudentReward(productId) {
                         font-size:13px;
                         line-height:1.6;
                     ">
-                        ${homework.description || "Izoh mavjud emas."}
+                        ${escapeHtml(homework.description || "Izoh mavjud emas.")}
                     </div>
 
                     ${
@@ -2294,7 +2294,7 @@ async function buyStudentReward(productId) {
                                             color:#cbd5e1;
                                             font-size:13px;
                                         ">
-                                            💬 ${submission.teacher_comment}
+                                            💬 ${escapeHtml(submission.teacher_comment)}
                                         </div>
                                     `
                                     : ""
@@ -3113,7 +3113,7 @@ async function loadStudentHomeworkResults() {
                                     </div>
 
                                     <div>
-                                        ${item.teacher_comment || "Izoh qoldirilmagan."}
+                                        ${escapeHtml(item.teacher_comment || "Izoh qoldirilmagan.")}
                                     </div>
                                 </div>
 
