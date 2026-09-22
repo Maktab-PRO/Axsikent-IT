@@ -864,9 +864,13 @@ def create_module(
             detail="Deaktiv kursga modul qo'shib bo'lmaydi"
         )
 
+    module_title = data.title.strip()
+    if not module_title:
+        raise HTTPException(status_code=400, detail="Modul nomi bo'sh bo'lishi mumkin emas")
+
     module = CourseModule(
         course_id=course_id,
-        title=data.title,
+        title=module_title,
         description=data.description,
         sort_order=data.sort_order,
         is_active=True
@@ -1064,9 +1068,13 @@ def create_lesson(
             detail="Deaktiv modulga dars qo'shib bo'lmaydi"
         )
 
+    lesson_title = data.title.strip()
+    if not lesson_title:
+        raise HTTPException(status_code=400, detail="Dars nomi bo'sh bo'lishi mumkin emas")
+
     lesson = Lesson(
         module_id=module.id,
-        title=data.title,
+        title=lesson_title,
         content=data.content,
         video_url=data.video_url,
         sort_order=data.sort_order,
