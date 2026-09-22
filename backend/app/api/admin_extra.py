@@ -134,7 +134,7 @@ def exam_registrations(db: Session = Depends(get_db), admin: Admin = Depends(req
 
 @router.put("/exams/{exam_id}/toggle")
 def toggle_exam(exam_id: int, db: Session = Depends(get_db), admin: Admin = Depends(require_admin)):
-    x = db.query(Exam).filter(Exam.id == exam_id).first()
+    x = db.query(Exam).filter(Exam.id == exam_id).with_for_update().first()
     if not x: raise HTTPException(status_code=404, detail="Imtihon topilmadi")
     if not x.is_active and x.end_at is not None and x.end_at <= __import__("datetime").datetime.utcnow():
         raise HTTPException(status_code=400, detail="Muddati tugagan imtihonni qayta faollashtirib bo‘lmaydi")
