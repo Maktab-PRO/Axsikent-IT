@@ -3737,7 +3737,7 @@ async function startStudentOnlineExam(examId, button) {
     } catch (error) {
         console.error("Online test start:", error);
         if (button) { button.disabled = false; button.textContent = "Testni boshlash"; }
-        showPremiumModal("Testni boshlashda xatolik",escapeOnlineExamHtml(error.message),"Yopish");
+        showPremiumModal("Testni boshlashda xatolik",error.message,"Yopish");
     }
 }
 
