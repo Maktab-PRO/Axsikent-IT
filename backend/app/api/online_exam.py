@@ -168,6 +168,18 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
     ).with_for_update().first()
 
     if active:
+        # Eski/noto‘g‘ri urinishlarda deadline_at started_at bilan teng yoki undan
+        # oldin qolgan bo‘lishi mumkin. Bunday holatda test vaqtini qayta tiklaymiz.
+        if (
+            active.deadline_at and
+            active.started_at and
+            active.deadline_at <= active.started_at and
+            exam.time_limit_minutes > 0
+        ):
+            active.deadline_at = active.started_at + timedelta(minutes=exam.time_limit_minutes)
+            db.commit()
+            db.refresh(active)
+
         # SQLite/PostgreSQL sozlamalariga qarab SQLAlchemy datetime qiymatini
         # naive yoki timezone-aware qaytarishi mumkin. Ikkala holatni ham
         # bir xil UTC ko‘rinishga keltiramiz, aks holda resume paytida
