@@ -30,7 +30,7 @@ def get_student_rewards(
     student = db.query(Student).filter(
         Student.id == student_id,
         Student.is_active == True
-    ).with_for_update().first()
+    ).first()
     if not student:
         raise HTTPException(status_code=404, detail="O'quvchi topilmadi")
 
