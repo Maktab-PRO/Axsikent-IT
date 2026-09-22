@@ -285,8 +285,7 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
         question_ids = []
     questions = db.query(OnlineExamQuestion).filter(
         OnlineExamQuestion.id.in_(question_ids),
-        OnlineExamQuestion.exam_id == exam_id,
-        OnlineExamQuestion.is_active == True
+        OnlineExamQuestion.exam_id == exam_id
     ).all()
 
     correct = sum(
