@@ -4369,6 +4369,94 @@ function startStudentExamTimer() {
     studentOnlineTimer = setInterval(tick,1000);
 }
 
+async function startStudentOnlineExam(examId, button) {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        showPremiumModal("Sessiya tugagan", "Avval student kabinetiga qayta kiring.", "Yopish");
+        return;
+    }
+
+    const examWindow = document.getElementById("studentOnlineTestWindow");
+    const body = document.getElementById("studentOnlineWindowBody");
+    if (!body) {
+        openStudentOnlineTests();
+        return;
+    }
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Boshlanmoqda...";
+    }
+
+    try {
+        const {response, data} = await fetchStudentApi(
+            "/online-exams/" + Number(examId) + "/start",
+            token,
+            {method: "POST"}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Online testni boshlab bo‘lmadi. Qayta urinib ko‘ring.");
+        }
+
+        if (!data.deadline_at || !Array.isArray(data.questions) || !data.questions.length) {
+            throw new Error("Test ma’lumotlari serverdan to‘liq kelmadi. Testni qayta boshlang.");
+        }
+
+        const deadline = new Date(data.deadline_at);
+        if (Number.isNaN(deadline.getTime())) {
+            throw new Error("Test vaqti serverdan noto‘g‘ri keldi. Testni qayta boshlang.");
+        }
+
+        studentOnlineAttemptId = Number(data.attempt_id);
+        studentOnlineExamId = Number(data.exam_id || examId);
+        studentOnlineDeadline = deadline;
+        markStudentExamPageVisible(true);
+
+        body.innerHTML =
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;">' +
+                '<div><div style="font-size:10px;color:#a78bfa;font-weight:900;letter-spacing:.14em;">AXSIKENT IT / TEST</div>' +
+                '<h2 style="margin:5px 0 0;color:#fff;font-size:21px;">' + escapeOnlineExamHtml(data.title || "Online Test") + '</h2></div>' +
+                '<div id="studentExamTimer" style="min-width:86px;text-align:center;padding:10px 12px;border-radius:12px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);color:#c4b5fd;font-weight:900;font-variant-numeric:tabular-nums;">00:00</div>' +
+            '</div>' +
+            '<div id="studentOnlineQuestions">' +
+                data.questions.map((q, index) =>
+                    '<div style="padding:18px;margin-bottom:14px;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(255,255,255,.035);">' +
+                        '<div style="color:#fff;font-weight:800;line-height:1.55;">' + (index + 1) + '. ' + escapeOnlineExamHtml(q.question || "Savol") + '</div>' +
+                        '<div style="margin-top:13px;display:grid;gap:9px;">' +
+                            (Array.isArray(q.options) ? q.options : []).map((option, optionIndex) =>
+                                '<label style="display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(0,0,0,.16);color:#dbe4f0;cursor:pointer;">' +
+                                    '<input type="radio" name="student_question_' + Number(q.id) + '" value="' + optionIndex + '" style="margin-top:3px;">' +
+                                    '<span>' + escapeOnlineExamHtml(option) + '</span>' +
+                                '</label>'
+                            ).join("") +
+                        '</div>' +
+                    '</div>'
+                ).join("") +
+            '</div>' +
+            '<button type="button" id="studentOnlineSubmit" onclick="submitStudentOnlineExam(false)" style="width:100%;padding:14px;border:0;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#059669);color:#fff;font-weight:900;cursor:pointer;">Testni topshirish</button>';
+
+        startStudentExamTimer();
+    } catch (error) {
+        console.error("Online test start:", error);
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Testni boshlash";
+        }
+        const message = error?.name === "AbortError"
+            ? "Server javobi kutilgan vaqtda kelmadi. Qayta urinib ko‘ring."
+            : (error?.message || "Online testni boshlab bo‘lmadi. Qayta urinib ko‘ring.");
+        body.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">' + escapeOnlineExamHtml(message) + '</div>';
+    }
+}
+
 async function submitStudentOnlineExam(forceTimeout = false) {
     if (!studentOnlineExamId) return;
 
