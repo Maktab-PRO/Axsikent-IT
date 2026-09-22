@@ -369,6 +369,19 @@ def update_admin_group(
             db
         )
 
+    if "name" in update_data:
+        duplicate = db.query(Group).filter(
+            Group.name == update_data["name"],
+            Group.id != group_id,
+            Group.is_active == True
+        ).first()
+
+        if duplicate:
+            raise HTTPException(
+                status_code=409,
+                detail="Bu nomdagi faol guruh allaqachon mavjud"
+            )
+
     # Sig'imni kamaytirishda mavjud o'quvchilar sonini tekshiramiz
     if "capacity" in update_data:
         students_count = db.query(StudentGroup).filter(
