@@ -702,7 +702,7 @@ def submit_lesson_quiz(
 
     total = len(quizzes)
 
-    passed = score == total
+    passed = score >= max(1, round(total * 0.8))
 
     # Bir marta muvaffaqiyatli o'tilgan test holatini qayta urinishda
     # noto'g'ri javoblar sabab bekor qilib yubormaymiz.
@@ -811,11 +811,33 @@ def complete_lesson(
         )
 
     if progress.is_completed:
+        total_lessons = db.query(Lesson).join(
+            CourseModule,
+            Lesson.module_id == CourseModule.id
+        ).filter(
+            CourseModule.course_id == course_id,
+            CourseModule.is_active == True,
+            Lesson.is_active == True
+        ).count()
+        completed_lessons = db.query(func.count(func.distinct(LessonProgress.lesson_id))).join(
+            Lesson, LessonProgress.lesson_id == Lesson.id
+        ).join(
+            CourseModule, Lesson.module_id == CourseModule.id
+        ).filter(
+            LessonProgress.student_id == student_id,
+            LessonProgress.is_completed == True,
+            CourseModule.course_id == course_id,
+            CourseModule.is_active == True,
+            Lesson.is_active == True
+        ).scalar() or 0
+        current_progress = round(completed_lessons / total_lessons * 100) if total_lessons else 0
+        current_progress = max(0, min(100, current_progress))
+        student_course.progress = current_progress
         return {
             "message": "Dars allaqachon tugallangan",
             "lesson_id": lesson_id,
             "course_id": course_id,
-            "progress": student_course.progress
+            "progress": current_progress
         }
 
     if progress:
@@ -869,10 +891,6 @@ def complete_lesson(
 
     gamification.last_activity_at = now_utc
 
-    db.commit()
-    db.refresh(progress)
-    db.refresh(gamification)
-
     total_lessons = db.query(Lesson).join(
         CourseModule,
         Lesson.module_id == CourseModule.id
@@ -897,6 +915,12 @@ def complete_lesson(
         Lesson.is_active == True,
         CourseModule.is_active == True
     ).scalar() or 0
+
+    new_progress = round(completed_lessons / total_lessons * 100) if total_lessons else 0
+    student_course.progress = max(0, min(100, new_progress))
+    db.commit()
+    db.refresh(progress)
+    db.refresh(gamification)
 
     if total_lessons > 0:
         student_course.progress = round(
