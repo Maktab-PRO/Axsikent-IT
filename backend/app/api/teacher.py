@@ -105,7 +105,7 @@ def teacher_dashboard(
     credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
     db: Session = Depends(get_db)
 ):
-        from app.models.student_group import StudentGroup
+    from app.models.student_group import StudentGroup
     from app.models.group import Group
     from app.models.student import Student
     from app.models.course import Course
