@@ -105,6 +105,10 @@ def create_group(
             detail="Guruh uchun o‘qituvchi tanlanishi shart"
         )
 
+    name = name.strip()
+    if not name:
+        raise HTTPException(status_code=400, detail="Guruh nomi bo'sh bo'lishi mumkin emas")
+
     if capacity < 1 or capacity > 100:
         raise HTTPException(
             status_code=400,
@@ -141,13 +145,18 @@ def create_group(
     if not teacher:
         raise HTTPException(status_code=404, detail="Faol tasdiqlangan o‘qituvchi topilmadi")
 
+    try:
+        parsed_start_date = date.fromisoformat(start_date) if start_date else None
+    except ValueError:
+        raise HTTPException(status_code=400, detail="start_date YYYY-MM-DD formatida bo'lishi kerak")
+
     group = Group(
         name=name,
         course_id=course_id,
         level_id=level_id,
         teacher_id=teacher_id,
         room=room,
-        start_date=start_date,
+        start_date=parsed_start_date,
         capacity=capacity,
         status=status,
         is_active=(status == "active")
