@@ -542,6 +542,7 @@
   $("refreshBtn").onclick=()=>location.reload();
   $("logoutBtn").onclick=()=>{localStorage.removeItem(tokenKey);localStorage.removeItem("user_role");location.href="../index.html";};
   $("aiCheckBtn").onclick=checkAi;
+  window.__studentV2LoginHandler = loginFromPanel;
 
   // Keyboard + visibility handling is intentionally limited to test state.
   document.addEventListener("visibilitychange",()=>{ if(document.hidden && examState) showStatus("Test oynasidan chiqildi. Test davom etmoqda.", true); });
