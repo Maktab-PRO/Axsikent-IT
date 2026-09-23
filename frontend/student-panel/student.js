@@ -775,6 +775,11 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
 
     const container = document.getElementById("studentCourses");
 
+    if (!container) {
+        console.error("Student courses container topilmadi.");
+        return;
+    }
+
     container.innerHTML = `
         <div style="
             text-align:center;
@@ -808,6 +813,10 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
             throw new Error(
                 "Dars ma'lumotlarini yuklashda xatolik"
             );
+        }
+
+        if (!Array.isArray(lessons)) {
+            throw new Error("Darslar ma'lumotlari noto'g'ri formatda");
         }
 
         const lesson = lessons.find(
