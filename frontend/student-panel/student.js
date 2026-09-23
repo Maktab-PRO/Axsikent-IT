@@ -3463,12 +3463,140 @@ function openStudentTrainings() {
     loadStudentTrainings();
 }
 
-function openStudentExams() {
-    openStudentExtraModal("<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;\"><path d=\"M9 3h6M10 3v5l-5 9a3 3 0 0 0 3 4h8a3 3 0 0 0 3-4l-5-9V3\"/><path d=\"M8 15h8\"/></svg><span style=\"margin-left:8px;\">Imtihonlar</span>");
-    loadStudentExams();
+function openStudentOnlineTests() {
+    openStudentExtraModal("🧪 Test topshirish");
+    loadStudentOnlineTests();
 }
 
-   function premiumMessageHtml(value) {
+async function loadStudentOnlineTests() {
+    const body = document.getElementById("studentExtraContentBody");
+    const token = localStorage.getItem("access_token");
+    if (!body) return;
+    if (!token) {
+        body.innerHTML = studentExtraError("Avval tizimga kiring.");
+        return;
+    }
+    body.innerHTML = studentExtraLoading("Mavjud testlar yuklanmoqda...");
+    try {
+        const {response, data} = await fetchStudentApi("/online-exams/available", token, {method:"GET"});
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (!response.ok) throw new Error(data.detail || "Testlarni yuklashda xatolik.");
+        const exams = Array.isArray(data.exams) ? data.exams : [];
+        if (!exams.length) {
+            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;">🧪<br><br>Hozircha siz uchun faol test mavjud emas.</div>';
+            return;
+        }
+        body.innerHTML = exams.map(exam => {
+            const attempts = Number(exam.attempts_used) || 0;
+            const maxAttempts = Number(exam.max_attempts) || 1;
+            const canStart = exam.can_start === true;
+            return `
+                <div style="padding:18px;margin-bottom:12px;border:1px solid rgba(139,92,246,.22);border-radius:18px;background:rgba(255,255,255,.035);">
+                    <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:7px;">📝 ${escapeHtml(exam.title || "Nomsiz test")}</div>
+                    <div style="color:#aaa5b8;line-height:1.6;margin-bottom:10px;">${escapeHtml(exam.description || "Tavsif mavjud emas")}</div>
+                    <div style="color:#c4b5fd;font-size:13px;line-height:1.8;">⏱ ${Number(exam.time_limit_minutes) || 0} daqiqa &nbsp;•&nbsp; 🎯 O‘tish: ${Number(exam.pass_score) || 0}%<br>🔁 Urinish: ${attempts}/${maxAttempts}</div>
+                    <button type="button" onclick="startStudentOnlineTest(${Number(exam.id)})" ${canStart ? "" : "disabled"} style="width:100%;margin-top:14px;border:0;border-radius:13px;padding:13px;background:${canStart ? "linear-gradient(135deg,#7c3aed,#059669)" : "rgba(255,255,255,.08)"};color:#fff;font-weight:900;cursor:${canStart ? "pointer" : "not-allowed"};opacity:${canStart ? "1" : ".55"};">${canStart ? "▶ Testni boshlash" : "Urinishlar tugagan"}</button>
+                </div>`;
+        }).join("");
+    } catch (error) {
+        if (error?.name === "AbortError") return;
+        console.error("Online testlar:", error);
+        body.innerHTML = studentExtraError(error.message || "Testlarni yuklashda xatolik.");
+    }
+}
+
+async function startStudentOnlineTest(examId) {
+    const body = document.getElementById("studentExtraContentBody");
+    const token = localStorage.getItem("access_token");
+    if (!body || !token) return;
+    body.innerHTML = studentExtraLoading("Test ochilmoqda...");
+    try {
+        const {response, data} = await fetchStudentApi("/online-exams/" + Number(examId) + "/start", token, {method:"POST"});
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (!response.ok) throw new Error(data.detail || "Testni boshlashda xatolik.");
+        const questions = Array.isArray(data.questions) ? data.questions : [];
+        if (!questions.length) throw new Error("Testda savollar topilmadi.");
+        const deadline = data.deadline_at ? new Date(data.deadline_at).getTime() : 0;
+        const examIdNum = Number(data.exam_id || examId);
+        body.innerHTML = `
+            <div>
+                <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px;">
+                    <div><div style="font-size:20px;font-weight:900;color:#fff;">${escapeHtml(data.title || "Online test")}</div><div style="margin-top:5px;color:#aaa5b8;font-size:12px;">${questions.length} ta savol • O‘tish: ${Number(data.pass_score) || 0}%</div></div>
+                    <div id="studentOnlineTestTimer" style="min-width:82px;text-align:center;padding:10px;border-radius:12px;background:rgba(139,92,246,.14);color:#c4b5fd;font-weight:900;">--:--</div>
+                </div>
+                <form id="studentOnlineTestForm">
+                    ${questions.map((q,index) => `
+                        <div style="padding:16px;margin-bottom:12px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.025);">
+                            <div style="font-weight:800;color:#fff;line-height:1.5;margin-bottom:12px;">${index+1}. ${escapeHtml(q.question || "")}</div>
+                            ${(Array.isArray(q.options) ? q.options : []).map((option,optionIndex) => `
+                                <label style="display:block;margin:8px 0;padding:11px 12px;border-radius:11px;background:rgba(255,255,255,.04);color:#ddd;cursor:pointer;"><input type="radio" name="q_${Number(q.id)}" value="${optionIndex}" style="margin-right:8px;">${escapeHtml(option)}</label>
+                            `).join("")}
+                        </div>`).join("")}
+                    <button type="submit" id="studentOnlineTestSubmit" style="width:100%;border:0;border-radius:14px;padding:14px;background:linear-gradient(135deg,#7c3aed,#059669);color:#fff;font-weight:900;cursor:pointer;">Javoblarni yuborish</button>
+                </form>
+            </div>`;
+        const form = document.getElementById("studentOnlineTestForm");
+        let timerId = null;
+        const updateTimer = () => {
+            if (!deadline) return;
+            const left = Math.max(0, deadline - Date.now());
+            const totalSeconds = Math.ceil(left / 1000);
+            const min = Math.floor(totalSeconds / 60), sec = totalSeconds % 60;
+            const timer = document.getElementById("studentOnlineTestTimer");
+            if (timer) timer.textContent = String(min).padStart(2,"0") + ":" + String(sec).padStart(2,"0");
+            if (left <= 0) { if (timerId) clearInterval(timerId); if (form) form.requestSubmit(); }
+        };
+        updateTimer();
+        if (deadline) timerId = setInterval(updateTimer, 1000);
+        form?.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            if (timerId) clearInterval(timerId);
+            const submitButton = document.getElementById("studentOnlineTestSubmit");
+            if (submitButton) { submitButton.disabled = true; submitButton.textContent = "Natija hisoblanmoqda..."; }
+            const answers = {};
+            questions.forEach(q => {
+                const selected = form.querySelector(`input[name="q_${Number(q.id)}"]:checked`);
+                if (selected) answers[String(q.id)] = Number(selected.value);
+            });
+            try {
+                const resultResponse = await fetchStudentApi("/online-exams/" + examIdNum + "/submit", token, {method:"POST", body:JSON.stringify({answers})});
+                if (resultResponse.response.status === 401) {
+                    localStorage.removeItem("access_token");
+                    localStorage.removeItem("user_role");
+                    window.location.href = "../index.html";
+                    return;
+                }
+                if (!resultResponse.response.ok) throw new Error(resultResponse.data.detail || "Natijani yuborishda xatolik.");
+                const result = resultResponse.data;
+                body.innerHTML = `
+                    <div style="text-align:center;padding:30px 10px;">
+                        <div style="font-size:48px;">${result.passed ? "🎉" : "📚"}</div>
+                        <h2 style="color:#fff;margin:12px 0 8px;">${result.passed ? "Testdan o‘tdingiz!" : "Test yakunlandi"}</h2>
+                        <div style="font-size:38px;font-weight:900;color:#c4b5fd;">${Number(result.score) || 0}%</div>
+                        <div style="color:#aaa5b8;margin-top:8px;">To‘g‘ri javob: ${Number(result.correct) || 0}/${Number(result.total) || 0}</div>
+                        <button type="button" onclick="loadStudentOnlineTests()" style="margin-top:20px;width:100%;border:0;border-radius:13px;padding:13px;background:linear-gradient(135deg,#7c3aed,#059669);color:#fff;font-weight:900;">Testlar ro‘yxatiga qaytish</button>
+                    </div>`;
+            } catch (error) {
+                body.innerHTML = studentExtraError(error.message || "Natijani yuborishda xatolik.");
+            }
+        });
+    } catch (error) {
+        console.error("Online testni boshlash:", error);
+        body.innerHTML = studentExtraError(error.message || "Testni boshlashda xatolik.");
+    }
+}
+
+function premiumMessageHtml(value) {
     return escapeHtml(value).replace(/&lt;br\s*\/?&gt;/gi, "<br>").replace(/&lt;(\/?)strong&gt;/gi, "<$1strong>");
 }
 
