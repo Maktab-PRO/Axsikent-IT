@@ -251,6 +251,11 @@ async function openStudentCourse(courseId) {
         return;
     }
 
+    if (!container) {
+        console.error("Student courses container topilmadi.");
+        return;
+    }
+
     container.innerHTML = `
         <div style="
             text-align:center;
@@ -289,6 +294,10 @@ async function openStudentCourse(courseId) {
 
         if (!response.ok) {
             throw new Error("Modullarni yuklashda xatolik");
+        }
+
+        if (!Array.isArray(modules)) {
+            throw new Error("Modullar ma'lumotlari noto'g'ri formatda");
         }
 
         if (!modules.length) {
@@ -365,9 +374,12 @@ async function openStudentCourse(courseId) {
 
             ${modules.map((module, index) => {
 
-                const progress = Number(module.progress || 0);
-                const completed = Number(module.completed_lessons || 0);
-                const total = Number(module.total_lessons || 0);
+                const progress = Math.min(
+                    100,
+                    Math.max(0, Number(module.progress) || 0)
+                );
+                const completed = Math.max(0, Number(module.completed_lessons) || 0);
+                const total = Math.max(0, Number(module.total_lessons) || 0);
 
                 let progressText = "";
 
@@ -541,6 +553,11 @@ async function openStudentModule(courseId, moduleId) {
         return;
     }
 
+    if (!container) {
+        console.error("Student courses container topilmadi.");
+        return;
+    }
+
     container.innerHTML = `
         <div style="
             text-align:center;
@@ -567,6 +584,10 @@ async function openStudentModule(courseId, moduleId) {
 
         if (!response.ok) {
             throw new Error("Darslarni yuklashda xatolik");
+        }
+
+        if (!Array.isArray(lessons)) {
+            throw new Error("Darslar ma'lumotlari noto'g'ri formatda");
         }
 
         if (!lessons.length) {
