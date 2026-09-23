@@ -1655,69 +1655,53 @@ if (finishButton) {
         const token = localStorage.getItem("access_token");
 
         if (!token) {
-
             window.location.href = "../index.html";
-
-            return;
+            return false;
         }
 
+        for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+                const {response, data} = await fetchStudentApi("/students/me", token);
 
-        try {
+                if (response.status === 401) {
+                    localStorage.removeItem("access_token");
+                    localStorage.removeItem("user_role");
+                    window.location.href = "../index.html";
+                    return false;
+                }
 
-            const {response, data} = await fetchStudentApi("/students/me", token);
+                if (!response.ok) {
+                    console.error("Student profile:", data.detail || response.status);
+                    if (attempt === 0) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        continue;
+                    }
+                    return false;
+                }
 
+                const fullName = data.full_name || "O‘quvchi";
 
-            if (response.status === 401) {
+                document.getElementById("welcomeName").textContent =
+                    `Xush kelibsiz, ${fullName}! 👋`;
 
-                localStorage.removeItem("access_token");
-                localStorage.removeItem("user_role");
+                document.getElementById("topStudentName").textContent = fullName;
 
-                window.location.href = "../index.html";
+                const firstLetter = fullName.charAt(0).toUpperCase();
+                document.getElementById("avatarLetter").textContent = firstLetter;
 
-                return;
+                return true;
+            } catch (error) {
+                console.error("Student profile:", error);
+                if (error?.name === "AbortError") return false;
+                if (attempt === 0) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    continue;
+                }
+                return false;
             }
-
-
-
-
-            if (!response.ok) {
-                console.error("Student profile:", data.detail || response.status);
-                return;
-            }
-
-
-            const fullName = data.full_name || "O‘quvchi";
-
-
-            document.getElementById(
-                "welcomeName"
-            ).textContent =
-                `Xush kelibsiz, ${fullName}! 👋`;
-
-
-            document.getElementById(
-                "topStudentName"
-            ).textContent = fullName;
-
-
-            const firstLetter =
-                fullName.charAt(0).toUpperCase();
-
-
-            document.getElementById(
-                "avatarLetter"
-            ).textContent = firstLetter;
-
-
-        } catch (error) {
-
-            console.error(error);
-            // Sahifa ochilganda vaqtinchalik API/network uzilishi studentga
-            // xatolik yozuvi sifatida ko‘rsatilmaydi.
-            return;
-
         }
 
+        return false;
     }
 
 
@@ -3431,6 +3415,10 @@ function openStudentTrainings() {
 }
 
 function openStudentOnlineTests(skipLoad = false) {
+    return;
+    
+    /*
+
     const oldModal = document.getElementById("studentOnlineTestWindow");
     if (oldModal) oldModal.remove();
 
@@ -3519,6 +3507,9 @@ function openStudentOnlineTests(skipLoad = false) {
         clearTimeout(timeout);
         if (studentOnlineTestsLoadController === controller) studentOnlineTestsLoadController = null;
     });
+}
+
+    */
 }
 
 function openStudentExams() {
@@ -4333,16 +4324,22 @@ async function initStudentDashboard() {
         return;
     }
 
-    if (typeof loadStudent === "function") {
-        loadStudent();
+    // Avval Student profili ochiladi. Render cold-start paytida 6 ta API'ni
+    // bir vaqtda urib yubormaslik uchun qolgan bo‘limlar keyin yuklanadi.
+    const profileLoaded = await loadStudent();
+    if (!profileLoaded) {
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        if (!await loadStudent()) return;
     }
 
-    if (typeof loadStudentCourses === "function") loadStudentCourses();
-    if (typeof loadStudentRanking === "function") loadStudentRanking();
-    if (typeof loadStudentDashboardStats === "function") loadStudentDashboardStats();
-    if (typeof loadStudentBooks === "function") loadStudentBooks();
-    if (typeof loadStudentNotifications === "function") loadStudentNotifications();
-    if (typeof loadStudentDashboardHomework === "function") loadStudentDashboardHomework();
+    await Promise.allSettled([
+        loadStudentCourses(),
+        loadStudentRanking(),
+        loadStudentDashboardStats(),
+        loadStudentBooks(),
+        loadStudentNotifications(),
+        loadStudentDashboardHomework()
+    ]);
 }
 
 initStudentDashboard();
