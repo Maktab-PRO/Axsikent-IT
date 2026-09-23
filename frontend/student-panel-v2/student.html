@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Axsikent IT — Student Panel V2</title>
+  <link rel="stylesheet" href="student-v2.css?v=20260923-1">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <img src="../assets/logo.png" alt="Axsikent IT">
+        <div>
+          <strong>Student Panel</strong>
+          <span>AXSIKENT IT</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="refreshBtn" class="icon-btn" type="button" title="Yangilash">↻</button>
+        <button id="logoutBtn" class="danger-btn" type="button">Chiqish</button>
+      </div>
+    </header>
+
+    <div id="sessionGate" class="screen hidden">
+      <div class="gate-card">
+        <div class="gate-icon">🔐</div>
+        <h2>Student kabinetiga kirish kerak</h2>
+        <p>Login sahifasiga qaytib, akkauntingiz bilan kiring.</p>
+        <a class="primary-btn" href="../index.html">Login sahifasiga qaytish</a>
+      </div>
+    </div>
+
+    <main id="dashboard" class="dashboard hidden">
+      <aside class="sidebar">
+        <button class="nav-item active" data-view="home">🏠 <span>Bosh sahifa</span></button>
+        <button class="nav-item" data-view="courses">📚 <span>Kurslarim</span></button>
+        <button class="nav-item" data-view="homework">📝 <span>Uy vazifalarim</span></button>
+        <button class="nav-item" data-view="ranking">🏆 <span>Reyting</span></button>
+        <button class="nav-item" data-view="rewards">🎁 <span>Mukofotlar</span></button>
+        <button class="nav-item" data-view="books">📖 <span>Kitoblar</span></button>
+        <button class="nav-item" data-view="notifications">🔔 <span>Bildirishnomalar</span></button>
+        <button class="nav-item" data-view="podcasts">🎧 <span>Podcastlar</span></button>
+        <button class="nav-item" data-view="trainings">🗓️ <span>Treninglar</span></button>
+        <button class="nav-item" data-view="exams">🎓 <span>Imtihonlar</span></button>
+        <button id="onlineTestsBtn" class="nav-item online-test-nav" data-view="online-tests">🧪 <span>Online Test</span></button>
+        <button class="nav-item" data-view="ai">🤖 <span>AKHSIKENT AI</span></button>
+      </aside>
+
+      <section class="content">
+        <div id="statusBar" class="status-bar" role="status">Ulanish tekshirilmoqda...</div>
+
+        <section id="view-home" class="view active">
+          <div class="hero">
+            <div>
+              <div class="eyebrow">AXSIKENT IT / O‘QUVCHI KABINETI V2</div>
+              <h1 id="welcomeName">Xush kelibsiz! 👋</h1>
+              <p>Ta’limingiz, vazifalaringiz, natijalaringiz va testlaringiz shu yerda.</p>
+            </div>
+            <div class="hero-badge">● ONLINE</div>
+          </div>
+
+          <div class="stats-grid">
+            <article class="stat-card"><span>⭐ XP</span><strong id="statXp">0</strong></article>
+            <article class="stat-card"><span>🏆 Reyting</span><strong id="statRank">—</strong></article>
+            <article class="stat-card"><span>🪙 Coin</span><strong id="statCoins">0</strong></article>
+            <article class="stat-card"><span>🔥 Faollik</span><strong id="statStreak">0 kun</strong></article>
+          </div>
+
+          <div class="two-col">
+            <article class="panel-card">
+              <div class="panel-head"><h2>Mening kurslarim</h2><button class="small-btn" data-open="courses">Barchasi</button></div>
+              <div id="homeCourses" class="stack"></div>
+            </article>
+            <article class="panel-card">
+              <div class="panel-head"><h2>So‘nggi bildirishnomalar</h2><button class="small-btn" data-open="notifications">Ko‘rish</button></div>
+              <div id="homeNotifications" class="stack"></div>
+            </article>
+          </div>
+
+          <article class="panel-card online-card">
+            <div class="panel-head">
+              <div><div class="eyebrow">ASSESSMENT</div><h2>Online Test</h2></div>
+              <button id="homeOnlineBtn" class="primary-btn" type="button">Testlarni ochish →</button>
+            </div>
+            <p>Faol testlar faqat tugmani bosganingizda yuklanadi.</p>
+          </article>
+        </section>
+
+        <section id="view-courses" class="view">
+          <div class="section-title"><div><div class="eyebrow">TA’LIM</div><h2>Kurslarim</h2></div></div>
+          <div id="coursesList" class="stack"></div>
+        </section>
+
+        <section id="view-course-detail" class="view">
+          <button id="backCoursesBtn" class="small-btn" type="button">← Kurslarga qaytish</button>
+          <div id="courseDetail"></div>
+        </section>
+
+        <section id="view-homework" class="view">
+          <div class="section-title"><div><div class="eyebrow">TOPSHIRIQLAR</div><h2>Uy vazifalarim</h2></div></div>
+          <div id="homeworkList" class="stack"></div>
+        </section>
+
+        <section id="view-ranking" class="view">
+          <div class="section-title"><div><div class="eyebrow">NATIJA</div><h2>Reyting</h2></div></div>
+          <div id="rankingList" class="stack"></div>
+        </section>
+
+        <section id="view-rewards" class="view">
+          <div class="section-title"><div><div class="eyebrow">AKHSIKENT SHOP</div><h2>Mukofotlar</h2></div></div>
+          <div id="rewardsList" class="grid-list"></div>
+        </section>
+
+        <section id="view-books" class="view">
+          <div class="section-title"><div><div class="eyebrow">RESURSLAR</div><h2>Kitoblar</h2></div></div>
+          <div id="booksList" class="grid-list"></div>
+        </section>
+
+        <section id="view-notifications" class="view">
+          <div class="section-title"><div><div class="eyebrow">ALOQA</div><h2>Bildirishnomalar</h2></div></div>
+          <div id="notificationsList" class="stack"></div>
+        </section>
+
+        <section id="view-podcasts" class="view">
+          <div class="section-title"><div><div class="eyebrow">MEDIA</div><h2>Podcastlar</h2></div></div>
+          <div id="podcastsList" class="grid-list"></div>
+        </section>
+
+        <section id="view-trainings" class="view">
+          <div class="section-title"><div><div class="eyebrow">TADBIRLAR</div><h2>Treninglar</h2></div></div>
+          <div id="trainingsList" class="stack"></div>
+        </section>
+
+        <section id="view-exams" class="view">
+          <div class="section-title"><div><div class="eyebrow">IMTIHON</div><h2>Imtihonlar</h2></div></div>
+          <div id="examsList" class="stack"></div>
+        </section>
+
+        <section id="view-online-tests" class="view">
+          <div class="section-title">
+            <div><div class="eyebrow">ASSESSMENT</div><h2>Online Test</h2></div>
+            <button id="closeOnlineBtn" class="small-btn" type="button">Bosh sahifaga</button>
+          </div>
+          <div id="onlineTestsList" class="stack"></div>
+        </section>
+
+        <section id="view-ai" class="view">
+          <div class="section-title"><div><div class="eyebrow">SUN’IY INTELLEKT</div><h2>AKHSIKENT AI</h2></div></div>
+          <div class="ai-layout">
+            <div class="panel-card">
+              <h3>Ustoz AI uy vazifani tekshiradi</h3>
+              <label>Topshiriq<textarea id="aiTask" rows="5" placeholder="Topshiriqni yozing..."></textarea></label>
+              <label>Javob<textarea id="aiAnswer" rows="7" placeholder="Javobingizni yozing..."></textarea></label>
+              <button id="aiCheckBtn" class="primary-btn" type="button">AI orqali tekshirish</button>
+            </div>
+            <div id="aiResult" class="panel-card muted-panel">Natija shu yerda chiqadi.</div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="modalRoot"></div>
+  <script src="student-v2.js?v=20260923-1"></script>
+</body>
+</html>
