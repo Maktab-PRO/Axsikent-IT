@@ -22,54 +22,66 @@
     el.classList.toggle("warn", !!warning);
   }
 
-  async function api(path, options = {}, retry = 1) {
-    const t = token();
-    if (!t) throw new Error("NO_SESSION");
-    if (activeAbort) activeAbort.abort();
+  async function request(path, options = {}, retry = 1) {
     const controller = new AbortController();
-    activeAbort = controller;
-    const timer = setTimeout(() => controller.abort(), options.timeout || 60000);
+    const timeout = Number(options.timeout || 60000);
+    const timer = setTimeout(() => controller.abort(), timeout);
+    const headers = {
+      "Accept": "application/json",
+      ...(options.body ? {"Content-Type":"application/json"} : {}),
+      ...(options.headers || {})
+    };
+
+    if (!options.publicRequest) {
+      const t = token();
+      if (!t) {
+        clearTimeout(timer);
+        throw new Error("NO_SESSION");
+      }
+      headers.Authorization = "Bearer " + t;
+    }
 
     try {
       const res = await fetch(API + path, {
         method: options.method || "GET",
-        headers: {
-          "Accept": "application/json",
-          ...(options.body ? {"Content-Type":"application/json"} : {}),
-          ...(options.headers || {}),
-          "Authorization": "Bearer " + t
-        },
+        headers,
         body: options.body,
         cache: "no-store",
-        signal: options.signal || controller.signal
+        signal: controller.signal
       });
 
       const raw = await res.text();
       let data = {};
-      if (raw) { try { data = JSON.parse(raw); } catch (_) { data = {detail: raw}; } }
+      if (raw) {
+        try { data = JSON.parse(raw); }
+        catch (_) { data = {detail: raw}; }
+      }
 
-      if (res.status === 401) {
+      if (res.status === 401 && !options.publicRequest) {
         localStorage.removeItem(tokenKey);
         localStorage.removeItem("user_role");
         throw new Error("SESSION_EXPIRED");
       }
+
       if (!res.ok) {
         const e = new Error(data.detail || "REQUEST_FAILED");
         e.status = res.status;
         throw e;
       }
+
       return data;
     } catch (e) {
       if ((e.name === "AbortError" || e.message === "Failed to fetch") && retry > 0) {
-        await new Promise(r => setTimeout(r, 700));
-        return api(path, options, retry - 1);
+        await new Promise(r => setTimeout(r, 900));
+        return request(path, options, retry - 1);
       }
       throw e;
     } finally {
       clearTimeout(timer);
-      if (activeAbort === controller) activeAbort = null;
     }
   }
+
+  const api = (path, options = {}, retry = 1) => request(path, options, retry);
 
   function go(view) {
     document.querySelectorAll(".view").forEach(x => x.classList.remove("active"));
@@ -93,11 +105,43 @@
     if (el) el.innerHTML = '<div class="item"><strong>' + esc(text) + '</strong></div>';
   }
 
+  async function loginFromPanel(event) {
+    event.preventDefault();
+    const phone = $("loginPhone")?.value.trim();
+    const password = $("loginPassword")?.value || "";
+    const message = $("loginMessage");
+    const button = $("loginBtn");
+    if (!phone || !password) {
+      if (message) message.textContent = "Telefon raqam va parolni kiriting.";
+      return;
+    }
+    if (button) { button.disabled = true; button.textContent = "Kirilmoqda..."; }
+    try {
+      const data = await request("/students/login", {
+        method: "POST",
+        body: JSON.stringify({phone, password}),
+        publicRequest: true,
+        timeout: 60000
+      }, 1);
+      localStorage.setItem(tokenKey, data.access_token);
+      localStorage.setItem("user_role", data.role || "student");
+      if (message) message.textContent = "Muvaffaqiyatli kirildi.";
+      await init();
+    } catch (e) {
+      console.error("Student login:", e);
+      if (message) message.textContent = "Login yoki parol noto‘g‘ri, yoki server vaqtincha javob bermadi.";
+    } finally {
+      if (button) { button.disabled = false; button.textContent = "Kirish"; }
+    }
+  }
+
   async function init() {
     if (!token()) {
       $("sessionGate").classList.remove("hidden");
+      $("dashboard").classList.add("hidden");
       return;
     }
+    $("sessionGate").classList.add("hidden");
     $("dashboard").classList.remove("hidden");
     showStatus("Student ma’lumotlari yuklanmoqda...");
     try {
@@ -288,7 +332,7 @@
     const input = document.querySelector('.hw-answer[data-id="' + id + '"]');
     if (!input?.value.trim()) return alert("Javobni kiriting.");
     try {
-      await api("/homework/" + id + "/submit", {method:"POST",body:JSON.stringify({answer:input.value.trim()}),timeout:60000});
+      await api("/homework/" + id + "/submit?answer=" + encodeURIComponent(input.value.trim()), {method:"POST",timeout:60000});
       await loadHomework();
       showStatus("Uy vazifasi topshirildi.");
     } catch (e) { alert(e.message || "Uy vazifasini topshirib bo‘lmadi."); }
@@ -321,8 +365,9 @@
   async function loadBooks() {
     $("booksList").innerHTML = '<div class="card-grid-item">Kitoblar yuklanmoqda...</div>';
     try {
-      const arr = await api("/students/books", {timeout:60000});
-      $("booksList").innerHTML = (Array.isArray(arr) ? arr : []).map(x => '<div class="card-grid-item"><strong>' + esc(x.title || x.name) + '</strong><p>' + esc(x.description || "") + '</p><div class="price">🪙 ' + Number(x.coin_price || x.price || 0) + ' Coin</div><button class="primary-btn buy-book" data-id="' + Number(x.id) + '" type="button">Olish</button></div>').join("") || '<div class="card-grid-item">Hozircha kitob yo‘q.</div>';
+      const data = await api("/students/books", {timeout:60000});
+      const arr = Array.isArray(data?.books) ? data.books : [];
+      $("booksList").innerHTML = arr.map(x => '<div class="card-grid-item"><strong>' + esc(x.title || x.name) + '</strong><p>' + esc(x.description || "") + '</p><div class="price">🪙 ' + Number(x.coin_price || x.price || 0) + ' Coin</div><button class="primary-btn buy-book" data-id="' + Number(x.id) + '" type="button">Olish</button></div>').join("") || '<div class="card-grid-item">Hozircha kitob yo‘q.</div>';
       document.querySelectorAll(".buy-book").forEach(b => b.onclick = () => buyBook(Number(b.dataset.id)));
     } catch (_) { renderEmpty("booksList", "Kitoblar hozircha yuklanmadi."); }
   }
