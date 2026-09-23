@@ -173,9 +173,56 @@ async function openLesson(courseId,moduleId,lessonId){
 async function markRead(courseId,moduleId,lessonId){
   try{
     const result=await api("/students/courses/"+courseId+"/modules/"+moduleId+"/lessons/"+lessonId+"/read",{method:"POST"});
-    showToast(result?.has_quiz?"Dars o‘qilgan. Yakuniy tekshiruv mavjud.":"Dars o‘qilgan deb belgilandi.");
-    $("modalRoot").hidden=true;$("modalRoot").innerHTML="";
-    await loadCourses();setActiveNav("courses");
+    if(result?.has_quiz){
+      await openLessonQuiz(courseId,moduleId,lessonId);
+      return;
+    }
+    try{
+      await api("/students/courses/"+courseId+"/modules/"+moduleId+"/lessons/"+lessonId+"/complete",{method:"POST"});
+      showToast("Dars tugallandi.");
+    }catch(completeError){
+      showToast(friendlyError(completeError));
+    }
+    closeModal();
+    await loadCourses();
+    setActiveNav("courses");
+  }catch(error){showToast(friendlyError(error))}
+}
+async function openLessonQuiz(courseId,moduleId,lessonId){
+  const modal=$("modalRoot");
+  modal.hidden=false;
+  modal.innerHTML='<div class="modal-card"><div class="modal-head"><h2>Yakuniy tekshiruv yuklanmoqda…</h2><button class="icon-button" data-close-modal type="button">✕</button></div></div>';
+  try{
+    const quizzes=await api("/students/courses/"+courseId+"/modules/"+moduleId+"/lessons/"+lessonId+"/quiz");
+    if(!Array.isArray(quizzes)||!quizzes.length) throw new Error("Bu dars uchun tekshiruv topilmadi.");
+    const questions=quizzes.map((q,index)=>'<div class="quiz-question"><div class="quiz-q">'+(index+1)+'. '+escapeHtml(q.question||"Savol")+'</div><div class="quiz-options">'+[
+      ["A",q.option_a],["B",q.option_b],["C",q.option_c],["D",q.option_d]
+    ].filter(x=>x[1]).map(x=>'<label class="quiz-option"><input type="radio" name="quiz-'+q.id+'" value="'+x[0]+'"><span><b>'+x[0]+')</b> '+escapeHtml(x[1])+'</span></label>').join("")+'</div></div>').join("");
+    modal.innerHTML='<div class="modal-card"><div class="modal-head"><div><span class="eyebrow">YAKUNIY TEKSHIRUV</span><h2>Darsni yakunlash</h2></div><button class="icon-button" data-close-modal type="button">✕</button></div><div class="modal-body"><p class="muted">Keyingi bosqichga o‘tish uchun kamida 80% natija kerak.</p><div id="lessonQuizBody">'+questions+'</div><div class="modal-actions"><button class="primary-button" type="button" data-submit-quiz data-course="'+courseId+'" data-module="'+moduleId+'" data-lesson="'+lessonId+'">Tekshiruvni topshirish</button></div></div></div>';
+  }catch(error){
+    modal.innerHTML='<div class="modal-card"><div class="modal-head"><h2>Tekshiruvni ochib bo‘lmadi</h2><button class="icon-button" data-close-modal type="button">✕</button></div><div class="modal-body"><p>'+escapeHtml(friendlyError(error))+'</p></div></div>';
+  }
+}
+async function submitLessonQuiz(courseId,moduleId,lessonId){
+  const inputs=$('input[name^="quiz-"]:checked');
+  const answers={};
+  inputs.forEach(input=>{answers[input.name.replace("quiz-","")]=input.value});
+  const total=$('input[name^="quiz-"]').reduce((acc,input)=>acc+(answers[input.name.replace("quiz-","")]?0:0),0);
+  if(inputs.length===0){showToast("Avval javoblarni belgilang.");return}
+  try{
+    const result=await api("/students/courses/"+courseId+"/modules/"+moduleId+"/lessons/"+lessonId+"/quiz",{method:"POST",body:answers});
+    if(result?.passed){
+      try{
+        await api("/students/courses/"+courseId+"/modules/"+moduleId+"/lessons/"+lessonId+"/complete",{method:"POST"});
+      }catch(completeError){
+        showToast(friendlyError(completeError));
+        return;
+      }
+      $("modalRoot").innerHTML='<div class="modal-card"><div class="modal-head"><div><span class="eyebrow">NATija</span><h2>✅ Tekshiruvdan o‘tdingiz</h2></div><button class="icon-button" data-close-modal type="button">✕</button></div><div class="modal-body"><p>'+Number(result.score||0)+' / '+Number(result.total||0)+' to‘g‘ri javob.</p><div class="modal-actions"><button class="primary-button" type="button" data-close-modal>Darsga qaytish</button></div></div></div>';
+      await loadCourses();
+    }else{
+      showToast("Natija: "+Number(result.score||0)+"/"+Number(result.total||0)+". Kamida 80% kerak.");
+    }
   }catch(error){showToast(friendlyError(error))}
 }
 async function loadHomework(){
@@ -294,7 +341,7 @@ document.addEventListener("click",async (event)=>{
   const openModuleBtn=event.target.closest("[data-open-module]");if(openModuleBtn){openModuleLessons(openModuleBtn.dataset.openModule,openModuleBtn.dataset.moduleId);return}
   const openLessonBtn=event.target.closest("[data-open-lesson]");if(openLessonBtn){openLesson(openLessonBtn.dataset.openLesson,openLessonBtn.dataset.moduleId,openLessonBtn.dataset.lessonId);return}
   const readBtn=event.target.closest("[data-mark-read]");if(readBtn){markRead(readBtn.dataset.course,readBtn.dataset.module,readBtn.dataset.lesson);return}
-  const hw=event.target.closest("[data-homework]");if(hw){openHomeworkModal(hw.dataset.homework);return}
+  const quizBtn=event.target.closest("[data-submit-quiz]");if(quizBtn){submitLessonQuiz(quizBtn.dataset.course,quizBtn.dataset.module,quizBtn.dataset.lesson);return}\n  const hw=event.target.closest("[data-homework]");if(hw){openHomeworkModal(hw.dataset.homework);return}
   const submitHw=event.target.closest("[data-submit-homework]");if(submitHw){submitHomework(submitHw.dataset.submitHomework);return}
   const buyRewardBtn=event.target.closest("[data-buy-reward]");if(buyRewardBtn){buyReward(buyRewardBtn.dataset.buyReward);return}
   const buyBookBtn=event.target.closest("[data-buy-book]");if(buyBookBtn){buyBook(buyBookBtn.dataset.buyBook);return}
