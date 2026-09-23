@@ -1910,7 +1910,7 @@ async function loadStudentRewards(targetId) {
         }
 
         if (!response.ok) {
-            throw new Error(data.detail || ("Server xatosi: " + response.status));
+            throw new Error("Mukofotlarni yuklab bo‘lmadi. Qayta urinib ko‘ring.");
         }
 
         const student = data.student || {};
