@@ -4068,7 +4068,7 @@ async function initStudentDashboard() {
     }
 
     if (typeof loadStudent === "function") {
-        await loadStudent();
+        loadStudent();
     }
 
     if (typeof loadStudentCourses === "function") loadStudentCourses();
