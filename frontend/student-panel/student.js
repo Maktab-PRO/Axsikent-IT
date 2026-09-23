@@ -497,8 +497,7 @@ async function openStudentCourse(courseId) {
                             <div style="
                                 display:flex;
                                 justify-content:space-between;
-                                align-items:center;                                margin-top:9px;
-                            ">
+                                align-items:center;                                margin-top:9px;                            ">
 
                                 <span style="
                                     font-size:12px;
@@ -997,8 +996,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
 
         console.error(error);
         if (error?.name === "AbortError") return;
-        container.innerHTML = `
-            <div style="
+        container.innerHTML = `            <div style="
                 text-align:center;
                 padding:30px;
                 color:#f87171;
@@ -1497,8 +1495,7 @@ if (finishButton) {
                                 text-align:center;
                                 font-weight:600;
                             ">
-                                ❌ ${escapeHtml(result.message || "Tekshiruv yakunlandi")}
-                                <br>
+                                ❌ ${escapeHtml(result.message || "Tekshiruv yakunlandi")}                                <br>
                                 <span style="
                                     display:block;
                                     margin-top:6px;
@@ -1997,8 +1994,7 @@ async function buyStudentReward(productId) {
                     {
                         method: "POST",
                         headers: {"Accept": "application/json"}
-                    }
-                );
+                    }                );
 
                 if (response.status === 401) {
                     localStorage.removeItem("access_token");
@@ -2079,7 +2075,11 @@ async function buyStudentReward(productId) {
             throw new Error(ranking.detail || "Reytingni yuklab bo'lmadi");
         }
 
-        if (!ranking || ranking.length === 0) {
+        if (!Array.isArray(ranking)) {
+            throw new Error("Reyting ma’lumotlari noto‘g‘ri formatda");
+        }
+
+        if (ranking.length === 0) {
             container.innerHTML = `
                 <div style="
                     text-align:center;
@@ -2258,6 +2258,10 @@ async function buyStudentReward(productId) {
             );
         }
 
+        if (!Array.isArray(homeworks)) {
+            throw new Error("Uy vazifalari ma’lumotlari noto‘g‘ri formatda");
+        }
+
         if (!homeworks.length) {
 
             container.innerHTML = `
@@ -2302,6 +2306,10 @@ async function buyStudentReward(productId) {
 
         if (!submissionsResponse.ok) {
             throw new Error(submissions.detail || "Uy vazifasi natijalarini yuklashda xatolik");
+        }
+
+        if (!Array.isArray(submissions)) {
+            throw new Error("Uy vazifasi natijalari noto‘g‘ri formatda");
         }
 
         container.innerHTML = homeworks.map(homework => {
@@ -2497,8 +2505,7 @@ async function buyStudentReward(productId) {
                                     "
                                 >
                                     ${
-                                        submitted
-                                        ? "🔄 Javobni qayta topshirish"
+                                        submitted                                        ? "🔄 Javobni qayta topshirish"
                                         : "🚀 Javobni topshirish"
                                     }
                                 </button>
@@ -2997,7 +3004,6 @@ async function loadStudentBooks() {
     ">
 
         <div>
-
             <div style="
                 color:#817C8F;
                 font-size:12px;
@@ -3497,8 +3503,7 @@ modal.innerHTML = `
             padding:28px;
             box-sizing:border-box;
             box-shadow:
-                0 25px 80px rgba(0,0,0,0.65),
-                0 0 45px rgba(139,92,246,0.12);
+                0 25px 80px rgba(0,0,0,0.65),                0 0 45px rgba(139,92,246,0.12);
             color:#F5F3FF;
             position:relative;
             overflow:hidden;
@@ -3923,15 +3928,3 @@ async function initStudentDashboard() {
         window.location.href = "../index.html";
         return;
     }
-
-    // Avval Student profili ochiladi. Render cold-start paytida 6 ta API'ni
-    // bir vaqtda urib yubormaslik uchun qolgan bo‘limlar keyin yuklanadi.
-    const profileLoaded = await loadStudent();
-    if (!profileLoaded && localStorage.getItem("access_token")) {
-        await new Promise(resolve => setTimeout(resolve, 1200));
-        await loadStudent();
-    }
-
-    await Promise.allSettled([
-        loadStudentCourses(),
-        loadStudentRanking(),
