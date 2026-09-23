@@ -309,7 +309,7 @@ function openSection(section) {
     if (section === "podcasts") loadPodcasts();
     if (section === "trainings") loadTrainings();
     if (section === "exams") loadExams();
-    if (section === "online-tests") { initOnlineExamAdmin(); }
+    if (section === "online-tests") { initOnlineExamAdmin(); loadOnlineExamAdminList(); }
 
     const backButton = document.getElementById("sectionBackBtn");
     if (backButton) backButton.hidden = section === "dashboard";
@@ -3943,6 +3943,7 @@ async function createOnlineExam(event) {
         document.getElementById("onlineExamCreateMessage").textContent = "Online Test yaratildi. Endi savollar qo‘shing.";
         showToast("Online Test yaratildi", "success");
         if (examId) openOnlineExamQuestions(examId, data.exam.title);
+        await loadOnlineExamAdminList();
     } catch (error) {
         showToast(error.message || "Online Test yaratilmadi", "error");
     }
@@ -4046,6 +4047,46 @@ function initOnlineExamAdmin() {
     if (examForm && !examForm.dataset.ready) {
         examForm.dataset.ready = "1";
         examForm.addEventListener("submit", createOnlineExam);
+    }
+    loadOnlineExamAdminList();
+}
+
+async function loadOnlineExamAdminList() {
+    const box = document.getElementById("onlineExamListContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("Online Testlar yuklanmoqda...");
+    try {
+        const items = await apiRequest("/online-exams/admin/list");
+        box.innerHTML = items.length ? moduleTable(
+            ["ID","NOMI","VAQT","O‘TISH","URINISH","SAVOLLAR","HOLAT","AMAL"],
+            items.map(x =>
+                '<tr>' +
+                '<td>#' + Number(x.id) + '</td>' +
+                '<td><strong>' + escapeHtml(x.title || "") + '</strong><small>' + escapeHtml(x.description || "") + '</small></td>' +
+                '<td>' + Number(x.time_limit_minutes || 0) + ' daq.</td>' +
+                '<td>' + Number(x.pass_score || 0) + '%</td>' +
+                '<td>' + Number(x.max_attempts || 0) + '</td>' +
+                '<td>' + Number(x.question_count || 0) + '</td>' +
+                '<td>' + (x.is_active ? "Faol" : "Nofaol") + '</td>' +
+                '<td style="white-space:nowrap;">' +
+                '<button type="button" class="module-action" onclick="openOnlineExamQuestions(' + Number(x.id) + ', \'' + escapeHtml(x.title || "").replace(/'/g, "\\'") + '\')">Savollar</button> ' +
+                '<button type="button" class="module-action" onclick="toggleOnlineExamAdmin(' + Number(x.id) + ')">' + (x.is_active ? "Deaktiv" : "Aktivlashtirish") + '</button>' +
+                '</td>' +
+                '</tr>'
+            )
+        ) : '<div class="module-empty"><h3>Online Testlar yo‘q</h3><p>Hozircha online test yaratilmagan.</p></div>';
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message || "Online testlarni yuklashda xatolik.") + '</p></div>';
+    }
+}
+
+async function toggleOnlineExamAdmin(id) {
+    try {
+        await apiRequest("/online-exams/admin/" + Number(id) + "/toggle", {method:"PUT"});
+        showToast("Online Test holati yangilandi", "success");
+        await loadOnlineExamAdminList();
+    } catch (error) {
+        showToast(error.message || "Online Test holati o‘zgartirilmadi", "error");
     }
 }
 
