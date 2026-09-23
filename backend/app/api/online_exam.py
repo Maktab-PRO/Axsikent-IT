@@ -124,11 +124,22 @@ def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security
         ).first()
 
         active_attempt_expired = False
-        if active_attempt and active_attempt.deadline_at:
+        if active_attempt:
             active_deadline = active_attempt.deadline_at
-            if active_deadline.tzinfo is None:
-                active_deadline = active_deadline.replace(tzinfo=timezone.utc)
-            active_attempt_expired = datetime.now(timezone.utc) >= active_deadline
+            if (
+                active_attempt.started_at and
+                exam.time_limit_minutes > 0 and
+                (
+                    active_deadline is None or
+                    active_deadline <= active_attempt.started_at
+                )
+            ):
+                active_deadline = active_attempt.started_at + timedelta(minutes=exam.time_limit_minutes)
+
+            if active_deadline:
+                if active_deadline.tzinfo is None:
+                    active_deadline = active_deadline.replace(tzinfo=timezone.utc)
+                active_attempt_expired = datetime.now(timezone.utc) >= active_deadline
 
         effective_attempts = attempts + (1 if active_attempt_expired else 0)
         can_start = effective_attempts < exam.max_attempts
