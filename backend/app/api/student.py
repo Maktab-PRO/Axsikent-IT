@@ -10,7 +10,6 @@ from passlib.context import CryptContext
 from app.db import get_db
 from app.models.student import Student
 from app.models.gamification import StudentGamification
-from app.models.exam import Exam, ExamRegistration
 from app.models.student_course import StudentCourse
 from app.models.course import Course
 from app.models.course_module import CourseModule
@@ -142,43 +141,6 @@ def login_student(
     "full_name": user.full_name,
     "role": "student"
 }
-
-@router.get("/exams")
-def student_exams(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
-):
-    student_id = get_student_id(credentials, db)
-    exams = db.query(Exam).filter(
-        Exam.is_active == True,
-        Exam.end_at.is_(None) | (Exam.end_at > datetime.utcnow())
-    ).order_by(Exam.start_at.asc()).all()
-
-    result = []
-    for exam in exams:
-        registration = db.query(ExamRegistration).filter(
-            ExamRegistration.exam_id == exam.id,
-            ExamRegistration.student_id == student_id,
-            ExamRegistration.status == "registered"
-        ).first()
-        result.append({
-            "id": exam.id,
-            "title": exam.title,
-            "description": exam.description,
-            "start_at": exam.start_at.isoformat() if exam.start_at else None,
-            "end_at": exam.end_at.isoformat() if exam.end_at else None,
-            "location": exam.location,
-            "capacity": exam.capacity,
-            "registrations": db.query(ExamRegistration).filter(
-                ExamRegistration.exam_id == exam.id,
-                ExamRegistration.status == "registered"
-            ).count(),
-            "is_registered": bool(registration),
-            "registration_status": registration.status if registration else None
-        })
-
-    return result
-
 
 @router.get("/me")
 def get_current_student(
