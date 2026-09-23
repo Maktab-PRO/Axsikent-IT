@@ -4270,6 +4270,79 @@ async function openStudentNotifications() {
 
 window.openStudentNotifications = openStudentNotifications;
 
+
+async function loadStudentDashboardStats() {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    try {
+        const rewardsResult = await fetchStudentApi(
+            "/students/rewards",
+            token,
+            {method:"GET"}
+        );
+
+        if (rewardsResult.response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (!rewardsResult.response.ok) {
+            throw new Error(rewardsResult.data?.detail || "Student statistikasi yuklanmadi");
+        }
+
+        const student = rewardsResult.data?.student || {};
+        const xp = Number(student.xp || 0);
+        const streak = Number(student.streak_days || 0);
+        const xpCounter = document.getElementById("statTotalXp");
+        const streakCounter = document.getElementById("statStreak");
+        const activity = document.getElementById("studentActivityContent");
+
+        if (xpCounter) xpCounter.textContent = xp.toLocaleString("uz-UZ");
+        if (streakCounter) streakCounter.textContent = streak + " kun";
+
+        if (activity) {
+            activity.innerHTML =
+                '<div style="display:flex;align-items:center;gap:14px;padding:18px;border-radius:16px;background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(52,211,153,.16);">' +
+                    '<div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(52,211,153,.10);font-size:23px;">🔥</div>' +
+                    '<div>' +
+                        '<div style="color:#fff;font-weight:800;font-size:14px;">Faollik zanjiri</div>' +
+                        '<div style="margin-top:5px;color:#94a3b8;font-size:12px;">' +
+                            (streak > 0 ? streak + " kun ketma-ket faol bo‘ldingiz." : "Bugun faoliyat boshlang va zanjirni yarating.") +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+        }
+
+        const rankingResult = await fetchStudentApi(
+            "/students/ranking",
+            token,
+            {method:"GET"}
+        );
+
+        if (rankingResult.response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (rankingResult.response.ok) {
+            const ranking = Array.isArray(rankingResult.data) ? rankingResult.data : [];
+            const current = ranking.find(item => Number(item.student_id) === Number(student.student_id));
+            const rankCounter = document.getElementById("statRank");
+
+            if (rankCounter) {
+                rankCounter.textContent = current?.rank ? "#" + current.rank : "—";
+            }
+        }
+    } catch (error) {
+        console.error("Student dashboard stats:", error);
+    }
+}
+
 async function initStudentDashboard() {
     if (!localStorage.getItem("access_token")) {
         window.location.href = "../index.html";
@@ -4282,6 +4355,7 @@ async function initStudentDashboard() {
 
     if (typeof loadStudentCourses === "function") loadStudentCourses();
     if (typeof loadStudentRanking === "function") loadStudentRanking();
+    if (typeof loadStudentDashboardStats === "function") loadStudentDashboardStats();
     if (typeof loadStudentBooks === "function") loadStudentBooks();
     if (typeof loadStudentNotifications === "function") loadStudentNotifications();
     if (typeof loadStudentDashboardHomework === "function") loadStudentDashboardHomework();
