@@ -336,6 +336,17 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
         raise HTTPException(status_code=404, detail="Faol imtihon urinishi topilmadi")
 
     attempt_deadline = attempt.deadline_at
+    if (
+        attempt.started_at and
+        exam.time_limit_minutes > 0 and
+        (
+            attempt_deadline is None or
+            attempt_deadline <= attempt.started_at
+        )
+    ):
+        attempt_deadline = attempt.started_at + timedelta(minutes=exam.time_limit_minutes)
+        attempt.deadline_at = attempt_deadline
+
     if attempt_deadline and attempt_deadline.tzinfo is None:
         attempt_deadline = attempt_deadline.replace(tzinfo=timezone.utc)
 
