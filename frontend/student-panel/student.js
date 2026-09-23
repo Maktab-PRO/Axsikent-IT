@@ -4061,6 +4061,288 @@ function startStudentExamTimer() {
     studentOnlineTimer = setInterval(tick, 1000);
 }
 
+
+async function loadStudentDashboardHomework() {
+    const container = document.getElementById("studentRecentTasks");
+    if (!container) return;
+
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        container.innerHTML = '<div style="text-align:center;padding:25px;color:#94a3b8;">Avval Student kabinetiga kiring.</div>';
+        return;
+    }
+
+    try {
+        const {response, data: homeworks} = await fetchStudentApi("/homework/student", token, {method:"GET"});
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (!response.ok) {
+            throw new Error(homeworks?.detail || "Uy vazifalarini yuklab bo‘lmadi");
+        }
+
+        const {response: submissionsResponse, data: submissions} =
+            await fetchStudentApi("/homework/student/submissions", token, {method:"GET"});
+
+        if (submissionsResponse.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (!submissionsResponse.ok) {
+            throw new Error(submissions?.detail || "Uy vazifasi natijalarini yuklab bo‘lmadi");
+        }
+
+        const homeworkList = Array.isArray(homeworks) ? homeworks : [];
+        const submissionList = Array.isArray(submissions) ? submissions : [];
+        const completedCount = submissionList.filter(item => item.status === "checked").length;
+
+        const doneCounter = document.getElementById("statHomeworkDone");
+        if (doneCounter) doneCounter.textContent = String(completedCount);
+
+        if (!homeworkList.length) {
+            container.innerHTML =
+                '<div style="text-align:center;padding:25px;color:#94a3b8;">Hozircha uy vazifalari yo‘q.</div>';
+            return;
+        }
+
+        container.innerHTML = homeworkList.slice(0, 5).map(homework => {
+            const submission = submissionList.find(item => item.homework_id === homework.id);
+            let statusText = "Yangi vazifa";
+            if (submission?.status === "checked") statusText = "✅ Tekshirildi";
+            else if (submission?.status === "submitted" || submission?.status === "late") statusText = "⏳ Topshirilgan";
+
+            return '<div class="task">' +
+                '<div class="task-check task-check-modern"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/></svg></div>' +
+                '<div>' +
+                    '<div class="task-name">' + escapeHtml(homework.title || "Uy vazifasi") + '</div>' +
+                    '<div class="task-date">' + escapeHtml(statusText) + '</div>' +
+                '</div>' +
+            '</div>';
+        }).join("");
+    } catch (error) {
+        console.error("Student dashboard homework:", error);
+        if (error?.name === "AbortError") return;
+        container.innerHTML =
+            '<div style="text-align:center;padding:25px;color:#94a3b8;">Uy vazifalarini hozircha yuklab bo‘lmadi.</div>';
+    }
+}
+
+async function loadStudentNotifications() {
+    const token = localStorage.getItem("access_token");
+    const badge = document.getElementById("studentNotificationBadge");
+    if (!token) return {unread: 0, notifications: []};
+
+    try {
+        const {response, data} = await fetchStudentApi(
+            "/students/notifications",
+            token,
+            {method:"GET"}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return {unread: 0, notifications: []};
+        }
+
+        if (!response.ok) {
+            throw new Error(data?.detail || "Bildirishnomalarni yuklab bo‘lmadi");
+        }
+
+        const unread = Number(data?.unread || 0);
+        const notifications = Array.isArray(data?.notifications) ? data.notifications : [];
+
+        if (badge) {
+            badge.textContent = String(unread);
+            badge.hidden = unread <= 0;
+        }
+
+        window.studentNotifications = notifications;
+
+        const body = document.getElementById("studentNotificationsBody");
+        if (body) renderStudentNotificationsBody(body, notifications);
+
+        return {unread, notifications};
+    } catch (error) {
+        console.error("Student notifications:", error);
+        if (badge) badge.hidden = true;
+
+        const body = document.getElementById("studentNotificationsBody");
+        if (body) {
+            body.innerHTML =
+                '<div style="padding:28px;text-align:center;color:#94a3b8;">Bildirishnomalarni yuklab bo‘lmadi. Qayta urinib ko‘ring.</div>';
+        }
+
+        return {unread: 0, notifications: []};
+    }
+}
+
+function renderStudentNotificationsBody(body, notifications) {
+    if (!body) return;
+
+    if (!notifications.length) {
+        body.innerHTML =
+            '<div style="padding:35px;text-align:center;color:#94a3b8;">Hozircha bildirishnoma yo‘q.</div>';
+        return;
+    }
+
+    body.innerHTML = notifications.map(item => {
+        const created = item.created_at
+            ? new Date(item.created_at).toLocaleString("uz-UZ")
+            : "—";
+
+        return '<button type="button" onclick="markStudentNotificationRead(' + Number(item.id) + ')" style="display:block;width:100%;padding:15px;margin-bottom:10px;text-align:left;border:1px solid ' +
+            (item.is_read ? 'rgba(255,255,255,.07)' : 'rgba(139,92,246,.25)') +
+            ';border-radius:15px;background:' +
+            (item.is_read ? 'rgba(255,255,255,.025)' : 'rgba(139,92,246,.08)') +
+            ';color:#fff;cursor:pointer;">' +
+                '<div style="font-weight:800;font-size:14px;">' + escapeHtml(item.title || "Bildirishnoma") + '</div>' +
+                '<div style="margin-top:6px;color:#aab3c2;font-size:12px;line-height:1.55;">' + escapeHtml(item.message || "") + '</div>' +
+                '<div style="margin-top:8px;color:#7f8da3;font-size:10px;">' + escapeHtml(created) + (item.is_read ? '' : ' · Yangi') + '</div>' +
+            '</button>';
+    }).join("");
+}
+
+async function markStudentNotificationRead(notificationId) {
+    const token = localStorage.getItem("access_token");
+    if (!token || !notificationId) return;
+
+    try {
+        const {response, data} = await fetchStudentApi(
+            "/students/notifications/" + Number(notificationId) + "/read",
+            token,
+            {method:"PUT"}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(data?.detail || "Bildirishnoma o‘qilgan deb belgilanmadi");
+        }
+
+        await loadStudentNotifications();
+    } catch (error) {
+        console.error("Student notification read:", error);
+    }
+}
+
+async function openStudentNotifications() {
+    const old = document.getElementById("studentNotificationsModal");
+    if (old) old.remove();
+
+    const modal = document.createElement("div");
+    modal.id = "studentNotificationsModal";
+    modal.style.cssText =
+        "position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;";
+
+    modal.innerHTML =
+        '<div style="width:min(560px,100%);max-height:86vh;display:flex;flex-direction:column;background:linear-gradient(145deg,#111827,#070b12);border:1px solid rgba(139,92,246,.28);border-radius:22px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.72);">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.08);">' +
+                '<div><div style="font-size:10px;color:#a78bfa;font-weight:900;letter-spacing:.14em;">AXSIKENT IT / ALERTS</div><h2 style="margin:5px 0 0;color:#fff;font-size:21px;">🔔 Bildirishnomalar</h2></div>' +
+                '<button type="button" id="studentNotificationsClose" style="width:40px;height:40px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;font-size:23px;cursor:pointer;">×</button>' +
+            '</div>' +
+            '<div id="studentNotificationsBody" style="overflow:auto;padding:16px;">' +
+                '<div style="padding:30px;text-align:center;color:#94a3b8;">Bildirishnomalar yuklanmoqda...</div>' +
+            '</div>' +
+        '</div>';
+
+    document.body.appendChild(modal);
+
+    const close = () => modal.remove();
+    document.getElementById("studentNotificationsClose").onclick = close;
+    modal.addEventListener("click", event => {
+        if (event.target === modal) close();
+    });
+
+    await loadStudentNotifications();
+}
+
+window.openStudentNotifications = openStudentNotifications;
+
+
+async function loadStudentDashboardStats() {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    try {
+        const rewardsResult = await fetchStudentApi(
+            "/students/rewards",
+            token,
+            {method:"GET"}
+        );
+
+        if (rewardsResult.response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (!rewardsResult.response.ok) {
+            throw new Error(rewardsResult.data?.detail || "Student statistikasi yuklanmadi");
+        }
+
+        const student = rewardsResult.data?.student || {};
+        const xp = Number(student.xp || 0);
+        const streak = Number(student.streak_days || 0);
+        const xpCounter = document.getElementById("statTotalXp");
+        const streakCounter = document.getElementById("statStreak");
+        const activity = document.getElementById("studentActivityContent");
+
+        if (xpCounter) xpCounter.textContent = xp.toLocaleString("uz-UZ");
+        if (streakCounter) streakCounter.textContent = streak + " kun";
+
+        if (activity) {
+            activity.innerHTML =
+                '<div style="display:flex;align-items:center;gap:14px;padding:18px;border-radius:16px;background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(52,211,153,.16);">' +
+                    '<div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(52,211,153,.10);font-size:23px;">🔥</div>' +
+                    '<div>' +
+                        '<div style="color:#fff;font-weight:800;font-size:14px;">Faollik zanjiri</div>' +
+                        '<div style="margin-top:5px;color:#94a3b8;font-size:12px;">' +
+                            (streak > 0 ? streak + " kun ketma-ket faol bo‘ldingiz." : "Bugun faoliyat boshlang va zanjirni yarating.") +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+        }
+
+        const rankingResult = await fetchStudentApi(
+            "/students/ranking",
+            token,
+            {method:"GET"}
+        );
+
+        if (rankingResult.response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (rankingResult.response.ok) {
+            const ranking = Array.isArray(rankingResult.data) ? rankingResult.data : [];
+            const current = ranking.find(item => Number(item.student_id) === Number(student.student_id));
+            const rankCounter = document.getElementById("statRank");
+
+            if (rankCounter) {
+                rankCounter.textContent = current?.rank ? "#" + current.rank : "—";
+            }
+        }
+    } catch (error) {
+        console.error("Student dashboard stats:", error);
+    }
+}
+
 async function initStudentDashboard() {
     if (!localStorage.getItem("access_token")) {
         window.location.href = "../index.html";
@@ -4073,6 +4355,7 @@ async function initStudentDashboard() {
 
     if (typeof loadStudentCourses === "function") loadStudentCourses();
     if (typeof loadStudentRanking === "function") loadStudentRanking();
+    if (typeof loadStudentDashboardStats === "function") loadStudentDashboardStats();
     if (typeof loadStudentBooks === "function") loadStudentBooks();
     if (typeof loadStudentNotifications === "function") loadStudentNotifications();
     if (typeof loadStudentDashboardHomework === "function") loadStudentDashboardHomework();
