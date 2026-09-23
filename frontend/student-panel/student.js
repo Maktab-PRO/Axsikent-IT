@@ -3956,3 +3956,27 @@ async function loadStudentDashboardStats() {
 }
 
 async function initStudentDashboard() {
+    if (!localStorage.getItem("access_token")) {
+        window.location.href = "../index.html";
+        return;
+    }
+
+    // Avval Student profili ochiladi. Render cold-start paytida 6 ta API'ni
+    // bir vaqtda urib yubormaslik uchun qolgan bo‘limlar keyin yuklanadi.
+    const profileLoaded = await loadStudent();
+    if (!profileLoaded && localStorage.getItem("access_token")) {
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        await loadStudent();
+    }
+
+    await Promise.allSettled([
+        loadStudentCourses(),
+        loadStudentRanking(),
+        loadStudentDashboardStats(),
+        loadStudentBooks(),
+        loadStudentNotifications(),
+        loadStudentDashboardHomework()
+    ]);
+}
+
+initStudentDashboard();
