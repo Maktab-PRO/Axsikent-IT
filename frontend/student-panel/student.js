@@ -2148,15 +2148,7 @@ async function buyStudentReward(productId) {
         console.error(error);
         if (error?.name === "AbortError") return;
 
-        container.innerHTML = `
-            <div style="
-                text-align:center;
-                padding:30px;
-                color:#ef4444;
-            ">
-                Reytingni yuklashda xatolik yuz berdi.
-            </div>
-        `;
+        return;
     }
 }
 
@@ -3061,15 +3053,7 @@ async function loadStudentBooks() {
         console.error(error);
         if (error?.name === "AbortError") return;
 
-        container.innerHTML = `
-            <div style="
-                text-align:center;
-                padding:25px;
-                color:#ff6b6b;
-            ">
-                Kitoblarni yuklashda xatolik yuz berdi.
-            </div>
-        `;
+        return;
     }
 }
 
