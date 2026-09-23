@@ -3071,10 +3071,22 @@ async function loadStudentBooks() {
 `).join("");
 
     } catch (error) {
-        console.error(error);
+        console.error("Student books:", error);
         if (error?.name === "AbortError") return;
 
-        return;
+        container.innerHTML = `
+            <div style="text-align:center;padding:30px;color:#fda4af;">
+                <strong>Kitoblarni yuklab bo‘lmadi.</strong>
+                <div style="margin-top:8px;color:#9ca3af;font-size:12px;">
+                    ${escapeHtml(error?.message || "Noma’lum xatolik")}
+                </div>
+                <button type="button"
+                    onclick="loadStudentBooks()"
+                    style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">
+                    Qayta urinish
+                </button>
+            </div>
+        `;
     }
 }
 
@@ -3465,7 +3477,12 @@ function showPremiumModal(title, message, buttonText = "Yopish", onConfirm = nul
 const oldModal = document.getElementById("premiumPurchaseModal");
 
 if (oldModal) {
-    oldModal.remove();
+    const dismissPrevious = oldModal.__premiumDismiss;
+    if (typeof dismissPrevious === "function") {
+        dismissPrevious();
+    } else {
+        oldModal.remove();
+    }
 }
 
 const modal = document.createElement("div");
@@ -3613,6 +3630,15 @@ modal.innerHTML = `
 
 document.body.appendChild(modal);
 
+let premiumModalHandled = false;
+
+const dismissPremiumModal = () => {
+    if (premiumModalHandled) return;
+    premiumModalHandled = true;
+    modal.remove();
+    if (onCancel) onCancel();
+};
+
 const cancelButton = document.getElementById(
     "premiumCancelButton"
 );
@@ -3621,20 +3647,18 @@ const confirmButton = document.getElementById(
     "premiumConfirmButton"
 );
 
-cancelButton.onclick = () => {
-    modal.remove();
-    if (onCancel) onCancel();
-};
+cancelButton.onclick = dismissPremiumModal;
+modal.__premiumDismiss = dismissPremiumModal;
 
 confirmButton.onclick = async () => {
+    if (premiumModalHandled) return;
+
+    premiumModalHandled = true;
+    modal.remove();
 
     if (onConfirm) {
-        modal.remove();
         await onConfirm();
-    } else {
-        modal.remove();
     }
-
 };
 
 }
@@ -3678,8 +3702,15 @@ async function loadStudentDashboardHomework() {
             throw new Error(submissions?.detail || "Uy vazifasi natijalarini yuklab bo‘lmadi");
         }
 
-        const homeworkList = Array.isArray(homeworks) ? homeworks : [];
-        const submissionList = Array.isArray(submissions) ? submissions : [];
+        if (!Array.isArray(homeworks)) {
+            throw new Error("Uy vazifalari ma’lumotlari noto‘g‘ri formatda");
+        }
+        if (!Array.isArray(submissions)) {
+            throw new Error("Uy vazifasi natijalari noto‘g‘ri formatda");
+        }
+
+        const homeworkList = homeworks;
+        const submissionList = submissions;
         const completedCount = submissionList.filter(item => item.status === "checked").length;
 
         const doneCounter = document.getElementById("statHomeworkDone");
