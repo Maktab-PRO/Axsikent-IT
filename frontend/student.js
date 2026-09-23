@@ -1681,11 +1681,7 @@ if (finishButton) {
 
 
             if (!response.ok) {
-
-                showMessage(
-                    data.detail || "Ma'lumotlarni olishda xatolik."
-                );
-
+                console.error("Student profile:", data.detail || response.status);
                 return;
             }
 
@@ -3533,7 +3529,7 @@ function openStudentOnlineTests(skipLoad = false) {
     })
     .catch(error => {
         if (error?.name === "AbortError") return;
-        body.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">❌ ' + escapeOnlineExamHtml(error.message || "Online testlarni yuklab bo‘lmadi.") + '</div>';
+        body.innerHTML = '<div style="padding:18px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.16);color:#fca5a5;">❌ Online testlarni yuklab bo‘lmadi. Qayta urinib ko‘ring.</div>';
     })
     .finally(() => {
         clearTimeout(timeout);
@@ -3782,8 +3778,7 @@ async function loadStudentOnlineExams() {
 
     try {
         if (studentOnlineExamsLoadController) studentOnlineExamsLoadController.abort();
-        let controller = null;
-        controller = new AbortController();
+        const controller = new AbortController();
         studentOnlineExamsLoadController = controller;
         const {response, data} = await fetchStudentApi(
             "/online-exams/available?ts=" + Date.now(),
@@ -4022,6 +4017,65 @@ async function submitStudentOnlineExam(forceTimeout = false) {
 
         showPremiumModal("Xatolik yuz berdi", escapeOnlineExamHtml(message), "Yopish");
     }
+}
+
+
+
+function markStudentExamPageVisible(visible) {
+    window.studentExamPageVisible = Boolean(visible);
+}
+
+function startStudentExamTimer() {
+    if (studentOnlineTimer) clearInterval(studentOnlineTimer);
+
+    const timer = document.getElementById("studentExamTimer");
+    const tick = () => {
+        if (!studentOnlineDeadline) return;
+
+        const left = Math.max(0, studentOnlineDeadline.getTime() - Date.now());
+        const totalSeconds = Math.floor(left / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+
+        if (timer) {
+            timer.textContent =
+                String(minutes).padStart(2, "0") + ":" +
+                String(seconds).padStart(2, "0");
+        }
+
+        if (left <= 0) {
+            clearInterval(studentOnlineTimer);
+            studentOnlineTimer = null;
+
+            const submitButton = document.getElementById("studentOnlineSubmit");
+            if (submitButton) submitButton.disabled = true;
+
+            if (studentOnlineExamId) {
+                submitStudentOnlineExam(true);
+            }
+        }
+    };
+
+    tick();
+    studentOnlineTimer = setInterval(tick, 1000);
+}
+
+async function initStudentDashboard() {
+    if (!localStorage.getItem("access_token")) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    if (typeof loadStudent === "function") {
+        await loadStudent();
+    }
+
+    if (typeof loadStudentCourses === "function") loadStudentCourses();
+    if (typeof loadStudentRanking === "function") loadStudentRanking();
+    if (typeof loadStudentBooks === "function") loadStudentBooks();
+    if (typeof loadStudentNotifications === "function") loadStudentNotifications();
+    if (typeof loadStudentDashboardHomework === "function") loadStudentDashboardHomework();
+    if (typeof loadStudentOnlineExams === "function") loadStudentOnlineExams();
 }
 
 initStudentDashboard();
