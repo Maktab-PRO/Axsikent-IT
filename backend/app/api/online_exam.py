@@ -432,6 +432,50 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
     }
 
 
+@router.get("/admin/list")
+def admin_online_exams(admin: Admin = Depends(require_admin), db: Session = Depends(get_db)):
+    exams = db.query(OnlineExam).order_by(OnlineExam.id.desc()).all()
+    return [
+        {
+            "id": exam.id,
+            "title": exam.title,
+            "description": exam.description,
+            "course_id": exam.course_id,
+            "time_limit_minutes": exam.time_limit_minutes,
+            "pass_score": exam.pass_score,
+            "max_attempts": exam.max_attempts,
+            "question_limit": exam.question_limit,
+            "question_count": db.query(OnlineExamQuestion.id).filter(
+                OnlineExamQuestion.exam_id == exam.id,
+                OnlineExamQuestion.is_active == True
+            ).count(),
+            "is_active": exam.is_active
+        }
+        for exam in exams
+    ]
+
+
+@router.put("/admin/{exam_id}/toggle")
+def toggle_online_exam(
+    exam_id: int,
+    admin: Admin = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    exam = db.query(OnlineExam).filter(OnlineExam.id == exam_id).first()
+    if not exam:
+        raise HTTPException(status_code=404, detail="Imtihon topilmadi")
+
+    exam.is_active = not exam.is_active
+    db.commit()
+    db.refresh(exam)
+
+    return {
+        "success": True,
+        "id": exam.id,
+        "is_active": exam.is_active
+    }
+
+
 @router.post("/admin/create")
 def create_exam(data: ExamCreate, admin: Admin = Depends(require_admin), db: Session = Depends(get_db)):
     if data.time_limit_minutes <= 0:
