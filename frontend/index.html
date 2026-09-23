@@ -6991,26 +6991,37 @@ async function loginUser() {
 
     message.textContent = "Kirilmoqda...";
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 60000);
+
     try {
         const response = await fetch(
             "https://axsikent-it-backend.onrender.com/students/login",
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
                 },
                 body: JSON.stringify({
                     phone: phone,
                     password: password
-                })
+                }),
+                signal: controller.signal,
+                cache: "no-store"
             }
         );
 
-        const data = await response.json();
+        const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
             message.textContent =
                 data.detail || "Login yoki parol noto‘g‘ri.";
+            return;
+        }
+
+        if (!data.access_token) {
+            message.textContent = "Server token qaytarmadi. Qayta urinib ko‘ring.";
             return;
         }
 
@@ -7019,18 +7030,19 @@ async function loginUser() {
 
         message.textContent = "Muvaffaqiyatli kirildi!";
 
-        // Login muvaffaqiyatli bo‘lgach, /students/me ni kutib turmaymiz.
-        // Student panel o‘zining student.js orqali profilni yuklaydi.
         setTimeout(() => {
             closeLoginModal();
-            window.location.href = "student-panel/student.html?v=20260923-12";
+            window.location.href = "student-panel/student.html?v=20260923-13";
         }, 300);
 
     } catch (error) {
-        message.textContent =
-            "Kirishni amalga oshirib bo‘lmadi. Qayta urinib ko‘ring.";
+        message.textContent = error?.name === "AbortError"
+            ? "Server 60 soniya ichida javob bermadi. Qayta urinib ko‘ring."
+            : "Kirishni amalga oshirib bo‘lmadi. Qayta urinib ko‘ring.";
+    } finally {
+        clearTimeout(timeout);
     }
-                   }
+}
 async function loadStudentHomeworkResults() {
 
     const token = localStorage.getItem("access_token");
