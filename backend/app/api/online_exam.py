@@ -114,6 +114,25 @@ def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security
             OnlineExamAttempt.student_id == student_id,
             OnlineExamAttempt.status == "submitted"
         ).count()
+
+        # Tugagan in_progress urinish ham max_attempts hisobiga kiradi.
+        # Faol urinish bo'lsa uni qayta davom ettirish mumkin.
+        active_attempt = db.query(OnlineExamAttempt).filter(
+            OnlineExamAttempt.exam_id == exam.id,
+            OnlineExamAttempt.student_id == student_id,
+            OnlineExamAttempt.status == "in_progress"
+        ).first()
+
+        active_attempt_expired = False
+        if active_attempt and active_attempt.deadline_at:
+            active_deadline = active_attempt.deadline_at
+            if active_deadline.tzinfo is None:
+                active_deadline = active_deadline.replace(tzinfo=timezone.utc)
+            active_attempt_expired = datetime.now(timezone.utc) >= active_deadline
+
+        effective_attempts = attempts + (1 if active_attempt_expired else 0)
+        can_start = effective_attempts < exam.max_attempts
+
         result.append({
             "id": exam.id,
             "title": exam.title,
@@ -122,8 +141,8 @@ def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security
             "time_limit_minutes": exam.time_limit_minutes,
             "pass_score": exam.pass_score,
             "max_attempts": exam.max_attempts,
-            "attempts_used": attempts,
-            "can_start": attempts < exam.max_attempts
+            "attempts_used": effective_attempts,
+            "can_start": can_start
         })
     return {"total": len(result), "exams": result}
 
