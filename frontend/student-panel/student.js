@@ -497,8 +497,7 @@ async function openStudentCourse(courseId) {
                             <div style="
                                 display:flex;
                                 justify-content:space-between;
-                                align-items:center;
-                                margin-top:9px;
+                                align-items:center;                                margin-top:9px;
                             ">
 
                                 <span style="
@@ -998,7 +997,6 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
 
         console.error(error);
         if (error?.name === "AbortError") return;
-
         container.innerHTML = `
             <div style="
                 text-align:center;
@@ -1154,6 +1152,11 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
 
     const container = document.getElementById("studentCourses");
 
+    if (!container) {
+        console.error("Student courses container topilmadi.");
+        return;
+    }
+
     container.innerHTML = `
         <div style="
             text-align:center;
@@ -1184,6 +1187,10 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
             throw new Error(
                 quizzes.detail || "Tekshiruvni yuklashda xatolik"
             );
+        }
+
+        if (!Array.isArray(quizzes)) {
+            throw new Error("Tekshiruv ma’lumotlari noto‘g‘ri formatda");
         }
 
         if (!quizzes.length) {
@@ -1332,7 +1339,12 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
             </div>
         `;
 
-        document.getElementById("lessonQuizForm").addEventListener(
+        const quizForm = document.getElementById("lessonQuizForm");
+        if (!quizForm) {
+            throw new Error("Quiz formasi topilmadi");
+        }
+
+        quizForm.addEventListener(
             "submit",
             async function(event) {
 
@@ -1361,6 +1373,10 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
 
                 const resultBox =
                     document.getElementById("quizResult");
+
+                if (!resultBox) {
+                    throw new Error("Quiz natija oynasi topilmadi");
+                }
 
                 resultBox.innerHTML = `
                     <div class="student-modern-checking-state">
@@ -1497,8 +1513,7 @@ if (finishButton) {
                 } catch (error) {
 
                     if (submitButton) {
-                        submitButton.disabled = false;
-                        submitButton.textContent = "Javoblarni tekshirish";
+                        submitButton.disabled = false;                        submitButton.textContent = "Javoblarni tekshirish";
                     }
 
                     console.error(error);
@@ -1997,8 +2012,7 @@ async function buyStudentReward(productId) {
                 }
 
                 showPremiumModal(
-                    "Xarid muvaffaqiyatli!",
-                    "🎉 " + (data.message || "Mukofot buyurtma qilindi") + "<br><br>Buyurtma №" + data.order_id + "<br>🪙 Coin: " + Number((data.student || {}).coins || 0),
+                    "Xarid muvaffaqiyatli!",                    "🎉 " + (data.message || "Mukofot buyurtma qilindi") + "<br><br>Buyurtma №" + data.order_id + "<br>🪙 Coin: " + Number((data.student || {}).coins || 0),
                     "Ajoyib!"
                 );
 
@@ -2497,7 +2511,6 @@ async function buyStudentReward(productId) {
             `;
 
         }).join("");
-
     } catch (error) {
 
         console.error(error);
@@ -2997,8 +3010,7 @@ async function loadStudentBooks() {
                 color:#E9E5F2;
                 font-size:14px;
                 font-weight:600;
-            ">
-                ${Number(book.price || 0).toLocaleString()} so'm
+            ">                ${Number(book.price || 0).toLocaleString()} so'm
             </div>
 
             <div style="
@@ -3497,8 +3509,7 @@ modal.innerHTML = `
                 width:150px;
                 height:150px;
                 background:rgba(139,92,246,0.13);
-                filter:blur(50px);
-                border-radius:50%;
+                filter:blur(50px);                border-radius:50%;
                 top:-70px;
                 right:-50px;
                 pointer-events:none;
@@ -3924,11 +3935,3 @@ async function initStudentDashboard() {
     await Promise.allSettled([
         loadStudentCourses(),
         loadStudentRanking(),
-        loadStudentDashboardStats(),
-        loadStudentBooks(),
-        loadStudentNotifications(),
-        loadStudentDashboardHomework()
-    ]);
-}
-
-initStudentDashboard();
