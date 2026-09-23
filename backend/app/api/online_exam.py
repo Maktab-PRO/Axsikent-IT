@@ -340,12 +340,45 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
         attempt_deadline = attempt_deadline.replace(tzinfo=timezone.utc)
 
     if attempt_deadline and datetime.now(timezone.utc) >= attempt_deadline:
+        try:
+            question_ids = json.loads(attempt.question_ids or "[]")
+            if not isinstance(question_ids, list):
+                question_ids = []
+        except (TypeError, ValueError, json.JSONDecodeError):
+            question_ids = []
+
+        if not question_ids:
+            raise HTTPException(status_code=409, detail="Bu test urinishida savollar saqlanmagan")
+
+        questions = db.query(OnlineExamQuestion).filter(
+            OnlineExamQuestion.id.in_(question_ids),
+            OnlineExamQuestion.exam_id == exam_id
+        ).all()
+
+        correct = sum(
+            1 for q in questions
+            if str(data.answers.get(str(q.id), "")) == q.correct_answer
+        )
+        score = round(correct / len(questions) * 100) if questions else 0
+        passed = score >= exam.pass_score
+
+        attempt.answers = json.dumps(data.answers, ensure_ascii=False)
+        attempt.score = score
+        attempt.passed = passed
         attempt.status = "submitted"
         attempt.submitted_at = datetime.now(timezone.utc)
         attempt.finished_reason = "time_expired"
-        attempt.answers = json.dumps(data.answers, ensure_ascii=False)
         db.commit()
-        raise HTTPException(status_code=408, detail="Imtihon vaqti tugagan")
+
+        return {
+            "attempt_id": attempt.id,
+            "score": score,
+            "passed": passed,
+            "pass_score": exam.pass_score,
+            "correct": correct,
+            "total": len(questions),
+            "finished_reason": "time_expired"
+        }
 
     try:
         question_ids = json.loads(attempt.question_ids or "[]")
