@@ -3776,9 +3776,10 @@ async function loadStudentOnlineExams() {
         return;
     }
 
+    let controller = null;
     try {
         if (studentOnlineExamsLoadController) studentOnlineExamsLoadController.abort();
-        const controller = new AbortController();
+        controller = new AbortController();
         studentOnlineExamsLoadController = controller;
         const {response, data} = await fetchStudentApi(
             "/online-exams/available?ts=" + Date.now(),
