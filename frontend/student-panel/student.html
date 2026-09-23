@@ -1014,15 +1014,3 @@
 </div>
 <script src="student.js?v=20260923-13"></script>
 
-<script>
-document.addEventListener("visibilitychange",function(){
-    if(document.hidden && window.studentExamPageVisible){
-        alert("⚠️ Test oynasidan chiqdingiz. Test davom etmoqda.");
-    }
-});
-window.addEventListener("blur",function(){
-    if(window.studentExamPageVisible && !document.hidden){
-        alert("⚠️ Test oynasidan boshqa oynaga o‘tdingiz. Test davom etmoqda.");
-    }
-});
-</script>
