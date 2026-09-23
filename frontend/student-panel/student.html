@@ -113,10 +113,6 @@
             Treninglar
         </button>
 
-        <button id="studentExamsMenu" class="menu-item" onclick="openStudentExams()">
-            <span class="menu-icon menu-icon-exam"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v5l-5 9a3 3 0 0 0 3 4h8a3 3 0 0 0 3-4l-5-9V3"/><path d="M8 15h8"/></svg></span>
-            Imtihonlar
-        </button>
 <div class="menu-title">
             Yordam
         </div>
@@ -1017,7 +1013,25 @@
     </div>
 
 </div>
-<script src="student.js?v=20260923-7"></script>
+<script>
+(function blockLegacyOnlineTestUi(){
+    function removeLegacyOnlineTestUi(){
+        [
+            "studentOnlineTestWindow",
+            "studentOnlineExamsContent",
+            "studentOnlineTestSection",
+            "studentExamsSection",
+            "studentExamsMenu"
+        ].forEach(function(id){
+            var node=document.getElementById(id);
+            if(node) node.remove();
+        });
+    }
+    removeLegacyOnlineTestUi();
+    new MutationObserver(removeLegacyOnlineTestUi).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+<script src="student.js?v=20260923-9"></script>
 
 <script>
 document.addEventListener("visibilitychange",function(){
