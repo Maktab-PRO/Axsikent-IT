@@ -4076,7 +4076,6 @@ async function initStudentDashboard() {
     if (typeof loadStudentBooks === "function") loadStudentBooks();
     if (typeof loadStudentNotifications === "function") loadStudentNotifications();
     if (typeof loadStudentDashboardHomework === "function") loadStudentDashboardHomework();
-    if (typeof loadStudentOnlineExams === "function") loadStudentOnlineExams();
 }
 
 initStudentDashboard();
