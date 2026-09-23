@@ -498,7 +498,6 @@ async function openStudentCourse(courseId) {
                                 display:flex;
                                 justify-content:space-between;
                                 align-items:center;                                margin-top:9px;                            ">
-
                                 <span style="
                                     font-size:12px;
                                     color:#64748b;
@@ -997,8 +996,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
         console.error(error);
         if (error?.name === "AbortError") return;
         container.innerHTML = `            <div style="
-                text-align:center;
-                padding:30px;
+                text-align:center;                padding:30px;
                 color:#f87171;
             ">
                 ❌ ${escapeHtml(error.message || "Noma’lum xatolik")}
@@ -1497,8 +1495,7 @@ if (finishButton) {
                             ">
                                 ❌ ${escapeHtml(result.message || "Tekshiruv yakunlandi")}                                <br>
                                 <span style="
-                                    display:block;
-                                    margin-top:6px;
+                                    display:block;                                    margin-top:6px;
                                     font-size:14px;
                                 ">
                                     Natija: ${result.score}/${result.total}
@@ -1997,8 +1994,7 @@ async function buyStudentReward(productId) {
                     }                );
 
                 if (response.status === 401) {
-                    localStorage.removeItem("access_token");
-                    localStorage.removeItem("user_role");
+                    localStorage.removeItem("access_token");                    localStorage.removeItem("user_role");
                     window.location.href = "../index.html";
                     return;
                 }
@@ -2163,7 +2159,11 @@ async function buyStudentReward(productId) {
         console.error(error);
         if (error?.name === "AbortError") return;
 
-        return;
+        container.innerHTML = `
+            <div style="text-align:center;padding:30px;color:#fda4af;">
+                Reytingni yuklab bo‘lmadi. Qayta urinib ko‘ring.
+            </div>
+        `;
     }
 }
 
@@ -2497,8 +2497,7 @@ async function buyStudentReward(productId) {
                                             linear-gradient(
                                                 135deg,
                                                 #22c55e,
-                                                #15803d
-                                            );
+                                                #15803d                                            );
                                         color:white;
                                         font-weight:800;
                                         cursor:pointer;
@@ -2890,7 +2889,11 @@ async function loadStudentBooks() {
         if (!response.ok) {
             throw new Error(data.detail || "Kitoblarni yuklashda xatolik");
         }
-        if (!data.books || data.books.length === 0) {
+        if (!Array.isArray(data.books)) {
+            throw new Error("Kitoblar ma’lumotlari noto‘g‘ri formatda");
+        }
+
+        if (data.books.length === 0) {
             container.innerHTML = `
                 <div style="
                     text-align:center;
@@ -2997,8 +3000,7 @@ async function loadStudentBooks() {
 
     <div style="
         display:flex;
-        justify-content:space-between;
-        align-items:flex-end;
+        justify-content:space-between;        align-items:flex-end;
         gap:15px;
         flex-wrap:wrap;
     ">
@@ -3497,8 +3499,7 @@ modal.innerHTML = `
                     145deg,
                     #111118,
                     #09090d
-                );
-            border:1px solid rgba(139,92,246,0.35);
+                );            border:1px solid rgba(139,92,246,0.35);
             border-radius:24px;
             padding:28px;
             box-sizing:border-box;
@@ -3924,7 +3925,3 @@ async function loadStudentDashboardStats() {
 }
 
 async function initStudentDashboard() {
-    if (!localStorage.getItem("access_token")) {
-        window.location.href = "../index.html";
-        return;
-    }
