@@ -341,7 +341,8 @@ document.addEventListener("click",async (event)=>{
   const openModuleBtn=event.target.closest("[data-open-module]");if(openModuleBtn){openModuleLessons(openModuleBtn.dataset.openModule,openModuleBtn.dataset.moduleId);return}
   const openLessonBtn=event.target.closest("[data-open-lesson]");if(openLessonBtn){openLesson(openLessonBtn.dataset.openLesson,openLessonBtn.dataset.moduleId,openLessonBtn.dataset.lessonId);return}
   const readBtn=event.target.closest("[data-mark-read]");if(readBtn){markRead(readBtn.dataset.course,readBtn.dataset.module,readBtn.dataset.lesson);return}
-  const quizBtn=event.target.closest("[data-submit-quiz]");if(quizBtn){submitLessonQuiz(quizBtn.dataset.course,quizBtn.dataset.module,quizBtn.dataset.lesson);return}\n  const hw=event.target.closest("[data-homework]");if(hw){openHomeworkModal(hw.dataset.homework);return}
+  const quizBtn=event.target.closest("[data-submit-quiz]");if(quizBtn){submitLessonQuiz(quizBtn.dataset.course,quizBtn.dataset.module,quizBtn.dataset.lesson);return}
+  const hw=event.target.closest("[data-homework]");if(hw){openHomeworkModal(hw.dataset.homework);return}
   const submitHw=event.target.closest("[data-submit-homework]");if(submitHw){submitHomework(submitHw.dataset.submitHomework);return}
   const buyRewardBtn=event.target.closest("[data-buy-reward]");if(buyRewardBtn){buyReward(buyRewardBtn.dataset.buyReward);return}
   const buyBookBtn=event.target.closest("[data-buy-book]");if(buyBookBtn){buyBook(buyBookBtn.dataset.buyBook);return}
