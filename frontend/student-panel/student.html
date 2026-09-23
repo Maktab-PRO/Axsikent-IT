@@ -1012,25 +1012,7 @@
     </div>
 
 </div>
-<script>
-(function blockLegacyOnlineTestUi(){
-    function removeLegacyOnlineTestUi(){
-        [
-            "studentOnlineTestWindow",
-            "studentOnlineExamsContent",
-            "studentOnlineTestSection",
-            "studentExamsSection",
-            "studentExamsMenu"
-        ].forEach(function(id){
-            var node=document.getElementById(id);
-            if(node) node.remove();
-        });
-    }
-    removeLegacyOnlineTestUi();
-    new MutationObserver(removeLegacyOnlineTestUi).observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
-<script src="student.js?v=20260923-12"></script>
+<script src="student.js?v=20260923-13"></script>
 
 <script>
 document.addEventListener("visibilitychange",function(){
