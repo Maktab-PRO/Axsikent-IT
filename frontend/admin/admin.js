@@ -4069,7 +4069,7 @@ async function loadOnlineExamAdminList() {
                 '<td>' + Number(x.question_count || 0) + '</td>' +
                 '<td>' + (x.is_active ? "Faol" : "Nofaol") + '</td>' +
                 '<td style="white-space:nowrap;">' +
-                '<button type="button" class="module-action" onclick="openOnlineExamQuestions(' + Number(x.id) + ', \'' + escapeHtml(x.title || "").replace(/'/g, "\\'") + '\')">Savollar</button> ' +
+                '<button type="button" class="module-action" onclick=\'openOnlineExamQuestions(' + Number(x.id) + ', ' + escapeHtml(JSON.stringify(x.title || "")) + ')\'>Savollar</button> ' +
                 '<button type="button" class="module-action" onclick="toggleOnlineExamAdmin(' + Number(x.id) + ')">' + (x.is_active ? "Deaktiv" : "Aktivlashtirish") + '</button>' +
                 '</td>' +
                 '</tr>'
