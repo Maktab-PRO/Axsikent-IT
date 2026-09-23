@@ -91,7 +91,7 @@ async function loadStudentCourses() {
         }
 
         if (!Array.isArray(courses)) {
-            throw new Error("Kurslar ma'lumotlari noto'g'ri formatda");
+            throw new Error("Kurslar ma'lumotlari noto‘g‘ri formatda");
         }
 
         if (!courses.length) {
@@ -307,3 +307,3619 @@ async function openStudentCourse(courseId) {
 
         if (!Array.isArray(modules)) {
             throw new Error("Modullar ma'lumotlari noto'g'ri formatda");
+        }
+
+        if (!modules.length) {
+            container.innerHTML = `
+                <div style="
+                    text-align:center;
+                    padding:40px 20px;
+                    color:#94a3b8;
+                    background:#111827;
+                    border:1px solid #1f2937;
+                    border-radius:18px;
+                ">
+                    <div style="font-size:35px;">📚</div>
+
+                    <div style="
+                        margin-top:10px;
+                        font-size:16px;
+                        font-weight:700;
+                        color:#f8fafc;
+                    ">
+                        Modullar mavjud emas
+                    </div>
+
+                    <div style="
+                        margin-top:6px;
+                        font-size:13px;
+                    ">
+                        Bu kursga hali modullar qo‘shilmagan.
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <div style="
+                margin-bottom:18px;
+            ">
+                <button
+                    onclick="loadStudentCourses()"
+                    style="
+                        border:1px solid #263244;
+                        background:#111827;
+                        color:#d1d5db;
+                        padding:10px 15px;
+                        border-radius:11px;
+                        cursor:pointer;
+                        font-weight:600;
+                    "
+                >
+                    ← Kurslarga qaytish
+                </button>
+            </div>
+
+            <div style="
+                margin-bottom:18px;
+            ">
+                <div style="
+                    color:#94a3b8;
+                    font-size:13px;
+                    margin-bottom:5px;
+                ">
+                    📖 Kurs tarkibi
+                </div>
+
+                <div style="
+                    color:#ffffff;
+                    font-size:22px;
+                    font-weight:800;
+                ">
+                    Modullar
+                </div>
+            </div>
+
+            ${modules.map((module, index) => {
+
+                const progress = Math.min(
+                    100,
+                    Math.max(0, Number(module.progress) || 0)
+                );
+                const completed = Math.max(0, Number(module.completed_lessons) || 0);
+                const total = Math.max(0, Number(module.total_lessons) || 0);
+
+                let progressText = "";
+
+                if (total > 0) {
+                    progressText = `${completed} / ${total} dars`;
+                } else {
+                    progressText = "Darslar tez orada";
+                }
+
+                return `
+                    <div
+                        onclick="openStudentModule(${courseId}, ${module.id})"
+                        style="
+                            padding:18px;
+                            margin-bottom:14px;
+                            border:1px solid #1f2937;
+                            border-radius:18px;
+                            cursor:pointer;
+                            background:
+                                linear-gradient(
+                                    145deg,
+                                    #111827,
+                                    #0b1220
+                                );
+                            box-shadow:
+                                0 8px 25px rgba(0,0,0,0.20);
+                            transition:all 0.2s ease;
+                        "
+                    >
+
+                        <div style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            gap:10px;
+                        ">
+
+                            <div style="
+                                font-size:12px;
+                                color:#64748b;
+                                font-weight:700;
+                                text-transform:uppercase;
+                                letter-spacing:0.5px;
+                            ">
+                                Modul ${index + 1}
+                            </div>
+
+                            <div style="
+                                font-size:13px;
+                                font-weight:800;
+                                color:${progress === 100 ? "#22c55e" : "#84cc16"};
+                            ">
+                                ${progress}%
+                            </div>
+
+                        </div>
+
+                        <div style="
+                            margin-top:9px;
+                            display:flex;
+                            align-items:center;
+                            gap:11px;
+                            font-size:17px;
+                            font-weight:800;
+                            color:#f8fafc;
+                        ">
+                            <span class="student-modern-module-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h13a1 1 0 0 1 1 1v15H7a2 2 0 0 0-2 2V4Z"/><path d="M7 20h12M9 8h7M9 12h7"/></svg></span>
+                            <span>${escapeHtml(module.title || "Modul")}</span>
+                        </div>
+
+                        <div style="
+                            margin-top:7px;
+                            font-size:13px;
+                            line-height:1.5;
+                            color:#94a3b8;
+                        ">
+                            ${escapeHtml(module.description || "Modulni ochish va darslarni boshlash")}
+                        </div>
+
+                        <div style="
+                            margin-top:16px;
+                        ">
+
+                            <div style="
+                                height:7px;
+                                background:#1f2937;
+                                border-radius:10px;
+                                overflow:hidden;
+                            ">
+
+                                <div style="
+                                    width:${progress}%;
+                                    height:100%;
+                                    background:
+                                        linear-gradient(
+                                            90deg,
+                                            #22c55e,
+                                            #84cc16
+                                        );
+                                    border-radius:10px;
+                                    transition:width 0.4s ease;
+                                "></div>
+
+                            </div>
+
+                            <div style="
+                                display:flex;
+                                justify-content:space-between;
+                                align-items:center;
+                                margin-top:9px;
+                            ">
+
+                                <span style="
+                                    font-size:12px;
+                                    color:#64748b;
+                                ">
+                                    ${progressText}
+                                </span>
+
+                                <span style="
+                                    font-size:12px;
+                                    font-weight:700;
+                                    color:${progress === 100 ? "#22c55e" : "#94a3b8"};
+                                ">
+                                    ${progress === 100 ? "✅ Tugatilgan" : "▶ Davom etish"}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                `;
+            }).join("")}
+        `;
+
+    } catch (error) {
+
+        console.error(error);
+        if (error?.name === "AbortError") return;
+
+        container.innerHTML = `
+            <div style="
+                text-align:center;
+                padding:35px 20px;
+                color:#f87171;
+                background:#111827;
+                border:1px solid #3f1d1d;
+                border-radius:18px;
+            ">
+                <div style="font-size:32px;">⚠️</div>
+
+                <div style="
+                    margin-top:10px;
+                    font-weight:700;
+                ">
+                    Modullarni yuklashda xatolik yuz berdi.
+                </div>
+            </div>
+        `;
+    }
+}
+
+async function openStudentModule(courseId, moduleId) {
+
+    const token = localStorage.getItem("access_token");
+    const container = document.getElementById("studentCourses");
+
+    if (!token) {
+        window.location.href = "../index.html";
+        return;
+    }
+
+    if (!container) {
+        console.error("Student courses container topilmadi.");
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="
+            text-align:center;
+            padding:25px;
+            color:#7b8496;
+        ">
+            <span class="student-modern-loading-icon student-loading-lessons"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span> Darslar yuklanmoqda...
+        </div>
+    `;
+
+    try {
+        const {response, data: lessons} = await fetchStudentApi(
+            `/students/courses/${courseId}/modules/${moduleId}/lessons`,
+            token
+        );
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+
+
+        if (!response.ok) {
+            throw new Error("Darslarni yuklashda xatolik");
+        }
+
+        if (!Array.isArray(lessons)) {
+            throw new Error("Darslar ma'lumotlari noto'g'ri formatda");
+        }
+
+        if (!lessons.length) {
+
+            container.innerHTML = `
+                <div style="
+                    text-align:center;
+                    padding:25px;
+                    color:#7b8496;
+                ">
+                    📖 Bu modulda hozircha darslar mavjud emas.
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = `
+            <div style="margin-bottom:15px;">
+
+                <button
+                    onclick="openStudentCourse(${courseId})"
+                    style="
+                        border:none;
+                        background:#eef2f7;
+                        padding:9px 14px;
+                        border-radius:10px;
+                        cursor:pointer;
+                    "
+                >
+                    ← Modullarga qaytish
+                </button>
+
+            </div>
+
+            ${lessons.map((lesson, index) => `
+    <div
+        onclick="openStudentLesson(${courseId}, ${moduleId}, ${lesson.id})"
+        style="
+            padding:20px;
+            margin-bottom:14px;
+            border:1px solid #1f2937;
+            border-radius:18px;
+            background:
+                linear-gradient(
+                    145deg,
+                    #111827,
+                    #0b1220
+                );
+            cursor:pointer;
+            box-shadow:0 8px 25px rgba(0,0,0,.20);
+            transition:all .2s ease;
+        "
+    >
+
+        <div style="
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+        ">
+
+            <div style="
+                display:flex;
+                align-items:center;
+                gap:13px;
+            ">
+
+                <div class="student-modern-lesson-icon ${lesson.completed ? "completed" : ""}" style="
+                    width:46px;
+                    height:46px;
+                    border-radius:14px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    background:
+                        ${lesson.completed
+                            ? "rgba(34,197,94,.12)"
+                            : "rgba(59,130,246,.12)"
+                        };
+                    border:1px solid
+                        ${lesson.completed
+                            ? "rgba(34,197,94,.25)"
+                            : "rgba(59,130,246,.25)"
+                        };
+                    font-size:21px;
+                ">
+                    ${lesson.completed ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-9"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6a2 2 0 0 1 2-2h5v16H7a2 2 0 0 0-2 2V6Z"/><path d="M12 4h5a2 2 0 0 1 2 2v16h-7V4Z"/><path d="m10 10 4 2-4 2v-4Z"/></svg>'}
+                </div>
+
+                <div>
+
+                    <div style="
+                        font-size:11px;
+                        color:#64748b;
+                        font-weight:700;
+                        text-transform:uppercase;
+                        letter-spacing:.6px;
+                    ">
+                        Dars ${index + 1}
+                    </div>
+
+                    <div style="
+                        margin-top:4px;
+                        font-size:16px;
+                        color:#f8fafc;
+                        font-weight:800;
+                    ">
+                        ${escapeHtml(lesson.title || "Dars")}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div style="
+                color:#22c55e;
+                font-size:20px;
+            ">
+                →
+            </div>
+
+        </div>
+
+        <div style="
+            margin-top:14px;
+            color:#64748b;
+            font-size:12px;
+        ">
+            ${lesson.completed
+                ? "✅ Bu dars tugallangan"
+                : "📖 Darsni ochish va o‘rganishni boshlash"
+            }
+        </div>
+
+    </div>
+`).join("")}
+        `;
+
+    } catch (error) {
+
+        console.error(error);
+        if (error?.name === "AbortError") return;
+
+        container.innerHTML = `
+            <div style="
+                text-align:center;
+                padding:25px;
+                color:#dc2626;
+            ">
+                Darslarni yuklashda xatolik yuz berdi.
+            </div>
+        `;
+    }
+}
+
+        function safeLessonUrl(url) {
+    try {
+        const parsed = new URL(String(url || ""), window.location.origin);
+        if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+            return parsed.href;
+        }
+    } catch (_) {}
+    return "#";
+}
+
+
+async function openStudentLesson(courseId, moduleId, lessonId) {
+
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        window.location.href = "../index.html";
+        return;
+    }
+
+    const container = document.getElementById("studentCourses");
+
+    container.innerHTML = `
+        <div style="
+            text-align:center;
+            padding:40px;
+            color:#94a3b8;
+        ">
+            📖 Dars yuklanmoqda...
+        </div>
+    `;
+
+    try {
+        if (studentOpenLessonController) studentOpenLessonController.abort();
+        const controller = new AbortController();
+        studentOpenLessonController = controller;
+
+        const {response, data: lessons} = await fetchStudentApi(
+            `/students/courses/${courseId}/modules/${moduleId}/lessons`,
+            token,
+            {signal: controller.signal}
+        );
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+
+
+        if (!response.ok) {
+            throw new Error(
+                "Dars ma'lumotlarini yuklashda xatolik"
+            );
+        }
+
+        const lesson = lessons.find(
+            item => Number(item.id) === Number(lessonId)
+        );
+
+        if (!lesson) {
+            throw new Error("Dars topilmadi");
+        }
+
+        container.innerHTML = `
+
+            <div style="
+                max-width:850px;
+                margin:0 auto;
+            ">
+
+                <button
+                    onclick="openStudentModule(${courseId}, ${moduleId})"
+                    style="
+                        border:1px solid #263244;
+                        background:#111827;
+                        color:#d1d5db;
+                        padding:10px 15px;
+                        border-radius:11px;
+                        cursor:pointer;
+                        font-weight:600;
+                        margin-bottom:20px;
+                    "
+                >
+                    ← Darslar ro‘yxatiga qaytish
+                </button>
+
+
+                <div style="
+                    background:
+                        linear-gradient(
+                            145deg,
+                            #111827,
+                            #0b1220
+                        );
+                    border:1px solid #1f2937;
+                    border-radius:22px;
+                    padding:25px;
+                    box-shadow:
+                        0 15px 40px rgba(0,0,0,.25);
+                ">
+
+                    <div style="
+                        color:#4ade80;
+                        font-size:12px;
+                        font-weight:800;
+                        letter-spacing:1px;
+                        text-transform:uppercase;
+                    ">
+                        📖 DARS ${lessonId}
+                    </div>
+
+
+                    <h1 style="
+                        margin-top:10px;
+                        font-size:26px;
+                        color:#f8fafc;
+                    ">
+                        ${escapeHtml(lesson.title || "Dars")}
+                    </h1>
+
+
+                    <div style="
+                        margin-top:25px;
+                        padding:22px;
+                        background:#080d16;
+                        border:1px solid #1f2937;
+                        border-radius:16px;
+                        color:#cbd5e1;
+                        font-size:15px;
+                        line-height:1.8;
+                    ">
+                        ${
+                            lesson.content
+                            || `
+                                <div style="
+                                    color:#64748b;
+                                    text-align:center;
+                                    padding:25px;
+                                ">
+                                    📚 Bu dars uchun hozircha matn
+                                    mavjud emas.
+                                </div>
+                            `
+                        }
+                    </div>
+
+
+                    ${
+                        lesson.video_url
+                        ? `
+                            <div style="
+                                margin-top:20px;
+                            ">
+                                <a
+                                    href="${safeLessonUrl(lesson.video_url)}"
+                                    target="_blank"
+                                    style="
+                                        display:block;
+                                        text-align:center;
+                                        padding:13px;
+                                        border-radius:12px;
+                                        background:#1d4ed8;
+                                        color:white;
+                                        text-decoration:none;
+                                        font-weight:700;
+                                    "
+                                >
+                                    ▶️ Dars videosini ko‘rish
+                                </a>
+                            </div>
+                        `
+                        : ""
+                    }
+
+
+                    <div style="
+                        margin-top:25px;
+                    ">
+
+                        ${
+                            lesson.completed
+                            ? `
+                                <button
+                                    disabled
+                                    style="
+                                        width:100%;
+                                        border:none;
+                                        background:#166534;
+                                        color:white;
+                                        padding:15px;
+                                        border-radius:12px;
+                                        font-weight:800;
+                                    "
+                                >
+                                    ✅ Dars tugallangan
+                                </button>
+                            `
+                            : `
+                                <button
+                                    onclick="
+                                        markLessonRead(\n                                            ${courseId},\n                                            ${moduleId},\n                                            ${lessonId},\n                                            this\n                                        )
+                                    "
+                                    style="
+                                        width:100%;
+                                        border:none;
+                                        background:
+                                            linear-gradient(
+                                                135deg,
+                                                #16a34a,
+                                                #22c55e
+                                            );
+                                        color:white;
+                                        padding:15px;
+                                        border-radius:12px;
+                                        font-weight:800;
+                                        cursor:pointer;
+                                    "
+                                >
+                                    📖 Darsni o‘qidim
+                                </button>
+                            `
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+
+    } catch (error) {
+
+        console.error(error);
+        if (error?.name === "AbortError") return;
+
+        container.innerHTML = `
+            <div style="
+                text-align:center;
+                padding:30px;
+                color:#f87171;
+            ">
+                ❌ ${escapeHtml(error.message || "Noma’lum xatolik")}
+            </div>
+        `;
+    }
+}
+        async function markLessonRead(courseId, moduleId, lessonId, button) {
+
+    if (button?.disabled) return;
+    if (button) { button.disabled = true; button.textContent = "Yuklanmoqda..."; }
+
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        window.location.href = "../index.html";
+        return;
+    }
+
+    const container = document.getElementById("studentCourses");
+
+    try {
+
+        const {response, data: result} = await fetchStudentApi(
+            `/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/read`,
+            token,
+            {method: "POST"}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                result.detail || "Darsni o‘qilgan deb belgilashda xatolik"
+            );
+        }
+
+        container.innerHTML = `
+            <div style="
+                max-width:700px;
+                margin:40px auto;
+                text-align:center;
+                background:#111827;
+                border:1px solid #1f2937;
+                border-radius:20px;
+                padding:30px;
+            ">
+
+                <div style="
+                    font-size:45px;
+                    margin-bottom:15px;
+                ">
+                    ✅
+                </div>
+
+                <h2 style="
+                    color:#f8fafc;
+                    margin-bottom:10px;
+                ">
+                    Dars o‘qildi
+                </h2>
+
+                <p style="
+                    color:#94a3b8;
+                    line-height:1.6;
+                ">
+                    ${result.has_quiz
+                        ? "Endi dars bo‘yicha bilimingizni tekshiring."
+                        : "Bu dars uchun tekshiruv mavjud emas. Darsni to‘g‘ridan-to‘g‘ri yakunlashingiz mumkin."
+                    }
+                </p>
+
+                ${result.has_quiz
+                    ? `<button
+                        onclick="
+                            startLessonQuiz(
+                                ${courseId},
+                                ${moduleId},
+                                ${lessonId}
+                            )
+                        "
+                        style="
+                            width:100%;
+                            margin-top:20px;
+                            border:none;
+                            background:linear-gradient(135deg,#0f766e,#34d399);
+                            color:white;
+                            padding:15px;
+                            border-radius:12px;
+                            font-weight:800;
+                            font-size:15px;
+                            cursor:pointer;
+                        "
+                    >
+                        📝 Darsni tekshirish
+                    </button>`
+                    : `<button
+                        type="button"
+                        id="finishLessonButton"
+                        onclick="completeStudentLesson(${courseId},${moduleId},${lessonId},this)"
+                        style="
+                            width:100%;
+                            margin-top:20px;
+                            border:none;
+                            background:linear-gradient(135deg,#166534,#22c55e);
+                            color:white;
+                            padding:15px;
+                            border-radius:12px;
+                            font-weight:800;
+                            font-size:15px;
+                            cursor:pointer;
+                        "
+                    >
+                        ✅ Darsni tugatdim
+                    </button>`
+                }
+
+            </div>
+        `;
+
+    } catch (error) {
+        console.error(error);
+
+        container.innerHTML = `
+            <div style="
+                text-align:center;
+                padding:30px;
+                color:#f87171;
+            ">
+                ❌ ${escapeHtml(error.message || "Noma’lum xatolik")}
+            </div>
+        `;
+    }
+}
+
+        async function startLessonQuiz(courseId, moduleId, lessonId) {
+
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        window.location.href = "../index.html";
+        return;
+    }
+
+    const container = document.getElementById("studentCourses");
+
+    container.innerHTML = `
+        <div style="
+            text-align:center;
+            padding:40px 20px;
+            color:#7b8496;
+        ">
+            <div class="student-modern-loading-icon student-loading-check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/></svg></div>
+            <div style="margin-top:10px;font-weight:600;">
+                Tekshiruv yuklanmoqda...
+            </div>
+        </div>    `;
+    try {
+
+        const {response, data: quizzes} = await fetchStudentApi(
+            `/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz`,
+            token
+        );
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+
+
+        if (!response.ok) {
+            throw new Error(
+                quizzes.detail || "Tekshiruvni yuklashda xatolik"
+            );
+        }
+
+        if (!quizzes.length) {
+            throw new Error(
+                "Bu dars uchun tekshiruv mavjud emas."
+            );
+        }
+
+        if (quizzes[0]?.quiz_blocked) {
+            container.innerHTML = `
+                <div style="max-width:700px;margin:0 auto;">
+                    <button type="button" onclick="openStudentModule(${courseId}, ${moduleId})"
+                        style="border:none;background:#eef2f7;padding:9px 14px;border-radius:10px;cursor:pointer;margin-bottom:18px;">
+                        ← Darsga qaytish
+                    </button>
+                    <div style="background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(239,68,68,.35);border-radius:22px;padding:28px;text-align:center;color:#f8fafc;">
+                        <div style="font-size:42px;">🔒</div>
+                        <h2 style="margin:10px 0;color:#f8fafc;">Quiz vaqtincha yopildi</h2>
+                        <p style="color:#cbd5e1;line-height:1.6;">Quiz 3 marta muvaffaqiyatsiz topshirildi. Qayta ochish uchun o'qituvchingizga murojaat qiling.</p>
+                        <div style="margin-top:12px;color:#fca5a5;font-weight:700;">Muvaffaqiyatsiz urinishlar: ${Number(quizzes[0]?.quiz_failures || 0)}</div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = `
+            <div style="
+                max-width:700px;
+                margin:0 auto;
+            ">
+
+                <button
+                    onclick="openStudentModule(${courseId}, ${moduleId})"
+                    style="
+                        border:none;
+                        background:#eef2f7;
+                        padding:9px 14px;
+                        border-radius:10px;
+                        cursor:pointer;
+                        margin-bottom:18px;
+                    "
+                >
+                    ← Darsga qaytish
+                </button>
+
+                <div style="
+                    background:linear-gradient(145deg,#111827,#0b1220);
+                    border:1px solid rgba(52,211,153,.25);
+                    border-radius:22px;
+                    padding:24px;
+                    box-shadow:0 20px 50px rgba(0,0,0,.35);
+                ">
+
+                    <div style="
+                        font-size:13px;
+                        color:#34d399;
+                        font-weight:700;
+                        margin-bottom:8px;
+                    ">
+                        📝 DARS TEKSHIRUVI
+                    </div>
+
+                    <h2 style="
+                        margin:0 0 20px;
+                        color:#f8fafc;
+                    ">
+                        Bilimingizni tekshiring
+                    </h2>
+
+                    <form id="lessonQuizForm">
+
+                        ${quizzes.map((quiz, index) => `
+                            <div style="
+                                margin-bottom:24px;
+                                padding-bottom:20px;
+                                border-bottom:1px solid #eef1f5;
+                            ">
+
+                                <div style="
+                                    font-weight:700;
+                                    color:#f1f5f9;
+                                    margin-bottom:12px;
+                                    line-height:1.5;
+                                ">
+                                    ${index + 1}. ${escapeHtml(quiz.question || "")}
+                                </div>
+
+                                ${[
+                                    ["A", quiz.option_a],
+                                    ["B", quiz.option_b],
+                                    ["C", quiz.option_c],
+                                    ["D", quiz.option_d]
+                                ].map(([letter, option]) => `
+                                    <label style="
+                                        display:flex;
+                                        align-items:center;
+                                        gap:10px;
+                                        padding:12px;
+                                        margin-bottom:8px;
+                                        border:1px solid rgba(148,163,184,.25);
+                                        border-radius:14px;
+                                        cursor:pointer;
+                                        background:rgba(255,255,255,.06);
+                                        color:#f8fafc;
+                                    ">
+                                        <input
+                                            type="radio"
+                                            name="quiz_${quiz.id}"
+                                            value="${letter}"
+                                        >
+                                        <span>${letter}) ${escapeHtml(option || "")}</span>
+                                    </label>
+                                `).join("")}
+
+                            </div>
+                        `).join("")}
+
+                        <button
+                            type="submit"
+                            style="
+                                width:100%;
+                                border:none;
+                                background:linear-gradient(135deg,#16a34a,#22c55e);
+                                color:white;
+                                padding:14px;
+                                border-radius:12px;
+                                font-size:16px;
+                                font-weight:700;
+                                cursor:pointer;
+                            "
+                        >
+                            ✅ Javoblarni tekshirish
+                        </button>
+
+                    </form>
+
+                    <div
+                        id="quizResult"
+                        style="
+                            margin-top:15px;
+                        "
+                    ></div>
+
+                </div>
+            </div>
+        `;
+
+        document.getElementById("lessonQuizForm").addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+                const submitButton = event.submitter;
+                if (submitButton?.disabled) return;
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.textContent = "Tekshirilmoqda...";
+                }
+
+                const answers = {};
+
+                quizzes.forEach(quiz => {
+
+                    const selected = document.querySelector(
+                        `input[name="quiz_${quiz.id}"]:checked`
+                    );
+
+                    if (selected) {
+                        answers[quiz.id] = selected.value;
+                    }
+
+                });
+
+                const resultBox =
+                    document.getElementById("quizResult");
+
+                resultBox.innerHTML = `
+                    <div class="student-modern-checking-state">
+                        <span class="student-modern-loading-icon student-loading-check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+                        <span>Tekshirilmoqda...</span>
+                    </div>
+                `;
+
+                try {
+
+                    const {response: submitResponse, data: result} = await fetchStudentApi(
+                        `/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quiz`,
+                        token,
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify(answers)
+                        }
+                    );
+
+                    if (submitResponse.status === 401) {
+                        localStorage.removeItem("access_token");
+                        localStorage.removeItem("user_role");
+                        window.location.href = "../index.html";
+                        return;
+                    }
+
+                    if (!submitResponse.ok) {
+                        throw new Error(
+                            result.detail ||
+                            "Javoblarni tekshirishda xatolik"
+                        );
+                    }
+
+                    if (result.quiz_blocked) {
+                        resultBox.innerHTML = `
+                            <div style="padding:18px;background:#fff1f2;border:1px solid #fda4af;border-radius:12px;color:#9f1239;text-align:center;font-weight:600;">
+                                🔒 Quiz 3 marta muvaffaqiyatsiz topshirildi.
+                                <br>
+                                <span style="display:block;margin-top:6px;font-size:14px;font-weight:500;">Qayta ochish uchun o'qituvchingizga murojaat qiling.</span>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    if (result.passed) {
+
+                        resultBox.innerHTML = `
+                            <div style="
+                                padding:18px;
+                                background:#ecfdf5;
+                                border:1px solid #86efac;
+                                border-radius:12px;
+                                color:#166534;
+                                text-align:center;
+                                font-weight:600;
+                            ">
+                                🎉 ${escapeHtml(result.message || "Tekshiruv yakunlandi")}
+                                <br>
+                                <span style="
+                                    display:block;
+                                    margin-top:6px;
+                                    font-size:14px;
+                                ">
+                                    Natija: ${result.score}/${result.total}
+                                </span>
+                            </div>
+
+                            <button
+    type="button"
+    id="finishLessonButton"
+    style="
+        width:100%;
+        margin-top:12px;
+        border:none;
+        background:#166534;
+        color:white;
+        padding:14px;
+        border-radius:12px;
+        font-weight:700;
+        cursor:pointer;
+        position:relative;
+        z-index:9999;
+    "
+>
+    ✅ Darsni tugatdim
+</button>
+                        `;
+const finishButton =
+    document.getElementById("finishLessonButton");
+
+if (finishButton) {
+    finishButton.addEventListener("click", function () {
+
+        console.log("Darsni tugatdim bosildi");
+
+        completeStudentLesson(
+            courseId,
+            moduleId,
+            lessonId,
+            this
+        );
+
+    });
+}
+
+                    } else {
+
+                        resultBox.innerHTML = `
+                            <div style="
+                                padding:18px;
+                                background:#fef2f2;
+                                border:1px solid #fecaca;
+                                border-radius:12px;
+                                color:#991b1b;
+                                text-align:center;
+                                font-weight:600;
+                            ">
+                                ❌ ${escapeHtml(result.message || "Tekshiruv yakunlandi")}
+                                <br>
+                                <span style="
+                                    display:block;
+                                    margin-top:6px;
+                                    font-size:14px;
+                                ">
+                                    Natija: ${result.score}/${result.total}
+                                </span>
+                            </div>
+                        `;
+                    }
+
+                } catch (error) {
+
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.textContent = "Javoblarni tekshirish";
+                    }
+
+                    console.error(error);
+
+                    resultBox.innerHTML = `
+                        <div style="
+                            padding:15px;
+                            background:#fef2f2;
+                            border-radius:10px;
+                            color:#dc2626;
+                        ">
+                            ❌ ${escapeHtml(error.message || "Noma’lum xatolik")}
+                        </div>
+                    `;
+                }
+            }
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div style="
+                text-align:center;
+                padding:30px;
+                color:#dc2626;
+            ">
+                ❌ ${escapeHtml(error.message || "Noma’lum xatolik")}
+            </div>
+        `;
+    }
+}
+    
+        async function completeStudentLesson(courseId, moduleId, lessonId, button) {
+        if (button?.disabled) return;
+        if (button) { button.disabled = true; button.textContent = "Yakunlanmoqda..."; }
+        let currentCourseId = courseId;
+        let currentModuleId = moduleId;
+
+        const token = localStorage.getItem("access_token");
+
+        if (!token) {
+            window.location.href = "../index.html";
+            return;
+        }
+
+        try {
+
+            const {response, data: result} = await fetchStudentApi(
+                `/students/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/complete`,
+                token,
+                {method: "POST"}
+            );
+
+
+            if (response.status === 401) {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user_role");
+                window.location.href = "../index.html";
+                return;
+            }
+
+            if (!response.ok) {
+
+                showLessonErrorModal(
+                    result.detail || "Darsni yakunlashda xatolik"
+                );
+
+                return;
+            }
+
+            showLessonSuccessModal(result.progress);
+
+            // Backend progressni yangiladi. UI ham darhol yangilansin:
+            // kurs/modul ro'yxatida eski progress qolib ketmasligi kerak.
+            await loadStudentCourses();
+
+           if (button) {
+
+    button.textContent = "✅ Tugallandi";
+
+    button.disabled = true;
+
+    button.style.background = "#166534";
+
+    button.style.cursor = "default";
+}
+        } catch (error) {
+
+            if (button) {
+                button.disabled = false;
+                button.textContent = "✅ Darsni tugatdim";
+                button.style.background = "linear-gradient(135deg,#166534,#22c55e)";
+                button.style.cursor = "pointer";
+            }
+
+            console.error(error);
+
+            showLessonErrorModal(
+                error?.message || "Amalni bajarib bo‘lmadi. Qayta urinib ko‘ring."
+            );
+        }
+    }
+
+        function showLessonErrorModal(message) {
+
+        const modal =
+            document.getElementById("lessonErrorModal");
+
+        const text =
+            document.getElementById("lessonErrorText");
+
+        if (!modal) return;
+
+        if (text) {
+            text.textContent =
+                message || "Darsni yakunlashda xatolik";
+        }
+
+        modal.classList.add("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+    }
+
+
+    function closeLessonErrorModal() {
+
+        const modal =
+            document.getElementById("lessonErrorModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+    }
+
+
+    function showLessonSuccessModal(progress) {
+
+        const modal =
+            document.getElementById("lessonSuccessModal");
+
+        const percent =
+            document.getElementById("lessonSuccessPercent");
+
+        const fill =
+            document.getElementById("lessonSuccessFill");
+
+        if (!modal) return;
+
+        if (percent) {
+            percent.textContent =
+                `${progress}%`;
+        }
+
+        if (fill) {
+            fill.style.width =
+                `${progress}%`;
+        }
+
+        modal.classList.add("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "false"
+        );
+    }
+
+
+    function closeLessonSuccessModal() {
+
+        const modal =
+            document.getElementById("lessonSuccessModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("show");
+
+        modal.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+    }
+    async function loadStudent() {
+        const token = localStorage.getItem("access_token");
+
+        if (!token) {
+            window.location.href = "../index.html";
+            return false;
+        }
+
+        for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+                const {response, data} = await fetchStudentApi("/students/me", token);
+
+                if (response.status === 401) {
+                    localStorage.removeItem("access_token");
+                    localStorage.removeItem("user_role");
+                    window.location.href = "../index.html";
+                    return false;
+                }
+
+                if (!response.ok) {
+                    console.error("Student profile:", data.detail || response.status);
+                    if (attempt === 0) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        continue;
+                    }
+                    return false;
+                }
+
+                const fullName = data.full_name || "O‘quvchi";
+
+                document.getElementById("welcomeName").textContent =
+                    `Xush kelibsiz, ${fullName}! 👋`;
+
+                document.getElementById("topStudentName").textContent = fullName;
+
+                const firstLetter = fullName.charAt(0).toUpperCase();
+                document.getElementById("avatarLetter").textContent = firstLetter;
+
+                return true;
+            } catch (error) {
+                console.error("Student profile:", error);
+                if (error?.name === "AbortError") return false;
+                if (attempt === 0) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    continue;
+                }
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+
+    /* =========================
+       LOGOUT
+    ========================= */
+
+    function openLogoutModal() {
+
+    const modal = document.getElementById("logoutModal");
+
+    if (!modal) return;
+
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden", "false");
+
+}
+
+
+function closeLogoutModal() {
+
+    const modal = document.getElementById("logoutModal");
+
+    if (!modal) return;
+
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+
+}
+
+
+function confirmLogoutStudent() {
+
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user_role");
+
+    window.location.href = "../index.html";
+
+}
+
+
+    function openStudentSupport() {
+        const modal = document.getElementById("studentSupportModal");
+        if (!modal) return;
+        modal.classList.add("show");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("support-modal-open");
+    }
+
+    function closeStudentSupport() {
+        const modal = document.getElementById("studentSupportModal");
+        if (!modal) return;
+        modal.classList.remove("show");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("support-modal-open");
+    }
+
+    /* =========================
+       MENU
+    ========================= */
+
+    function selectMenu(element) {
+
+        document
+            .querySelectorAll(".menu-item")
+            .forEach(item => {
+                item.classList.remove("active");
+            });
+
+
+        element.classList.add("active");
+
+    }
+
+    async function openStudentRankingMenu(element) {
+
+    selectMenu(element);
+
+    const container = document.getElementById("studentRanking");
+
+    if (!container) {
+        return;
+    }
+
+    container.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+    await loadStudentRanking();
+}
+
+    async function openStudentRewardsMenu(element) {
+        selectMenu(element);
+        const modalId = "studentRewardsModal";
+        const oldModal = document.getElementById(modalId);
+        if (oldModal) oldModal.remove();
+
+        const modal = document.createElement("div");
+        modal.id = modalId;
+        modal.className = "student-rewards-modal";
+        modal.innerHTML =
+            '<div class="student-rewards-modal-backdrop"></div>' +
+            '<div class="student-rewards-modal-box">' +
+                '<button type="button" class="student-rewards-modal-close" aria-label="Yopish">×</button>' +
+                '<div class="student-rewards-modal-kicker">AXSIKENT IT / REWARDS</div>' +
+                '<h2>Mukofotlar</h2>' +
+                '<div id="studentRewardsModalContent"></div>' +
+            '</div>';
+
+        document.body.appendChild(modal);
+
+        const close = function(){ modal.remove(); };
+        modal.querySelector(".student-rewards-modal-close").onclick = close;
+        modal.querySelector(".student-rewards-modal-backdrop").onclick = close;
+
+        await loadStudentRewards("studentRewardsModalContent");
+    }
+
+    let studentRewardsLoadController = null;
+
+async function loadStudentRewards(targetId) {
+    const container = document.getElementById(targetId || "studentRewardsContent");
+    if (!container) return;
+
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        container.innerHTML = '<div style="text-align:center;padding:30px;color:#ef4444;">Avval tizimga kiring.</div>';
+        return;
+    }
+
+    container.innerHTML = '<div style="text-align:center;padding:25px;color:#7b8496;">Mukofotlar yuklanmoqda...</div>';
+
+    try {
+        if (studentRewardsLoadController) studentRewardsLoadController.abort();
+        let controller = null;
+        controller = new AbortController();
+        studentRewardsLoadController = controller;
+        const timer = setTimeout(() => controller.abort(), 10000);
+
+        let response;
+        let data = {};
+        try {
+            response = await fetch(API_URL + "/students/rewards?ts=" + Date.now(), {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Accept": "application/json"
+                },
+                cache: "no-store",
+                signal: controller.signal
+            });
+
+            const text = await response.text();
+            if (text) {
+                try { data = JSON.parse(text); } catch (_) { data = {}; }
+            }
+        } finally {
+            clearTimeout(timer);
+            if (studentRewardsLoadController === controller) studentRewardsLoadController = null;
+        }
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error("Mukofotlarni yuklab bo‘lmadi. Qayta urinib ko‘ring.");
+        }
+
+        const student = data.student || {};
+        const rewards = Array.isArray(data.rewards) ? data.rewards : [];
+
+        const rewardHtml = rewards.map(function(reward) {
+            const stock = Number(reward.stock || 0);
+            const coinPrice = Number(reward.coin_price || 0);
+            const crystalPrice = Number(reward.crystal_price || 0);
+            const canBuy = stock > 0 && Number(student.coins || 0) >= coinPrice;
+
+            return '<div style="position:relative;overflow:hidden;border:1px solid rgba(139,92,246,.28);border-radius:20px;padding:22px;margin-bottom:16px;background:linear-gradient(145deg,rgba(20,18,30,.96),rgba(10,10,15,.98));box-shadow:0 12px 35px rgba(0,0,0,.28);">' +
+                '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">' +
+                    '<div style="width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:25px;background:linear-gradient(135deg,#8B5CF6,#6D28D9);">🎁</div>' +
+                    '<div style="min-width:0;"><h3 style="margin:0;color:#fff;font-size:18px;">' + escapeHtml(reward.name || "Mukofot") + '</h3>' +
+                    '<div style="margin-top:4px;color:' + (stock > 0 ? '#86efac' : '#fca5a5') + ';font-size:12px;font-weight:700;">' + (stock > 0 ? "Mavjud: " + stock + " dona" : "Hozircha tugagan") + '</div></div>' +
+                '</div>' +
+                '<p style="color:#aaa5b8;margin:0 0 18px;line-height:1.6;font-size:14px;">' + escapeHtml(reward.description || "Mukofot tavsifi mavjud emas") + '</p>' +
+                '<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:15px;flex-wrap:wrap;">' +
+                    '<div><div style="color:#817c8f;font-size:12px;margin-bottom:5px;">Mukofot narxi</div>' +
+                    '<div style="color:#c4b5fd;font-size:16px;font-weight:800;">🪙 ' + coinPrice + ' Coin</div>' +
+
+                    '</div>' +
+                    '<button type="button" onclick="buyStudentReward(' + Number(reward.id) + ')" ' + (canBuy ? '' : 'disabled') + ' style="border:none;border-radius:13px;padding:12px 20px;background:' + (canBuy ? 'linear-gradient(135deg,#8B5CF6,#6D28D9)' : 'rgba(255,255,255,.08)') + ';color:' + (canBuy ? '#fff' : '#777') + ';font-weight:800;cursor:' + (canBuy ? 'pointer' : 'not-allowed') + ';">' + (stock <= 0 ? "Tugagan" : (canBuy ? "Sotib olish" : "Coin yetarli emas")) + '</button>' +
+                '</div>' +
+            '</div>';
+        }).join("");
+
+        const rewardsBlock = rewardHtml || '<div style="text-align:center;padding:35px;color:#7b8496;"><div style="font-size:42px;margin-bottom:10px;">🎁</div><strong style="display:block;color:#fff;margin-bottom:7px;">Hozircha mukofot mavjud emas</strong><span>Administrator mukofot qo‘shganda shu yerda ko‘rinadi.</span></div>';
+
+        container.innerHTML =
+            '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;">' +
+                '<div style="padding:16px;border-radius:16px;background:rgba(52,211,153,.10);"><div>🪙</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.coins || 0) + '</div><div style="color:#9ca3af;font-size:12px;">Coin</div></div>' +
+                '<div style="padding:16px;border-radius:16px;background:rgba(168,85,247,.10);"><div>💎</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.crystals || 0) + '</div><div style="color:#9ca3af;font-size:12px;">Crystal</div></div>' +
+                '<div style="padding:16px;border-radius:16px;background:rgba(59,130,246,.10);"><div>⭐</div><div style="color:#fff;font-size:20px;font-weight:800;margin-top:5px;">' + Number(student.xp || 0) + '</div><div style="color:#9ca3af;font-size:12px;">XP · Level ' + Number(student.level || 1) + '</div></div>' +
+            '</div><h3 style="color:#fff;margin:0 0 14px;font-size:17px;">🎁 Mavjud mukofotlar</h3>' + rewardsBlock;
+    } catch (error) {
+        console.error("Rewards load error:", error);
+        if (error?.name === "AbortError") return;
+        const message = error && error.name === "AbortError" ? "Server 10 soniya ichida javob bermadi." : (error.message || "Noma’lum xatolik");
+        container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;"><strong>Mukofotlarni yuklab bo‘lmadi.</strong><div style="margin-top:8px;color:#9ca3af;font-size:12px;">' + escapeHtml(message) + '</div><button type="button" onclick="loadStudentRewards(\'studentRewardsModalContent\')" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
+    }
+}
+
+
+const studentRewardPurchasesInFlight = new Set();
+
+async function buyStudentReward(productId) {
+    if (studentRewardPurchasesInFlight.has(Number(productId))) return;
+    studentRewardPurchasesInFlight.add(Number(productId));
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        studentRewardPurchasesInFlight.delete(Number(productId));
+        showPremiumModal("Tizimga kirish kerak", "Mukofot sotib olish uchun avval tizimga kiring.", "Kirish");
+        return;
+    }
+
+    showPremiumModal(
+        "Mukofotni sotib olish",
+        "Bu mukofotni Coin orqali sotib olishni tasdiqlaysizmi?",
+        "Sotib olish",
+        async () => {
+            try {
+                const {response, data} = await fetchStudentApi(
+                    "/students/rewards/" + Number(productId) + "/buy",
+                    token,
+                    {
+                        method: "POST",
+                        headers: {"Accept": "application/json"}
+                    }
+                );
+
+                if (response.status === 401) {
+                    localStorage.removeItem("access_token");
+                    localStorage.removeItem("user_role");
+                    window.location.href = "../index.html";
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.detail || "Mukofotni sotib olishda xatolik");
+                }
+
+                showPremiumModal(
+                    "Xarid muvaffaqiyatli!",
+                    "🎉 " + (data.message || "Mukofot buyurtma qilindi") + "<br><br>Buyurtma №" + data.order_id + "<br>🪙 Coin: " + Number((data.student || {}).coins || 0),
+                    "Ajoyib!"
+                );
+
+                await loadStudentRewards("studentRewardsModalContent");
+            } catch (error) {
+                console.error("Reward buy error:", error);
+                showPremiumModal("Xatolik yuz berdi", error.message || "Mukofotni sotib olishda xatolik", "Yopish");
+            } finally {
+                studentRewardPurchasesInFlight.delete(Number(productId));
+            }
+        },
+        () => {
+            studentRewardPurchasesInFlight.delete(Number(productId));
+        }
+    );
+}
+
+
+    let studentRankingLoadController = null;
+
+    async function loadStudentRanking() {
+
+    const container = document.getElementById("studentRankingList");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="
+            text-align:center;
+            padding:25px;
+            color:#7b8496;
+        ">
+            Reyting yuklanmoqda...
+        </div>
+    `;
+
+    try {
+
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            container.innerHTML = '<div style="text-align:center;padding:30px;color:#ef4444;">Avval Student kabinetiga kiring.</div>';
+            return;
+        }
+
+        if (studentRankingLoadController) studentRankingLoadController.abort();
+        const controller = new AbortController();
+        studentRankingLoadController = controller;
+        const {response, data: ranking} = await fetchStudentApi(
+            "/students/ranking",
+            token,
+            {signal: controller.signal}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(ranking.detail || "Reytingni yuklab bo'lmadi");
+        }
+
+        if (!ranking || ranking.length === 0) {
+            container.innerHTML = `
+                <div style="
+                    text-align:center;
+                    padding:30px;
+                    color:#7b8496;
+                ">
+                    Hozircha reytingda o‘quvchilar yo‘q.
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = ranking.map(student => `
+
+            <div style="
+                display:flex;
+                align-items:center;
+                gap:14px;
+                padding:16px;
+                margin-bottom:10px;
+                background:linear-gradient(
+                    145deg,
+                    #111827,
+                    #0b1220
+                );
+                border:1px solid rgba(52,211,153,.18);
+                border-radius:16px;
+            ">
+
+                <div style="
+                    min-width:42px;
+                    height:42px;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    border-radius:12px;
+                    background:rgba(52,211,153,.12);
+                    color:#34d399;
+                    font-weight:800;
+                    font-size:17px;
+                ">
+                    ${student.rank}
+                </div>
+
+                <div style="flex:1;">
+
+                    <div style="
+                        color:#fff;
+                        font-weight:700;
+                        font-size:15px;
+                    ">
+                        ${escapeHtml(student.full_name || "O‘quvchi")}
+                    </div>
+
+                    <div style="
+                        margin-top:5px;
+                        color:#9ca3af;
+                        font-size:13px;
+                    ">
+                        Level ${student.level}
+                        · ${student.xp} XP
+                        · 🪙 ${student.coins}
+                    </div>
+
+                </div>
+
+                <div style="
+                    color:#34d399;
+                    font-weight:800;
+                    font-size:14px;
+                ">
+                    #${student.rank}
+                </div>
+
+            </div>
+
+        `).join("");
+
+    } catch (error) {
+
+        console.error(error);
+        if (error?.name === "AbortError") return;
+
+        return;
+    }
+}
+
+    async function openStudentCoursesMenu(element) {
+
+    selectMenu(element);
+
+    const container = document.getElementById("studentCourses");
+
+    if (!container) {
+        return;
+    }
+
+    await loadStudentCourses();
+
+    container.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}
+    async function openStudentHomeworkMenu(element) {
+
+    selectMenu(element);
+
+    
+    const container = document.getElementById("studentHomeworkList");
+    if (!container) {
+        return;
+    }
+
+    container.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+    await loadStudentHomework();
+}
+
+    let studentHomeworkLoadController = null;
+
+    async function loadStudentHomework() {
+
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        window.location.href = "../index.html";
+        return;
+    }
+
+    const container =
+        document.getElementById("studentHomeworkResults");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = `
+        <div style="
+            text-align:center;
+            padding:35px 20px;
+            color:#94a3b8;
+        ">
+            <div style="font-size:35px;">📝</div>
+            <div style="
+                margin-top:10px;
+                font-weight:700;
+                color:#f8fafc;
+            ">
+                Uy vazifalari yuklanmoqda...
+            </div>
+        </div>
+    `;
+
+    try {
+
+        if (studentHomeworkLoadController) studentHomeworkLoadController.abort();
+        const controller = new AbortController();
+        studentHomeworkLoadController = controller;
+        const {response, data: homeworks} = await fetchStudentApi("/homework/student", token, {signal: controller.signal});
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                homeworks.detail ||
+                "Uy vazifalarini yuklashda xatolik"
+            );
+        }
+
+        if (!homeworks.length) {
+
+            container.innerHTML = `
+                <div style="
+                    text-align:center;
+                    padding:40px 20px;
+                    color:#94a3b8;
+                ">
+                    <div class="student-modern-empty-icon" style="margin-bottom:14px;">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/></svg>
+                    </div>
+
+                    <div style="
+                        color:#f8fafc;
+                        font-size:17px;
+                        font-weight:800;
+                    ">
+                        Hozircha uy vazifasi yo‘q
+                    </div>
+
+                    <div style="
+                        margin-top:7px;
+                        font-size:13px;
+                    ">
+                        Yangi vazifalar shu yerda ko‘rinadi.
+                    </div>
+
+                </div>
+            `;
+
+            return;
+        }
+
+        const {response: submissionsResponse, data: submissions} = await fetchStudentApi("/homework/student/submissions", token);
+
+        if (submissionsResponse.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (!submissionsResponse.ok) {
+            throw new Error(submissions.detail || "Uy vazifasi natijalarini yuklashda xatolik");
+        }
+
+        container.innerHTML = homeworks.map(homework => {
+
+            const submission =
+                submissions.find(
+                    item => item.homework_id === homework.id
+                );
+
+            const submitted =
+                submission &&
+                (submission.status === "submitted" || submission.status === "late");
+
+            const checked =
+                submission &&
+                submission.status === "checked";
+
+            return `
+                <div style="
+                    background:
+                        linear-gradient(
+                            145deg,
+                            #111827,
+                            #0b1220
+                        );
+                    border:1px solid #263244;
+                    border-radius:18px;
+                    padding:20px;
+                    margin-bottom:14px;
+                    box-shadow:
+                        0 10px 30px rgba(0,0,0,.25);
+                ">
+
+                    <div style="
+                        display:flex;
+                        justify-content:space-between;
+                        align-items:flex-start;
+                        gap:12px;
+                    ">
+
+                        <div>
+                            <div style="
+                                color:#4ade80;
+                                font-size:11px;
+                                font-weight:800;
+                                letter-spacing:1px;
+                            ">
+                                📝 UY VAZIFASI
+                            </div>
+
+                            <div style="
+                                margin-top:7px;
+                                color:#f8fafc;
+                                font-size:17px;
+                                font-weight:800;
+                            ">
+                                ${escapeHtml(homework.title || "Uy vazifasi")}
+                            </div>
+                        </div>
+
+                        <span style="
+                            padding:6px 10px;
+                            border-radius:20px;
+                            background:${
+                                checked
+                                ? "rgba(34,197,94,.12)"
+                                : submitted
+                                ? "rgba(250,204,21,.12)"
+                                : "rgba(59,130,246,.12)"
+                            };
+                            color:${
+                                checked
+                                ? "#4ade80"
+                                : submitted
+                                ? "#facc15"
+                                : "#60a5fa"
+                            };
+                            font-size:11px;
+                            font-weight:800;
+                            white-space:nowrap;
+                        ">
+                            ${
+                                checked
+                                ? "✅ Tekshirildi"
+                                : submitted
+                                ? "⏳ Tekshirilmoqda"
+                                : "🆕 Yangi"
+                            }
+                        </span>
+
+                    </div>
+
+                    <div style="
+                        margin-top:15px;
+                        color:#94a3b8;
+                        font-size:13px;
+                        line-height:1.6;
+                    ">
+                        ${escapeHtml(homework.description || "Izoh mavjud emas.")}
+                    </div>
+
+                    ${
+                        homework.deadline
+                        ? `
+                            <div style="
+                                margin-top:12px;
+                                color:#64748b;
+                                font-size:12px;
+                            ">
+                                ⏰ Muddat: ${escapeHtml(homework.deadline)}
+                            </div>
+                        `
+                        : ""
+                    }
+
+                    ${
+                        checked
+                        ? `
+                            <div style="
+                                margin-top:15px;
+                                padding:14px;
+                                background:rgba(34,197,94,.07);
+                                border:1px solid rgba(34,197,94,.15);
+                                border-radius:12px;
+                            ">
+                                <div style="
+                                    color:#64748b;
+                                    font-size:11px;
+                                ">
+                                    Sizning bahoyingiz
+                                </div>
+
+                                <strong style="
+                                    display:block;
+                                    margin-top:4px;
+                                    color:#4ade80;
+                                    font-size:25px;
+                                ">
+                                    ${submission.score ?? 0}/100
+                                </strong>
+
+                                ${
+                                    submission.teacher_comment
+                                    ? `
+                                        <div style="
+                                            margin-top:8px;
+                                            color:#cbd5e1;
+                                            font-size:13px;
+                                        ">
+                                            💬 ${escapeHtml(submission.teacher_comment)}
+                                        </div>
+                                    `
+                                    : ""
+                                }
+                            </div>
+                        `
+                        : `
+                            <div style="
+                                margin-top:16px;
+                            ">
+
+                                <textarea
+                                    id="homeworkAnswer_${homework.id}"
+                                    placeholder="Javobingizni shu yerga yozing..."
+                                    style="
+                                        width:100%;
+                                        min-height:110px;
+                                        padding:13px;
+                                        border-radius:12px;
+                                        resize:vertical;
+                                    "
+                                >${
+                                    escapeHtml(submission?.answer || "")
+                                }</textarea>
+
+                                <button
+                                    onclick="submitStudentHomework(${homework.id})"
+                                    style="
+                                        width:100%;
+                                        margin-top:10px;
+                                        border:none;
+                                        padding:13px;
+                                        border-radius:12px;
+                                        background:
+                                            linear-gradient(
+                                                135deg,
+                                                #22c55e,
+                                                #15803d
+                                            );
+                                        color:white;
+                                        font-weight:800;
+                                        cursor:pointer;
+                                    "
+                                >
+                                    ${
+                                        submitted
+                                        ? "🔄 Javobni qayta topshirish"
+                                        : "🚀 Javobni topshirish"
+                                    }
+                                </button>
+
+                            </div>
+                        `
+                    }
+
+                </div>
+            `;
+
+        }).join("");
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div style="
+                padding:20px;
+                background:rgba(239,68,68,.08);
+                border:1px solid rgba(239,68,68,.2);
+                border-radius:14px;
+                color:#f87171;
+            ">
+                ❌ ${escapeHtml(error.message || "Noma’lum xatolik")}
+            </div>
+        `;
+    }
+}
+
+    async function submitStudentHomework(homeworkId) {
+
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+        window.location.href = "../index.html";
+        return;
+    }
+
+    const textarea =
+        document.getElementById(
+            `homeworkAnswer_${homeworkId}`
+        );
+
+    if (!textarea) {
+        return;
+    }
+
+    const submitButton = textarea.closest("div")?.querySelector("button");
+    if (submitButton?.disabled) return;
+
+    const answer = textarea.value.trim();
+
+    if (!answer) {
+        showPremiumModal(
+            "Javob kerak",
+            "Avval uy vazifasiga javob yozing.",
+            "Tushundim"
+        );
+        return;
+    }
+
+    try {
+
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = "Yuborilmoqda...";
+        }
+
+        const {response, data} = await fetchStudentApi(
+            "/homework/" + Number(homeworkId) + "/submit?answer=" + encodeURIComponent(answer),
+            token,
+            {method: "POST"}
+        );
+
+        const result = data;
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                result.detail ||
+                "Uy vazifasini topshirishda xatolik"
+            );
+        }
+
+        showPremiumModal(
+            "Vazifa topshirildi",
+            "✅ Uy vazifasi muvaffaqiyatli topshirildi.",
+            "Ajoyib!"
+        );
+
+        await loadStudentHomework();
+        await loadStudentDashboardHomework();
+
+    } catch (error) {
+
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "🚀 Javobni topshirish";
+        }
+
+        console.error(error);
+
+        showPremiumModal(
+            "Xatolik yuz berdi",
+            "❌ " + escapeHtml(error.message || "Uy vazifasini topshirishda xatolik"),
+            "Yopish"
+        );
+    }
+}
+
+    /* =========================
+       STUDENT HOME QUICK ACTIONS
+    ========================= */
+
+    function getStudentMenuButton(id) {
+        return document.getElementById(id);
+    }
+
+    function openStudentCoursesFromHome() {
+        const button = getStudentMenuButton("studentCoursesMenu");
+        if (button) {
+            openStudentCoursesMenu(button);
+        }
+    }
+
+    function openStudentHomeworkFromHome() {
+        const button = getStudentMenuButton("studentHomeworkMenu");
+        if (button) {
+            openStudentHomeworkMenu(button);
+        }
+    }
+
+    function openStudentRankingFromHome() {
+        const button = getStudentMenuButton("studentRankingMenu");
+        if (button) {
+            openStudentRankingMenu(button);
+        }
+    }
+
+    function openStudentRewardsFromHome() {
+        const button = getStudentMenuButton("studentRewardsMenu");
+        if (button) {
+            openStudentRewardsMenu(button);
+        }
+    }
+
+    function openStudentBooksFromHome() {
+        const button = getStudentMenuButton("studentBooksMenu");
+        if (button) {
+            openStudentBooksMenu(button);
+        }
+    }
+
+    function closeStudentFeatureModal() {
+        const modal = document.getElementById("studentFeatureModal");
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    function openStudentFeatureModal(title, icon, content) {
+        closeStudentFeatureModal();
+
+        const modal = document.createElement("div");
+        modal.id = "studentFeatureModal";
+
+        modal.innerHTML =
+            '<div style="position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.78);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:20px;">' +
+                '<div style="position:relative;width:min(560px,100%);max-height:85vh;overflow:auto;background:linear-gradient(145deg,#111827,#080d16);border:1px solid rgba(52,211,153,.22);border-radius:24px;padding:26px;box-shadow:0 30px 90px rgba(0,0,0,.65);color:#f8fafc;">' +
+                    '<button type="button" onclick="closeStudentFeatureModal()" aria-label="Yopish" style="position:absolute;top:14px;right:14px;width:36px;height:36px;border:1px solid rgba(255,255,255,.10);border-radius:11px;background:rgba(255,255,255,.05);color:#cbd5e1;font-size:18px;cursor:pointer;">×</button>' +
+                    '<div style="width:58px;height:58px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(135deg,#064e3b,#22c55e);box-shadow:0 10px 28px rgba(34,197,94,.18);margin-bottom:17px;">' +
+                        icon +
+                    '</div>' +
+                    '<h2 style="margin:0 45px 10px 0;color:#fff;font-size:22px;">' +
+                        escapeHtml(title) +
+                    '</h2>' +
+                    '<div style="color:#94a3b8;font-size:14px;line-height:1.7;">' +
+                        content +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+
+        modal.firstElementChild.addEventListener("click", function(event) {
+            if (event.target === this) {
+                closeStudentFeatureModal();
+            }
+        });
+
+        document.body.appendChild(modal);
+    }
+
+    function openStudentProfile() {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            window.location.href = "../index.html";
+            return;
+        }
+
+        const old = document.getElementById("studentProfileModal");
+        if (old) old.remove();
+
+        const modal = document.createElement("div");
+        modal.id = "studentProfileModal";
+        modal.style.cssText = "position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;";
+
+        modal.innerHTML =
+            '<div style="width:min(520px,100%);max-height:88vh;overflow:auto;background:linear-gradient(145deg,#111827,#070b12);border:1px solid rgba(52,211,153,.28);border-radius:24px;padding:24px;box-sizing:border-box;color:#fff;box-shadow:0 30px 90px rgba(0,0,0,.7);">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">' +
+                    '<div><div style="font-size:11px;color:#34d399;font-weight:800;letter-spacing:.12em;">SHAXSIY KABINET</div><h2 style="margin:5px 0 0;font-size:23px;">Profilim</h2></div>' +
+                    '<button type="button" id="studentProfileClose" style="width:38px;height:38px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(255,255,255,.05);color:#fff;font-size:22px;cursor:pointer;">×</button>' +
+                '</div>' +
+                '<div id="studentProfileBody" style="color:#cbd5e1;">' +
+                    '<div style="padding:28px 10px;text-align:center;">⏳<div style="margin-top:10px;">Ma’lumotlar yuklanmoqda...</div></div>' +
+                '</div>' +
+            '</div>';
+
+        document.body.appendChild(modal);
+
+        document.getElementById("studentProfileClose").onclick = function() {
+            modal.remove();
+        };
+
+        modal.onclick = function(event) {
+            if (event.target === modal) modal.remove();
+        };
+
+        const body = document.getElementById("studentProfileBody");
+
+        fetchStudentApi("/students/me", token)
+        .then(function(result) {
+            const response = result.response;
+            const data = result.data;
+
+            if (response.status === 401) {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user_role");
+                window.location.href = "../index.html";
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(data.detail || "Profil ma’lumotlarini yuklashda xatolik");
+            }
+
+            const birthKey = "student_birth_date_" + data.id;
+            const savedBirthDate = localStorage.getItem(birthKey) || "";
+
+            body.innerHTML =
+                '<div style="display:grid;gap:12px;">' +
+                    '<div style="padding:16px;border:1px solid rgba(52,211,153,.14);border-radius:17px;background:rgba(52,211,153,.06);">' +
+                        '<div style="font-size:11px;color:#94a3b8;font-weight:800;">ISM VA FAMILIYA</div>' +
+                        '<div id="profileFullName" style="margin-top:6px;font-size:16px;font-weight:800;color:#fff;"></div>' +
+                    '</div>' +
+                    '<div style="padding:16px;border:1px solid rgba(52,211,153,.14);border-radius:17px;background:rgba(52,211,153,.06);">' +
+                        '<div style="font-size:11px;color:#94a3b8;font-weight:800;">RO‘YXATDAN O‘TGAN TELEFON RAQAMI</div>' +
+                        '<div id="profilePhone" style="margin-top:6px;font-size:16px;font-weight:800;color:#fff;"></div>' +
+                    '</div>' +
+                    '<div style="padding:16px;border:1px solid rgba(52,211,153,.14);border-radius:17px;background:rgba(52,211,153,.06);">' +
+                        '<div style="font-size:11px;color:#94a3b8;font-weight:800;">PROFIL HOLATI</div>' +
+                        '<div id="profileStatus" style="margin-top:6px;font-size:16px;font-weight:800;"></div>' +
+                    '</div>' +
+                    '<div style="padding:18px;border:1px solid rgba(139,92,246,.30);border-radius:19px;background:linear-gradient(145deg,rgba(139,92,246,.10),rgba(52,211,153,.05));">' +
+                        '<div style="font-size:11px;color:#c4b5fd;font-weight:800;">TUG‘ILGAN KUNINGIZ</div>' +
+                        '<div style="margin-top:5px;color:#94a3b8;font-size:12px;">Tug‘ilgan sanangizni kiriting</div>' +
+                        '<input id="studentBirthDate" type="date" value="' + escapeHtml(savedBirthDate) + '" style="width:100%;height:46px;margin-top:13px;padding:0 12px;box-sizing:border-box;border-radius:12px;border:1px solid rgba(167,139,250,.25);background:#090e16;color:#fff;color-scheme:dark;">' +
+                        '<button id="studentBirthDateSave" type="button" style="width:100%;height:44px;margin-top:10px;border:0;border-radius:12px;background:linear-gradient(135deg,#059669,#15803d);color:#fff;font-weight:800;cursor:pointer;">Saqlash</button>' +
+                        '<div id="studentBirthDateMessage" style="min-height:17px;margin-top:8px;font-size:12px;"></div>' +
+                    '</div>' +
+                '</div>';
+
+            document.getElementById("profileFullName").textContent = data.full_name || "O‘quvchi";
+            document.getElementById("profilePhone").textContent = data.phone || "—";
+
+            const status = document.getElementById("profileStatus");
+            status.textContent = data.is_active ? "● Faol" : "● Faol emas";
+            status.style.color = data.is_active ? "#4ade80" : "#f87171";
+
+            document.getElementById("studentBirthDateSave").onclick = function() {
+                const input = document.getElementById("studentBirthDate");
+                const message = document.getElementById("studentBirthDateMessage");
+
+                if (!input.value) {
+                    message.textContent = "Iltimos, tug‘ilgan sanangizni kiriting.";
+                    message.style.color = "#f87171";
+                    return;
+                }
+
+                localStorage.setItem(birthKey, input.value);
+                message.textContent = "Tug‘ilgan sana saqlandi ✓";
+                message.style.color = "#4ade80";
+            };
+        })
+        .catch(function(error) {
+            body.innerHTML = '<div style="padding:18px;border:1px solid rgba(248,113,113,.2);border-radius:15px;color:#f87171;background:rgba(248,113,113,.06);">❌ ' + escapeHtml(error.message || "Profilni yuklashda xatolik") + '</div>';
+        });
+    }
+
+    window.openStudentProfile = openStudentProfile;
+
+    function saveStudentBirthDate(studentId) {
+        const input = document.getElementById("studentBirthDate");
+        const message = document.getElementById("studentBirthDateMessage");
+
+        if (!input || !message) return;
+
+        if (!input.value) {
+            message.textContent = "Iltimos, tug‘ilgan sanangizni kiriting.";
+            message.className = "student-profile-message error";
+            return;
+        }
+
+        localStorage.setItem(
+            "student_birth_date_" + studentId,
+            input.value
+        );
+
+        message.textContent = "Tug‘ilgan sana saqlandi ✓";
+        message.className = "student-profile-message success";
+    }
+
+/* =========================
+   START STUDENT CABINET
+========================= */
+
+/* Initial loading is handled by initStudentDashboard() below.
+   Keeping a single boot path prevents duplicate API requests. */
+
+    function openStudentBooksMenu(element) {
+    selectMenu(element);
+
+    const container = document.getElementById("studentBooks");
+
+    if (!container) {
+        return;
+    }
+
+    container.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+
+    loadStudentBooks();
+}
+
+
+let studentBooksLoadController = null;
+
+async function loadStudentBooks() {
+    const token = localStorage.getItem("access_token");
+    const container = document.getElementById("studentBooks");
+    if (!container) return;
+    if (!token) {
+        container.innerHTML = `
+            <div style="text-align:center;padding:30px;color:#7b8496;">Tizimga kirish kerak.</div>
+        `;
+        return;
+    }
+
+    try {
+        if (studentBooksLoadController) studentBooksLoadController.abort();
+        const controller = new AbortController();
+        studentBooksLoadController = controller;
+        const {response, data} = await fetchStudentApi(
+            "/students/books?ts=" + Date.now(),
+            token,
+            {method:"GET", signal: controller.signal}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (!response.ok) {
+            throw new Error(data.detail || "Kitoblarni yuklashda xatolik");
+        }
+        if (!data.books || data.books.length === 0) {
+            container.innerHTML = `
+                <div style="
+                    text-align:center;
+                    padding:30px;
+                    color:#7b8496;
+                ">
+                    Hozircha kitoblar mavjud emas.
+                </div>
+            `;
+            return;
+        }
+
+    container.innerHTML = data.books.map(book => ` <div style="
+        position:relative;
+        overflow:hidden;
+        border:1px solid rgba(139,92,246,0.28);
+        border-radius:20px;
+        padding:22px;
+        margin-bottom:16px;
+        background:
+        radial-gradient(
+        circle at top right,
+        rgba(139,92,246,0.16),
+        transparent 42%
+         ),
+         linear-gradient(
+             145deg,
+             rgba(20,18,30,0.96),
+             rgba(10,10,15,0.98)
+         );
+     box-shadow:
+         0 12px 35px rgba(0,0,0,0.28),
+         inset 0 1px 0 rgba(255,255,255,0.04);
+ ">
+    <div style="
+        position:absolute;
+        width:120px;
+        height:120px;
+        right:-45px;
+        top:-45px;
+        border-radius:50%;
+        background:rgba(139,92,246,0.13);
+        filter:blur(35px);
+        pointer-events:none;
+    "></div>
+
+    <div style="
+        display:flex;
+        align-items:center;
+        gap:14px;
+        margin-bottom:14px;
+    ">
+
+        <div style="
+            width:52px;
+            height:52px;
+            flex-shrink:0;
+            border-radius:16px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:25px;
+            background:linear-gradient(
+                135deg,
+                #8B5CF6,
+                #6D28D9
+            );
+            box-shadow:
+                0 8px 22px rgba(139,92,246,0.25);
+        ">
+            📖
+        </div>
+
+        <div style="
+            min-width:0;
+        ">
+            <h3 style="
+                margin:0;
+                color:#FFFFFF;
+                font-size:18px;
+                font-weight:800;
+                line-height:1.35;
+            ">
+                ${escapeHtml(book.title || "Kitob")}
+            </h3>
+        </div>
+
+    </div>
+
+    <p style="
+        color:#AAA5B8;
+        margin:0 0 18px;
+        line-height:1.6;
+        font-size:14px;
+    ">
+        ${escapeHtml(book.description || "Tavsif mavjud emas")}
+    </p>
+
+    <div style="
+        height:1px;
+        background:rgba(255,255,255,0.07);
+        margin-bottom:17px;
+    "></div>
+
+    <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-end;
+        gap:15px;
+        flex-wrap:wrap;
+    ">
+
+        <div>
+
+            <div style="
+                color:#817C8F;
+                font-size:12px;
+                margin-bottom:5px;
+            ">
+                Oddiy narx
+            </div>
+
+            <div style="
+                color:#E9E5F2;
+                font-size:14px;
+                font-weight:600;
+            ">
+                ${Number(book.price || 0).toLocaleString()} so'm
+            </div>
+
+            <div style="
+                color:#C4B5FD;
+                font-size:16px;
+                font-weight:800;
+                margin-top:7px;
+            ">
+                🪙 ${book.coin_price} Coin
+            </div>
+
+        </div>
+
+        <button
+            type="button"
+            class="student-book-buy-button"
+            onclick="buyStudentBook(${book.id})"
+            style="
+                border:none;
+                border-radius:13px;
+                padding:12px 20px;
+                background:linear-gradient(
+                    135deg,
+                    #8B5CF6,
+                    #6D28D9
+                );
+                color:#FFFFFF;
+                font-size:14px;
+                font-weight:800;
+                cursor:pointer;
+                box-shadow:
+                    0 8px 24px rgba(139,92,246,0.25);
+            "
+        >
+            Sotib olish
+        </button>
+
+    </div>
+
+    <div style="
+        margin-top:16px;
+        color:#777285;
+        font-size:12px;
+    ">
+        Mavjud: ${book.stock} dona
+    </div>
+
+</div>
+
+`).join("");
+
+    } catch (error) {
+        console.error(error);
+        if (error?.name === "AbortError") return;
+
+        return;
+    }
+}
+
+
+const studentBookPurchasesInFlight = new Set();
+
+async function buyStudentBook(bookId) {
+    if (studentBookPurchasesInFlight.has(Number(bookId))) return;
+    studentBookPurchasesInFlight.add(Number(bookId));
+    
+const token = localStorage.getItem("access_token");
+
+if (!token) {
+    studentBookPurchasesInFlight.delete(Number(bookId));
+    showPremiumModal(
+        "Tizimga kirish kerak",
+        "Kitob sotib olish uchun avval tizimga kiring.",
+        "Kirish"
+    );
+    return;
+}
+
+showPremiumModal(
+    "📖 Kitobni sotib olish",
+    "Bu kitobni Coin orqali sotib olishni tasdiqlaysizmi?",
+    "Sotib olish",
+    async () => {
+
+        try {
+
+            const {response, data} = await fetchStudentApi(
+                "/students/books/" + Number(bookId) + "/buy",
+                token,
+                {method:"POST"}
+            );
+
+            if (response.status === 401) {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user_role");
+                window.location.href = "../index.html";
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Kitobni sotib olishda xatolik"
+                );
+            }
+
+            showPremiumModal(
+                "Xarid muvaffaqiyatli!",
+                `🎉 ${data.message}<br><br>` +
+                `Buyurtma №${data.order_id}<br>` +
+                `🪙 Qolgan Coin: ${Number((data.student || {}).coins || 0)}`,
+                "Ajoyib!"
+            );
+
+            await loadStudentBooks();
+
+        } catch (error) {
+
+            console.error(error);
+
+            showPremiumModal(
+                "Xatolik yuz berdi",
+                error.message,
+                "Yopish"
+            );
+        } finally {
+            studentBookPurchasesInFlight.delete(Number(bookId));
+        }
+    },
+    () => {
+        studentBookPurchasesInFlight.delete(Number(bookId));
+    }
+);
+
+}
+
+
+/* =========================
+   PODCASTS / TRAININGS / EXAMS
+========================= */
+
+function closeStudentExtraModal() {
+    const modal = document.getElementById("studentExtraContentModal");
+    if (modal) modal.remove();
+}
+
+function openStudentExtraModal(title) {
+    closeStudentExtraModal();
+
+    const modal = document.createElement("div");
+    modal.id = "studentExtraContentModal";
+    modal.innerHTML = `
+        <div style="position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.78);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;padding:18px;">
+            <div style="width:100%;max-width:620px;max-height:88vh;overflow:auto;background:linear-gradient(145deg,#111118,#09090d);border:1px solid rgba(139,92,246,.3);border-radius:24px;padding:24px;color:#f5f3ff;box-sizing:border-box;box-shadow:0 25px 80px rgba(0,0,0,.65);">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:20px;">
+                    <h2 id="studentExtraTitle" style="margin:0;color:#fff;font-size:22px;">${title}</h2>
+                    <button type="button" onclick="closeStudentExtraModal()" style="width:40px;height:40px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:rgba(255,255,255,.05);color:#fff;font-size:20px;cursor:pointer;">×</button>
+                </div>
+                <div id="studentExtraContentBody"></div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+function studentExtraLoading(text) {
+    return `<div style="text-align:center;padding:35px 15px;color:#aaa5b8;font-size:15px;">⏳<br><br>${text}</div>`;
+}
+
+function studentExtraError(text) {
+    return `<div style="padding:18px;border-radius:15px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);color:#fca5a5;">❌ ${escapeHtml(text)}</div>`;
+}
+
+function formatStudentContentDate(value) {
+    if (!value) return "Vaqt belgilanmagan";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+    return date.toLocaleString("uz-UZ", {
+        day:"2-digit", month:"2-digit", year:"numeric",
+        hour:"2-digit", minute:"2-digit"
+    });
+}
+
+let studentExtraLoadController = null;
+
+async function loadStudentPodcasts() {
+    const body = document.getElementById("studentExtraContentBody");
+    if (!body) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        body.innerHTML = studentExtraError("Avval tizimga kiring.");
+        return;
+    }
+
+    body.innerHTML = studentExtraLoading("Podcastlar yuklanmoqda...");
+
+    try {
+        if (studentExtraLoadController) studentExtraLoadController.abort();
+        const controller = new AbortController();
+        studentExtraLoadController = controller;
+        const {response, data} = await fetchStudentApi(
+            "/students/podcasts",
+            token,
+            {method:"GET", signal: controller.signal}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (!response.ok) throw new Error(data.detail || "Podcastlarni yuklashda xatolik.");
+
+        if (!Array.isArray(data) || !data.length) {
+            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M5 13a7 7 0 0 1 14 0"/><path d="M5 13v4a2 2 0 0 0 2 2h1v-7H7a2 2 0 0 0-2 1ZM19 13v4a2 2 0 0 1-2 2h-1v-7h1a2 2 0 0 1 2 1ZM12 19v2"/></svg><span style="margin-left:10px;">Hozircha podcastlar mavjud emas.</span></div>';
+            return;
+        }
+
+        body.innerHTML = data.map(item => `
+            <div style="padding:18px;margin-bottom:12px;border:1px solid rgba(139,92,246,.2);border-radius:18px;background:rgba(255,255,255,.035);">
+                <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:7px;">🎧 ${escapeHtml(item.title || "Nomsiz podcast")}</div>
+                <div style="color:#aaa5b8;line-height:1.6;margin-bottom:12px;">${escapeHtml(item.description || "Tavsif mavjud emas")}</div>
+                ${item.audio_url ? `<audio controls preload="none" style="width:100%;"><source src="${escapeHtml(item.audio_url)}"></audio>` : '<div style="color:#817c8f;font-size:13px;">Audio fayl hali biriktirilmagan.</div>'}
+                ${item.duration_minutes ? `<div style="margin-top:10px;color:#c4b5fd;font-size:12px;">⏱ ${item.duration_minutes} daqiqa</div>` : ""}
+            </div>
+        `).join("");
+    } catch (error) {
+        console.error("Podcastlar:", error);
+        if (error?.name === "AbortError") return;
+        body.innerHTML = studentExtraError(error.message || "Podcastlarni yuklashda xatolik.");
+    }
+}
+
+async function loadStudentTrainings() {
+    const body = document.getElementById("studentExtraContentBody");
+    if (!body) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        body.innerHTML = studentExtraError("Avval tizimga kiring.");
+        return;
+    }
+
+    body.innerHTML = studentExtraLoading("Treninglar yuklanmoqda...");
+
+    try {
+        if (studentExtraLoadController) studentExtraLoadController.abort();
+        const controller = new AbortController();
+        studentExtraLoadController = controller;
+        const {response, data} = await fetchStudentApi(
+            "/students/trainings",
+            token,
+            {method:"GET", signal: controller.signal}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (!response.ok) throw new Error(data.detail || "Treninglarni yuklashda xatolik.");
+
+        if (!Array.isArray(data) || !data.length) {
+            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M4 7.5 12 4l8 3.5L12 11 4 7.5Z"/><path d="M6.5 9v5.2c0 1.8 2.5 3.3 5.5 3.3s5.5-1.5 5.5-3.3V9"/><path d="M20 8v6"/></svg><span style="margin-left:10px;">Hozircha faol treninglar mavjud emas.</span></div>';
+            return;
+        }
+
+        body.innerHTML = data.map(item => `
+            <div style="padding:18px;margin-bottom:12px;border:1px solid rgba(34,197,94,.18);border-radius:18px;background:rgba(255,255,255,.035);">
+                <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:7px;">📅 ${escapeHtml(item.title || "Nomsiz trening")}</div>
+                <div style="color:#aaa5b8;line-height:1.6;margin-bottom:10px;">${escapeHtml(item.description || "Tavsif mavjud emas")}</div>
+                <div style="color:#c4b5fd;font-size:13px;line-height:1.7;">
+                    🕒 ${escapeHtml(formatStudentContentDate(item.start_at))}
+                    ${item.end_at ? " — " + escapeHtml(formatStudentContentDate(item.end_at)) : ""}
+                    ${item.location ? "<br>📍 " + escapeHtml(item.location) : ""}
+                </div>
+                <div style="margin-top:14px;">
+                    ${item.registered
+                        ? '<div style="padding:11px 14px;border-radius:12px;background:rgba(34,197,94,.1);color:#86efac;font-weight:700;">✅ Siz ro‘yxatdan o‘tgansiz</div>'
+                        : `<button type="button" onclick="registerStudentTraining(${Number(item.id)})" style="width:100%;border:0;border-radius:12px;padding:12px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-weight:800;cursor:pointer;">Treningka ro‘yxatdan o‘tish</button>`}
+                </div>
+            </div>
+        `).join("");
+    } catch (error) {
+        console.error("Treninglar:", error);
+        if (error?.name === "AbortError") return;
+        body.innerHTML = studentExtraError(error.message || "Treninglarni yuklashda xatolik.");
+    }
+}
+
+async function registerStudentTraining(trainingId) {
+    const button = document.querySelector(`button[onclick="registerStudentTraining(${Number(trainingId)})"]`);
+    if (button?.disabled) return;
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Yozilmoqda...";
+    }
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        if (button) button.disabled = false;
+        showPremiumModal("Tizimga kirish kerak","Treningka yozilish uchun avval tizimga kiring.","Kirish");
+        return;
+    }
+
+    try {
+        const {response, data} = await fetchStudentApi(
+            "/students/trainings/" + Number(trainingId) + "/register",
+            token,
+            {method:"POST"}
+        );
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (!response.ok) throw new Error(data.detail || "Treningka ro‘yxatdan o‘tishda xatolik.");
+
+        showPremiumModal("Ro‘yxatdan o‘tildi",data.message || "Treningka muvaffaqiyatli ro‘yxatdan o‘tildi.","Ajoyib!");
+        await loadStudentTrainings();
+    } catch (error) {
+        console.error("Trening ro‘yxatdan o‘tish:",error);
+        showPremiumModal("Xatolik yuz berdi",error.message,"Yopish");
+    } finally {
+        if (button) button.disabled = false;
+    }
+}
+
+async function loadStudentExams() {
+    const body = document.getElementById("studentExtraContentBody");
+    if (!body) return;
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        body.innerHTML = studentExtraError("Avval tizimga kiring.");
+        return;
+    }
+
+    body.innerHTML = studentExtraLoading("Imtihonlar yuklanmoqda...");
+
+    try {
+        if (studentExtraLoadController) studentExtraLoadController.abort();
+        const controller = new AbortController();
+        studentExtraLoadController = controller;
+        const {response, data} = await fetchStudentApi(
+            "/students/exams",
+            token,
+            {method:"GET", signal: controller.signal}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (!response.ok) throw new Error(data.detail || "Imtihonlarni yuklashda xatolik.");
+
+        if (!Array.isArray(data) || !data.length) {
+            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 3h6M10 3v5l-5 9a3 3 0 0 0 3 4h8a3 3 0 0 0 3-4l-5-9V3"/><path d="M8 15h8"/></svg><span style="margin-left:10px;">Hozircha faol imtihonlar mavjud emas.</span></div>';
+            return;
+        }
+
+        body.innerHTML = data.map(item => `
+            <div style="padding:18px;margin-bottom:12px;border:1px solid rgba(59,130,246,.18);border-radius:18px;background:rgba(255,255,255,.035);">
+                <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:7px;">🧪 ${escapeHtml(item.title || "Nomsiz imtihon")}</div>
+                <div style="color:#aaa5b8;line-height:1.6;margin-bottom:10px;">${escapeHtml(item.description || "Tavsif mavjud emas")}</div>
+                <div style="color:#c4b5fd;font-size:13px;line-height:1.7;">
+                    🕒 ${escapeHtml(formatStudentContentDate(item.start_at))}
+                    ${item.end_at ? " — " + escapeHtml(formatStudentContentDate(item.end_at)) : ""}
+                    ${item.location ? "<br>📍 " + escapeHtml(item.location) : ""}
+                </div>
+                <div style="margin-top:14px;">
+                    ${item.registered
+                        ? '<div style="padding:11px 14px;border-radius:12px;background:rgba(59,130,246,.1);color:#93c5fd;font-weight:700;">✅ Siz ro‘yxatdan o‘tgansiz</div>'
+                        : `<button type="button" onclick="registerStudentExam(${Number(item.id)})" style="width:100%;border:0;border-radius:12px;padding:12px;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;font-weight:800;cursor:pointer;">Imtihonga ro‘yxatdan o‘tish</button>`}
+                </div>
+            </div>
+        `).join("");
+    } catch (error) {
+        console.error("Imtihonlar:",error);
+        if (error?.name === "AbortError") return;
+        body.innerHTML = studentExtraError(error.message || "Imtihonlarni yuklashda xatolik.");
+    }
+}
+
+async function registerStudentExam(examId) {
+    const button = document.querySelector(`button[onclick="registerStudentExam(${Number(examId)})"]`);
+    if (button?.disabled) return;
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Yozilmoqda...";
+    }
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        if (button) button.disabled = false;
+        showPremiumModal("Tizimga kirish kerak","Imtihonga yozilish uchun avval tizimga kiring.","Kirish");
+        return;
+    }
+
+    try {
+        const {response, data} = await fetchStudentApi(
+            "/students/exams/" + Number(examId) + "/register",
+            token,
+            {method:"POST"}
+        );
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (!response.ok) throw new Error(data.detail || "Imtihonga ro‘yxatdan o‘tishda xatolik.");
+
+        showPremiumModal("Ro‘yxatdan o‘tildi",data.message || "Imtihonga muvaffaqiyatli ro‘yxatdan o‘tildi.","Ajoyib!");
+        await loadStudentExams();
+    } catch (error) {
+        console.error("Imtihon ro‘yxatdan o‘tish:",error);
+        showPremiumModal("Xatolik yuz berdi",error.message,"Yopish");
+    } finally {
+        if (button) button.disabled = false;
+    }
+}
+
+function openStudentPodcasts() {
+    openStudentExtraModal("<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;\"><path d=\"M5 13a7 7 0 0 1 14 0\"/><path d=\"M5 13v4a2 2 0 0 0 2 2h1v-7H7a2 2 0 0 0-2 1ZM19 13v4a2 2 0 0 1-2 2h-1v-7h1a2 2 0 0 1 2 1ZM12 19v2\"/></svg><span style=\"margin-left:8px;\">Podcastlar</span>");
+    loadStudentPodcasts();
+}
+
+function openStudentTrainings() {
+    openStudentExtraModal("<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;\"><path d=\"M4 7.5 12 4l8 3.5L12 11 4 7.5Z\"/><path d=\"M6.5 9v5.2c0 1.8 2.5 3.3 5.5 3.3s5.5-1.5 5.5-3.3V9\"/><path d=\"M20 8v6\"/></svg><span style=\"margin-left:8px;\">Treninglar</span>");
+    loadStudentTrainings();
+}
+
+function openStudentExams() {
+    openStudentExtraModal("<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\" style=\"width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;\"><path d=\"M9 3h6M10 3v5l-5 9a3 3 0 0 0 3 4h8a3 3 0 0 0 3-4l-5-9V3\"/><path d=\"M8 15h8\"/></svg><span style=\"margin-left:8px;\">Imtihonlar</span>");
+    loadStudentExams();
+}
+
+   function premiumMessageHtml(value) {
+    return escapeHtml(value).replace(/&lt;br\s*\/?&gt;/gi, "<br>").replace(/&lt;(\/?)strong&gt;/gi, "<$1strong>");
+}
+
+function showPremiumModal(title, message, buttonText = "Yopish", onConfirm = null, onCancel = null) {
+
+const oldModal = document.getElementById("premiumPurchaseModal");
+
+if (oldModal) {
+    oldModal.remove();
+}
+
+const modal = document.createElement("div");
+
+modal.id = "premiumPurchaseModal";
+
+modal.innerHTML = `
+    <div style="
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.78);
+        backdrop-filter:blur(12px);
+        -webkit-backdrop-filter:blur(12px);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        z-index:99999;
+    ">
+
+        <div style="
+            width:100%;
+            max-width:430px;
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(139,92,246,0.20),
+                    transparent 45%
+                ),
+                linear-gradient(
+                    145deg,
+                    #111118,
+                    #09090d
+                );
+            border:1px solid rgba(139,92,246,0.35);
+            border-radius:24px;
+            padding:28px;
+            box-sizing:border-box;
+            box-shadow:
+                0 25px 80px rgba(0,0,0,0.65),
+                0 0 45px rgba(139,92,246,0.12);
+            color:#F5F3FF;
+            position:relative;
+            overflow:hidden;
+        ">
+
+            <div style="
+                position:absolute;
+                width:150px;
+                height:150px;
+                background:rgba(139,92,246,0.13);
+                filter:blur(50px);
+                border-radius:50%;
+                top:-70px;
+                right:-50px;
+                pointer-events:none;
+            "></div>
+
+            <div style="
+                width:58px;
+                height:58px;
+                border-radius:18px;
+                background:linear-gradient(
+                    135deg,
+                    #8B5CF6,
+                    #6D28D9
+                );
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                font-size:27px;
+                margin-bottom:18px;
+                box-shadow:0 8px 25px rgba(139,92,246,0.30);
+            ">
+                ✨
+            </div>
+
+            <h2 style="
+                margin:0 0 10px;
+                font-size:22px;
+                font-weight:800;
+                letter-spacing:-0.3px;
+                color:#FFFFFF;
+            ">
+                ${escapeHtml(title)}
+            </h2>
+
+            <div style="
+                color:#C4B5FD;
+                font-size:15px;
+                line-height:1.65;
+                margin-bottom:25px;
+            ">
+                ${premiumMessageHtml(message)}
+            </div>
+
+            <div style="
+                display:flex;
+                gap:10px;
+            ">
+
+                <button
+                    id="premiumCancelButton"
+                    style="
+                        flex:1;
+                        border:1px solid rgba(255,255,255,0.10);
+                        border-radius:13px;
+                        padding:13px 15px;
+                        background:rgba(255,255,255,0.05);
+                        color:#B8B5C7;
+                        font-size:14px;
+                        font-weight:700;
+                        cursor:pointer;
+                    "
+                >
+                    Bekor qilish
+                </button>
+
+                <button
+                    id="premiumConfirmButton"
+                    style="
+                        flex:1;
+                        border:none;
+                        border-radius:13px;
+                        padding:13px 15px;
+                        background:linear-gradient(
+                            135deg,
+                            #8B5CF6,
+                            #6D28D9
+                        );
+                        color:#FFFFFF;
+                        font-size:14px;
+                        font-weight:800;
+                        cursor:pointer;
+                        box-shadow:
+                            0 8px 25px rgba(139,92,246,0.28);
+                    "
+                >
+                    ${escapeHtml(buttonText)}
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+`;
+
+document.body.appendChild(modal);
+
+const cancelButton = document.getElementById(
+    "premiumCancelButton"
+);
+
+const confirmButton = document.getElementById(
+    "premiumConfirmButton"
+);
+
+cancelButton.onclick = () => {
+    modal.remove();
+    if (onCancel) onCancel();
+};
+
+confirmButton.onclick = async () => {
+
+    if (onConfirm) {
+        modal.remove();
+        await onConfirm();
+    } else {
+        modal.remove();
+    }
+
+};
+
+}
+
+/* =========================
+   STUDENT CONTENT HELPERS
+========================= */
+
+async function loadStudentDashboardHomework() {
+    const container = document.getElementById("studentRecentTasks");
+    if (!container) return;
+
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+        container.innerHTML = '<div style="text-align:center;padding:25px;color:#94a3b8;">Avval Student kabinetiga kiring.</div>';
+        return;
+    }
+
+    try {
+        const {response, data: homeworks} = await fetchStudentApi("/homework/student", token, {method:"GET"});
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (!response.ok) {
+            throw new Error(homeworks?.detail || "Uy vazifalarini yuklab bo‘lmadi");
+        }
+
+        const {response: submissionsResponse, data: submissions} =
+            await fetchStudentApi("/homework/student/submissions", token, {method:"GET"});
+
+        if (submissionsResponse.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+        if (!submissionsResponse.ok) {
+            throw new Error(submissions?.detail || "Uy vazifasi natijalarini yuklab bo‘lmadi");
+        }
+
+        const homeworkList = Array.isArray(homeworks) ? homeworks : [];
+        const submissionList = Array.isArray(submissions) ? submissions : [];
+        const completedCount = submissionList.filter(item => item.status === "checked").length;
+
+        const doneCounter = document.getElementById("statHomeworkDone");
+        if (doneCounter) doneCounter.textContent = String(completedCount);
+
+        if (!homeworkList.length) {
+            container.innerHTML =
+                '<div style="text-align:center;padding:25px;color:#94a3b8;">Hozircha uy vazifalari yo‘q.</div>';
+            return;
+        }
+
+        container.innerHTML = homeworkList.slice(0, 5).map(homework => {
+            const submission = submissionList.find(item => item.homework_id === homework.id);
+            let statusText = "Yangi vazifa";
+            if (submission?.status === "checked") statusText = "✅ Tekshirildi";
+            else if (submission?.status === "submitted" || submission?.status === "late") statusText = "⏳ Topshirilgan";
+
+            return '<div class="task">' +
+                '<div class="task-check task-check-modern"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 12 2 2 4-4"/></svg></div>' +
+                '<div>' +
+                    '<div class="task-name">' + escapeHtml(homework.title || "Uy vazifasi") + '</div>' +
+                    '<div class="task-date">' + escapeHtml(statusText) + '</div>' +
+                '</div>' +
+            '</div>';
+        }).join("");
+    } catch (error) {
+        console.error("Student dashboard homework:", error);
+        if (error?.name === "AbortError") return;
+        container.innerHTML =
+            '<div style="text-align:center;padding:25px;color:#94a3b8;">Uy vazifalarini hozircha yuklab bo‘lmadi.</div>';
+    }
+}
+
+async function loadStudentNotifications() {
+    const token = localStorage.getItem("access_token");
+    const badge = document.getElementById("studentNotificationBadge");
+    if (!token) return {unread: 0, notifications: []};
+
+    try {
+        const {response, data} = await fetchStudentApi(
+            "/students/notifications",
+            token,
+            {method:"GET"}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return {unread: 0, notifications: []};
+        }
+
+        if (!response.ok) {
+            throw new Error(data?.detail || "Bildirishnomalarni yuklab bo‘lmadi");
+        }
+
+        const unread = Number(data?.unread || 0);
+        const notifications = Array.isArray(data?.notifications) ? data.notifications : [];
+
+        if (badge) {
+            badge.textContent = String(unread);
+            badge.hidden = unread <= 0;
+        }
+
+        window.studentNotifications = notifications;
+
+        const body = document.getElementById("studentNotificationsBody");
+        if (body) renderStudentNotificationsBody(body, notifications);
+
+        return {unread, notifications};
+    } catch (error) {
+        console.error("Student notifications:", error);
+        if (badge) badge.hidden = true;
+
+        const body = document.getElementById("studentNotificationsBody");
+        if (body) {
+            body.innerHTML =
+                '<div style="padding:28px;text-align:center;color:#94a3b8;">Bildirishnomalarni yuklab bo‘lmadi. Qayta urinib ko‘ring.</div>';
+        }
+
+        return {unread: 0, notifications: []};
+    }
+}
+
+function renderStudentNotificationsBody(body, notifications) {
+    if (!body) return;
+
+    if (!notifications.length) {
+        body.innerHTML =
+            '<div style="padding:35px;text-align:center;color:#94a3b8;">Hozircha bildirishnoma yo‘q.</div>';
+        return;
+    }
+
+    body.innerHTML = notifications.map(item => {
+        const created = item.created_at
+            ? new Date(item.created_at).toLocaleString("uz-UZ")
+            : "—";
+
+        return '<button type="button" onclick="markStudentNotificationRead(' + Number(item.id) + ')" style="display:block;width:100%;padding:15px;margin-bottom:10px;text-align:left;border:1px solid ' +
+            (item.is_read ? 'rgba(255,255,255,.07)' : 'rgba(139,92,246,.25)') +
+            ';border-radius:15px;background:' +
+            (item.is_read ? 'rgba(255,255,255,.025)' : 'rgba(139,92,246,.08)') +
+            ';color:#fff;cursor:pointer;">' +
+                '<div style="font-weight:800;font-size:14px;">' + escapeHtml(item.title || "Bildirishnoma") + '</div>' +
+                '<div style="margin-top:6px;color:#aab3c2;font-size:12px;line-height:1.55;">' + escapeHtml(item.message || "") + '</div>' +
+                '<div style="margin-top:8px;color:#7f8da3;font-size:10px;">' + escapeHtml(created) + (item.is_read ? '' : ' · Yangi') + '</div>' +
+            '</button>';
+    }).join("");
+}
+
+async function markStudentNotificationRead(notificationId) {
+    const token = localStorage.getItem("access_token");
+    if (!token || !notificationId) return;
+
+    try {
+        const {response, data} = await fetchStudentApi(
+            "/students/notifications/" + Number(notificationId) + "/read",
+            token,
+            {method:"PUT"}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(data?.detail || "Bildirishnoma o‘qilgan deb belgilanmadi");
+        }
+
+        await loadStudentNotifications();
+    } catch (error) {
+        console.error("Student notification read:", error);
+    }
+}
+
+async function openStudentNotifications() {
+    const old = document.getElementById("studentNotificationsModal");
+    if (old) old.remove();
+
+    const modal = document.createElement("div");
+    modal.id = "studentNotificationsModal";
+    modal.style.cssText =
+        "position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;";
+
+    modal.innerHTML =
+        '<div style="width:min(560px,100%);max-height:86vh;display:flex;flex-direction:column;background:linear-gradient(145deg,#111827,#070b12);border:1px solid rgba(139,92,246,.28);border-radius:22px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.72);">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.08);">' +
+                '<div><div style="font-size:10px;color:#a78bfa;font-weight:900;letter-spacing:.14em;">AXSIKENT IT / ALERTS</div><h2 style="margin:5px 0 0;color:#fff;font-size:21px;">🔔 Bildirishnomalar</h2></div>' +
+                '<button type="button" id="studentNotificationsClose" style="width:40px;height:40px;border:1px solid rgba(255,255,255,.10);border-radius:12px;background:rgba(255,255,255,.06);color:#fff;font-size:23px;cursor:pointer;">×</button>' +
+            '</div>' +
+            '<div id="studentNotificationsBody" style="overflow:auto;padding:16px;">' +
+                '<div style="padding:30px;text-align:center;color:#94a3b8;">Bildirishnomalar yuklanmoqda...</div>' +
+            '</div>' +
+        '</div>';
+
+    document.body.appendChild(modal);
+
+    const close = () => modal.remove();
+    document.getElementById("studentNotificationsClose").onclick = close;
+    modal.addEventListener("click", event => {
+        if (event.target === modal) close();
+    });
+
+    await loadStudentNotifications();
+}
+
+window.openStudentNotifications = openStudentNotifications;
+
+
+async function loadStudentDashboardStats() {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    try {
+        const rewardsResult = await fetchStudentApi(
+            "/students/rewards",
+            token,
+            {method:"GET"}
+        );
+
+        if (rewardsResult.response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (!rewardsResult.response.ok) {
+            throw new Error(rewardsResult.data?.detail || "Student statistikasi yuklanmadi");
+        }
+
+        const student = rewardsResult.data?.student || {};
+        const xp = Number(student.xp || 0);
+        const streak = Number(student.streak_days || 0);
+        const xpCounter = document.getElementById("statTotalXp");
+        const streakCounter = document.getElementById("statStreak");
+        const activity = document.getElementById("studentActivityContent");
+
+        if (xpCounter) xpCounter.textContent = xp.toLocaleString("uz-UZ");
+        if (streakCounter) streakCounter.textContent = streak + " kun";
+
+        if (activity) {
+            activity.innerHTML =
+                '<div style="display:flex;align-items:center;gap:14px;padding:18px;border-radius:16px;background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(52,211,153,.16);">' +
+                    '<div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(52,211,153,.10);font-size:23px;">🔥</div>' +
+                    '<div>' +
+                        '<div style="color:#fff;font-weight:800;font-size:14px;">Faollik zanjiri</div>' +
+                        '<div style="margin-top:5px;color:#94a3b8;font-size:12px;">' +
+                            (streak > 0 ? streak + " kun ketma-ket faol bo‘ldingiz." : "Bugun faoliyat boshlang va zanjirni yarating.") +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+        }
+
+        const rankingResult = await fetchStudentApi(
+            "/students/ranking",
+            token,
+            {method:"GET"}
+        );
+
+        if (rankingResult.response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "../index.html";
+            return;
+        }
+
+        if (rankingResult.response.ok) {
+            const ranking = Array.isArray(rankingResult.data) ? rankingResult.data : [];
+            const current = ranking.find(item => Number(item.student_id) === Number(student.student_id));
+            const rankCounter = document.getElementById("statRank");
+
+            if (rankCounter) {
+                rankCounter.textContent = current?.rank ? "#" + current.rank : "—";
+            }
+        }
+    } catch (error) {
+        console.error("Student dashboard stats:", error);
+    }
+}
+
+async function initStudentDashboard() {
+    if (!localStorage.getItem("access_token")) {
+        window.location.href = "../index.html";
+        return;
+    }
+
+    // Avval Student profili ochiladi. Render cold-start paytida 6 ta API'ni
+    // bir vaqtda urib yubormaslik uchun qolgan bo‘limlar keyin yuklanadi.
+    const profileLoaded = await loadStudent();
+    if (!profileLoaded && localStorage.getItem("access_token")) {
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        await loadStudent();
+    }
+
+    await Promise.allSettled([
+        loadStudentCourses(),
+        loadStudentRanking(),
+        loadStudentDashboardStats(),
+        loadStudentBooks(),
+        loadStudentNotifications(),
+        loadStudentDashboardHomework()
+    ]);
+}
+
+initStudentDashboard();
