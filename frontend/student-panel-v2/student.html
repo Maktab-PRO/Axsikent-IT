@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Axsikent IT — Student Panel V2</title>
-  <link rel="stylesheet" href="student-v2.css?v=20260923-1">
+  <link rel="stylesheet" href="student-v2.css?v=20260923-2">
 </head>
 <body>
   <div id="app">
@@ -28,9 +28,18 @@
     <div id="sessionGate" class="screen hidden">
       <div class="gate-card">
         <div class="gate-icon">🔐</div>
-        <h2>Student kabinetiga kirish kerak</h2>
-        <p>Login sahifasiga qaytib, akkauntingiz bilan kiring.</p>
-        <a class="primary-btn" href="../index.html">Login sahifasiga qaytish</a>
+        <h2>Student kabinetiga kirish</h2>
+        <p>Telefon raqamingiz va parolingizni kiriting.</p>
+        <form id="studentLoginForm">
+          <label>Telefon raqam
+            <input id="loginPhone" type="tel" inputmode="tel" autocomplete="username" placeholder="+998901234567" required>
+          </label>
+          <label>Parol
+            <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Parolingiz" required>
+          </label>
+          <button id="loginBtn" class="primary-btn" type="submit">Kirish</button>
+          <div id="loginMessage" class="login-message"></div>
+        </form>
       </div>
     </div>
 
@@ -165,6 +174,7 @@
   </div>
 
   <div id="modalRoot"></div>
-  <script src="student-v2.js?v=20260923-1"></script>
+  <script src="student-v2.js?v=20260923-2"></script>
+  <script>document.getElementById("studentLoginForm")?.addEventListener("submit", window.__studentV2LoginHandler || (() => {}));</script>
 </body>
 </html>
