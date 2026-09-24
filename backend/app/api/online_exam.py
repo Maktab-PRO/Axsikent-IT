@@ -547,6 +547,36 @@ def add_question(exam_id: int, data: QuestionCreate, admin: Admin = Depends(requ
     return {"success": True, "question_id": q.id}
 
 
+@router.post("/admin/{exam_id}/debug-score")
+def debug_score(
+    exam_id: int,
+    data: SubmitExam,
+    admin: Admin = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    questions = db.query(OnlineExamQuestion).filter(
+        OnlineExamQuestion.exam_id == exam_id
+    ).order_by(OnlineExamQuestion.id.asc()).all()
+
+    return {
+        "exam_id": exam_id,
+        "runtime_marker": "score-debug-d1c91fa-v1",
+        "submitted_answers": data.answers,
+        "questions": [
+            {
+                "id": q.id,
+                "answer_received": data.answers.get(str(q.id)),
+                "answer_type": type(data.answers.get(str(q.id))).__name__,
+                "correct_answer_raw": q.correct_answer,
+                "correct_answer_type": type(q.correct_answer).__name__,
+                "correct_answer_int": int(q.correct_answer),
+                "match": data.answers.get(str(q.id)) == int(q.correct_answer)
+            }
+            for q in questions
+        ]
+    }
+
+
 @router.get("/admin/{exam_id}/questions")
 def admin_questions(exam_id: int, admin: Admin = Depends(require_admin), db: Session = Depends(get_db)):
     questions = db.query(OnlineExamQuestion).filter(
