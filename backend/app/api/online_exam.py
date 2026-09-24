@@ -368,7 +368,7 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
 
         correct = sum(
             1 for q in questions
-            if str(data.answers.get(str(q.id), "")) == q.correct_answer
+            if data.answers.get(str(q.id)) == int(q.correct_answer)
         )
         score = round(correct / len(questions) * 100) if questions else 0
         passed = score >= exam.pass_score
@@ -420,7 +420,7 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
 
     correct = sum(
         1 for q in questions
-        if str(data.answers.get(str(q.id), "")) == q.correct_answer
+        if data.answers.get(str(q.id)) == int(q.correct_answer)
     )
     score = round(correct / len(questions) * 100) if questions else 0
     passed = score >= exam.pass_score
