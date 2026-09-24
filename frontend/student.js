@@ -1827,7 +1827,7 @@ function confirmLogoutStudent() {
 
     }
 
-    async function openStudentRankingMenu(element) {
+    async async function openStudentRankingMenu(element) {
 
     selectMenu(element);
 
@@ -2187,7 +2187,7 @@ async function buyStudentReward(productId) {
         block: "center"
     });
 }
-    async function openStudentHomeworkMenu(element) {
+    async async function openStudentHomeworkMenu(element) {
 
     selectMenu(element);
 
@@ -3919,7 +3919,7 @@ async function openStudentNotifications() {
 window.openStudentNotifications = openStudentNotifications;
 
 
-async function loadStudentDashboardStats() {
+async async function loadStudentDashboardStats() {
     const token = localStorage.getItem("access_token");
     if (!token) return;
 
@@ -3991,7 +3991,7 @@ async function loadStudentDashboardStats() {
     }
 }
 
-async function initStudentDashboard() {
+async async function initStudentDashboard() {
     if (!localStorage.getItem("access_token")) {
         window.location.href = "index.html";
         return;
