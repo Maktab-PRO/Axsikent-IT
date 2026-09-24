@@ -3474,7 +3474,7 @@ async function startStudentOnlineTest(examId) {
                 if (selected) answers[String(q.id)] = Number(selected.value);
             });
             try {
-                const resultResponse = await fetchStudentApi("/online-exams/" + examIdNum + "/submit", token, {method:"POST", body:JSON.stringify({answers})});
+                const resultResponse = await fetchStudentApi("/online-exams/" + examIdNum + "/submit", token, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({answers})});
                 if (resultResponse.response.status === 401) {
                     localStorage.removeItem("access_token");
                     localStorage.removeItem("user_role");
