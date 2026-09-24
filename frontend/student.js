@@ -86,7 +86,7 @@ async function loadStudentCourses() {
         }
 
         if (!response.ok) {
-            throw new Error(data?.detail || "Kurslarni yuklab bo‘lmadi");
+            throw new Error(courses?.detail || "Kurslarni yuklab bo‘lmadi");
         }
 
         if (!Array.isArray(courses)) {
@@ -184,7 +184,12 @@ async function loadStudentCourses() {
     } catch (error) {
 
         console.error(error);
-        if (error?.name === "AbortError") return;
+        if (error?.name === "AbortError") {
+            if (studentCoursesLoadController === null) {
+                container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;">Kurslarni yuklash bekor qilindi. Qayta urinib ko‘ring.</div>';
+            }
+            return;
+        }
 
         // Render/Internet qisqa uzilishida bir marta qayta urinib ko‘ramiz.
         // Muvaffaqiyatsiz bo‘lsa ham studentga xatolik oynasi/yozuvi chiqmaydi.
@@ -2160,7 +2165,12 @@ async function buyStudentReward(productId) {
     } catch (error) {
 
         console.error(error);
-        if (error?.name === "AbortError") return;
+        if (error?.name === "AbortError") {
+            if (studentRankingLoadController === null) {
+                container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;">Reyting yuklash bekor qilindi. Qayta urinib ko‘ring.</div>';
+            }
+            return;
+        }
 
         container.innerHTML = `
             <div style="text-align:center;padding:30px;color:#fda4af;">
