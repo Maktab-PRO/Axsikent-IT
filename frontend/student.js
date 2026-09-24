@@ -249,7 +249,8 @@ async function loadStudentCourses() {
             if (retryError?.name === "AbortError") return;
         }
 
-        // Qayta urinish ham muvaffaqiyatsiz bo‘lsa, mavjud UI holatini saqlaymiz.
+        // Qayta urinish ham muvaffaqiyatsiz bo‘lsa, loading holatida qoldirmaymiz.
+        container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;">Kurslarni yuklab bo‘lmadi. <button type="button" onclick="loadStudentCourses()" style="margin-top:12px;padding:9px 14px;border:1px solid rgba(52,211,153,.25);border-radius:10px;background:rgba(52,211,153,.08);color:#86efac;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
         return;
     }
 }
@@ -1967,8 +1968,11 @@ async function loadStudentRewards(targetId) {
             '</div><h3 style="color:#fff;margin:0 0 14px;font-size:17px;">🎁 Mavjud mukofotlar</h3>' + rewardsBlock;
     } catch (error) {
         console.error("Rewards load error:", error);
-        if (error?.name === "AbortError") return;
-        const message = error && error.name === "AbortError" ? "Server 10 soniya ichida javob bermadi." : (error.message || "Noma’lum xatolik");
+        if (error?.name === "AbortError") {
+            container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;">Mukofotlarni yuklash bekor qilindi. Qayta urinib ko‘ring.</div>';
+            return;
+        }
+        const message = error.message || "Noma’lum xatolik";
         container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;"><strong>Mukofotlarni yuklab bo‘lmadi.</strong><div style="margin-top:8px;color:#9ca3af;font-size:12px;">' + escapeHtml(message) + '</div><button type="button" onclick="loadStudentRewards(\'studentRewardsModalContent\')" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
     }
 }
