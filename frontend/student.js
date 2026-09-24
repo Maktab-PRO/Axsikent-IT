@@ -1,6 +1,6 @@
 async function fetchStudentApi(path, token, options = {}) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 60000);
+    const timeout = setTimeout(() => controller.abort(), 20000);
     const externalSignal = options.signal;
     const abortFromExternal = () => controller.abort();
 
