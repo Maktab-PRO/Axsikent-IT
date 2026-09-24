@@ -81,7 +81,7 @@ async function loadStudentCourses() {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
 
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -202,7 +202,7 @@ async function loadStudentCourses() {
             if (retryResponse.status === 401) {
                 localStorage.removeItem("access_token");
                 localStorage.removeItem("user_role");
-                window.location.href = "../index.html";
+                window.location.href = "index.html";
                 return;
             }
 
@@ -256,7 +256,7 @@ async function openStudentCourse(courseId) {
     const container = document.getElementById("studentCourses");
 
     if (!token) {
-        window.location.href = "../index.html";
+        window.location.href = "index.html";
         return;
     }
 
@@ -295,7 +295,7 @@ async function openStudentCourse(courseId) {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -555,7 +555,7 @@ async function openStudentModule(courseId, moduleId) {
     const container = document.getElementById("studentCourses");
 
     if (!token) {
-        window.location.href = "../index.html";
+        window.location.href = "index.html";
         return;
     }
 
@@ -582,7 +582,7 @@ async function openStudentModule(courseId, moduleId) {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -766,7 +766,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
     const token = localStorage.getItem("access_token");
 
     if (!token) {
-        window.location.href = "../index.html";
+        window.location.href = "index.html";
         return;
     }
 
@@ -800,7 +800,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -1012,7 +1012,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
     const token = localStorage.getItem("access_token");
 
     if (!token) {
-        window.location.href = "../index.html";
+        window.location.href = "index.html";
         return;
     }
 
@@ -1029,7 +1029,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -1142,7 +1142,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
     const token = localStorage.getItem("access_token");
 
     if (!token) {
-        window.location.href = "../index.html";
+        window.location.href = "index.html";
         return;
     }
 
@@ -1173,7 +1173,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -1398,7 +1398,7 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
                     if (submitResponse.status === 401) {
                         localStorage.removeItem("access_token");
                         localStorage.removeItem("user_role");
-                        window.location.href = "../index.html";
+                        window.location.href = "index.html";
                         return;
                     }
 
@@ -1551,7 +1551,7 @@ if (finishButton) {
         const token = localStorage.getItem("access_token");
 
         if (!token) {
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -1567,7 +1567,7 @@ if (finishButton) {
             if (response.status === 401) {
                 localStorage.removeItem("access_token");
                 localStorage.removeItem("user_role");
-                window.location.href = "../index.html";
+                window.location.href = "index.html";
                 return;
             }
 
@@ -1703,7 +1703,7 @@ if (finishButton) {
         const token = localStorage.getItem("access_token");
 
         if (!token) {
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return false;
         }
 
@@ -1714,7 +1714,7 @@ if (finishButton) {
                 if (response.status === 401) {
                     localStorage.removeItem("access_token");
                     localStorage.removeItem("user_role");
-                    window.location.href = "../index.html";
+                    window.location.href = "index.html";
                     return false;
                 }
 
@@ -1786,7 +1786,7 @@ function confirmLogoutStudent() {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user_role");
 
-    window.location.href = "../index.html";
+    window.location.href = "index.html";
 
 }
 
@@ -1915,7 +1915,7 @@ async function loadStudentRewards(targetId) {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -1995,7 +1995,7 @@ async function buyStudentReward(productId) {
 
                 if (response.status === 401) {
                     localStorage.removeItem("access_token");                    localStorage.removeItem("user_role");
-                    window.location.href = "../index.html";
+                    window.location.href = "index.html";
                     return;
                 }
 
@@ -2063,7 +2063,7 @@ async function buyStudentReward(productId) {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -2209,7 +2209,7 @@ async function buyStudentReward(productId) {
     const token = localStorage.getItem("access_token");
 
     if (!token) {
-        window.location.href = "../index.html";
+        window.location.href = "index.html";
         return;
     }
 
@@ -2247,7 +2247,7 @@ async function buyStudentReward(productId) {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -2300,7 +2300,7 @@ async function buyStudentReward(productId) {
         if (submissionsResponse.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -2540,7 +2540,7 @@ async function buyStudentReward(productId) {
     const token = localStorage.getItem("access_token");
 
     if (!token) {
-        window.location.href = "../index.html";
+        window.location.href = "index.html";
         return;
     }
 
@@ -2585,7 +2585,7 @@ async function buyStudentReward(productId) {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -2706,7 +2706,7 @@ async function buyStudentReward(productId) {
     function openStudentProfile() {
         const token = localStorage.getItem("access_token");
         if (!token) {
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -2748,7 +2748,7 @@ async function buyStudentReward(productId) {
             if (response.status === 401) {
                 localStorage.removeItem("access_token");
                 localStorage.removeItem("user_role");
-                window.location.href = "../index.html";
+                window.location.href = "index.html";
                 return;
             }
 
@@ -2883,7 +2883,7 @@ async function loadStudentBooks() {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
         if (!response.ok) {
@@ -3126,7 +3126,7 @@ showPremiumModal(
             if (response.status === 401) {
                 localStorage.removeItem("access_token");
                 localStorage.removeItem("user_role");
-                window.location.href = "../index.html";
+                window.location.href = "index.html";
                 return;
             }
 
@@ -3238,7 +3238,7 @@ async function loadStudentPodcasts() {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
         if (!response.ok) throw new Error(data.detail || "Podcastlarni yuklashda xatolik.");
@@ -3287,7 +3287,7 @@ async function loadStudentTrainings() {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
         if (!response.ok) throw new Error(data.detail || "Treninglarni yuklashda xatolik.");
@@ -3343,7 +3343,7 @@ async function registerStudentTraining(trainingId) {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
         if (!response.ok) throw new Error(data.detail || "Treningka ro‘yxatdan o‘tishda xatolik.");
@@ -3387,7 +3387,7 @@ async function loadStudentOnlineTests() {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
         if (!response.ok) throw new Error(data.detail || "Testlarni yuklashda xatolik.");
@@ -3425,7 +3425,7 @@ async function startStudentOnlineTest(examId) {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
         if (!response.ok) throw new Error(data.detail || "Testni boshlashda xatolik.");
@@ -3478,7 +3478,7 @@ async function startStudentOnlineTest(examId) {
                 if (resultResponse.response.status === 401) {
                     localStorage.removeItem("access_token");
                     localStorage.removeItem("user_role");
-                    window.location.href = "../index.html";
+                    window.location.href = "index.html";
                     return;
                 }
                 if (!resultResponse.response.ok) throw new Error(resultResponse.data.detail || "Natijani yuborishda xatolik.");
@@ -3715,7 +3715,7 @@ async function loadStudentDashboardHomework() {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
         if (!response.ok) {
@@ -3728,7 +3728,7 @@ async function loadStudentDashboardHomework() {
         if (submissionsResponse.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
         if (!submissionsResponse.ok) {
@@ -3792,7 +3792,7 @@ async function loadStudentNotifications() {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return {unread: 0, notifications: []};
         }
 
@@ -3868,7 +3868,7 @@ async function markStudentNotificationRead(notificationId) {
         if (response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -3930,7 +3930,7 @@ async function loadStudentDashboardStats() {
         if (rewardsResult.response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -3970,7 +3970,7 @@ async function loadStudentDashboardStats() {
         if (rankingResult.response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
-            window.location.href = "../index.html";
+            window.location.href = "index.html";
             return;
         }
 
@@ -3990,7 +3990,7 @@ async function loadStudentDashboardStats() {
 
 async function initStudentDashboard() {
     if (!localStorage.getItem("access_token")) {
-        window.location.href = "../index.html";
+        window.location.href = "index.html";
         return;
     }
 
