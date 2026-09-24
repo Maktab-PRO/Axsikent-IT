@@ -3703,7 +3703,7 @@ confirmButton.onclick = async () => {
    STUDENT CONTENT HELPERS
 ========================= */
 
-async async function loadStudentDashboardHomework() {
+async function loadStudentDashboardHomework() {
     const container = document.getElementById("studentRecentTasks");
     if (!container) return;
 
