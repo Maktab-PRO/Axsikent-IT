@@ -86,8 +86,7 @@ async function loadStudentCourses() {
         }
 
         if (!response.ok) {
-            // Vaqtinchalik API/network xatosini studentga ko‘rsatmaymiz.
-            return;
+            throw new Error(data?.detail || "Kurslarni yuklab bo‘lmadi");
         }
 
         if (!Array.isArray(courses)) {
@@ -235,6 +234,10 @@ async function loadStudentCourses() {
                     `;
                 }).join("");
                 return;
+            }
+
+            if (!retryResponse.ok) {
+                throw new Error(retryCourses?.detail || "Kurslarni yuklab bo‘lmadi");
             }
         } catch (retryError) {
             console.error("Student courses retry:", retryError);
@@ -3700,7 +3703,7 @@ confirmButton.onclick = async () => {
    STUDENT CONTENT HELPERS
 ========================= */
 
-async function loadStudentDashboardHomework() {
+async async function loadStudentDashboardHomework() {
     const container = document.getElementById("studentRecentTasks");
     if (!container) return;
 
