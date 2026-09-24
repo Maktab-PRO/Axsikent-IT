@@ -21,7 +21,7 @@
 <header class="topbar">
 
     <a href="#" class="logo premium-logo" aria-label="Axsikent IT" onclick="window.location.reload(); return false;">
-        <img src="../assets/logo.png" alt="Axsikent IT" class="student-site-logo-image">
+        <img src="assets/Sayt logo1.png" alt="Axsikent IT" class="student-site-logo-image">
     </a>
 
     <div class="topbar-right">
@@ -736,7 +736,7 @@
             if (response.status === 401) {
                 localStorage.removeItem("access_token");
                 localStorage.removeItem("user_role");
-                window.location.href = "../index.html";
+                window.location.href = "index.html";
                 return;
             }
             if (!response.ok) throw new Error(data.detail || "Telegram ulanish ma’lumotini olishda xatolik");
@@ -758,7 +758,7 @@
         const token = localStorage.getItem("access_token");
         const status = document.getElementById("studentTelegramStatus");
         const button = document.getElementById("studentTelegramConnectButton");
-        if (!token) { window.location.href = "../index.html"; return; }
+        if (!token) { window.location.href = "index.html"; return; }
         button.disabled = true; button.textContent = "Ulanmoqda...";
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 10000);
@@ -768,7 +768,7 @@
             if (response.status === 401) {
                 localStorage.removeItem("access_token");
                 localStorage.removeItem("user_role");
-                window.location.href = "../index.html";
+                window.location.href = "index.html";
                 return;
             }
             if (!response.ok) throw new Error(data.detail || "Telegram ulanishida xatolik");
@@ -837,7 +837,7 @@
                     if (response.status === 401) {
                         localStorage.removeItem("access_token");
                         localStorage.removeItem("user_role");
-                        window.location.href = "../index.html";
+                        window.location.href = "index.html";
                         return null;
                     }
                     if (!response.ok) throw new Error(data.detail || "Profil ma’lumotlarini yuklab bo‘lmadi.");
