@@ -19,7 +19,7 @@ security = HTTPBearer()
 
 @router.post("/unlock")
 def unlock_ai_homework(
-    student_id: int = Body(...),
+    student_id: int = Body(..., embed=True),
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
 ):
