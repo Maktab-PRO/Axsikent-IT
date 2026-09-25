@@ -35,5 +35,5 @@ async function teacherLogin(e){
  finally{if(btn){btn.disabled=false;btn.removeAttribute("aria-busy")}}
 }
 $("teacherLoginForm").addEventListener("submit",teacherLogin);
-$("teacherPasswordToggle").addEventListener("click",()=>{const input=$("teacherPassword"),show=input.type==="password";input.type=show?"text":"password";$("teacherPasswordToggle").textContent=show?"◉":"○";$("teacherPasswordToggle").setAttribute("aria-label",show?"Parolni yashirish":"Parolni ko‘rsatish")});
+$("teacherPasswordToggle").addEventListener("click",()=>{const input=$("teacherPassword"),show=input.type==="password";input.type=show?"text":"password";$("teacherPasswordToggle").textContent=show?"🙈":"👁️";$("teacherPasswordToggle").setAttribute("aria-label",show?"Parolni yashirish":"Parolni ko‘rsatish")});
 $("teacherLoginLogo").addEventListener("click",()=>location.reload());
