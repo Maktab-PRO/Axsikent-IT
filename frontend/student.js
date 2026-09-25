@@ -307,14 +307,9 @@ async function openStudentCourse(courseId) {
     `;
 
     try {
-        if (studentOpenCourseController) studentOpenCourseController.abort();
-        const controller = new AbortController();
-        studentOpenCourseController = controller;
-
         const {response, data: modules} = await fetchStudentApi(
             `/students/courses/${courseId}/modules`,
-            token,
-            {signal: controller.signal}
+            token
         );
         if (response.status === 401) {
             localStorage.removeItem("access_token");
@@ -812,14 +807,9 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
     `;
 
     try {
-        if (studentOpenLessonController) studentOpenLessonController.abort();
-        const controller = new AbortController();
-        studentOpenLessonController = controller;
-
         const {response, data: lessons} = await fetchStudentApi(
             `/students/courses/${courseId}/modules/${moduleId}/lessons`,
-            token,
-            {signal: controller.signal}
+            token
         );
         if (response.status === 401) {
             localStorage.removeItem("access_token");
