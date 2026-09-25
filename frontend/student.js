@@ -141,7 +141,8 @@ async function loadStudentCourses() {
                 <div
                     class="course"
                     onclick="openStudentCourse(${course.id})"
-                    style="cursor:pointer;"
+                    style="cursor:${lesson.locked ? "not-allowed" : "pointer"};
+            opacity:${lesson.locked ? ".68" : "1"};"
                 >
 
                     <div class="course-top">
@@ -335,7 +336,7 @@ async function openStudentCourse(courseId) {
                     padding:40px 20px;
                     color:#94a3b8;
                     background:#111827;
-                    border:1px solid #1f2937;
+                    border:1px solid ${lesson.locked ? "#26303d" : "#1f2937"};
                     border-radius:18px;
                 ">
                     <div style="font-size:35px;">📚</div>
@@ -650,7 +651,7 @@ async function openStudentModule(courseId, moduleId) {
 
             ${lessons.map((lesson, index) => `
     <div
-        onclick="openStudentLesson(${courseId}, ${moduleId}, ${lesson.id})"
+        onclick="${lesson.locked ? "" : `openStudentLesson(${courseId}, ${moduleId}, ${lesson.id})`}"
         style="
             padding:20px;
             margin-bottom:14px;
@@ -659,8 +660,8 @@ async function openStudentModule(courseId, moduleId) {
             background:
                 linear-gradient(
                     145deg,
-                    #111827,
-                    #0b1220
+                    ${lesson.locked ? "#0d141d" : "#111827"},
+                    ${lesson.locked ? "#0a1017" : "#0b1220"}
                 );
             cursor:pointer;
             box-shadow:0 8px 25px rgba(0,0,0,.20);
@@ -729,10 +730,10 @@ async function openStudentModule(courseId, moduleId) {
             </div>
 
             <div style="
-                color:#22c55e;
+                color:${lesson.locked ? "#64748b" : "#22c55e"};
                 font-size:20px;
             ">
-                →
+                ${lesson.locked ? "🔒" : "→"}
             </div>
 
         </div>
@@ -742,9 +743,11 @@ async function openStudentModule(courseId, moduleId) {
             color:#64748b;
             font-size:12px;
         ">
-            ${lesson.completed
-                ? "✅ Bu dars tugallangan"
-                : "📖 Darsni ochish va o‘rganishni boshlash"
+            ${lesson.locked
+                ? "🔒 " + escapeHtml(lesson.lock_reason || "Avval oldingi darsni tugating")
+                : lesson.completed
+                    ? "✅ Bu dars tugallangan"
+                    : "📖 Darsni ochish va o‘rganishni boshlash"
             }
         </div>
 
@@ -836,6 +839,15 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
 
         if (!lesson) {
             throw new Error("Dars topilmadi");
+        }
+
+        if (lesson.locked) {
+            showPremiumModal(
+                "🔒 Dars yopiq",
+                lesson.lock_reason || "Avval oldingi darsni tugating."
+            );
+            await openStudentModule(courseId, moduleId);
+            return;
         }
 
         container.innerHTML = `
