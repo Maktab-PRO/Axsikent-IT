@@ -42,6 +42,8 @@ $("unlockQuizBtn").addEventListener("click",async()=>{
       student_id:Number($("unlockStudentId").value),
       lesson_id:Number($("unlockLessonId").value)
     })});
+$("unlockAiBtn")?.addEventListener("click",async()=>{const btn=$("unlockAiBtn"),msg=$("unlockAiMessage"),studentId=Number($("aiUnlockStudent")?.value);if(!studentId){if(msg)msg.textContent="Avval o‘quvchini tanlang.";return}if(btn)btn.disabled=true;if(msg)msg.textContent="";try{await api("/teachers/ai-homework/unlock",{method:"POST",body:JSON.stringify({student_id:studentId})});if(msg)msg.textContent="AKHSIKENT AI qayta ochildi. 3 ta xato hisoblagichi 0 ga tushirildi."; }catch(e){if(msg)msg.textContent=e.message}finally{if(btn)btn.disabled=false}});
+
     if(msg) msg.textContent="Quiz qayta ochildi.";
   }catch(e){
     if(msg) msg.textContent=e.message;
@@ -91,6 +93,6 @@ async function boot(){
   if(!token){location.href="teacher-login.html";return}
   $("teacherApp").hidden=false;
   if(!$("attendanceDate").value){const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());$("attendanceDate").value=now.toISOString().slice(0,10);}
-  await loadTeacherData()
+  await loadTeacherData();fillAiUnlockStudentSelect()
 }
 boot();
