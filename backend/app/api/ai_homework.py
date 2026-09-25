@@ -10,6 +10,8 @@ from app.models.student import Student
 from app.models.homework import Homework
 from app.models.student_group import StudentGroup
 from app.models.group import Group
+from app.models.ai_homework_state import AIHomeworkState
+from datetime import datetime, timezone
 from openai import OpenAI
 import json
 
@@ -50,6 +52,15 @@ def check_homework(
     student: Student = Depends(get_student),
     db: Session = Depends(get_db)
 ):
+    ai_state = db.query(AIHomeworkState).filter(
+        AIHomeworkState.student_id == student.id
+    ).first()
+    if ai_state and ai_state.is_blocked:
+        raise HTTPException(
+            status_code=423,
+            detail="AKHSIKENT AI 3 ta ketma-ket muvaffaqiyatsiz urinishdan so'ng bloklandi. O'qituvchi qayta ochishi kerak."
+        )
+
     if not settings.OPENAI_API_KEY:
         raise HTTPException(status_code=503, detail="OpenAI API kaliti serverga ulanmagan")
 
@@ -131,9 +142,35 @@ Xatolarni aniq va o'quvchiga tushunarli qilib ko'rsating.
     result["score"] = score
     result["passed"] = score >= 80
 
+    ai_state = db.query(AIHomeworkState).filter(
+        AIHomeworkState.student_id == student.id
+    ).with_for_update().first()
+    if not ai_state:
+        ai_state = AIHomeworkState(
+            student_id=student.id,
+            consecutive_failures=0,
+            is_blocked=False
+        )
+        db.add(ai_state)
+        db.flush()
+
+    if score >= 80:
+        ai_state.consecutive_failures = 0
+        ai_state.is_blocked = False
+        ai_state.blocked_at = None
+    else:
+        ai_state.consecutive_failures = (ai_state.consecutive_failures or 0) + 1
+        if ai_state.consecutive_failures >= 3:
+            ai_state.is_blocked = True
+            ai_state.blocked_at = datetime.now(timezone.utc)
+
+    db.commit()
+
     return {
         "student_id": student.id,
         "student_name": student.full_name,
         "ai": "AKHSIKENT AI",
-        **result
+        **result,
+        "ai_consecutive_failures": ai_state.consecutive_failures,
+        "ai_blocked": ai_state.is_blocked
     }
