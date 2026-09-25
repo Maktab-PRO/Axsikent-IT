@@ -73,7 +73,7 @@ async function loadStudentCourses() {
         const {response, data: courses} = await fetchStudentApi(
             "/students/courses",
             token,
-            {method: "GET"}
+            {method: "GET", signal: controller.signal}
         );
 
         if (response.status === 401) {
@@ -3245,7 +3245,7 @@ async function loadStudentPodcasts() {
         const {response, data} = await fetchStudentApi(
             "/students/podcasts",
             token,
-            {method:"GET"}
+            {method:"GET", signal: controller.signal}
         );
 
         if (response.status === 401) {
@@ -3294,7 +3294,7 @@ async function loadStudentTrainings() {
         const {response, data} = await fetchStudentApi(
             "/students/trainings",
             token,
-            {method:"GET"}
+            {method:"GET", signal: controller.signal}
         );
 
         if (response.status === 401) {
