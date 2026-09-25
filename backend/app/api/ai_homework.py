@@ -111,7 +111,8 @@ Xatolarni aniq va o'quvchiga tushunarli qilib ko'rsating.
             response_format={"type": "json_object"}
         )
         result = json.loads(response.choices[0].message.content)
-    except Exception:
+    except Exception as exc:
+        print(f"[AKHSIKENT AI] OpenAI error: {type(exc).__name__}: {exc}", flush=True)
         raise HTTPException(status_code=502, detail="AI tekshiruvda vaqtinchalik xatolik yuz berdi. Iltimos, qayta urinib ko‘ring.")
 
     raw_score = result.get("score", 0)
