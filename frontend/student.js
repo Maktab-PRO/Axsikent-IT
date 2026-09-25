@@ -45,6 +45,13 @@ async function fetchStudentApi(path, token, options = {}) {
 }
 
 const API_URL = "https://axsikent-it-backend.onrender.com";
+
+let studentCoursesLoadController = null;
+let studentOpenCourseController = null;
+let studentOpenLessonController = null;
+let studentRewardsLoadController = null;
+let studentRankingLoadController = null;
+let studentHomeworkLoadController = null;
 // Student API fetches use a hard timeout so Rewards/Notifications cannot stay on loading forever.
     /* =========================
    LOAD STUDENT COURSES
