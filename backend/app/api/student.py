@@ -17,6 +17,9 @@ from app.models.lesson import Lesson
 from app.models.lesson_quiz import LessonQuiz
 from app.models.student_lesson import StudentLesson
 from app.models.lesson_progress import LessonProgress
+from app.models.reward_rule import RewardRule
+from app.models.reward_transaction import RewardTransaction
+from app.models.achievement import Achievement, StudentAchievement
 from app.schemas.student import StudentCreate, StudentLogin, StudentResponse
 from app.core.security import create_access_token, decode_token
 
@@ -44,6 +47,118 @@ pwd_context = CryptContext(
     schemes=["bcrypt"],
     deprecated="auto"
 )
+
+
+def _apply_lesson_gamification_rewards(db: Session, student_id: int, lesson_id: int):
+    rules = db.query(RewardRule).filter(
+        RewardRule.is_active == True,
+        RewardRule.action_type == "lesson_completed"
+    ).all()
+    for rule in rules:
+        exists = db.query(RewardTransaction).filter(
+            RewardTransaction.student_id == student_id,
+            RewardTransaction.reward_type == rule.reward_type,
+            RewardTransaction.reason == rule.name,
+            RewardTransaction.reference_type == "lesson_completed",
+            RewardTransaction.reference_id == lesson_id,
+        ).first()
+        if exists:
+            continue
+        amount = max(0, int(rule.reward_amount or 0))
+        gamification = db.query(StudentGamification).filter(
+            StudentGamification.student_id == student_id
+        ).with_for_update().first()
+        if not gamification:
+            continue
+        if rule.reward_type == "coin":
+            gamification.coins = (gamification.coins or 0) + amount
+        elif rule.reward_type == "crystal":
+            gamification.crystals = (gamification.crystals or 0) + amount
+        else:
+            continue
+        db.add(RewardTransaction(
+            student_id=student_id,
+            reward_type=rule.reward_type,
+            amount=amount,
+            reason=rule.name,
+            reference_type="lesson_completed",
+            reference_id=lesson_id,
+        ))
+
+
+def _check_lesson_achievements(db: Session, student_id: int):
+    completed_count = db.query(func.count(func.distinct(LessonProgress.lesson_id))).filter(
+        LessonProgress.student_id == student_id,
+        LessonProgress.is_completed == True,
+    ).scalar() or 0
+    milestones = {
+        1: ("Birinchi qadam", "Birinchi darsni tugatdingiz.", "🥇", 10, 5, 0),
+        5: ("5 dars", "5 ta darsni tugatdingiz.", "🔥", 20, 10, 0),
+        10: ("10 dars", "10 ta darsni tugatdingiz.", "🏆", 40, 20, 1),
+        25: ("25 dars", "25 ta darsni tugatdingiz.", "💎", 100, 50, 3),
+    }
+    for threshold, data in milestones.items():
+        if completed_count < threshold:
+            continue
+        name, description, icon, xp_reward, coin_reward, crystal_reward = data
+        achievement = db.query(Achievement).filter(Achievement.name == name).first()
+        if not achievement:
+            achievement = Achievement(
+                name=name, description=description, icon=icon,
+                xp_reward=xp_reward, coin_reward=coin_reward,
+                crystal_reward=crystal_reward, is_active=True
+            )
+            db.add(achievement)
+            db.flush()
+        if not achievement.is_active:
+            continue
+        earned = db.query(StudentAchievement).filter(
+            StudentAchievement.student_id == student_id,
+            StudentAchievement.achievement_id == achievement.id,
+        ).first()
+        if earned:
+            continue
+        gamification = db.query(StudentGamification).filter(
+            StudentGamification.student_id == student_id
+        ).with_for_update().first()
+        if not gamification:
+            continue
+        gamification.xp = (gamification.xp or 0) + max(0, achievement.xp_reward or 0)
+        gamification.coins = (gamification.coins or 0) + max(0, achievement.coin_reward or 0)
+        gamification.crystals = (gamification.crystals or 0) + max(0, achievement.crystal_reward or 0)
+        gamification.level = max(1, (gamification.xp // 100) + 1)
+        db.add(StudentAchievement(
+            student_id=student_id,
+            achievement_id=achievement.id,
+            earned_at=datetime.now(timezone.utc).isoformat(),
+        ))
+
+
+@router.get("/achievements")
+def get_student_achievements(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    student_id = get_student_id(credentials, db)
+    rows = db.query(StudentAchievement, Achievement).join(
+        Achievement, Achievement.id == StudentAchievement.achievement_id
+    ).filter(
+        StudentAchievement.student_id == student_id,
+        Achievement.is_active == True,
+    ).order_by(StudentAchievement.id.desc()).all()
+    return [
+        {
+            "id": achievement.id,
+            "name": achievement.name,
+            "description": achievement.description,
+            "icon": achievement.icon,
+            "xp_reward": achievement.xp_reward,
+            "coin_reward": achievement.coin_reward,
+            "crystal_reward": achievement.crystal_reward,
+            "earned_at": earned.earned_at,
+        }
+        for earned, achievement in rows
+    ]
 
 
 @router.post("/register", response_model=StudentResponse)
@@ -914,6 +1029,10 @@ def complete_lesson(
         gamification.streak_days = 1
 
     gamification.last_activity_at = now_utc
+
+    # Yangi qatlam faqat yangi tugallangan darsdan keyin ishlaydi.
+    _apply_lesson_gamification_rewards(db, student_id, lesson_id)
+    _check_lesson_achievements(db, student_id)
 
     total_lessons = db.query(Lesson).join(
         CourseModule,
