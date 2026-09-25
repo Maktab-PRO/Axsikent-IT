@@ -141,8 +141,7 @@ async function loadStudentCourses() {
                 <div
                     class="course"
                     onclick="openStudentCourse(${course.id})"
-                    style="cursor:${lesson.locked ? "not-allowed" : "pointer"};
-            opacity:${lesson.locked ? ".68" : "1"};"
+                    style="cursor:pointer;"
                 >
 
                     <div class="course-top">
@@ -336,7 +335,7 @@ async function openStudentCourse(courseId) {
                     padding:40px 20px;
                     color:#94a3b8;
                     background:#111827;
-                    border:1px solid ${lesson.locked ? "#26303d" : "#1f2937"};
+                    border:1px solid #1f2937;
                     border-radius:18px;
                 ">
                     <div style="font-size:35px;">📚</div>
@@ -655,7 +654,7 @@ async function openStudentModule(courseId, moduleId) {
         style="
             padding:20px;
             margin-bottom:14px;
-            border:1px solid #1f2937;
+            border:1px solid ${lesson.locked ? "#26303d" : "#1f2937"};
             border-radius:18px;
             background:
                 linear-gradient(
@@ -663,7 +662,8 @@ async function openStudentModule(courseId, moduleId) {
                     ${lesson.locked ? "#0d141d" : "#111827"},
                     ${lesson.locked ? "#0a1017" : "#0b1220"}
                 );
-            cursor:pointer;
+            cursor:${lesson.locked ? "not-allowed" : "pointer"};
+            opacity:${lesson.locked ? ".68" : "1"};
             box-shadow:0 8px 25px rgba(0,0,0,.20);
             transition:all .2s ease;
         "
