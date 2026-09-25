@@ -29,6 +29,18 @@ router = APIRouter(prefix="/students", tags=["Students"])
 security = HTTPBearer()
 
 
+def lesson_is_available_to_student(db: Session, student_id: int, lesson_id: int) -> bool:
+    """Teacher-assigned lessons are visible only to their assigned student.
+    Normal lessons (without StudentLesson rows) remain visible to enrolled students.
+    """
+    assignments = db.query(StudentLesson).filter(
+        StudentLesson.lesson_id == lesson_id
+    ).all()
+    if not assignments:
+        return True
+    return any(item.student_id == student_id for item in assignments)
+
+
 def get_student_id(credentials: HTTPAuthorizationCredentials, db: Session):
     payload = decode_token(credentials.credentials)
     if not payload or payload.get("role") != "student":
@@ -517,6 +529,10 @@ def get_module_lessons(
         Lesson.sort_order.asc(),
         Lesson.id.asc()
     ).all()
+    lessons = [
+        lesson for lesson in lessons
+        if lesson_is_available_to_student(db, student_id, lesson.id)
+    ]
 
     # Darslar ketma-ket ochiladi: birinchi dars ochiq,
     # keyingi dars esa undan oldingi faol dars tugagandan keyin ochiladi.
