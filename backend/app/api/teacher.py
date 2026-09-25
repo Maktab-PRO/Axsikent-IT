@@ -150,7 +150,9 @@ def teacher_dashboard(
     courses = db.query(Course).filter(
         Course.id.in_(course_ids),
         Course.is_active == True
-    ).all() if course_ids else []
+    ).all() if course_ids else db.query(Course).filter(
+        Course.is_active == True
+    ).order_by(Course.name.asc()).all()
     course_map = {x.id:x.name for x in courses}
 
     return {
@@ -444,13 +446,12 @@ def create_teacher_grade(
     group = db.query(Group).join(
         StudentGroup, StudentGroup.group_id == Group.id
     ).filter(
-        Group.teacher_id == teacher.id,
         Group.is_active == True,
         StudentGroup.student_id == student.id,
         StudentGroup.is_active == True
     ).order_by(Group.id.asc()).first()
     if not group:
-        raise HTTPException(status_code=403, detail="Bu o‘quvchi sizga biriktirilmagan")
+        raise HTTPException(status_code=404, detail="O‘quvchining faol guruhi topilmadi")
 
     if score < 0 or score > 100:
         raise HTTPException(status_code=400, detail="Baho 0 dan 100 gacha bo‘lishi kerak")
