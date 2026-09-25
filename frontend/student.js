@@ -4005,6 +4005,25 @@ async function loadStudentDashboardStats() {
         }
     } catch (error) {
         console.error("Student dashboard stats:", error);
+
+        const rankCounter = document.getElementById("statRank");
+        const xpCounter = document.getElementById("statTotalXp");
+        const streakCounter = document.getElementById("statStreak");
+        const activity = document.getElementById("studentActivityContent");
+
+        if (rankCounter && rankCounter.textContent.includes("yuklan")) {
+            rankCounter.textContent = "—";
+        }
+        if (xpCounter && xpCounter.textContent.includes("yuklan")) {
+            xpCounter.textContent = "—";
+        }
+        if (streakCounter && streakCounter.textContent.includes("yuklan")) {
+            streakCounter.textContent = "—";
+        }
+        if (activity && /yuklanmoqda/i.test(activity.textContent || "")) {
+            activity.innerHTML =
+                '<div style="padding:22px;text-align:center;color:#fda4af;background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(248,113,113,.16);border-radius:16px;">Faollik ma’lumotini yuklab bo‘lmadi. <button type="button" onclick="loadStudentDashboardStats()" style="margin-top:10px;padding:8px 13px;border:1px solid rgba(52,211,153,.25);border-radius:10px;background:rgba(52,211,153,.08);color:#86efac;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
+        }
     }
 }
 
