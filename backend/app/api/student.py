@@ -641,6 +641,8 @@ def mark_lesson_as_read(
             status_code=404,
             detail="Dars topilmadi"
         )
+    if not lesson_is_available_to_student(db, student_id, lesson_id):
+        raise HTTPException(status_code=403, detail="Bu dars sizga biriktirilmagan")
 
     progress = db.query(LessonProgress).filter(
         LessonProgress.student_id == student_id,
@@ -719,6 +721,8 @@ def get_lesson_quiz(
             status_code=404,
             detail="Dars topilmadi"
         )
+    if not lesson_is_available_to_student(db, student_id, lesson_id):
+        raise HTTPException(status_code=403, detail="Bu dars sizga biriktirilmagan")
 
     quizzes = db.query(LessonQuiz).filter(
         LessonQuiz.lesson_id == lesson_id,
@@ -799,6 +803,8 @@ def submit_lesson_quiz(
             status_code=404,
             detail="Dars topilmadi"
         )
+    if not lesson_is_available_to_student(db, student_id, lesson_id):
+        raise HTTPException(status_code=403, detail="Bu dars sizga biriktirilmagan")
 
     progress = db.query(LessonProgress).filter(
         LessonProgress.student_id == student_id,
@@ -935,6 +941,8 @@ def complete_lesson(
             status_code=404,
             detail="Dars topilmadi"
         )
+    if not lesson_is_available_to_student(db, student_id, lesson_id):
+        raise HTTPException(status_code=403, detail="Bu dars sizga biriktirilmagan")
 
     progress = db.query(LessonProgress).filter(
         LessonProgress.student_id == student_id,
