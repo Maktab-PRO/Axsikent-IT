@@ -8,7 +8,7 @@
 <body>
 <div id="teacherApp" class="teacher-app" hidden>
 <header class="teacher-topbar">
-  <button class="brand" id="teacherBrandLogo" type="button" aria-label="Refresh teacher panel"><img src="assets/Sayt%20logo.png" alt="Axsikent IT"></button>
+  <button class="brand" id="teacherBrandLogo" type="button" aria-label="Refresh teacher panel"><img src="assets/Sayt%20logo1.png" alt="Axsikent IT"></button>
   <div class="top-actions"><button id="teacherRefreshBtn" class="icon-btn refresh-teacher-btn" type="button" aria-label="Refresh">↻</button>
     <div class="language-picker" data-picker="app"><button type="button" class="language-trigger" id="appLangButton">UZ <span>⌄</span></button><div class="language-menu"><button type="button" data-lang="uz">UZ</button><button type="button" data-lang="ru">RU</button><button type="button" data-lang="en">EN</button></div></div>
     <button id="logoutBtn" class="icon-btn" type="button" aria-label="Logout">↪</button>
@@ -22,6 +22,7 @@
     <button class="side-item" data-section="students"><span>◎</span><b data-i18n="students">O‘quvchilar</b></button>
     <button class="side-item" data-section="lessons"><span>▣</span><b data-i18n="lessons">Darslar</b></button>
     <button class="side-item" data-section="quiz"><span>◇</span><b data-i18n="quiz">Quiz / Savollar</b></button>
+    <button class="side-item" data-section="ai-homework"><span>🤖</span><b>AKHSIKENT AI</b></button>
     <button class="side-item" data-section="attendance"><span>◷</span><b data-i18n="attendance">Davomat</b></button>
     <button class="side-item" data-section="grades"><span>★</span><b data-i18n="grades">Baholar</b></button>
     <button class="side-item" data-section="courses"><span>◈</span><b data-i18n="courses">Fanlar / Kurslar</b></button>
@@ -49,6 +50,8 @@
   <div id="unlockQuizMessage" class="form-message"></div>
 </div></div></section>
 
+<section class="teacher-section" id="section-ai-homework"><div class="section-head"><div><div class="eyebrow">TEACHER / AKHSIKENT AI</div><h2>AKHSIKENT AI</h2><p>3 ta ketma-ket muvaffaqiyatsiz urinishdan keyin bloklangan o‘quvchining AI tekshiruvini qayta oching.</p></div></div><div class="panel form-panel"><div class="form-grid"><label class="wide"><span>O‘quvchi</span><select id="aiUnlockStudent"><option value="">Tanlang</option></select></label></div><button class="premium-btn primary" id="unlockAiBtn" type="button"><span>🔓</span><span>AKHSIKENT AI ni qayta ochish</span></button><div id="unlockAiMessage" class="form-message"></div></div></section>
+
 <section class="teacher-section" id="section-attendance"><div class="section-head"><div><div class="eyebrow">TEACHER / ATTENDANCE</div><h2 data-i18n="attendance">Davomat</h2><p data-i18n="attendanceText">Har bir o‘quvchi uchun keldi / kelmadi holatini belgilang.</p></div><input class="date-input" id="attendanceDate" type="date"></div><div class="panel table-panel"><div id="attendanceContent" class="empty-state"><span>◷</span><strong data-i18n="loadingStudents">O‘quvchilar yuklanmoqda...</strong></div></div></section>
 
 <section class="teacher-section" id="section-grades"><div class="section-head"><div><div class="eyebrow">TEACHER / GRADES</div><h2 data-i18n="grades">Baholar</h2><p data-i18n="gradesText">O‘quvchilarga baho va izoh qoldiring.</p></div></div><div class="panel form-panel"><div class="form-grid"><label><span data-i18n="student">O‘quvchi</span><select id="gradeStudent"><option data-i18n="choose">Tanlang</option></select></label><label><span data-i18n="score">Baho (0–100)</span><input id="gradeScore" type="number" min="0" max="100"></label><label class="wide"><span data-i18n="comment">Izoh</span><textarea id="gradeComment" rows="4" placeholder="O‘quvchi uchun izoh"></textarea></label></div><button class="premium-btn primary" id="saveGradeBtn" type="button"><span>★</span><span data-i18n="saveGrade">Bahoni saqlash</span></button><div id="gradeMessage" class="form-message"></div></div></section>
@@ -58,7 +61,7 @@
 <section class="teacher-section" id="section-support"><div class="section-head"><div><div class="eyebrow">AXSIKENT IT / SUPPORT</div><h2 data-i18n="support">Texnik yordam</h2><p data-i18n="supportText">Platforma bo‘yicha yordam kerak bo‘lsa, biz bilan bog‘laning.</p></div></div><div class="support-grid"><a href="tel:+998973739399" class="support-card"><span>☎</span><strong>+998 97 373 93 99</strong><small data-i18n="call">Qo‘ng‘iroq</small></a><a href="mailto:adxamjonai99@gmail.com" class="support-card"><span>✉</span><strong>adxamjonai99@gmail.com</strong><small>Email</small></a></div></section>
 </main></div>
 
-<footer class="teacher-footer"><div class="footer-brand"><img src="assets/Sayt%20logo.png" alt="Axsikent IT"></div><p data-i18n="footerText">Zamonaviy ta’lim va kuchli kelajak sari.</p><div class="socials"><a href="https://t.me/akhsikent_edu" aria-label="Telegram">✈</a><a href="https://instagram.com/akhsikent_edu" aria-label="Instagram">◎</a><a href="https://youtube.com/@akhsikent_edu" aria-label="YouTube">▶</a><a href="https://facebook.com/akhsikent_edu" aria-label="Facebook">f</a></div><div class="creator"><span data-i18n="creator">Platforma yaratuvchisi</span><a href="https://t.me/Mister_A_01" aria-label="Telegram creator">✈</a><a href="https://instagram.com/adiiik_01" aria-label="Instagram creator">◎</a></div></footer>
+<footer class="teacher-footer"><div class="footer-brand"><img src="assets/Sayt%20logo1.png" alt="Axsikent IT"></div><p data-i18n="footerText">Zamonaviy ta’lim va kuchli kelajak sari.</p><div class="socials"><a href="https://t.me/akhsikent_edu" aria-label="Telegram">✈</a><a href="https://instagram.com/akhsikent_edu" aria-label="Instagram">◎</a><a href="https://youtube.com/@akhsikent_edu" aria-label="YouTube">▶</a><a href="https://facebook.com/akhsikent_edu" aria-label="Facebook">f</a></div><div class="creator"><span data-i18n="creator">Platforma yaratuvchisi</span><a href="https://t.me/Mister_A_01" aria-label="Telegram creator">✈</a><a href="https://instagram.com/adiiik_01" aria-label="Instagram creator">◎</a></div></footer>
 </div>
 <script src="teacher.js?v=split1"></script>
 </body></html>
