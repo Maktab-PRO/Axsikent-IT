@@ -142,15 +142,9 @@ def teacher_dashboard(
         Group.teacher_id == teacher.id,
         Group.is_active == True
     ).all()
-    links = db.query(StudentGroup).filter(
-        StudentGroup.group_id.in_([g.id for g in groups] or [-1]),
-        StudentGroup.is_active == True
-    ).all()
-    student_ids = list(dict.fromkeys([x.student_id for x in links]))
     students = db.query(Student).filter(
-        Student.id.in_(student_ids),
         Student.is_active == True
-    ).all() if student_ids else []
+    ).order_by(Student.full_name.asc()).all()
 
     course_ids = list(dict.fromkeys([g.course_id for g in groups]))
     courses = db.query(Course).filter(
