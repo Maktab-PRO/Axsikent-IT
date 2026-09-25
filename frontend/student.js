@@ -66,9 +66,9 @@ async function loadStudentCourses() {
     }
 
     try {
-        if (window.__studentCoursesLoadController) window.__studentCoursesLoadController.abort();
+        if (studentCoursesLoadController) studentCoursesLoadController.abort();
         const controller = new AbortController();
-        window.__studentCoursesLoadController = controller;
+        studentCoursesLoadController = controller;
 
         const {response, data: courses} = await fetchStudentApi(
             "/students/courses",
@@ -185,7 +185,7 @@ async function loadStudentCourses() {
 
         console.error(error);
         if (error?.name === "AbortError") {
-            if (window.__studentCoursesLoadController === null) {
+            if (studentCoursesLoadController === null) {
                 container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;">Kurslarni yuklash bekor qilindi. Qayta urinib ko‘ring.</div>';
             }
             return;
@@ -196,7 +196,7 @@ async function loadStudentCourses() {
         try {
             await new Promise(resolve => setTimeout(resolve, 800));
             const retryController = new AbortController();
-            window.__studentCoursesLoadController = retryController;
+            studentCoursesLoadController = retryController;
             const {response: retryResponse, data: retryCourses} = await fetchStudentApi(
                 "/students/courses",
                 token,
@@ -292,9 +292,9 @@ async function openStudentCourse(courseId) {
     `;
 
     try {
-        if (window.__studentOpenCourseController) window.__studentOpenCourseController.abort();
+        if (studentOpenCourseController) studentOpenCourseController.abort();
         const controller = new AbortController();
-        window.__studentOpenCourseController = controller;
+        studentOpenCourseController = controller;
 
         const {response, data: modules} = await fetchStudentApi(
             `/students/courses/${courseId}/modules`,
@@ -797,9 +797,9 @@ async function openStudentLesson(courseId, moduleId, lessonId) {
     `;
 
     try {
-        if (window.__studentOpenLessonController) window.__studentOpenLessonController.abort();
+        if (studentOpenLessonController) studentOpenLessonController.abort();
         const controller = new AbortController();
-        window.__studentOpenLessonController = controller;
+        studentOpenLessonController = controller;
 
         const {response, data: lessons} = await fetchStudentApi(
             `/students/courses/${courseId}/modules/${moduleId}/lessons`,
@@ -1878,7 +1878,7 @@ function confirmLogoutStudent() {
         await loadStudentRewards("studentRewardsModalContent");
     }
 
-    let window.__studentRewardsLoadController = null;
+    let studentRewardsLoadController = null;
 
 async function loadStudentRewards(targetId) {
     const container = document.getElementById(targetId || "studentRewardsContent");
@@ -1915,7 +1915,7 @@ async function loadStudentRewards(targetId) {
             }
         } finally {
             clearTimeout(timer);
-            window.__studentRewardsLoadController = null;
+            studentRewardsLoadController = null;
         }
 
         if (response.status === 401) {
@@ -2032,7 +2032,7 @@ async function buyStudentReward(productId) {
 }
 
 
-    let window.__studentRankingLoadController = null;
+    let studentRankingLoadController = null;
 
     async function loadStudentRanking() {
 
@@ -2165,7 +2165,7 @@ async function buyStudentReward(productId) {
 
         console.error(error);
         if (error?.name === "AbortError") {
-            if (window.__studentRankingLoadController === null) {
+            if (studentRankingLoadController === null) {
                 container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;"><strong>Reytingni yuklash vaqti tugadi.</strong><div style="margin-top:8px;color:#9ca3af;font-size:12px;">Server javobi kelmadi.</div><button type="button" onclick="loadStudentRanking()" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(52,211,153,.25);border-radius:10px;background:rgba(52,211,153,.08);color:#86efac;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
             }
             return;
@@ -2214,7 +2214,7 @@ async function buyStudentReward(productId) {
     await loadStudentHomework();
 }
 
-    let window.__studentHomeworkLoadController = null;
+    let studentHomeworkLoadController = null;
 
     async function loadStudentHomework() {
 
@@ -2251,9 +2251,9 @@ async function buyStudentReward(productId) {
 
     try {
 
-        if (window.__studentHomeworkLoadController) window.__studentHomeworkLoadController.abort();
+        if (studentHomeworkLoadController) studentHomeworkLoadController.abort();
         const controller = new AbortController();
-        window.__studentHomeworkLoadController = controller;
+        studentHomeworkLoadController = controller;
         const {response, data: homeworks} = await fetchStudentApi("/homework/student", token, {signal: controller.signal});
 
         if (response.status === 401) {
