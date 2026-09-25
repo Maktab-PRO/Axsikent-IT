@@ -2503,6 +2503,24 @@ async function buyStudentReward(productId) {
                                 }</textarea>
 
                                 <button
+                                    type="button"
+                                    onclick="checkStudentHomeworkWithAI(${homework.id})"
+                                    style="
+                                        width:100%;
+                                        margin-top:10px;
+                                        border:1px solid rgba(167,139,250,.30);
+                                        padding:13px;
+                                        border-radius:12px;
+                                        background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(76,29,149,.22));
+                                        color:#ddd6fe;
+                                        font-weight:800;
+                                        cursor:pointer;
+                                    "
+                                >
+                                    🤖 Ustoz AI bilan tekshirish
+                                </button>
+
+                                <button
                                     onclick="submitStudentHomework(${homework.id})"
                                     style="
                                         width:100%;
@@ -2551,6 +2569,101 @@ async function buyStudentReward(productId) {
         `;
     }
 }
+
+    async function checkStudentHomeworkWithAI(homeworkId) {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            window.location.href = "index.html";
+            return;
+        }
+
+        const textarea = document.getElementById("homeworkAnswer_" + homeworkId);
+        const answer = textarea?.value?.trim();
+        if (!answer) {
+            showPremiumModal("Javob kerak", "Avval uy vazifasi javobingizni yozing.", "Yopish");
+            return;
+        }
+
+        const card = textarea.closest("div[style*='background']");
+        const titleNode = card?.querySelector("div[style*='font-size:17px']");
+        const descriptionNode = card?.querySelector("div[style*='line-height:1.6']");
+        const task = [
+            titleNode?.textContent?.trim() || "Uy vazifasi",
+            descriptionNode?.textContent?.trim() || ""
+        ].filter(Boolean).join("\n");
+
+        const aiButton = Array.from(card?.querySelectorAll("button") || [])
+            .find(button => button.textContent.includes("Ustoz AI"));
+
+        if (aiButton) {
+            aiButton.disabled = true;
+            aiButton.textContent = "🤖 AI tekshirmoqda...";
+        }
+
+        try {
+            const {response, data} = await fetchStudentApi("/ai/homework/check", token, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    homework_id: Number(homeworkId),
+                    task,
+                    answer
+                })
+            });
+
+            if (response.status === 401) {
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user_role");
+                window.location.href = "index.html";
+                return;
+            }
+
+            if (response.status === 423) {
+                showPremiumModal("🔒 AKHSIKENT AI bloklandi", data.detail || "Qayta ochish uchun o‘qituvchingizga murojaat qiling.", "Tushunarli");
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(data.detail || "AI tekshiruvda xatolik yuz berdi");
+            }
+
+            const score = Number(data.score || 0);
+            const mistakes = Array.isArray(data.mistakes) ? data.mistakes : [];
+            const correctPoints = Array.isArray(data.correct_points) ? data.correct_points : [];
+            const explanation = data.explanation || "";
+            const recommendation = data.recommendation || "";
+
+            const mistakeHtml = mistakes.length
+                ? "<div style='margin-top:12px'><strong>❌ Xatolar:</strong><ul style='margin:8px 0 0 18px'>" + mistakes.map(item => "<li>" + escapeHtml(item) + "</li>").join("") + "</ul></div>"
+                : "<div style='margin-top:12px'>✅ Jiddiy xato topilmadi.</div>";
+
+            const correctHtml = correctPoints.length
+                ? "<div style='margin-top:12px'><strong>✅ To‘g‘ri bajarilgan:</strong><ul style='margin:8px 0 0 18px'>" + correctPoints.map(item => "<li>" + escapeHtml(item) + "</li>").join("") + "</ul></div>"
+                : "";
+
+            showPremiumModal(
+                score >= 80 ? "🎉 AI tekshiruv: " + score + "%" : "📝 AI tekshiruv: " + score + "%",
+                "<div style='text-align:left;line-height:1.6;color:#e5e7eb'>" +
+                correctHtml +
+                mistakeHtml +
+                (explanation ? "<div style='margin-top:12px'><strong>💡 Izoh:</strong><div style='margin-top:5px'>" + escapeHtml(explanation) + "</div></div>" : "") +
+                (recommendation ? "<div style='margin-top:12px'><strong>📌 Tavsiya:</strong><div style='margin-top:5px'>" + escapeHtml(recommendation) + "</div></div>" : "") +
+                (score >= 80
+                    ? "<div style='margin-top:14px;padding:10px;border-radius:10px;background:rgba(34,197,94,.10);color:#86efac;font-weight:800'>✅ 80% yoki undan yuqori — muvaffaqiyatli.</div>"
+                    : "<div style='margin-top:14px;padding:10px;border-radius:10px;background:rgba(239,68,68,.10);color:#fca5a5;font-weight:800'>🔁 80% ga yetmadi — xatolarni tuzatib, qayta urinib ko‘ring.</div>") +
+                "</div>",
+                "Yopish"
+            );
+        } catch (error) {
+            console.error("AI homework check:", error);
+            showPremiumModal("AI tekshiruv xatosi", error.message || "Qayta urinib ko‘ring.", "Yopish");
+        } finally {
+            if (aiButton) {
+                aiButton.disabled = false;
+                aiButton.textContent = "🤖 Ustoz AI bilan tekshirish";
+            }
+        }
+    }
 
     async function submitStudentHomework(homeworkId) {
 
