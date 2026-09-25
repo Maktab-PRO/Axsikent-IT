@@ -66,9 +66,7 @@ async function loadStudentCourses() {
     }
 
     try {
-        if (studentCoursesLoadController) studentCoursesLoadController.abort();
         const controller = new AbortController();
-        studentCoursesLoadController = controller;
 
         const {response, data: courses} = await fetchStudentApi(
             "/students/courses",
@@ -149,8 +147,14 @@ async function loadStudentCourses() {
                             </div>
                             
                           <div class="course-info">
-                            Kurs davom etmoqda
+                                ${escapeHtml(course.description || "Kurs davom etmoqda")}
                             </div>
+                            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:#7b8496;">
+                                ${course.age_min != null && course.age_max != null ? `<span>👤 ${course.age_min}–${course.age_max} yosh</span>` : ""}
+                                ${course.lesson_minutes ? `<span>· ⏱ ${course.lesson_minutes} daqiqa</span>` : ""}
+                                ${course.lessons_per_week ? `<span>· 📅 ${course.lessons_per_week}×/hafta</span>` : ""}
+                            </div>
+                            ${(course.price_min != null || course.price_max != null) ? `<div style="margin-top:7px;font-size:12px;font-weight:700;color:#86efac;">💰 ${course.price_min != null ? Number(course.price_min).toLocaleString("uz-UZ") : "—"}${course.price_max != null && Number(course.price_max) !== Number(course.price_min) ? " – " + Number(course.price_max).toLocaleString("uz-UZ") : ""} so‘m</div>` : ""}
                         </div>
 
                     </div>
@@ -185,9 +189,6 @@ async function loadStudentCourses() {
 
         console.error(error);
         if (error?.name === "AbortError") {
-            if (studentCoursesLoadController === null) {
-                container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;">Kurslarni yuklash bekor qilindi. Qayta urinib ko‘ring.</div>';
-            }
             return;
         }
 
@@ -196,7 +197,6 @@ async function loadStudentCourses() {
         try {
             await new Promise(resolve => setTimeout(resolve, 800));
             const retryController = new AbortController();
-            studentCoursesLoadController = retryController;
             const {response: retryResponse, data: retryCourses} = await fetchStudentApi(
                 "/students/courses",
                 token,
@@ -230,7 +230,13 @@ async function loadStudentCourses() {
                                 </div>
                                 <div>
                                     <div class="course-name">${escapeHtml(course.name || "Kurs")}</div>
-                                    <div class="course-info">Kurs davom etmoqda</div>
+                                    <div class="course-info">${escapeHtml(course.description || "Kurs davom etmoqda")}</div>
+                            <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:#7b8496;">
+                                ${course.age_min != null && course.age_max != null ? `<span>👤 ${course.age_min}–${course.age_max} yosh</span>` : ""}
+                                ${course.lesson_minutes ? `<span>· ⏱ ${course.lesson_minutes} daqiqa</span>` : ""}
+                                ${course.lessons_per_week ? `<span>· 📅 ${course.lessons_per_week}×/hafta</span>` : ""}
+                            </div>
+                            ${(course.price_min != null || course.price_max != null) ? `<div style="margin-top:7px;font-size:12px;font-weight:700;color:#86efac;">💰 ${course.price_min != null ? Number(course.price_min).toLocaleString("uz-UZ") : "—"}${course.price_max != null && Number(course.price_max) !== Number(course.price_min) ? " – " + Number(course.price_max).toLocaleString("uz-UZ") : ""} so‘m</div>` : ""}
                                 </div>
                             </div>
                             <div class="progress"><div class="progress-bar" style="width:${progress}%"></div></div>
