@@ -55,9 +55,9 @@ def get_student_ranking(
     ranking = []
 
     for student, gamification in students:
-        xp = gamification.xp if gamification else 0
-        level = gamification.level if gamification else 1
-        coins = gamification.coins if gamification else 0
+        xp = (gamification.xp or 0) if gamification else 0
+        level = (gamification.level or 1) if gamification else 1
+        coins = (gamification.coins or 0) if gamification else 0
 
         ranking.append({
             "student_id": student.id,
