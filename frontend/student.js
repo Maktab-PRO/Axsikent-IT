@@ -1897,7 +1897,7 @@ async function loadStudentRewards(targetId) {
         let controller = null;
         controller = new AbortController();
         studentRewardsLoadController = controller;
-        const timer = setTimeout(() => controller.abort(), 10000);
+        const timer = setTimeout(() => controller.abort(), 20000);
 
         let response;
         let data = {};
@@ -1969,7 +1969,7 @@ async function loadStudentRewards(targetId) {
     } catch (error) {
         console.error("Rewards load error:", error);
         if (error?.name === "AbortError") {
-            container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;">Mukofotlarni yuklash bekor qilindi. Qayta urinib ko‘ring.</div>';
+            container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;"><strong>Mukofotlarni yuklash vaqti tugadi.</strong><div style="margin-top:8px;color:#9ca3af;font-size:12px;">Server javobi kelmadi.</div><button type="button" onclick="loadStudentRewards(\'studentRewardsModalContent\')" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
             return;
         }
         const message = error.message || "Noma’lum xatolik";
@@ -2171,7 +2171,7 @@ async function buyStudentReward(productId) {
         console.error(error);
         if (error?.name === "AbortError") {
             if (studentRankingLoadController === null) {
-                container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;">Reyting yuklash bekor qilindi. Qayta urinib ko‘ring.</div>';
+                container.innerHTML = '<div style="text-align:center;padding:30px;color:#fda4af;"><strong>Reytingni yuklash vaqti tugadi.</strong><div style="margin-top:8px;color:#9ca3af;font-size:12px;">Server javobi kelmadi.</div><button type="button" onclick="loadStudentRanking()" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(52,211,153,.25);border-radius:10px;background:rgba(52,211,153,.08);color:#86efac;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
             }
             return;
         }
@@ -3089,7 +3089,10 @@ async function loadStudentBooks() {
 
     } catch (error) {
         console.error("Student books:", error);
-        if (error?.name === "AbortError") return;
+        if (error?.name === "AbortError") {
+            container.innerHTML = `<div style="text-align:center;padding:30px;color:#fda4af;"><strong>Kitoblarni yuklash vaqti tugadi.</strong><div style="margin-top:8px;color:#9ca3af;font-size:12px;">Server javobi kelmadi.</div><button type="button" onclick="loadStudentBooks()" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button></div>`;
+            return;
+        }
 
         container.innerHTML = `
             <div style="text-align:center;padding:30px;color:#fda4af;">
@@ -3838,7 +3841,7 @@ async function loadStudentNotifications() {
         const body = document.getElementById("studentNotificationsBody");
         if (body) {
             body.innerHTML =
-                '<div style="padding:28px;text-align:center;color:#94a3b8;">Bildirishnomalarni yuklab bo‘lmadi. Qayta urinib ko‘ring.</div>';
+                '<div style="padding:28px;text-align:center;color:#fda4af;"><strong>Bildirishnomalarni yuklab bo‘lmadi.</strong><div style="margin-top:8px;color:#94a3b8;font-size:12px;">Server yoki internet javobi xato qaytdi.</div><button type="button" onclick="loadStudentNotifications()" style="margin-top:14px;padding:9px 14px;border:1px solid rgba(167,139,250,.25);border-radius:10px;background:rgba(139,92,246,.10);color:#ddd6fe;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
         }
 
         return {unread: 0, notifications: []};
