@@ -4014,15 +4014,11 @@ async function initStudentDashboard() {
         return;
     }
 
-    // Avval Student profili ochiladi. Render cold-start paytida 6 ta API'ni
-    // bir vaqtda urib yubormaslik uchun qolgan bo‘limlar keyin yuklanadi.
-    const profileLoaded = await loadStudent();
-    if (!profileLoaded && localStorage.getItem("access_token")) {
-        await new Promise(resolve => setTimeout(resolve, 1200));
-        await loadStudent();
-    }
+    // Profil so'rovi sekinlashsa ham qolgan Student Panel bo'limlari
+    // bir-birini kutib qolmasin. Barcha asosiy yuklashlar parallel boshlanadi.
+    const profilePromise = loadStudent();
 
-    await Promise.allSettled([
+    const sectionsPromise = Promise.allSettled([
         loadStudentCourses(),
         loadStudentRanking(),
         loadStudentDashboardStats(),
@@ -4030,6 +4026,12 @@ async function initStudentDashboard() {
         loadStudentNotifications(),
         loadStudentDashboardHomework()
     ]);
+
+    await profilePromise;
+
+    // Profil muvaffaqiyatsiz bo'lsa ham boshqa bo'limlar o'z natijasini
+    // mustaqil ko'rsatib bo'lgan bo'ladi.
+    await sectionsPromise;
 }
 
 initStudentDashboard();
