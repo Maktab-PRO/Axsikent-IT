@@ -42,17 +42,6 @@ def unlock_ai_homework(
     if not student:
         raise HTTPException(status_code=404, detail="O'quvchi topilmadi yoki faol emas")
 
-    managed = db.query(StudentGroup).join(
-        Group, Group.id == StudentGroup.group_id
-    ).filter(
-        Group.teacher_id == teacher.id,
-        Group.is_active == True,
-        StudentGroup.student_id == student.id,
-        StudentGroup.is_active == True
-    ).first()
-    if not managed:
-        raise HTTPException(status_code=403, detail="Bu o'quvchi sizga biriktirilmagan")
-
     state = db.query(AIHomeworkState).filter(
         AIHomeworkState.student_id == student.id
     ).with_for_update().first()
