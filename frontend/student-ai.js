@@ -86,6 +86,11 @@
                 return;
             }
 
+            if (response.status === 423) {
+                resultEl.innerHTML = '<div style="padding:13px;border-radius:12px;color:#fca5a5;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);font-weight:900;">🔒 AKHSIKENT AI bloklandi. 3 ta ketma-ket muvaffaqiyatsiz urinish qayd etildi. Qayta ochish uchun o‘qituvchiga murojaat qiling.</div>';
+                return;
+            }
+
             if (!response.ok) {
                 throw new Error(data.detail || "AI tekshiruvda xatolik yuz berdi.");
             }
@@ -106,7 +111,7 @@
                         '<strong style="font-size:22px;color:' + (Number(data.score) >= 80 ? "#4ade80" : "#fbbf24") + ';">' + aiEsc(data.score) + '%</strong>' +
                     '</div>' +
                     '<div style="margin-top:8px;color:' + (data.passed ? "#4ade80" : "#fbbf24") + ';font-weight:900;">' +
-                        (data.passed ? "✅ Keyingi dars uchun o‘tish chegarasidan o‘tdingiz." : "🔒 80% ga yetmadi. Xatolarni ko‘rib, qayta ishlang.") +
+                        (data.ai_blocked ? "🔒 3 ta ketma-ket xato. AKHSIKENT AI bloklandi — o‘qituvchi qayta ochishi kerak." : (data.passed ? "✅ Keyingi dars uchun o‘tish chegarasidan o‘tdingiz." : "🔒 80% ga yetmadi. Xatolarni ko‘rib, qayta ishlang.")) +
                     '</div>' +
                     '<div style="margin-top:12px;color:#a7f3d0;font-weight:800;font-size:12px;">To‘g‘ri bajarilganlar</div>' +
                     '<ul style="margin:7px 0 0 18px;color:#cbd5e1;font-size:12px;line-height:1.6;">' + correctHtml + '</ul>' +
