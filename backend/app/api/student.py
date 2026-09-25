@@ -403,23 +403,56 @@ def get_module_lessons(
         Lesson.id.asc()
     ).all()
 
-    return [
-        {
+    # Darslar ketma-ket ochiladi: birinchi dars ochiq,
+    # keyingi dars esa undan oldingi faol dars tugagandan keyin ochiladi.
+    course_lessons = db.query(Lesson, CourseModule).join(
+        CourseModule,
+        Lesson.module_id == CourseModule.id
+    ).filter(
+        CourseModule.course_id == course_id,
+        CourseModule.is_active == True,
+        Lesson.is_active == True
+    ).order_by(
+        CourseModule.sort_order.asc(),
+        CourseModule.id.asc(),
+        Lesson.sort_order.asc(),
+        Lesson.id.asc()
+    ).all()
+
+    completed_ids = {
+        row[0]
+        for row in db.query(LessonProgress.lesson_id).filter(
+            LessonProgress.student_id == student_id,
+            LessonProgress.is_completed == True
+        ).all()
+    }
+
+    unlocked_ids = set()
+    previous_lesson_id = None
+
+    for course_lesson, _module in course_lessons:
+        if previous_lesson_id is None or previous_lesson_id in completed_ids:
+            unlocked_ids.add(course_lesson.id)
+        previous_lesson_id = course_lesson.id
+
+    result = []
+    for lesson in lessons:
+        completed = lesson.id in completed_ids
+        locked = lesson.id not in unlocked_ids
+        result.append({
             "id": lesson.id,
             "module_id": lesson.module_id,
             "title": lesson.title,
-            "content": lesson.content,
-            "video_url": lesson.video_url,
+            "content": lesson.content if not locked else None,
+            "video_url": lesson.video_url if not locked else None,
             "sort_order": lesson.sort_order,
             "is_active": lesson.is_active,
-            "completed": db.query(LessonProgress).filter(
-    LessonProgress.student_id == student_id,
-    LessonProgress.lesson_id == lesson.id,
-    LessonProgress.is_completed == True
-).first() is not None
-        }
-        for lesson in lessons
-    ]
+            "completed": completed,
+            "locked": locked,
+            "lock_reason": "Avval oldingi darsni tugating" if locked else None
+        })
+
+    return result
 @router.post("/courses/{course_id}/modules/{module_id}/lessons/{lesson_id}/read")
 def mark_lesson_as_read(
     course_id: int,
