@@ -305,6 +305,38 @@ def submit_homework(
         "status": submission.status
     }
     
+@router.get("/teacher")
+def get_teacher_homework(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    teacher_id = get_teacher_id(credentials)
+    teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id,
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
+    ).first()
+    if not teacher:
+        raise HTTPException(status_code=403, detail="O'qituvchi topilmadi")
+
+    homeworks = db.query(Homework).filter(
+        Homework.teacher_id == teacher_id
+    ).order_by(Homework.id.desc()).all()
+
+    return [
+        {
+            "id": h.id,
+            "group_id": h.group_id,
+            "group_name": db.query(Group).filter(Group.id == h.group_id).first().name if db.query(Group).filter(Group.id == h.group_id).first() else "Guruh",
+            "title": h.title,
+            "description": h.description,
+            "deadline": h.deadline,
+            "status": h.status,
+            "submissions_count": db.query(HomeworkSubmission).filter(HomeworkSubmission.homework_id == h.id).count()
+        }
+        for h in homeworks
+    ]
+
 @router.get("/teacher/{homework_id}/submissions")
 def get_homework_submissions(
     homework_id: int,
