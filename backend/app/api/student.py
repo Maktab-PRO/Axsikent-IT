@@ -549,6 +549,10 @@ def get_module_lessons(
         Lesson.sort_order.asc(),
         Lesson.id.asc()
     ).all()
+    course_lessons = [
+        (lesson, course_module) for lesson, course_module in course_lessons
+        if lesson_is_available_to_student(db, student_id, lesson.id)
+    ]
 
     completed_ids = {
         row[0]
