@@ -4150,6 +4150,75 @@ async function loadStudentDashboardStats() {
     }
 }
 
+
+async function loadStudentAchievements() {
+    const container = document.getElementById("studentAchievementsContent");
+    const count = document.getElementById("studentAchievementsCount");
+    if (!container) return;
+
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    try {
+        const {response, data} = await fetchStudentApi(
+            "/students/achievements",
+            token,
+            {method:"GET"}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(data?.detail || "Yutuqlarni yuklab bo‘lmadi");
+        }
+
+        const achievements = Array.isArray(data) ? data : [];
+        if (count) count.textContent = achievements.length + " ta";
+
+        if (!achievements.length) {
+            container.innerHTML =
+                '<div style="text-align:center;padding:28px;color:#94a3b8;">Hozircha yutuqlar yo‘q. Darslarni davom ettiring! 🚀</div>';
+            return;
+        }
+
+        container.innerHTML =
+            '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;">' +
+            achievements.map(item => {
+                const earned = item.earned_at
+                    ? new Date(item.earned_at).toLocaleDateString("uz-UZ")
+                    : "—";
+                return '<div style="padding:15px;border-radius:16px;background:linear-gradient(145deg,rgba(250,204,21,.08),rgba(255,255,255,.025));border:1px solid rgba(250,204,21,.15);">' +
+                    '<div style="display:flex;align-items:center;gap:11px;">' +
+                        '<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:13px;background:rgba(250,204,21,.10);font-size:24px;">' +
+                            escapeHtml(item.icon || "🏆") +
+                        '</div>' +
+                        '<div style="min-width:0;">' +
+                            '<div style="color:#fff;font-size:13px;font-weight:900;">' + escapeHtml(item.name || "Yutuq") + '</div>' +
+                            '<div style="margin-top:3px;color:#7f8da3;font-size:10px;">Olingan sana: ' + escapeHtml(earned) + '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="margin-top:10px;color:#aab3c2;font-size:11px;line-height:1.5;">' + escapeHtml(item.description || "Maxsus yutuq") + '</div>' +
+                    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">' +
+                        (Number(item.xp_reward || 0) ? '<span style="padding:4px 7px;border-radius:999px;background:rgba(139,92,246,.10);color:#c4b5fd;font-size:9px;font-weight:800;">+' + Number(item.xp_reward) + ' XP</span>' : '') +
+                        (Number(item.coin_reward || 0) ? '<span style="padding:4px 7px;border-radius:999px;background:rgba(250,204,21,.09);color:#fde68a;font-size:9px;font-weight:800;">+' + Number(item.coin_reward) + ' Coin</span>' : '') +
+                        (Number(item.crystal_reward || 0) ? '<span style="padding:4px 7px;border-radius:999px;background:rgba(167,139,250,.10);color:#ddd6fe;font-size:9px;font-weight:800;">+' + Number(item.crystal_reward) + ' Crystal</span>' : '') +
+                    '</div>' +
+                '</div>';
+            }).join("") +
+            '</div>';
+    } catch (error) {
+        console.error("Student achievements:", error);
+        if (error?.name === "AbortError") return;
+        container.innerHTML =
+            '<div style="padding:22px;text-align:center;color:#fda4af;">Yutuqlarni hozircha yuklab bo‘lmadi. <button type="button" onclick="loadStudentAchievements()" style="margin-top:10px;padding:8px 13px;border:1px solid rgba(250,204,21,.18);border-radius:10px;background:rgba(250,204,21,.07);color:#fde68a;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
+    }
+}
+
 async function initStudentDashboard() {
     if (!localStorage.getItem("access_token")) {
         window.location.href = "index.html";
@@ -4166,7 +4235,8 @@ async function initStudentDashboard() {
         loadStudentDashboardStats(),
         loadStudentBooks(),
         loadStudentNotifications(),
-        loadStudentDashboardHomework()
+        loadStudentDashboardHomework(),
+        loadStudentAchievements()
     ]);
 
     await profilePromise;
