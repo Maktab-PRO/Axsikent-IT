@@ -73,7 +73,7 @@ async function loadStudentCourses() {
         const {response, data: courses} = await fetchStudentApi(
             "/students/courses",
             token,
-            {method: "GET", signal: controller.signal}
+            {method: "GET"}
         );
 
         if (response.status === 401) {
@@ -1893,10 +1893,7 @@ async function loadStudentRewards(targetId) {
     container.innerHTML = '<div style="text-align:center;padding:25px;color:#7b8496;">Mukofotlar yuklanmoqda...</div>';
 
     try {
-        if (studentRewardsLoadController) studentRewardsLoadController.abort();
-        let controller = null;
-        controller = new AbortController();
-        studentRewardsLoadController = controller;
+        const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 20000);
 
         let response;
@@ -1918,7 +1915,7 @@ async function loadStudentRewards(targetId) {
             }
         } finally {
             clearTimeout(timer);
-            if (studentRewardsLoadController === controller) studentRewardsLoadController = null;
+            studentRewardsLoadController = null;
         }
 
         if (response.status === 401) {
@@ -2063,9 +2060,7 @@ async function buyStudentReward(productId) {
             return;
         }
 
-        if (studentRankingLoadController) studentRankingLoadController.abort();
         const controller = new AbortController();
-        studentRankingLoadController = controller;
         const {response, data: ranking} = await fetchStudentApi(
             "/students/ranking",
             token,
@@ -2888,13 +2883,11 @@ async function loadStudentBooks() {
     }
 
     try {
-        if (studentBooksLoadController) studentBooksLoadController.abort();
         const controller = new AbortController();
-        studentBooksLoadController = controller;
         const {response, data} = await fetchStudentApi(
             "/students/books?ts=" + Date.now(),
             token,
-            {method:"GET", signal: controller.signal}
+            {method:"GET"}
         );
 
         if (response.status === 401) {
@@ -3252,7 +3245,7 @@ async function loadStudentPodcasts() {
         const {response, data} = await fetchStudentApi(
             "/students/podcasts",
             token,
-            {method:"GET", signal: controller.signal}
+            {method:"GET"}
         );
 
         if (response.status === 401) {
@@ -3301,7 +3294,7 @@ async function loadStudentTrainings() {
         const {response, data} = await fetchStudentApi(
             "/students/trainings",
             token,
-            {method:"GET", signal: controller.signal}
+            {method:"GET"}
         );
 
         if (response.status === 401) {
