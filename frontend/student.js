@@ -1,3 +1,12 @@
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 async function fetchStudentApi(path, token, options = {}) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 20000);
