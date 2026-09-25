@@ -15,7 +15,7 @@
     <p data-i18n="loginText">Kirish ma’lumotlaringizni kiriting. Yangi o‘qituvchini faqat administrator ro‘yxatdan o‘tkazadi.</p>
     <form id="teacherLoginForm">
       <label><span data-i18n="phone">Telefon raqam</span><input id="teacherPhone" type="tel" placeholder="+998 90 123 45 67" autocomplete="tel" required></label>
-      <label><span data-i18n="password">Parol</span><input id="teacherPassword" type="password" placeholder="Parol" autocomplete="current-password" required></label>
+      <label class="password-field"><span data-i18n="password">Parol</span><div class="password-wrap"><input id="teacherPassword" type="password" placeholder="Parol" autocomplete="current-password" required><button type="button" class="password-toggle" id="teacherPasswordToggle" aria-label="Parolni ko‘rsatish">◉</button></div></label>
       <button class="premium-btn primary" type="submit"><span>↗</span><span data-i18n="enter">Kirish</span></button>
     </form>
     <div id="teacherLoginMessage" class="auth-message"></div>
