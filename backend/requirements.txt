@@ -2,6 +2,7 @@ fastapi
 uvicorn
 pydantic-settings
 psycopg2-binary
+psycopg[binary]
 sqlalchemy
 passlib[bcrypt]
 python-jose[cryptography]
