@@ -42,7 +42,6 @@ $("unlockQuizBtn").addEventListener("click",async()=>{
       student_id:Number($("unlockStudentId").value),
       lesson_id:Number($("unlockLessonId").value)
     })});
-$("unlockAiBtn")?.addEventListener("click",async()=>{const btn=$("unlockAiBtn"),msg=$("unlockAiMessage"),studentId=Number($("aiUnlockStudent")?.value);if(!studentId){if(msg)msg.textContent="Avval o‘quvchini tanlang.";return}if(btn)btn.disabled=true;if(msg)msg.textContent="";try{await api("/teachers/ai-homework/unlock",{method:"POST",body:JSON.stringify({student_id:studentId})});if(msg)msg.textContent="AKHSIKENT AI qayta ochildi. 3 ta xato hisoblagichi 0 ga tushirildi."; }catch(e){if(msg)msg.textContent=e.message}finally{if(btn)btn.disabled=false}});
 
     if(msg) msg.textContent="Quiz qayta ochildi.";
   }catch(e){
@@ -51,6 +50,7 @@ $("unlockAiBtn")?.addEventListener("click",async()=>{const btn=$("unlockAiBtn"),
     if(btn) btn.disabled=false;
   }
 });
+$("unlockAiBtn")?.addEventListener("click",async()=>{const btn=$("unlockAiBtn"),msg=$("unlockAiMessage"),studentId=Number($("aiUnlockStudent")?.value);if(!studentId){if(msg)msg.textContent="Avval o‘quvchini tanlang.";return}if(btn)btn.disabled=true;if(msg)msg.textContent="";try{await api("/teachers/ai-homework/unlock",{method:"POST",body:JSON.stringify({student_id:studentId})});if(msg)msg.textContent="AKHSIKENT AI qayta ochildi. 3 ta xato hisoblagichi 0 ga tushirildi."; }catch(e){if(msg)msg.textContent=e.message}finally{if(btn)btn.disabled=false}});
 $("addQuizBtn").addEventListener("click",async()=>{const btn=$("addQuizBtn");if(btn)btn.disabled=true;try{const q=new URLSearchParams({lesson_id:$("quizLessonId").value,question:$("quizQuestion").value,option_a:$("quizA").value,option_b:$("quizB").value,option_c:$("quizC").value,option_d:$("quizD").value,correct_answer:$("quizCorrect").value});await api("/teachers/quiz?"+q.toString(),{method:"POST"});$("quizMessage").textContent="Quiz saqlandi."}catch(e){$("quizMessage").textContent=e.message}finally{if(btn)btn.disabled=false}});
 $("assignLessonBtn").addEventListener("click",async()=>{const btn=$("assignLessonBtn");if(btn)btn.disabled=true;$("lessonMessage").textContent="";try{await api("/teachers/assign-lesson",{method:"POST",body:JSON.stringify({student_id:Number($("lessonStudent").value),course_id:Number($("lessonCourse").value),title:$("lessonTitle").value,video_url:$("lessonLink").value||null})});$("lessonMessage").textContent="Dars biriktirildi."}catch(e){$("lessonMessage").textContent=e.message}finally{if(btn)btn.disabled=false}});
 $("saveGradeBtn").addEventListener("click",async()=>{const btn=$("saveGradeBtn");if(btn)btn.disabled=true;try{await api("/teachers/grades",{method:"POST",body:JSON.stringify({student_id:Number($("gradeStudent").value),score:Number($("gradeScore").value),comment:$("gradeComment").value||null})});$("gradeMessage").textContent="Baho saqlandi va o‘quvchiga ko‘rinadi."}catch(e){$("gradeMessage").textContent=e.message}finally{if(btn)btn.disabled=false}});
