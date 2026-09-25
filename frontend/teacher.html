@@ -23,6 +23,7 @@
     <button class="side-item" data-section="lessons"><span>▣</span><b data-i18n="lessons">Darslar</b></button>
     <button class="side-item" data-section="quiz"><span>◇</span><b data-i18n="quiz">Quiz / Savollar</b></button>
     <button class="side-item ai-side-item" data-section="ai-homework"><span class="ai-nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M8 4.5h8A2.5 2.5 0 0 1 18.5 7v10A2.5 2.5 0 0 1 16 19.5H8A2.5 2.5 0 0 1 5.5 17V7A2.5 2.5 0 0 1 8 4.5Z" stroke="currentColor" stroke-width="1.7"/><path d="M9 8.5h6M9 12h6M9 15.5h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M3.5 9.5v5M20.5 9.5v5M9.5 2.5v2M14.5 2.5v2M9.5 19.5v2M14.5 19.5v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span><b>AKHSIKENT AI</b></button>
+    <button class="side-item" data-section="homework"><span>✎</span><b>Uy vazifalari</b></button>
     <button class="side-item" data-section="attendance"><span>◷</span><b data-i18n="attendance">Davomat</b></button>
     <button class="side-item" data-section="grades"><span>★</span><b data-i18n="grades">Baholar</b></button>
     <button class="side-item" data-section="courses"><span>◈</span><b data-i18n="courses">Fanlar / Kurslar</b></button>
@@ -51,6 +52,28 @@
 </div></div></section>
 
 <section class="teacher-section" id="section-ai-homework"><div class="section-head"><div><div class="eyebrow">TEACHER / AKHSIKENT AI</div><h2>AKHSIKENT AI</h2><p>3 ta ketma-ket muvaffaqiyatsiz urinishdan keyin bloklangan o‘quvchining AI tekshiruvini qayta oching.</p></div></div><div class="panel form-panel"><div class="form-grid"><label><span>O‘quvchi</span><select id="aiUnlockStudent"><option value="">Tanlang</option></select></label></div><button class="premium-btn primary" id="unlockAiBtn" type="button"><span>🔓</span><span>AKHSIKENT AI ni qayta ochish</span></button><div id="unlockAiMessage" class="form-message"></div></div></section>
+
+<section class="teacher-section" id="section-homework">
+  <div class="section-head"><div><div class="eyebrow">TEACHER / HOMEWORK</div><h2>Uy vazifalari</h2><p>Guruhga vazifa bering, o‘quvchi topshiriqlarini ko‘ring va baholang.</p></div></div>
+  <div class="panel form-panel">
+    <div class="form-grid">
+      <label><span>Guruh</span><select id="homeworkGroup"><option value="">Tanlang</option></select></label>
+      <label><span>Muddat</span><input id="homeworkDeadline" type="datetime-local"></label>
+      <label class="wide"><span>Vazifa nomi</span><input id="homeworkTitle" placeholder="Masalan: HTML uy vazifasi"></label>
+      <label class="wide"><span>Topshiriq</span><textarea id="homeworkDescription" rows="4" placeholder="O‘quvchi bajarishi kerak bo‘lgan vazifani yozing"></textarea></label>
+    </div>
+    <button class="premium-btn primary" id="createHomeworkBtn" type="button"><span>＋</span><span>Vazifa berish</span></button>
+    <div id="homeworkMessage" class="form-message"></div>
+  </div>
+  <div class="panel homework-management-panel">
+    <div class="panel-title"><div><span class="panel-icon">✎</span><h3>Berilgan vazifalar</h3></div><button class="premium-btn ghost" id="refreshHomeworkBtn" type="button">↻ Yangilash</button></div>
+    <div id="teacherHomeworkList" class="teacher-homework-list"><div class="empty-state"><span>✎</span><strong>Vazifalar yuklanmoqda...</strong></div></div>
+  </div>
+  <div class="panel homework-submissions-panel">
+    <div class="panel-title"><div><span class="panel-icon">✓</span><h3>O‘quvchi topshiriqlari</h3></div></div>
+    <div id="teacherHomeworkSubmissions" class="teacher-homework-list"><div class="empty-state"><span>◎</span><strong>Avval vazifani tanlang.</strong></div></div>
+  </div>
+</section>
 
 <section class="teacher-section" id="section-attendance"><div class="section-head"><div><div class="eyebrow">TEACHER / ATTENDANCE</div><h2 data-i18n="attendance">Davomat</h2><p data-i18n="attendanceText">Har bir o‘quvchi uchun keldi / kelmadi holatini belgilang.</p></div><input class="date-input" id="attendanceDate" type="date"></div><div class="panel table-panel"><div id="attendanceContent" class="empty-state"><span>◷</span><strong data-i18n="loadingStudents">O‘quvchilar yuklanmoqda...</strong></div></div></section>
 
