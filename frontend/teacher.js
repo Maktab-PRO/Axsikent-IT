@@ -132,6 +132,6 @@ async function boot(){
   if(!token){location.href="teacher-login.html";return}
   $("teacherApp").hidden=false;
   if(!$("attendanceDate").value){const now=new Date();now.setMinutes(now.getMinutes()-now.getTimezoneOffset());$("attendanceDate").value=now.toISOString().slice(0,10);}
-  await loadTeacherData();fillAiUnlockStudentSelect();fillHomeworkGroupSelect()
+  await loadTeacherData();fillAiUnlockStudentSelect();fillHomeworkGroupSelect();await loadTeacherHomeworkLessons()
 }
 boot();
