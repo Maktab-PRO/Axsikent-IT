@@ -40,6 +40,18 @@ def lesson_is_available_to_student(db: Session, student_id: int, lesson_id: int)
         return True
     return any(item.student_id == student_id for item in assignments)
 
+def lesson_is_unlocked_to_student(db: Session, student_id: int, course_id: int, lesson_id: int) -> bool:
+    rows = db.query(Lesson, CourseModule).join(CourseModule, Lesson.module_id == CourseModule.id).filter(CourseModule.course_id == course_id, CourseModule.is_active == True, Lesson.is_active == True).order_by(CourseModule.sort_order.asc(), CourseModule.id.asc(), Lesson.sort_order.asc(), Lesson.id.asc()).all()
+    ordered = [lesson for lesson, _module in rows if lesson_is_available_to_student(db, student_id, lesson.id)]
+    previous_id = None
+    for lesson in ordered:
+        if lesson.id == lesson_id:
+            if previous_id is None:
+                return True
+            return db.query(LessonProgress).filter(LessonProgress.student_id == student_id, LessonProgress.lesson_id == previous_id, LessonProgress.is_completed == True).first() is not None
+        previous_id = lesson.id
+    return False
+
 
 def get_student_id(credentials: HTTPAuthorizationCredentials, db: Session):
     payload = decode_token(credentials.credentials)
@@ -648,6 +660,9 @@ def mark_lesson_as_read(
     if not lesson_is_available_to_student(db, student_id, lesson_id):
         raise HTTPException(status_code=403, detail="Bu dars sizga biriktirilmagan")
 
+    if not lesson_is_unlocked_to_student(db, student_id, course_id, lesson_id):
+        raise HTTPException(status_code=403, detail="Avval oldingi darsni tugating")
+
     progress = db.query(LessonProgress).filter(
         LessonProgress.student_id == student_id,
         LessonProgress.lesson_id == lesson_id
@@ -727,6 +742,9 @@ def get_lesson_quiz(
         )
     if not lesson_is_available_to_student(db, student_id, lesson_id):
         raise HTTPException(status_code=403, detail="Bu dars sizga biriktirilmagan")
+
+    if not lesson_is_unlocked_to_student(db, student_id, course_id, lesson_id):
+        raise HTTPException(status_code=403, detail="Avval oldingi darsni tugating")
 
     quizzes = db.query(LessonQuiz).filter(
         LessonQuiz.lesson_id == lesson_id,
@@ -809,6 +827,9 @@ def submit_lesson_quiz(
         )
     if not lesson_is_available_to_student(db, student_id, lesson_id):
         raise HTTPException(status_code=403, detail="Bu dars sizga biriktirilmagan")
+
+    if not lesson_is_unlocked_to_student(db, student_id, course_id, lesson_id):
+        raise HTTPException(status_code=403, detail="Avval oldingi darsni tugating")
 
     progress = db.query(LessonProgress).filter(
         LessonProgress.student_id == student_id,
@@ -947,6 +968,9 @@ def complete_lesson(
         )
     if not lesson_is_available_to_student(db, student_id, lesson_id):
         raise HTTPException(status_code=403, detail="Bu dars sizga biriktirilmagan")
+
+    if not lesson_is_unlocked_to_student(db, student_id, course_id, lesson_id):
+        raise HTTPException(status_code=403, detail="Avval oldingi darsni tugating")
 
     progress = db.query(LessonProgress).filter(
         LessonProgress.student_id == student_id,
