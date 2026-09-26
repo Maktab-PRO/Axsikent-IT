@@ -60,10 +60,10 @@ async function loadTeacherHomeworkSubmissions(homeworkId){
   }catch(e){c.innerHTML='<div class="empty-state"><strong>'+esc(e.message)+'</strong></div>';}
 }
 async function createTeacherHomework(){
-  const btn=$("createHomeworkBtn"), msg=$("homeworkMessage"), groupId=Number($("homeworkGroup")?.value), title=$("homeworkTitle")?.value?.trim(), description=$("homeworkDescription")?.value?.trim(), deadlineRaw=$("homeworkDeadline")?.value;
+  const btn=$("createHomeworkBtn"), msg=$("homeworkMessage"), groupId=Number($("homeworkGroup")?.value), lessonId=Number($("homeworkLesson")?.value)||null, title=$("homeworkTitle")?.value?.trim(), description=$("homeworkDescription")?.value?.trim(), deadlineRaw=$("homeworkDeadline")?.value;
   if(!groupId){msg.textContent="Avval guruhni tanlang.";return} if(!title){msg.textContent="Vazifa nomini kiriting.";return} if(!description){msg.textContent="Topshiriqni kiriting.";return}
   if(btn)btn.disabled=true;msg.textContent="";
-  try{const q=new URLSearchParams({group_id:String(groupId),teacher_id:String(teacher.id),title,description});if(deadlineRaw)q.set("deadline",new Date(deadlineRaw).toISOString());await api("/homework/?"+q.toString(),{method:"POST"});msg.textContent="Uy vazifasi o‘quvchilarga berildi.";$("homeworkTitle").value="";$("homeworkDescription").value="";$("homeworkDeadline").value="";await loadTeacherHomeworks();}catch(e){msg.textContent=e.message}finally{if(btn)btn.disabled=false}
+  try{const q=new URLSearchParams({group_id:String(groupId),teacher_id:String(teacher.id),title,description});if(lessonId)q.set("lesson_id",String(lessonId));if(deadlineRaw)q.set("deadline",new Date(deadlineRaw).toISOString());await api("/homework/?"+q.toString(),{method:"POST"});msg.textContent="Uy vazifasi o‘quvchilarga berildi.";$("homeworkTitle").value="";$("homeworkDescription").value="";$("homeworkDeadline").value="";await loadTeacherHomeworks();await loadTeacherHomeworkLessons();}catch(e){msg.textContent=e.message}finally{if(btn)btn.disabled=false}
 }
 $("createHomeworkBtn")?.addEventListener("click",createTeacherHomework);
 $("refreshHomeworkBtn")?.addEventListener("click",loadTeacherHomeworks);
