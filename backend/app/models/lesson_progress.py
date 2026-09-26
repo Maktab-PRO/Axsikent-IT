@@ -58,6 +58,12 @@ class LessonProgress(Base):
         nullable=False
     )
 
+    homework_passed = Column(
+        Boolean,
+        default=False,
+        nullable=False
+    )
+
     completed_at = Column(
         DateTime,
         nullable=True
