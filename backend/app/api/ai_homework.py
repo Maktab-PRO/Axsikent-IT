@@ -8,6 +8,7 @@ from app.core.security import decode_token
 from app.db import get_db
 from app.models.student import Student
 from app.models.homework import Homework, HomeworkSubmission
+from app.models.lesson_progress import LessonProgress
 from app.models.student_group import StudentGroup
 from app.models.group import Group
 from app.models.ai_homework_state import AIHomeworkState
@@ -188,6 +189,14 @@ Xatolarni aniq va o'quvchiga tushunarli qilib ko'rsating.
         existing_submission.score = score
         existing_submission.teacher_comment = "AKHSIKENT AI: " + (result.get("explanation") or result.get("recommendation") or "AI tekshiruv natijasi saqlandi.")
         existing_submission.checked_at = datetime.utcnow()
+
+        if score >= 80 and homework.lesson_id:
+            progress = db.query(LessonProgress).filter(
+                LessonProgress.student_id == student.id,
+                LessonProgress.lesson_id == homework.lesson_id
+            ).with_for_update().first()
+            if progress:
+                progress.homework_passed = True
 
     db.commit()
 
