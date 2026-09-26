@@ -4080,11 +4080,47 @@ async function loadOnlineExamAdminList() {
     }
 }
 
+async function loadOnlineExamLockedAttempts() {
+    const box = document.getElementById("onlineExamLockedAttemptsContent");
+    if (!box) return;
+    box.innerHTML = moduleLoading("Qulflangan testlar yuklanmoqda...");
+    try {
+        const items = await apiRequest("/online-exams/admin/locked-attempts");
+        box.innerHTML = items.length ? moduleTable(
+            ["URINISH","O‘QUVCHI","TEST","QULFLANGAN VAQT","HOLAT","AMAL"],
+            items.map(x =>
+                '<tr>' +
+                '<td>#' + Number(x.attempt_id) + '</td>' +
+                '<td><strong>' + escapeHtml(x.student_name || "O‘quvchi") + '</strong><small>' + escapeHtml(x.student_phone || "") + '</small></td>' +
+                '<td><strong>' + escapeHtml(x.exam_title || ("Test #" + Number(x.exam_id))) + '</strong></td>' +
+                '<td>' + escapeHtml(x.locked_at ? new Date(x.locked_at).toLocaleString("uz-UZ") : "—") + '</td>' +
+                '<td><span style="color:#fca5a5;font-weight:800;">🔒 Qulflangan</span></td>' +
+                '<td><button type="button" class="module-action" onclick="unlockOnlineExamAttempt(' + Number(x.attempt_id) + ')">🔓 Qayta ochish</button></td>' +
+                '</tr>'
+            )
+        ) : '<div class="module-empty"><h3>Qulflangan test yo‘q</h3><p>Hozircha testdan chiqish sababli qulflangan urinish mavjud emas.</p></div>';
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' + escapeHtml(error.message || "Qulflangan testlarni yuklashda xatolik.") + '</p></div>';
+    }
+}
+
+async function unlockOnlineExamAttempt(attemptId) {
+    try {
+        await apiRequest("/online-exams/admin/attempts/" + Number(attemptId) + "/unlock", {method:"POST"});
+        showToast("Test qayta ochildi. O‘quvchi yana boshlashi mumkin.", "success");
+        await loadOnlineExamLockedAttempts();
+        await loadOnlineExamAdminList();
+    } catch (error) {
+        showToast(error.message || "Testni qayta ochib bo‘lmadi", "error");
+    }
+}
+
 async function toggleOnlineExamAdmin(id) {
     try {
         await apiRequest("/online-exams/admin/" + Number(id) + "/toggle", {method:"PUT"});
         showToast("Online Test holati yangilandi", "success");
         await loadOnlineExamAdminList();
+        await loadOnlineExamLockedAttempts();
     } catch (error) {
         showToast(error.message || "Online Test holati o‘zgartirilmadi", "error");
     }
