@@ -583,9 +583,19 @@ def get_module_lessons(
         previous_lesson_id = course_lesson.id
 
     result = []
+    progress_rows = db.query(LessonProgress).filter(
+        LessonProgress.student_id == student_id,
+        LessonProgress.lesson_id.in_([lesson.id for lesson in lessons])
+    ).all() if lessons else []
+    progress_map = {row.lesson_id: row for row in progress_rows}
+
     for lesson in lessons:
+        progress_row = progress_map.get(lesson.id)
         completed = lesson.id in completed_ids
         locked = lesson.id not in unlocked_ids
+        quiz_blocked = bool(progress_row.quiz_blocked) if progress_row else False
+        quiz_failures = int(progress_row.quiz_failures or 0) if progress_row else 0
+        quiz_passed = bool(progress_row.quiz_passed) if progress_row else False
         result.append({
             "id": lesson.id,
             "module_id": lesson.module_id,
@@ -596,7 +606,10 @@ def get_module_lessons(
             "is_active": lesson.is_active,
             "completed": completed,
             "locked": locked,
-            "lock_reason": "Avval oldingi darsni tugating" if locked else None
+            "lock_reason": "Avval oldingi darsni tugating" if locked else None,
+            "quiz_passed": quiz_passed,
+            "quiz_failures": quiz_failures,
+            "quiz_blocked": quiz_blocked
         })
 
     return result
