@@ -195,7 +195,10 @@ Xatolarni aniq va o'quvchiga tushunarli qilib ko'rsating.
                 LessonProgress.student_id == student.id,
                 LessonProgress.lesson_id == homework.lesson_id
             ).with_for_update().first()
-            if progress:
+            if not progress:
+                progress = LessonProgress(student_id=student.id, lesson_id=homework.lesson_id, homework_passed=True)
+                db.add(progress)
+            else:
                 progress.homework_passed = True
 
     db.commit()
