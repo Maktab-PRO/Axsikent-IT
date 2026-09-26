@@ -573,12 +573,20 @@ def get_module_lessons(
             LessonProgress.is_completed == True
         ).all()
     }
+    homework_passed_ids = {
+        row[0]
+        for row in db.query(LessonProgress.lesson_id).filter(
+            LessonProgress.student_id == student_id,
+            LessonProgress.homework_passed == True
+        ).all()
+    }
+    unlock_progress_ids = completed_ids | homework_passed_ids
 
     unlocked_ids = set()
     previous_lesson_id = None
 
     for course_lesson, _module in course_lessons:
-        if previous_lesson_id is None or previous_lesson_id in completed_ids:
+        if previous_lesson_id is None or previous_lesson_id in unlock_progress_ids:
             unlocked_ids.add(course_lesson.id)
         previous_lesson_id = course_lesson.id
 
