@@ -48,7 +48,7 @@ def lesson_is_unlocked_to_student(db: Session, student_id: int, course_id: int, 
         if lesson.id == lesson_id:
             if previous_id is None:
                 return True
-            return db.query(LessonProgress).filter(LessonProgress.student_id == student_id, LessonProgress.lesson_id == previous_id, LessonProgress.is_completed == True).first() is not None
+            return db.query(LessonProgress).filter(LessonProgress.student_id == student_id, LessonProgress.lesson_id == previous_id).filter((LessonProgress.is_completed == True) | (LessonProgress.homework_passed == True)).first() is not None
         previous_id = lesson.id
     return False
 
@@ -596,6 +596,7 @@ def get_module_lessons(
         quiz_blocked = bool(progress_row.quiz_blocked) if progress_row else False
         quiz_failures = int(progress_row.quiz_failures or 0) if progress_row else 0
         quiz_passed = bool(progress_row.quiz_passed) if progress_row else False
+        homework_passed = bool(progress_row.homework_passed) if progress_row else False
         result.append({
             "id": lesson.id,
             "module_id": lesson.module_id,
@@ -609,7 +610,8 @@ def get_module_lessons(
             "lock_reason": "Avval oldingi darsni tugating" if locked else None,
             "quiz_passed": quiz_passed,
             "quiz_failures": quiz_failures,
-            "quiz_blocked": quiz_blocked
+            "quiz_blocked": quiz_blocked,
+            "homework_passed": homework_passed
         })
 
     return result
