@@ -149,3 +149,195 @@
         initStudentAi();
     }
 })();
+
+/* ============================================================
+   AXSIKENT ONLINE EXAM EXIT GUARD
+   ISHLAYOTGAN KODGA TEGMAYMIZ — faqat Online Test uchun qo'shimcha guard.
+   ============================================================ */
+(function installAxsikentOnlineExamExitGuard() {
+    if (window.__axsikentOnlineExamExitGuardInstalled) return;
+    window.__axsikentOnlineExamExitGuardInstalled = true;
+
+    const API = "https://axsikent-it-backend.onrender.com";
+    const HIDE_GRACE_MS = 1500;
+
+    let active = false;
+    let leaving = false;
+    let examId = null;
+    let hideTimer = null;
+
+    function token() {
+        return localStorage.getItem("access_token");
+    }
+
+    function clearGuard() {
+        active = false;
+        leaving = false;
+        examId = null;
+        if (hideTimer) {
+            clearTimeout(hideTimer);
+            hideTimer = null;
+        }
+    }
+
+    async function lockExam(reason = "exit_locked") {
+        if (!active || !examId || leaving) return;
+        leaving = true;
+
+        const currentExamId = examId;
+        const auth = token();
+        if (!auth) {
+            clearGuard();
+            return;
+        }
+
+        try {
+            await fetch(API + "/online-exams/" + Number(currentExamId) + "/exit", {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Authorization": "Bearer " + auth
+                },
+                cache: "no-store",
+                keepalive: true
+            });
+        } catch (error) {
+            console.error("Online Test exit lock:", error);
+        } finally {
+            clearGuard();
+        }
+    }
+
+    function showExitWarning(onConfirm) {
+        if (typeof window.showPremiumModal === "function") {
+            window.showPremiumModal(
+                "⚠️ Testdan chiqish",
+                "Siz testdan chiqishga urinyapsiz.<br><br>" +
+                "<strong>Diqqat:</strong> agar testdan chiqsangiz, ushbu test qulflanadi va uni faqat Administrator qayta ochishi mumkin.",
+                "Chiqish",
+                onConfirm,
+                function () {}
+            );
+            return;
+        }
+
+        if (window.confirm(
+            "Testdan chiqmoqchimisiz? Chiqsangiz test qulflanadi va faqat Administrator qayta ochadi."
+        )) {
+            onConfirm();
+        }
+    }
+
+    function installDomGuard() {
+        const form = document.getElementById("studentOnlineTestForm");
+        if (!form) return;
+
+        const modal = document.getElementById("studentExtraContentModal");
+        if (modal && !modal.dataset.examExitGuard) {
+            modal.dataset.examExitGuard = "1";
+            modal.addEventListener("click", function (event) {
+                if (!active || leaving) return;
+
+                const target = event.target.closest("button");
+                if (!target) return;
+
+                const closeButton = target.closest("#studentExtraContentModal")
+                    && (
+                        target.getAttribute("onclick")?.includes("closeStudentExtraModal")
+                        || target.textContent.trim() === "×"
+                    );
+
+                if (!closeButton) return;
+
+                event.preventDefault();
+                event.stopImmediatePropagation();
+
+                showExitWarning(async function () {
+                    await lockExam("exit_locked");
+                    if (typeof window.closeStudentExtraModal === "function") {
+                        window.closeStudentExtraModal();
+                    }
+                });
+            }, true);
+        }
+
+        if (!form.dataset.examExitGuard) {
+            form.dataset.examExitGuard = "1";
+            form.addEventListener("submit", function () {
+                // Normal topshirish — lock qilinmaydi.
+                clearGuard();
+            }, true);
+        }
+    }
+
+    window.addEventListener("beforeunload", function (event) {
+        if (!active || leaving) return;
+        event.preventDefault();
+        event.returnValue = true;
+    });
+
+    document.addEventListener("visibilitychange", function () {
+        if (!active || leaving) return;
+
+        if (document.visibilityState === "hidden") {
+            if (hideTimer) clearTimeout(hideTimer);
+
+            // Qisqa yashirin holatga qaytish imkonini beramiz.
+            // O'quvchi qaytmasa, urinish serverda qulflanadi.
+            hideTimer = setTimeout(function () {
+                if (active && document.visibilityState === "hidden") {
+                    lockExam("exit_locked");
+                }
+            }, HIDE_GRACE_MS);
+        } else if (document.visibilityState === "visible") {
+            if (hideTimer) {
+                clearTimeout(hideTimer);
+                hideTimer = null;
+            }
+        }
+    });
+
+    window.addEventListener("pagehide", function () {
+        if (!active || leaving) return;
+        lockExam("exit_locked");
+    });
+
+    const originalStart = window.startStudentOnlineTest;
+    if (typeof originalStart !== "function") {
+        console.warn("Online Test guard: startStudentOnlineTest topilmadi.");
+        return;
+    }
+
+    window.startStudentOnlineTest = async function (requestedExamId) {
+        clearGuard();
+
+        await originalStart(requestedExamId);
+
+        const form = document.getElementById("studentOnlineTestForm");
+        if (!form) return;
+
+        examId = Number(requestedExamId);
+        active = true;
+        leaving = false;
+
+        installDomGuard();
+
+        const banner = document.createElement("div");
+        banner.id = "axsikentOnlineExamExitWarning";
+        banner.style.cssText =
+            "margin-bottom:14px;padding:12px 14px;border-radius:13px;" +
+            "background:rgba(239,68,68,.10);" +
+            "border:1px solid rgba(248,113,113,.28);" +
+            "color:#fecaca;font-size:12px;line-height:1.55;font-weight:700;";
+        banner.innerHTML =
+            "⚠️ Test davomida oynani yopish, ortga qaytish yoki testdan chiqish " +
+            "urinishidan keyin tasdiqlab chiqsangiz, <strong>test qulflanadi</strong>. " +
+            "Qayta ochishni faqat Administrator amalga oshiradi.";
+
+        form.parentElement?.insertBefore(banner, form);
+
+        // Modal close tugmasi dinamik yaratilgani uchun DOM guardni bir marta
+        // yana tekshiramiz.
+        setTimeout(installDomGuard, 0);
+    };
+})();
