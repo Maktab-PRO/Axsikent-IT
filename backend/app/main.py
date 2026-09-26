@@ -122,6 +122,16 @@ with engine.connect() as connection:
         ADD COLUMN IF NOT EXISTS quiz_blocked BOOLEAN NOT NULL DEFAULT FALSE
     """)
 
+    connection.exec_driver_sql("""
+        ALTER TABLE lesson_progress
+        ADD COLUMN IF NOT EXISTS homework_passed BOOLEAN NOT NULL DEFAULT FALSE
+    """)
+
+    connection.exec_driver_sql("""
+        ALTER TABLE homeworks
+        ADD COLUMN IF NOT EXISTS lesson_id INTEGER
+    """)
+
     # Eski versiyalarda bir student+lesson uchun bir nechta progress qatori
     # paydo bo'lishi mumkin edi. Avval eng to'liq qatorni qoldirib, qolgan
     # dublikatlarni tozalaymiz; keyin kelajakda dublikat yaratishni DB darajasida
