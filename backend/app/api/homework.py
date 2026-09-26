@@ -9,6 +9,8 @@ from app.models.homework import Homework, HomeworkSubmission
 from app.models.teacher import Teacher
 from app.models.admin import Admin
 from app.models.group import Group
+from app.models.lesson import Lesson
+from app.models.course_module import CourseModule
 from app.core.security import decode_token
 from app.services.notifications import notify_student
 
@@ -42,6 +44,7 @@ def create_homework(
     teacher_id: int,
     title: str,
     description: str,
+    lesson_id: int | None = None,
     deadline: datetime | None = None,
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
@@ -90,6 +93,11 @@ def create_homework(
 
     if role == "teacher" and group.teacher_id != teacher_id:
         raise HTTPException(status_code=403, detail="Bu guruh sizga biriktirilmagan")
+    lesson = None
+    if lesson_id is not None:
+        lesson = db.query(Lesson).join(CourseModule, CourseModule.id == Lesson.module_id).filter(Lesson.id == lesson_id, Lesson.is_active == True, CourseModule.is_active == True, CourseModule.course_id == group.course_id).first()
+        if not lesson:
+            raise HTTPException(status_code=404, detail="Tanlangan dars ushbu guruh kursiga tegishli emas")
 
     title = title.strip()
     description = description.strip()
@@ -103,6 +111,7 @@ def create_homework(
     homework = Homework(
         group_id=group_id,
         teacher_id=teacher_id,
+        lesson_id=lesson.id if lesson else None,
         title=title,
         description=description,
         deadline=deadline
@@ -174,6 +183,7 @@ def get_student_homework(
             "id": homework.id,
             "group_id": homework.group_id,
             "teacher_id": homework.teacher_id,
+            "lesson_id": homework.lesson_id,
             "title": homework.title,
             "description": homework.description,
             "deadline": homework.deadline,
