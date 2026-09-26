@@ -2367,6 +2367,10 @@ async function buyStudentReward(productId) {
                 submission &&
                 submission.status === "checked";
 
+            const aiChecked =
+                submission &&
+                submission.status === "ai_checked";
+
             return `
                 <div style="
                     background:
@@ -2416,6 +2420,8 @@ async function buyStudentReward(productId) {
                             background:${
                                 checked
                                 ? "rgba(34,197,94,.12)"
+                                : aiChecked
+                                ? "rgba(167,139,250,.12)"
                                 : submitted
                                 ? "rgba(250,204,21,.12)"
                                 : "rgba(59,130,246,.12)"
@@ -2423,6 +2429,8 @@ async function buyStudentReward(productId) {
                             color:${
                                 checked
                                 ? "#4ade80"
+                                : aiChecked
+                                ? "#c4b5fd"
                                 : submitted
                                 ? "#facc15"
                                 : "#60a5fa"
@@ -2434,6 +2442,8 @@ async function buyStudentReward(productId) {
                             ${
                                 checked
                                 ? "✅ Tekshirildi"
+                                : aiChecked
+                                ? "🤖 AI tekshirdi"
                                 : submitted
                                 ? "⏳ Tekshirilmoqda"
                                 : "🆕 Yangi"
@@ -2511,6 +2521,8 @@ async function buyStudentReward(productId) {
                                 margin-top:16px;
                             ">
 
+                                ${aiChecked ? "<div style=\"margin-bottom:12px;padding:12px;border-radius:12px;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.20);color:#c4b5fd;font-size:13px;font-weight:700\">🤖 AI bahosi: " + (submission.score ?? 0) + "/100. Natijani ko‘rib, kerak bo‘lsa javobni tuzating.</div>" : ""}
+
                                 <textarea
                                     id="homeworkAnswer_${homework.id}"
                                     placeholder="Javobingizni shu yerga yozing..."
@@ -2562,7 +2574,8 @@ async function buyStudentReward(productId) {
                                     "
                                 >
                                     ${
-                                        submitted                                        ? "🔄 Javobni qayta topshirish"
+                                        submitted || aiChecked
+                                        ? "🔄 Javobni qayta topshirish"
                                         : "🚀 Javobni topshirish"
                                     }
                                 </button>
