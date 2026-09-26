@@ -648,10 +648,11 @@ async function openStudentModule(courseId, moduleId) {
 
             </div>
 
-            ${lessons.map((lesson, index) => `
+            ${lessons.map((lesson, index) => {
     const quizBlocked = Boolean(lesson.quiz_blocked);
     const uiLocked = Boolean(lesson.locked || quizBlocked);
     const lessonClick = uiLocked ? "" : `openStudentLesson(${courseId}, ${moduleId}, ${lesson.id})`;
+    return `
     <div
         onclick="${lessonClick}"
         style="
@@ -761,7 +762,8 @@ async function openStudentModule(courseId, moduleId) {
         </div>
 
     </div>
-`).join("")}
+    `;
+}).join("")}
         `;
 
     } catch (error) {
