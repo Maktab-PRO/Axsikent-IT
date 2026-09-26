@@ -1619,9 +1619,9 @@ if (finishButton) {
 
             showLessonSuccessModal(result.progress);
 
-            // Backend progressni yangiladi. UI ham darhol yangilansin:
-            // kurs/modul ro'yxatida eski progress qolib ketmasligi kerak.
-            await loadStudentCourses();
+            // Backend progressni yangiladi. Student shu modulda qoladi:
+            // keyingi ochilgan dars darhol ko‘rinishi kerak.
+            await openStudentModule(currentCourseId, currentModuleId);
 
            if (button) {
 
