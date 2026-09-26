@@ -179,6 +179,21 @@ def teacher_dashboard(
     }
 
 
+@router.get("/lessons")
+def get_teacher_lessons(
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+    db: Session = Depends(get_db)
+):
+    token_data = decode_token(credentials.credentials)
+    if not token_data or token_data.get("role") != "teacher":
+        raise HTTPException(status_code=403, detail="Faqat o‘qituvchi akkaunti uchun ruxsat berilgan")
+    teacher_id = token_data["user_id"]
+    teacher = db.query(Teacher).filter(Teacher.id == teacher_id, Teacher.is_active == True, Teacher.approved_by_admin == True).first()
+    if not teacher:
+        raise HTTPException(status_code=401, detail="O‘qituvchi sessiyasi noto‘g‘ri yoki akkaunt faol emas")
+    rows = db.query(Lesson, CourseModule, Course).join(CourseModule, CourseModule.id == Lesson.module_id).join(Course, Course.id == CourseModule.course_id).join(Group, Group.course_id == Course.id).filter(Group.teacher_id == teacher_id, Group.is_active == True, CourseModule.is_active == True, Lesson.is_active == True, Course.is_active == True).distinct().order_by(Course.name.asc(), CourseModule.sort_order.asc(), Lesson.sort_order.asc(), Lesson.id.asc()).all()
+    return [{"id": lesson.id, "title": lesson.title, "course_id": course.id, "course_name": course.name, "module_id": module.id, "module_name": module.title} for lesson, module, course in rows]
+
 @router.post("/assign-lesson")
 def assign_teacher_lesson(
     student_id: int = Body(...),
