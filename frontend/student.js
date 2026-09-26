@@ -649,21 +649,24 @@ async function openStudentModule(courseId, moduleId) {
             </div>
 
             ${lessons.map((lesson, index) => `
+    const quizBlocked = Boolean(lesson.quiz_blocked);
+    const uiLocked = Boolean(lesson.locked || quizBlocked);
+    const lessonClick = uiLocked ? "" : `openStudentLesson(${courseId}, ${moduleId}, ${lesson.id})`;
     <div
-        onclick="${lesson.locked ? "" : `openStudentLesson(${courseId}, ${moduleId}, ${lesson.id})`}"
+        onclick="${lessonClick}"
         style="
             padding:20px;
             margin-bottom:14px;
-            border:1px solid ${lesson.locked ? "#26303d" : "#1f2937"};
+            border:1px solid ${uiLocked ? "#26303d" : "#1f2937"};
             border-radius:18px;
             background:
                 linear-gradient(
                     145deg,
-                    ${lesson.locked ? "#0d141d" : "#111827"},
-                    ${lesson.locked ? "#0a1017" : "#0b1220"}
+                    ${uiLocked ? "#0d141d" : "#111827"},
+                    ${uiLocked ? "#0a1017" : "#0b1220"}
                 );
-            cursor:${lesson.locked ? "not-allowed" : "pointer"};
-            opacity:${lesson.locked ? ".68" : "1"};
+            cursor:${uiLocked ? "not-allowed" : "pointer"};
+            opacity:${uiLocked ? ".68" : "1"};
             box-shadow:0 8px 25px rgba(0,0,0,.20);
             transition:all .2s ease;
         "
@@ -730,10 +733,10 @@ async function openStudentModule(courseId, moduleId) {
             </div>
 
             <div style="
-                color:${lesson.locked ? "#64748b" : "#22c55e"};
+                color:${uiLocked ? "#64748b" : "#22c55e"};
                 font-size:20px;
             ">
-                ${lesson.locked ? "🔒" : "→"}
+                ${quizBlocked ? "🔒" : lesson.locked ? "🔒" : "→"}
             </div>
 
         </div>
@@ -745,9 +748,15 @@ async function openStudentModule(courseId, moduleId) {
         ">
             ${lesson.locked
                 ? "🔒 " + escapeHtml(lesson.lock_reason || "Avval oldingi darsni tugating")
-                : lesson.completed
-                    ? "✅ Bu dars tugallangan"
-                    : "📖 Darsni ochish va o‘rganishni boshlash"
+                : quizBlocked
+                    ? "🔒 Quiz 3 marta muvaffaqiyatsiz topshirildi. O‘qituvchi qayta ochishi kerak."
+                    : lesson.completed
+                        ? "✅ Bu dars tugallangan"
+                        : lesson.quiz_passed
+                            ? "✅ Quizdan o‘tdingiz — darsni yakunlang"
+                            : lesson.quiz_failures > 0
+                                ? `⚠️ Quiz urinishlari: ${Number(lesson.quiz_failures)}/3`
+                                : "📖 Darsni ochish va o‘rganishni boshlash"
             }
         </div>
 
