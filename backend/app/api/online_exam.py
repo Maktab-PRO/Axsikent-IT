@@ -109,6 +109,12 @@ def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security
         # o‘quvchiga ko‘rinadi. course_id=None esa umumiy test hisoblanadi.
         if exam.course_id is not None and exam.course_id not in active_course_ids:
             continue
+        locked_attempt = db.query(OnlineExamAttempt).filter(
+            OnlineExamAttempt.exam_id == exam.id,
+            OnlineExamAttempt.student_id == student_id,
+            OnlineExamAttempt.status == "locked"
+        ).first()
+
         attempts = db.query(OnlineExamAttempt).filter(
             OnlineExamAttempt.exam_id == exam.id,
             OnlineExamAttempt.student_id == student_id,
@@ -142,7 +148,7 @@ def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security
                 active_attempt_expired = datetime.now(timezone.utc) >= active_deadline
 
         effective_attempts = attempts + (1 if active_attempt_expired else 0)
-        can_start = effective_attempts < exam.max_attempts
+        can_start = (locked_attempt is None) and (effective_attempts < exam.max_attempts)
 
         result.append({
             "id": exam.id,
@@ -153,7 +159,9 @@ def available_exams(credentials: HTTPAuthorizationCredentials = Depends(security
             "pass_score": exam.pass_score,
             "max_attempts": exam.max_attempts,
             "attempts_used": effective_attempts,
-            "can_start": can_start
+            "can_start": can_start,
+            "locked": locked_attempt is not None,
+            "lock_reason": locked_attempt.finished_reason if locked_attempt else None
         })
     return {"total": len(result), "exams": result}
 
@@ -182,6 +190,17 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
         ).first()
         if not enrolled:
             raise HTTPException(status_code=403, detail="Bu test siz biriktirilgan kurs uchun mavjud emas")
+
+    locked_attempt = db.query(OnlineExamAttempt).filter(
+        OnlineExamAttempt.exam_id == exam_id,
+        OnlineExamAttempt.student_id == student_id,
+        OnlineExamAttempt.status == "locked"
+    ).first()
+    if locked_attempt:
+        raise HTTPException(
+            status_code=423,
+            detail="Bu testdan chiqish sababli urinish qulflangan. Qayta ochish uchun administratorga murojaat qiling."
+        )
 
     attempts = db.query(OnlineExamAttempt).filter(
         OnlineExamAttempt.exam_id == exam_id,
@@ -301,6 +320,37 @@ def start_exam(exam_id: int, credentials: HTTPAuthorizationCredentials = Depends
         "deadline_at": deadline_at.isoformat(),
         "pass_score": exam.pass_score,
         "questions": [{"id": q.id, "question": q.question, "options": parse_options(q.options)} for q in selected]
+    }
+
+
+@router.post("/{exam_id}/exit")
+def exit_exam(
+    exam_id: int,
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    student_id = student_id_from_token(credentials, db)
+
+    attempt = db.query(OnlineExamAttempt).filter(
+        OnlineExamAttempt.exam_id == exam_id,
+        OnlineExamAttempt.student_id == student_id,
+        OnlineExamAttempt.status == "in_progress"
+    ).with_for_update().first()
+
+    if not attempt:
+        raise HTTPException(status_code=404, detail="Faol imtihon urinishi topilmadi")
+
+    attempt.status = "locked"
+    attempt.finished_reason = "exit_locked"
+    attempt.submitted_at = datetime.now(timezone.utc)
+    db.commit()
+
+    return {
+        "success": True,
+        "attempt_id": attempt.id,
+        "locked": True,
+        "finished_reason": "exit_locked",
+        "message": "Testdan chiqish sababli urinish administrator tomonidan qayta ochilgunga qadar qulflandi."
     }
 
 
@@ -440,6 +490,61 @@ def submit_exam(exam_id: int, data: SubmitExam, credentials: HTTPAuthorizationCr
         "pass_score": exam.pass_score,
         "correct": correct,
         "total": len(questions)
+    }
+
+
+@router.get("/admin/locked-attempts")
+def admin_locked_attempts(
+    admin: Admin = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    rows = db.query(OnlineExamAttempt, OnlineExam, Student).join(
+        OnlineExam, OnlineExam.id == OnlineExamAttempt.exam_id
+    ).join(
+        Student, Student.id == OnlineExamAttempt.student_id
+    ).filter(
+        OnlineExamAttempt.status == "locked"
+    ).order_by(OnlineExamAttempt.submitted_at.desc()).all()
+
+    return [
+        {
+            "attempt_id": attempt.id,
+            "exam_id": exam.id,
+            "exam_title": exam.title,
+            "student_id": student.id,
+            "student_name": student.full_name,
+            "student_phone": student.phone,
+            "locked_at": attempt.submitted_at.isoformat() if attempt.submitted_at else None,
+            "reason": attempt.finished_reason
+        }
+        for attempt, exam, student in rows
+    ]
+
+
+@router.post("/admin/attempts/{attempt_id}/unlock")
+def admin_unlock_attempt(
+    attempt_id: int,
+    admin: Admin = Depends(require_admin),
+    db: Session = Depends(get_db)
+):
+    attempt = db.query(OnlineExamAttempt).filter(
+        OnlineExamAttempt.id == attempt_id,
+        OnlineExamAttempt.status == "locked"
+    ).with_for_update().first()
+
+    if not attempt:
+        raise HTTPException(status_code=404, detail="Qulflangan urinish topilmadi")
+
+    attempt.status = "unlocked"
+    attempt.finished_reason = "admin_unlocked"
+    db.commit()
+    db.refresh(attempt)
+
+    return {
+        "success": True,
+        "attempt_id": attempt.id,
+        "unlocked": True,
+        "message": "Urinish administrator tomonidan qayta ochildi."
     }
 
 
