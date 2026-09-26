@@ -19,6 +19,12 @@ class Homework(Base):
         nullable=False
     )
 
+    lesson_id = Column(
+        Integer,
+        ForeignKey("lessons.id"),
+        nullable=True
+    )
+
     teacher_id = Column(
         Integer,
         ForeignKey("teachers.id"),
