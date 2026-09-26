@@ -7,7 +7,7 @@ from app.core.config import settings
 from app.core.security import decode_token
 from app.db import get_db
 from app.models.student import Student
-from app.models.homework import Homework
+from app.models.homework import Homework, HomeworkSubmission
 from app.models.student_group import StudentGroup
 from app.models.group import Group
 from app.models.ai_homework_state import AIHomeworkState
@@ -70,6 +70,8 @@ def check_homework(
     if not task or not answer:
         raise HTTPException(status_code=400, detail="Topshiriq va javob bo'sh bo'lmasligi kerak")
 
+    homework = None
+    existing_submission = None
     if payload.homework_id:
         homework = db.query(Homework).join(
             Group, Group.id == Homework.group_id
@@ -84,6 +86,12 @@ def check_homework(
         ).first()
         if not homework:
             raise HTTPException(status_code=403, detail="Bu uy vazifasi sizga biriktirilmagan")
+        existing_submission = db.query(HomeworkSubmission).filter(
+            HomeworkSubmission.homework_id == homework.id,
+            HomeworkSubmission.student_id == student.id
+        ).first()
+        if existing_submission and existing_submission.status == "checked":
+            raise HTTPException(status_code=409, detail="Bu uy vazifasi o‘qituvchi tomonidan allaqachon baholangan.")
         task = f"{homework.title}\n{homework.description}"
 
     client = OpenAI(api_key=settings.OPENAI_API_KEY)
@@ -163,6 +171,23 @@ Xatolarni aniq va o'quvchiga tushunarli qilib ko'rsating.
         if ai_state.consecutive_failures >= 3:
             ai_state.is_blocked = True
             ai_state.blocked_at = datetime.now(timezone.utc)
+
+    # AI tekshiruv natijasini mavjud homework submission tarixiga saqlaymiz.
+    if homework:
+        if not existing_submission:
+            existing_submission = HomeworkSubmission(
+                homework_id=homework.id,
+                student_id=student.id,
+                answer=answer,
+                status="ai_checked"
+            )
+            db.add(existing_submission)
+        else:
+            existing_submission.answer = answer
+            existing_submission.status = "ai_checked"
+        existing_submission.score = score
+        existing_submission.teacher_comment = "AKHSIKENT AI: " + (result.get("explanation") or result.get("recommendation") or "AI tekshiruv natijasi saqlandi.")
+        existing_submission.checked_at = datetime.utcnow()
 
     db.commit()
 
