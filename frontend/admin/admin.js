@@ -310,7 +310,9 @@ function openSection(section) {
     if (section === "podcasts") loadPodcasts();
     if (section === "trainings") loadTrainings();
     if (section === "exams") loadExams();
-    if (section === "online-tests") { initOnlineExamAdmin(); loadOnlineExamAdminList(); }
+    if (section === "online-tests") { initOnlineExamAdmin(); }
+    if (section === "online-test-list") { initOnlineExamAdmin(); loadOnlineExamAdminList(); }
+    if (section === "locked-tests") { loadOnlineExamLockedAttempts(); }
 
     const backButton = document.getElementById("sectionBackBtn");
     if (backButton) backButton.hidden = section === "dashboard";
