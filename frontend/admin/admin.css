@@ -652,6 +652,8 @@ a {
 
     animation:
         pageEnter 320ms ease both;
+
+    scroll-margin-top: calc(var(--topbar-height) + 10px);
 }
 
 .page-section.active {
