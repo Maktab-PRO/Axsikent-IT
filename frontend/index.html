@@ -2790,20 +2790,27 @@
         }
 
         .nav-login-link {
-            border: 0;
-            background: #111;
+            border: 1px solid rgba(124,58,237,.20);
+            background: linear-gradient(135deg,#16a34a 0%,#0f9f55 42%,#6d28d9 100%);
             color: #fff;
-            border-radius: 10px;
-            padding: 9px 15px;
+            border-radius: 13px;
+            padding: 10px 17px;
             font-size: 14px;
-            font-weight: 800;
+            font-weight: 900;
             cursor: pointer;
-            transition: .2s ease;
+            transition: .22s ease;
+            box-shadow: 0 10px 28px rgba(22,163,74,.18), 0 5px 20px rgba(109,40,217,.10);
+            -webkit-tap-highlight-color: transparent;
         }
 
         .nav-login-link:hover {
-            background: #16a34a;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            filter: brightness(1.06);
+            box-shadow: 0 14px 34px rgba(22,163,74,.22), 0 8px 24px rgba(109,40,217,.14);
+        }
+
+        .nav-login-link:active {
+            transform: translateY(0) scale(.98);
         }
 
         .mobile-nav-login {
@@ -2931,6 +2938,33 @@
             .nav-apply-link,
             .nav-login-link { display: none; }
         }
+        /* =========================
+           PREMIUM LOGIN / CERTIFICATE / TEST MODE
+        ========================= */
+        .login-password-wrap{position:relative}
+        .login-password-wrap input{padding-right:52px!important}
+        .login-password-eye{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:38px;height:38px;border:0;border-radius:10px;background:linear-gradient(135deg,rgba(22,163,74,.08),rgba(109,40,217,.08));color:#5b21b6;display:grid;place-items:center;cursor:pointer;transition:.2s}
+        .login-password-eye:hover{background:linear-gradient(135deg,rgba(22,163,74,.15),rgba(109,40,217,.15));color:#16a34a}
+        .login-password-eye svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+        .login-submit{background:linear-gradient(135deg,#16a34a,#15803d 45%,#6d28d9)!important;box-shadow:0 14px 30px rgba(22,163,74,.16),0 7px 22px rgba(109,40,217,.10);font-weight:900!important}
+        .login-submit:disabled{opacity:.82;cursor:wait;transform:none!important}
+        .login-submit.is-loading{background:linear-gradient(135deg,#15803d,#6d28d9)!important}
+        .login-message{font-weight:900!important;letter-spacing:.1px}
+        .login-message-loading{color:#6d28d9!important}
+        .login-message-success{color:#15803d!important}
+        .login-message-error{color:#dc2626!important}
+        .certificate-mockup{background:linear-gradient(145deg,#ffffff,#f8fafc)!important;border:1px solid rgba(22,163,74,.22)!important;border-radius:28px!important;padding:38px 42px 34px!important;box-shadow:0 28px 70px rgba(15,23,42,.14)!important;min-height:330px}
+        .certificate-ribbon{font-size:11px;letter-spacing:.24em;font-weight:900;color:#64748b}
+        .certificate-seal{width:62px;height:62px;margin:15px auto 12px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:27px;background:linear-gradient(135deg,#16a34a,#6d28d9);box-shadow:0 12px 30px rgba(109,40,217,.20)}
+        .certificate-heading{font-size:11px;font-weight:900;letter-spacing:.16em;color:#6d28d9}
+        .certificate-name-label,.certificate-direction-label{margin-top:20px;font-size:9px;font-weight:900;letter-spacing:.18em;color:#94a3b8}
+        .certificate-mockup .cert-name{margin-top:3px!important;font-size:24px!important;font-weight:900!important;color:#0f172a!important;letter-spacing:.08em}
+        .certificate-direction{margin-top:3px;font-size:16px;font-weight:800;color:#15803d;letter-spacing:.06em}
+        .certificate-mockup .cert-sub{margin:15px auto 0!important;color:#64748b!important;font-size:11px!important}
+        .test-mode-banner{position:fixed;top:0;left:0;width:100%;z-index:12000;height:34px;overflow:hidden;background:rgba(255,255,255,.92);border-bottom:1px solid rgba(15,23,42,.08);backdrop-filter:blur(10px);pointer-events:none}
+        .test-mode-track{width:max-content;white-space:nowrap;display:flex;align-items:center;height:100%;animation:testModeMarquee 15s linear infinite}
+        .test-mode-text{font-size:13px;font-weight:950;color:#090909;letter-spacing:.04em;padding-right:70px}
+        @keyframes testModeMarquee{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
 </style>
 <script
     src="https://challenges.cloudflare.com/turnstile/v0/api.js"
@@ -3082,6 +3116,11 @@
 </head>
 
 <body>
+
+<div class="test-mode-banner" aria-label="Test rejimi">
+    <div class="test-mode-track"><span class="test-mode-text">Sayt hozirda Test rejimida ishlamoqda</span><span class="test-mode-text">Sayt hozirda Test rejimida ishlamoqda</span></div>
+</div>
+
 
 <div id="studentApprovalBanner" style="display:none;" role="status" aria-live="polite">
     <div class="student-approval-inner">
@@ -3971,8 +4010,14 @@
             </div>
 
             <div class="certificate-mockup">
-                <h4 data-i18n="certificate_mockup_label">Sertifikat</h4>
-                <div class="cert-name" data-i18n="certificate_mockup_name">F. I. Sh.</div>
+                <div class="certificate-ribbon">AKHSIKENT IT</div>
+                <div class="certificate-seal">✦</div>
+                <h4 data-i18n="certificate_mockup_label">SERTIFIKAT</h4>
+                <div class="certificate-heading">MUVAFFAQIYATLI TAMOMLAGANI UCHUN</div>
+                <div class="certificate-name-label">ISM-FAMILIYA</div>
+                <div class="cert-name">________________________________</div>
+                <div class="certificate-direction-label">YO‘NALISH</div>
+                <div class="certificate-direction">________________________________</div>
                 <div class="cert-sub" data-i18n="certificate_mockup_sub">AKHSIKENT IT — kursni muvaffaqiyatli tamomlagani uchun</div>
             </div>
 
@@ -4756,9 +4801,14 @@
                 </div>
                 <div class="login-field">
                     <label for="loginPassword">Parol</label>
-                    <input type="password" id="loginPassword" placeholder="Parolingiz" autocomplete="current-password" required>
+                    <div class="login-password-wrap">
+                        <input type="password" id="loginPassword" placeholder="Parolingiz" autocomplete="current-password" required>
+                        <button type="button" class="login-password-eye" id="loginPasswordEye" aria-label="Parolni ko‘rsatish" title="Parolni ko‘rsatish">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></svg>
+                        </button>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary login-submit">Kirish</button>
+                <button type="submit" class="btn btn-primary login-submit" id="loginSubmitBtn">Kirish</button>
                 <div id="loginMessage" class="login-message"></div>
             </form>
             <div class="login-register">
@@ -7049,13 +7099,19 @@ async function loginUser() {
     const phone = document.getElementById("loginPhone").value.trim();
     const password = document.getElementById("loginPassword").value;
     const message = document.getElementById("loginMessage");
+    const submitButton = document.getElementById("loginSubmitBtn");
 
     if (!phone || !password) {
         message.textContent = "Telefon raqam va parolni kiriting.";
+        message.className = "login-message login-message-error";
         return;
     }
 
+    submitButton.disabled = true;
+    submitButton.classList.add("is-loading");
+    submitButton.textContent = "Kirilmoqda...";
     message.textContent = "Kirilmoqda...";
+    message.className = "login-message login-message-loading";
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 60000);
@@ -7095,6 +7151,8 @@ async function loginUser() {
         localStorage.setItem("user_role", data.role || "student");
 
         message.textContent = "Muvaffaqiyatli kirildi!";
+        message.className = "login-message login-message-success";
+        submitButton.textContent = "Muvaffaqiyatli kirildi ✓";
 
         setTimeout(() => {
             closeLoginModal();
@@ -7105,6 +7163,10 @@ async function loginUser() {
         message.textContent = error?.name === "AbortError"
             ? "Server 60 soniya ichida javob bermadi. Qayta urinib ko‘ring."
             : "Kirishni amalga oshirib bo‘lmadi. Qayta urinib ko‘ring.";
+        message.className = "login-message login-message-error";
+        submitButton.disabled = false;
+        submitButton.classList.remove("is-loading");
+        submitButton.textContent = "Kirish";
     } finally {
         clearTimeout(timeout);
     }
@@ -7380,6 +7442,16 @@ document.addEventListener("keydown", function(event) {
 document.getElementById("loginForm")?.addEventListener("submit", async function(event) {
     event.preventDefault();
     await loginUser();
+});
+
+document.getElementById("loginPasswordEye")?.addEventListener("click", function () {
+    const input = document.getElementById("loginPassword");
+    if (!input) return;
+    const visible = input.type === "text";
+    input.type = visible ? "password" : "text";
+    this.classList.toggle("active", !visible);
+    this.setAttribute("aria-label", visible ? "Parolni ko‘rsatish" : "Parolni yashirish");
+    this.setAttribute("title", visible ? "Parolni ko‘rsatish" : "Parolni yashirish");
 });
 </script>
 </body>
