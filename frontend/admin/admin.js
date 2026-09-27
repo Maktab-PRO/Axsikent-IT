@@ -229,6 +229,8 @@ const sectionTitles = {
     trainings: "Treninglar",
     exams: "Imtihonlar",
     "online-tests": "Online Test",
+    "online-test-list": "Online testlar ro‘yxati",
+    "locked-tests": "Qulflangan testlar",
     support: "Texnik yordam"
 };
 
@@ -287,6 +289,17 @@ function openSection(section) {
         top: 0,
         behavior: "smooth"
     });
+
+    // Har bir yangi bo‘lim ochilganda kontent yuqoridan ko‘rinsin.
+    const activePage = document.getElementById("section-" + section);
+    if (activePage) {
+        requestAnimationFrame(() => {
+            activePage.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        });
+    }
 
     /*
      * MUHIM:
