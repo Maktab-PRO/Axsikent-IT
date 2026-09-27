@@ -305,6 +305,73 @@ def get_current_student(
         "phone": student.phone,
         "is_active": student.is_active
     }
+@router.get("/activity")
+def get_student_activity(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    student_id = get_student_id(credentials, db)
+
+    gamification = db.query(StudentGamification).filter(
+        StudentGamification.student_id == student_id
+    ).first()
+
+    completed_lessons = db.query(func.count(LessonProgress.id)).filter(
+        LessonProgress.student_id == student_id,
+        LessonProgress.is_completed == True,
+    ).scalar() or 0
+
+    read_lessons = db.query(func.count(LessonProgress.id)).filter(
+        LessonProgress.student_id == student_id,
+        LessonProgress.is_read == True,
+    ).scalar() or 0
+
+    homework_passed = db.query(func.count(LessonProgress.id)).filter(
+        LessonProgress.student_id == student_id,
+        LessonProgress.homework_passed == True,
+    ).scalar() or 0
+
+    quiz_failures = db.query(func.coalesce(func.sum(LessonProgress.quiz_failures), 0)).filter(
+        LessonProgress.student_id == student_id
+    ).scalar() or 0
+
+    active_courses = db.query(func.count(StudentCourse.id)).filter(
+        StudentCourse.student_id == student_id,
+        StudentCourse.is_active == True,
+    ).scalar() or 0
+
+    now = datetime.now(timezone.utc)
+    start = now - timedelta(days=6)
+    recent = db.query(LessonProgress.completed_at).filter(
+        LessonProgress.student_id == student_id,
+        LessonProgress.is_completed == True,
+        LessonProgress.completed_at.isnot(None),
+        LessonProgress.completed_at >= start,
+    ).all()
+
+    weekly = {i: 0 for i in range(7)}
+    for row in recent:
+        value = row[0]
+        if value is None:
+            continue
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=timezone.utc)
+        days_ago = (now.date() - value.astimezone(timezone.utc).date()).days
+        if 0 <= days_ago <= 6:
+            weekly[6 - days_ago] += 1
+
+    return {
+        "xp": int(gamification.xp or 0) if gamification else 0,
+        "level": int(gamification.level or 1) if gamification else 1,
+        "streak_days": int(gamification.streak_days or 0) if gamification else 0,
+        "completed_lessons": int(completed_lessons),
+        "read_lessons": int(read_lessons),
+        "homework_passed": int(homework_passed),
+        "quiz_failures": int(quiz_failures),
+        "active_courses": int(active_courses),
+        "weekly_lessons": [weekly[i] for i in range(7)],
+    }
+
 @router.get("/courses")
 def get_my_courses(
     credentials: HTTPAuthorizationCredentials = Depends(security),
