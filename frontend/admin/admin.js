@@ -302,6 +302,7 @@ function openSection(section) {
     if (section === "teachers") loadTeachers();
     if (section === "courses") loadCourses();
     if (section === "groups") loadGroups();
+    if (section === "groups-students") loadGroupStudents();
     if (section === "rewards") loadRewards();
     if (section === "orders") loadOrders();
     if (section === "books") loadBooks();
@@ -2977,6 +2978,64 @@ async function loadGroups() {
         box.innerHTML =
             '<div class="module-empty"><h3>Xatolik</h3><p>' +
             escapeHtml(error.message) + '</p></div>';
+    }
+}
+
+async function loadGroupStudents() {
+    const box = document.getElementById("groupStudentsContent");
+    if (!box) return;
+
+    box.innerHTML = moduleLoading("Guruhlar yuklanmoqda...");
+
+    try {
+        const data = await apiRequest("/admin/groups/");
+        const groups = asArray(data, ["groups", "items", "data"]);
+
+        if (!groups.length) {
+            box.innerHTML = '<div class="module-empty"><h3>Guruhlar yo‘q</h3><p>Avval guruh yarating.</p></div>';
+            return;
+        }
+
+        const details = await Promise.all(
+            groups.map(async group => {
+                try {
+                    return await apiRequest("/admin/groups/" + Number(group.id));
+                } catch {
+                    return { group };
+                }
+            })
+        );
+
+        box.innerHTML = details.map((item, index) => {
+            const group = item?.group || groups[index] || {};
+            const students = asArray(item, ["students"]);
+            const teacher = item?.teacher?.full_name || group.teacher?.full_name || "—";
+            const course = item?.course?.name || group.course?.name || "—";
+
+            const studentsHtml = students.length
+                ? students.map(student =>
+                    '<div class="admin-detail-list-item">' +
+                    '<strong>' + escapeHtml(student.full_name || "—") + '</strong>' +
+                    '<span>#' + Number(student.id) + ' · ' + escapeHtml(student.phone || "—") + '</span>' +
+                    '</div>'
+                ).join("")
+                : '<p>Bu guruhda hozircha o‘quvchi yo‘q.</p>';
+
+            return '<div class="admin-panel" style="margin-bottom:16px">' +
+                '<div class="panel-header">' +
+                '<div><h3>' + escapeHtml(group.name || "—") + '</h3>' +
+                '<p>' + escapeHtml(course) + ' · O‘qituvchi: ' + escapeHtml(teacher) + '</p></div>' +
+                '<span class="status-badge ' + (group.is_active ? "status-active" : "status-inactive") + '"><span></span>' +
+                (group.is_active ? "Faol" : "Nofaol") + '</span>' +
+                '</div>' +
+                '<div class="admin-detail-block">' +
+                '<h3>O‘quvchilar (' + students.length + ')</h3>' +
+                studentsHtml +
+                '</div></div>';
+        }).join("");
+    } catch (error) {
+        box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' +
+            escapeHtml(error.message || "Guruh o‘quvchilari olinmadi") + '</p></div>';
     }
 }
 
