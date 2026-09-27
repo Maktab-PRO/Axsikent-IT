@@ -2575,6 +2575,22 @@
    TURNSTILE — REGISTRATION BOTTOM
    ========================================= */
 
+.application-math-check{
+    margin-top:20px;
+    padding:16px 18px;
+    border-radius:16px;
+    background:linear-gradient(145deg,rgba(255,255,255,.86),rgba(240,253,244,.78));
+    border:1px solid rgba(22,163,74,.18);
+    box-shadow:0 12px 28px rgba(15,23,42,.06);
+}
+.application-math-title{font-size:13px;font-weight:900;color:#15803d;margin-bottom:9px}
+.application-math-question{font-size:20px;font-weight:950;letter-spacing:.04em;color:#111827;margin-bottom:9px}
+.application-math-input{width:100%;box-sizing:border-box;border:1px solid #dbe4ea;border-radius:11px;padding:11px 12px;background:#fff;color:#111827;font-size:15px;outline:none;transition:.2s}
+.application-math-input:focus{border-color:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.10)}
+.application-math-hint{min-height:16px;margin-top:6px;font-size:11px;font-weight:800;color:#be185d}
+.application-privacy-consent{display:flex;align-items:flex-start;gap:10px;margin:16px 0 14px;color:#475569;font-size:12px;line-height:1.45;cursor:pointer}
+.application-privacy-consent input{width:17px;height:17px;min-width:17px;margin:1px 0 0;accent-color:#16a34a;cursor:pointer}
+
 .turnstile-bottom {
     margin-top: 20px;
     margin-bottom: 15px;
@@ -2960,11 +2976,6 @@
         @keyframes testModeMarquee{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
         @media (max-width:700px){html,body{max-width:100%;overflow-x:hidden}.test-mode-banner{width:100%;max-width:100%}.test-mode-text{font-size:12px}}
 </style>
-<script
-    src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-    async
-    defer
-></script>
 <script>
 (function initLanguageSelector(){
  const root=document.getElementById("languageCustom"),btn=document.getElementById("languageCustomBtn"),menu=document.getElementById("languageCustomMenu"),select=document.getElementById("languageSelect"),label=document.getElementById("languageCustomLabel");
@@ -4492,6 +4503,25 @@
             </div>
 
 
+            <div class="application-math-check">
+                <div class="application-math-title">🧮 Misolni yeching</div>
+                <div class="application-math-question" id="applicationMathQuestion" aria-live="polite"></div>
+                <input
+                    type="number"
+                    id="applicationMathAnswer"
+                    class="application-math-input"
+                    placeholder="Javobingiz"
+                    inputmode="numeric"
+                    required
+                >
+                <div class="application-math-hint" id="applicationMathHint"></div>
+            </div>
+
+            <label class="application-privacy-consent">
+                <input type="checkbox" id="applicationPrivacyConsent" required>
+                <span>Shaxsiy ma'lumotlar qayta ishlanishiga roziman</span>
+            </label>
+
             <button
                 type="submit"
                 class="btn btn-primary"
@@ -4500,21 +4530,6 @@
             >
                 Ariza yuborish
             </button>
-
-            <div class="turnstile-bottom">
-
-    <div class="turnstile-label">
-        🛡️ Robot emasligingizni tasdiqlang
-    </div>
-
-    <div
-        class="cf-turnstile"
-        data-sitekey="0x4AAAAAAE0axiMXsiHC6EHT"
-        data-theme="light"
-        data-size="flexible"
-    ></div>
-
-</div>
             
             <div
                 class="form-message"
@@ -5784,6 +5799,25 @@ document
             "#555";
 
 
+        const mathAnswerInput = document.getElementById("applicationMathAnswer");
+        const privacyConsent = document.getElementById("applicationPrivacyConsent");
+
+        if (!window.applicationMath || Number(mathAnswerInput.value) !== window.applicationMath.answer) {
+            message.textContent = "Noto‘g‘ri javob. Yangi misol berildi.";
+            message.style.color = "#be185d";
+            generateApplicationMath();
+            mathAnswerInput.value = "";
+            mathAnswerInput.focus();
+            return;
+        }
+
+        if (!privacyConsent.checked) {
+            message.textContent = "Shaxsiy ma'lumotlar qayta ishlanishiga rozilik berishingiz kerak.";
+            message.style.color = "#be185d";
+            privacyConsent.focus();
+            return;
+        }
+
         const params =
             new URLSearchParams({
 
@@ -5811,8 +5845,20 @@ document
                 comment:
                     document.getElementById("comment").value,
 
-                cf_turnstile_response:
-                    document.querySelector('[name="cf-turnstile-response"]')?.value || "",
+                math_a:
+                    window.applicationMath.a,
+
+                math_b:
+                    window.applicationMath.b,
+
+                math_operator:
+                    window.applicationMath.operator,
+
+                math_answer:
+                    mathAnswerInput.value,
+
+                privacy_consent:
+                    "true"
 
             });
 
@@ -5871,6 +5917,41 @@ document
         }
 
     });
+
+    /* =========================
+       APPLICATION MATH CHECK
+    ========================= */
+
+    window.applicationMath = null;
+
+    function generateApplicationMath() {
+        const operations = ["+", "-", "×"];
+        const operator = operations[Math.floor(Math.random() * operations.length)];
+        let a, b, answer;
+
+        if (operator === "+") {
+            a = Math.floor(Math.random() * 40) + 2;
+            b = Math.floor(Math.random() * 40) + 2;
+            answer = a + b;
+        } else if (operator === "-") {
+            a = Math.floor(Math.random() * 40) + 10;
+            b = Math.floor(Math.random() * a);
+            answer = a - b;
+        } else {
+            a = Math.floor(Math.random() * 12) + 2;
+            b = Math.floor(Math.random() * 10) + 2;
+            answer = a * b;
+        }
+
+        window.applicationMath = { a, b, operator, answer };
+
+        const question = document.getElementById("applicationMathQuestion");
+        const hint = document.getElementById("applicationMathHint");
+        if (question) question.textContent = a + " " + operator + " " + b + " = ?";
+        if (hint) hint.textContent = "";
+    }
+
+    document.addEventListener("DOMContentLoaded", generateApplicationMath);
 
     /* =========================
        TRANSLATIONS
