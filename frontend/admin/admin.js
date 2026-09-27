@@ -2998,11 +2998,8 @@ async function loadGroupStudents() {
 
         const details = await Promise.all(
             groups.map(async group => {
-                try {
-                    return await apiRequest("/admin/groups/" + Number(group.id));
-                } catch {
-                    return { group };
-                }
+                try { return await apiRequest("/admin/groups/" + Number(group.id)); }
+                catch { return { group }; }
             })
         );
 
@@ -3014,31 +3011,85 @@ async function loadGroupStudents() {
 
             const studentsHtml = students.length
                 ? students.map(student =>
-                    '<div class="admin-detail-list-item">' +
-                    '<strong>' + escapeHtml(student.full_name || "—") + '</strong>' +
-                    '<span>#' + Number(student.id) + ' · ' + escapeHtml(student.phone || "—") + '</span>' +
+                    '<div class="admin-detail-list-item" style="padding:8px 10px;font-size:13px">' +
+                    '<div><strong style="font-size:13px">' + escapeHtml(student.full_name || "—") + '</strong>' +
+                    '<span style="display:block;font-size:11px;opacity:.65">#' + Number(student.id) + ' · ' + escapeHtml(student.phone || "—") + '</span></div>' +
+                    actionButton("Chiqarish", "removeStudentFromGroup(" + Number(group.id) + "," + Number(student.id) + ")", "danger") +
                     '</div>'
                 ).join("")
-                : '<p>Bu guruhda hozircha o‘quvchi yo‘q.</p>';
+                : '<p style="font-size:12px;opacity:.7">Bu guruhda hozircha o‘quvchi yo‘q.</p>';
 
-            return '<div class="admin-panel" style="margin-bottom:16px">' +
-                '<div class="panel-header">' +
-                '<div><h3>' + escapeHtml(group.name || "—") + '</h3>' +
-                '<p>' + escapeHtml(course) + ' · O‘qituvchi: ' + escapeHtml(teacher) + '</p></div>' +
-                '<span class="status-badge ' + (group.is_active ? "status-active" : "status-inactive") + '"><span></span>' +
+            return '<div class="admin-panel" style="margin-bottom:12px">' +
+                '<div class="panel-header" style="padding:12px 14px">' +
+                '<div><h3 style="font-size:16px;margin:0">' + escapeHtml(group.name || "—") + '</h3>' +
+                '<p style="font-size:11px;margin:3px 0 0;opacity:.7">' + escapeHtml(course) + ' · ' + escapeHtml(teacher) + '</p></div>' +
+                '<span class="status-badge ' + (group.is_active ? "status-active" : "status-inactive") + '" style="font-size:10px"><span></span>' +
                 (group.is_active ? "Faol" : "Nofaol") + '</span>' +
                 '</div>' +
-                '<div class="admin-detail-block">' +
-                '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
-                '<h3 style="margin:0">O‘quvchilar (' + students.length + ')</h3>' +
-                actionButton("＋ O‘quvchi biriktirish", "addStudentToGroupPrompt(" + Number(group.id) + ")") +
+                '<div class="admin-detail-block" style="padding:12px 14px">' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">' +
+                '<h3 style="font-size:14px;margin:0">O‘quvchilar (' + students.length + ')</h3>' +
+                actionButton("＋ Biriktirish", "openGroupStudentPicker(" + Number(group.id) + ")") +
                 '</div>' +
-                studentsHtml +
+                '<div style="margin-top:8px">' + studentsHtml + '</div>' +
                 '</div></div>';
         }).join("");
     } catch (error) {
         box.innerHTML = '<div class="module-empty"><h3>Xatolik</h3><p>' +
             escapeHtml(error.message || "Guruh o‘quvchilari olinmadi") + '</p></div>';
+    }
+}
+
+async function openGroupStudentPicker(groupId) {
+    try {
+        const data = await apiRequest("/admin/students/");
+        const students = asArray(data, ["students", "items", "data"]);
+
+        const options = students.length
+            ? students.map(student =>
+                '<button type="button" class="admin-detail-list-item" style="width:100%;text-align:left;border:0;background:transparent;cursor:pointer" onclick="assignStudentToGroup(' +
+                Number(groupId) + ',' + Number(student.id) + ')">' +
+                '<div><strong style="font-size:13px">' + escapeHtml(student.full_name || "—") + '</strong>' +
+                '<span style="display:block;font-size:11px;opacity:.65">#' + Number(student.id) + ' · ' + escapeHtml(student.phone || "—") + '</span></div>' +
+                '<span style="font-size:11px">Biriktirish →</span>' +
+                '</button>'
+            ).join("")
+            : '<p>O‘quvchilar topilmadi.</p>';
+
+        showInfoModal(
+            "O‘quvchini guruhga biriktirish",
+            '<div style="font-size:12px;opacity:.7;margin-bottom:10px">Kerakli o‘quvchini tanlang:</div>' +
+            '<div style="max-height:360px;overflow:auto">' + options + '</div>'
+        );
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function assignStudentToGroup(groupId, studentId) {
+    try {
+        await apiRequest("/admin/groups/" + Number(groupId) + "/students/" + Number(studentId), {
+            method: "POST"
+        });
+        document.getElementById("moduleInfoModal")?.remove();
+        showToast("O‘quvchi guruhga biriktirildi");
+        await loadGroupStudents();
+    } catch (error) {
+        showToast(error.message, "error");
+    }
+}
+
+async function removeStudentFromGroup(groupId, studentId) {
+    if (!window.confirm("O‘quvchini ushbu guruhdan chiqarilsinmi?")) return;
+
+    try {
+        await apiRequest("/admin/groups/" + Number(groupId) + "/students/" + Number(studentId), {
+            method: "DELETE"
+        });
+        showToast("O‘quvchi guruhdan chiqarildi");
+        await loadGroupStudents();
+    } catch (error) {
+        showToast(error.message, "error");
     }
 }
 
