@@ -1647,7 +1647,12 @@ function studentRow(student) {
 
                     <div>
 
-                        <div class="student-name">
+                        <div class="student-name"
+                             data-student-action="view"
+                             data-student-id="${Number(id)}"
+                             role="button"
+                             tabindex="0"
+                             style="cursor:pointer">
 
                             ${escapeHtml(name)}
 
@@ -2358,7 +2363,16 @@ function showStudentFullProfile(data) {
         courseHtml + '</div>' +
 
         '<div class="admin-detail-block"><h3>Guruhlar</h3>' +
-        groupHtml + '</div>' +
+        groupHtml +
+        '<div class="student-group-assign">' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px">' +
+        '<select id="studentGroupSelect" style="flex:1;min-width:220px">' +
+        '<option value="">Guruhlar yuklanmoqda...</option>' +
+        '</select>' +
+        '<button type="button" class="modal-primary-btn" onclick="assignStudentToSelectedGroup(' + Number(student.id) + ')">Guruhga biriktirish</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
 
         '<div class="admin-detail-block"><h3>Davomat</h3>' +
         '<p>Jami: ' + (attendance.total ?? 0) +
@@ -2380,6 +2394,58 @@ function showStudentFullProfile(data) {
         ) +
         '</div>'
     );
+
+    loadStudentGroupOptions(Number(student.id));
+}
+
+async function loadStudentGroupOptions(studentId) {
+    const select = document.getElementById("studentGroupSelect");
+    if (!select) return;
+    try {
+        const data = await apiRequest("/groups/");
+        const groups = asArray(data, ["groups", "items", "data"]);
+        if (!groups.length) {
+            select.innerHTML = '<option value="">Faol guruh topilmadi</option>';
+            return;
+        }
+        select.innerHTML =
+            '<option value="">Guruhni tanlang</option>' +
+            groups.map(group =>
+                '<option value="' + Number(group.id) + '">' +
+                escapeHtml(
+                    (group.name || "Noma’lum guruh") +
+                    " · " +
+                    (group.course_name || group.course?.name || "Kurs") +
+                    " · " +
+                    (group.teacher_name || group.teacher?.full_name || "O‘qituvchi")
+                ) +
+                '</option>'
+            ).join("");
+    } catch (error) {
+        select.innerHTML = '<option value="">Guruhlarni yuklab bo‘lmadi</option>';
+        showToast(error.message || "Guruhlar olinmadi", "error");
+    }
+}
+
+async function assignStudentToSelectedGroup(studentId) {
+    const select = document.getElementById("studentGroupSelect");
+    const groupId = Number(select?.value);
+    if (!Number.isInteger(groupId) || groupId <= 0) {
+        showToast("Avval guruhni tanlang.", "error");
+        return;
+    }
+    try {
+        await apiRequest(
+            "/admin/groups/" + groupId + "/students/" + Number(studentId),
+            { method: "POST" }
+        );
+        showToast("O‘quvchi guruhga muvaffaqiyatli biriktirildi.", "success");
+        const modal = document.getElementById("moduleInfoModal");
+        if (modal) modal.remove();
+        await viewStudent(Number(studentId));
+    } catch (error) {
+        showToast(error.message || "O‘quvchini guruhga biriktirib bo‘lmadi.", "error");
+    }
 }
 
 /* ============================================================
