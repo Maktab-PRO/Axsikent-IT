@@ -1969,20 +1969,29 @@
         }
 
         .certificate-mockup {
-            background: white;
-            border: 10px solid #16a34a;
+            background:
+                radial-gradient(circle at 50% 0%, rgba(34,197,94,.10), transparent 34%),
+                linear-gradient(145deg, #ffffff, #f7fbf8);
+            border: 8px solid #16a34a;
             border-radius: 18px;
-            padding: 35px;
+            padding: 28px 30px 24px;
             box-shadow: 0 30px 70px rgba(0,0,0,.1);
             text-align: center;
             position: relative;
+            overflow: hidden;
+            transition: transform .25s ease, box-shadow .25s ease;
+        }
+
+        .certificate-mockup:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 34px 78px rgba(0,0,0,.14);
         }
 
         .certificate-mockup::before {
-            content: "🏅";
-            font-size: 40px;
+            content: "🎓";
+            font-size: 34px;
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .certificate-mockup h4 {
@@ -1993,17 +2002,85 @@
             margin-bottom: 14px;
         }
 
-        .certificate-mockup .cert-name {
-            font-size: 26px;
+        .certificate-brand {
+            font-size: 21px;
             font-weight: 900;
-            margin-bottom: 8px;
-            border-bottom: 2px dashed #ddd;
-            padding-bottom: 10px;
+            letter-spacing: 1.5px;
+            color: #111;
+            margin-bottom: 5px;
         }
 
-        .certificate-mockup .cert-sub {
-            color: #777;
+        .certificate-title {
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #15803d;
+            margin-bottom: 16px;
+        }
+
+        .certificate-fields {
+            display: grid;
+            gap: 9px;
+            text-align: left;
+            margin: 0 auto 14px;
+            max-width: 360px;
+        }
+
+        .certificate-field {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 7px 0;
+            border-bottom: 1px dashed #d8e2da;
             font-size: 13px;
+        }
+
+        .certificate-field span {
+            color: #777;
+        }
+
+        .certificate-field strong {
+            color: #222;
+            text-align: right;
+        }
+
+        .certificate-complete {
+            color: #166534;
+            font-size: 14px;
+            font-weight: 900;
+            margin: 12px 0 8px;
+        }
+
+        .certificate-qr-note {
+            color: #777;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .certificate-caption {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .certificate-caption strong {
+            display: block;
+            color: #111;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .certificate-caption span {
+            display: block;
+            color: #555;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .certificate-caption small {
+            color: #16a34a;
+            font-size: 13px;
+            font-weight: 800;
         }
 
         /* =========================
@@ -3984,10 +4061,39 @@
 
             </div>
 
-            <div class="certificate-mockup">
-                <h4 data-i18n="certificate_mockup_label">Sertifikat</h4>
-                <div class="cert-name" data-i18n="certificate_mockup_name">F. I. Sh.</div>
-                <div class="cert-sub" data-i18n="certificate_mockup_sub">AKHSIKENT IT — kursni muvaffaqiyatli tamomlagani uchun</div>
+            <div>
+                <div class="certificate-mockup">
+                    <div class="certificate-brand">AKHSIKENT IT</div>
+                    <div class="certificate-title">SERTIFIKAT</div>
+
+                    <div class="certificate-fields">
+                        <div class="certificate-field">
+                            <span>F.I.Sh.</span>
+                            <strong>F. I. Sh.</strong>
+                        </div>
+                        <div class="certificate-field">
+                            <span>Kurs nomi</span>
+                            <strong>Frontend Development</strong>
+                        </div>
+                        <div class="certificate-field">
+                            <span>Berilgan sana</span>
+                            <strong>12.09.2026</strong>
+                        </div>
+                        <div class="certificate-field">
+                            <span>Kurs ID raqami</span>
+                            <strong>AKH-2026-001</strong>
+                        </div>
+                    </div>
+
+                    <div class="certificate-complete">✓ Kurs muvaffaqiyatli yakunlandi</div>
+                    <div class="certificate-qr-note">▦ QR kod orqali haqiqiyligini tekshirish</div>
+                </div>
+
+                <div class="certificate-caption">
+                    <strong>Kursni yakunlang.</strong>
+                    <span>Bilimingizni sertifikat bilan tasdiqlang.</span>
+                    <small>🎓 Har bir muvaffaqiyat — yangi imkoniyat.</small>
+                </div>
             </div>
 
         </div>
