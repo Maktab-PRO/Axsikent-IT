@@ -1652,6 +1652,7 @@ function studentRow(student) {
                              data-student-id="${Number(id)}"
                              role="button"
                              tabindex="0"
+                             onclick="viewStudent(${Number(id)})"
                              style="cursor:pointer">
 
                             ${escapeHtml(name)}
