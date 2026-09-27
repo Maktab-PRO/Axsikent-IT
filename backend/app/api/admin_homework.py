@@ -13,6 +13,7 @@ from app.models.homework import Homework, HomeworkSubmission
 from app.models.group import Group
 from app.models.teacher import Teacher
 from app.models.student import Student
+from app.models.lesson_progress import LessonProgress
 from app.models.ai_telegram_submission import AITelegramSubmission
 from app.services.notifications import notify_group_students, notify_student
 
@@ -694,6 +695,26 @@ def grade_submission(
     submission.teacher_comment = data.teacher_comment
     submission.status = "checked"
     submission.checked_at = datetime.utcnow()
+
+    # 80%+ admin bahosi bo‘lsa, shu darsning homework talabi bajarilgan deb belgilanadi.
+    if data.score >= 80:
+        homework = db.query(Homework).filter(
+            Homework.id == submission.homework_id
+        ).first()
+        if homework and homework.lesson_id:
+            progress = db.query(LessonProgress).filter(
+                LessonProgress.student_id == submission.student_id,
+                LessonProgress.lesson_id == homework.lesson_id
+            ).with_for_update().first()
+            if not progress:
+                progress = LessonProgress(
+                    student_id=submission.student_id,
+                    lesson_id=homework.lesson_id,
+                    homework_passed=True
+                )
+                db.add(progress)
+            else:
+                progress.homework_passed = True
 
     db.commit()
     db.refresh(submission)
