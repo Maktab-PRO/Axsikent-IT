@@ -3534,6 +3534,19 @@ a {
    TECHNICAL SUPPORT
 ========================================================= */
 
+/* ADMIN MOBILE — THESE SECTIONS MUST OPEN AT THE REAL TOP */
+@media (max-width: 760px) {
+    #section-online-test-list,
+    #section-locked-tests,
+    #section-ranking,
+    #section-reports,
+    #section-administrators,
+    #section-settings,
+    #section-support {
+        margin-top: -20px;
+    }
+}
+
 .admin-support-card,
 .admin-support-page {
     display: flex;
