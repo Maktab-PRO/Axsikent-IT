@@ -3535,6 +3535,105 @@ function openStudentTrainings() {
     loadStudentTrainings();
 }
 
+function openStudentExams(button) {
+    selectMenu(button);
+    openStudentExtraModal("📋 Imtihonlar");
+    loadStudentExams();
+}
+
+async function loadStudentExams() {
+    const body = document.getElementById("studentExtraContentBody");
+    const token = localStorage.getItem("access_token");
+    if (!body) return;
+    if (!token) {
+        body.innerHTML = studentExtraError("Avval tizimga kiring.");
+        return;
+    }
+
+    body.innerHTML = studentExtraLoading("Imtihonlar yuklanmoqda...");
+
+    try {
+        if (studentExtraLoadController) studentExtraLoadController.abort();
+        const controller = new AbortController();
+        studentExtraLoadController = controller;
+
+        const {response, data} = await fetchStudentApi(
+            "/students/exams",
+            token,
+            {method:"GET", signal: controller.signal}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+        if (!response.ok) throw new Error(data.detail || "Imtihonlarni yuklashda xatolik.");
+
+        if (!Array.isArray(data) || !data.length) {
+            body.innerHTML = '<div style="text-align:center;padding:35px;color:#aaa5b8;">📋<br><br>Hozircha faol imtihon mavjud emas.</div>';
+            return;
+        }
+
+        body.innerHTML = data.map(item => {
+            const registered = item.registered === true;
+            const start = formatStudentContentDate(item.start_at);
+            const end = item.end_at ? formatStudentContentDate(item.end_at) : "";
+
+            return `
+                <div style="padding:18px;margin-bottom:12px;border:1px solid rgba(34,197,94,.18);border-radius:18px;background:rgba(255,255,255,.035);">
+                    <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:7px;">📋 ${escapeHtml(item.title || "Nomsiz imtihon")}</div>
+                    <div style="color:#aaa5b8;line-height:1.6;margin-bottom:10px;">${escapeHtml(item.description || "Tavsif mavjud emas")}</div>
+                    <div style="color:#c4b5fd;font-size:13px;line-height:1.8;">
+                        🕒 ${escapeHtml(start)}
+                        ${end ? " — " + escapeHtml(end) : ""}
+                        ${item.location ? "<br>📍 " + escapeHtml(item.location) : ""}
+                        ${item.capacity ? "<br>👥 Joylar: " + Number(item.capacity) : ""}
+                    </div>
+                    <div style="margin-top:14px;">
+                        ${registered
+                            ? '<div style="padding:11px 14px;border-radius:12px;background:rgba(34,197,94,.1);color:#86efac;font-weight:700;">✅ Siz imtihonga ro‘yxatdan o‘tgansiz</div>'
+                            : `<button type="button" onclick="registerStudentExam(${Number(item.id)})" style="width:100%;border:0;border-radius:12px;padding:12px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-weight:800;cursor:pointer;">Imtihonga ro‘yxatdan o‘tish</button>`}
+                    </div>
+                </div>`;
+        }).join("");
+    } catch (error) {
+        console.error("Imtihonlar:", error);
+        if (error?.name === "AbortError") return;
+        body.innerHTML = studentExtraError(error.message || "Imtihonlarni yuklashda xatolik.");
+    }
+}
+
+async function registerStudentExam(examId) {
+    const body = document.getElementById("studentExtraContentBody");
+    const token = localStorage.getItem("access_token");
+    if (!body || !token) return;
+
+    body.innerHTML = studentExtraLoading("Imtihonga ro‘yxatdan o‘tilmoqda...");
+
+    try {
+        const {response, data} = await fetchStudentApi(
+            "/students/exams/" + Number(examId) + "/register",
+            token,
+            {method:"POST"}
+        );
+
+        if (response.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("user_role");
+            window.location.href = "index.html";
+            return;
+        }
+        if (!response.ok) throw new Error(data.detail || "Imtihonga ro‘yxatdan o‘tishda xatolik.");
+
+        await loadStudentExams();
+    } catch (error) {
+        if (error?.name === "AbortError") return;
+        body.innerHTML = studentExtraError(error.message || "Imtihonga ro‘yxatdan o‘tishda xatolik.");
+    }
+}
+
 function openStudentOnlineTests() {
     openStudentExtraModal("🧪 Test topshirish");
     loadStudentOnlineTests();
