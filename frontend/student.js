@@ -3567,12 +3567,30 @@ async function loadStudentOnlineTests() {
             const attempts = Number(exam.attempts_used) || 0;
             const maxAttempts = Number(exam.max_attempts) || 1;
             const canStart = exam.can_start === true;
+            const isLocked = exam.locked === true;
+            const lockReason = String(exam.lock_reason || "");
+
+            let actionHtml = "";
+            if (isLocked) {
+                actionHtml =
+                    '<div style="margin-top:14px;padding:13px;border-radius:13px;background:rgba(239,68,68,.10);border:1px solid rgba(248,113,113,.25);color:#fecaca;font-weight:800;line-height:1.55;">' +
+                        '🔒 <strong>Test qulflangan</strong><br>' +
+                        'Siz testdan chiqdingiz. Ushbu testni qayta ochishni faqat Administrator amalga oshirishi mumkin.' +
+                    '</div>';
+            } else if (canStart) {
+                actionHtml =
+                    '<button type="button" onclick="startStudentOnlineTest(' + Number(exam.id) + ')" style="width:100%;margin-top:14px;border:0;border-radius:13px;padding:13px;background:linear-gradient(135deg,#7c3aed,#059669);color:#fff;font-weight:900;cursor:pointer;">▶ Testni boshlash</button>';
+            } else {
+                actionHtml =
+                    '<div style="margin-top:14px;padding:13px;border-radius:13px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#aab3c2;font-weight:800;text-align:center;">Urinishlar tugagan</div>';
+            }
+
             return `
-                <div style="padding:18px;margin-bottom:12px;border:1px solid rgba(139,92,246,.22);border-radius:18px;background:rgba(255,255,255,.035);">
+                <div style="padding:18px;margin-bottom:12px;border:1px solid ${isLocked ? "rgba(248,113,113,.30)" : "rgba(139,92,246,.22)"};border-radius:18px;background:rgba(255,255,255,.035);">
                     <div style="font-size:17px;font-weight:800;color:#fff;margin-bottom:7px;">📝 ${escapeHtml(exam.title || "Nomsiz test")}</div>
                     <div style="color:#aaa5b8;line-height:1.6;margin-bottom:10px;">${escapeHtml(exam.description || "Tavsif mavjud emas")}</div>
                     <div style="color:#c4b5fd;font-size:13px;line-height:1.8;">⏱ ${Number(exam.time_limit_minutes) || 0} daqiqa &nbsp;•&nbsp; 🎯 O‘tish: ${Number(exam.pass_score) || 0}%<br>🔁 Urinish: ${attempts}/${maxAttempts}</div>
-                    <button type="button" onclick="startStudentOnlineTest(${Number(exam.id)})" ${canStart ? "" : "disabled"} style="width:100%;margin-top:14px;border:0;border-radius:13px;padding:13px;background:${canStart ? "linear-gradient(135deg,#7c3aed,#059669)" : "rgba(255,255,255,.08)"};color:#fff;font-weight:900;cursor:${canStart ? "pointer" : "not-allowed"};opacity:${canStart ? "1" : ".55"};">${canStart ? "▶ Testni boshlash" : "Urinishlar tugagan"}</button>
+                    ${actionHtml}
                 </div>`;
         }).join("");
     } catch (error) {
