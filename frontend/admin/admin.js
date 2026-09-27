@@ -285,21 +285,18 @@ function openSection(section) {
         sidebar.classList.remove("open");
     }
 
-    // Bo‘lim ochilganda aynan shu sahifaning boshlanishiga olib boramiz.
-    // Sticky topbar ostida qolib ketmasligi uchun kichik offset beriladi.
-    const activePage = document.getElementById("section-" + section);
-    if (activePage) {
-        requestAnimationFrame(() => {
-            const topbar = document.querySelector(".topbar");
-            const offset = (topbar ? topbar.offsetHeight : 86) + 10;
-            const pageTop = activePage.getBoundingClientRect().top + window.pageYOffset - offset;
-
-            window.scrollTo({
-                top: Math.max(0, pageTop),
-                behavior: "smooth"
-            });
-        });
-    }
+    // Har bir bo‘lim bir xil .content-area ichida turadi.
+    // Shuning uchun bo‘lim almashtirilganda sahifani doimo
+    // haqiqiy boshlanish nuqtasiga qaytaramiz.
+    // Ayniqsa telefonlarda sticky topbar + getBoundingClientRect()
+    // kombinatsiyasi kontentni pastga surib qo‘yishi mumkin.
+    window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "auto"
+    });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
 
     /*
      * MUHIM:
