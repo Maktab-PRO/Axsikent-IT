@@ -3029,7 +3029,10 @@ async function loadGroupStudents() {
                 (group.is_active ? "Faol" : "Nofaol") + '</span>' +
                 '</div>' +
                 '<div class="admin-detail-block">' +
-                '<h3>O‘quvchilar (' + students.length + ')</h3>' +
+                '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">' +
+                '<h3 style="margin:0">O‘quvchilar (' + students.length + ')</h3>' +
+                actionButton("＋ O‘quvchi biriktirish", "addStudentToGroupPrompt(" + Number(group.id) + ")") +
+                '</div>' +
                 studentsHtml +
                 '</div></div>';
         }).join("");
