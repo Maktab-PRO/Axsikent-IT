@@ -4,6 +4,8 @@ import urllib.parse
 import urllib.request
 
 from fastapi import APIRouter, Depends, HTTPException
+import operator
+import re
 
 from app.core.security import require_admin
 from app.models.admin import Admin
@@ -25,47 +27,6 @@ pwd_context = CryptContext(
 )
 
 
-def verify_turnstile(token: str) -> bool:
-    """
-    Cloudflare Turnstile tokenini tekshiradi.
-    """
-
-    secret_key = os.getenv("TURNSTILE_SECRET_KEY")
-
-    if not secret_key:
-        return False
-
-    if not token:
-        return False
-
-    url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
-
-    data = urllib.parse.urlencode({
-        "secret": secret_key,
-        "response": token
-    }).encode("utf-8")
-
-    request = urllib.request.Request(
-        url,
-        data=data,
-        method="POST",
-        headers={
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-    )
-
-    try:
-        with urllib.request.urlopen(request, timeout=10) as response:
-            result = json.loads(
-                response.read().decode("utf-8")
-            )
-
-        return result.get("success", False)
-
-    except Exception:
-        return False
-
-
 @router.post("/")
 def create_lead(
     full_name: str,
@@ -76,7 +37,11 @@ def create_lead(
     preferred_time: str | None = None,
     previous_it_course: str | None = None,
     comment: str | None = None,
-    cf_turnstile_response: str | None = None,
+    math_a: int | None = None,
+    math_b: int | None = None,
+    math_operator: str | None = None,
+    math_answer: int | None = None,
+    privacy_consent: bool = False,
     db: Session = Depends(get_db)
 ):
 
@@ -90,10 +55,30 @@ def create_lead(
             detail="Parol kamida 6 ta belgidan iborat bo‘lishi kerak."
         )
 
-    if not cf_turnstile_response or not verify_turnstile(cf_turnstile_response):
+    if not privacy_consent:
         raise HTTPException(
             status_code=400,
-            detail="Tasdiqlash muvaffaqiyatsiz. Iltimos, Turnstile tekshiruvini bajaring."
+            detail="Shaxsiy ma'lumotlar qayta ishlanishiga rozilik berish majburiy."
+        )
+
+    operations = {
+        "+": operator.add,
+        "-": operator.sub,
+        "×": operator.mul
+    }
+
+    if math_a is None or math_b is None or math_answer is None or math_operator not in operations:
+        raise HTTPException(
+            status_code=400,
+            detail="Matematik misolni to‘g‘ri yeching."
+        )
+
+    expected_answer = operations[math_operator](math_a, math_b)
+
+    if math_answer != expected_answer:
+        raise HTTPException(
+            status_code=400,
+            detail="Matematik misol noto‘g‘ri yechildi."
         )
 
     lead = Lead(
