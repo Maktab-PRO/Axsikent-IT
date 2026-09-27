@@ -11,6 +11,7 @@ from app.models.admin import Admin
 from app.models.group import Group
 from app.models.lesson import Lesson
 from app.models.course_module import CourseModule
+from app.models.lesson_progress import LessonProgress
 from app.core.security import decode_token
 from app.services.notifications import notify_student
 
@@ -456,6 +457,23 @@ def grade_homework_submission(
     submission.teacher_comment = teacher_comment
     submission.status = "checked"
     submission.checked_at = datetime.utcnow()
+
+    # 80%+ teacher bahosi bo‘lsa, shu darsning homework talabi bajarilgan deb belgilanadi.
+    # Shu bilan keyingi dars unlock qoidasi mavjud LessonProgress mexanizmi orqali ishlaydi.
+    if score >= 80 and homework.lesson_id:
+        progress = db.query(LessonProgress).filter(
+            LessonProgress.student_id == submission.student_id,
+            LessonProgress.lesson_id == homework.lesson_id
+        ).with_for_update().first()
+        if not progress:
+            progress = LessonProgress(
+                student_id=submission.student_id,
+                lesson_id=homework.lesson_id,
+                homework_passed=True
+            )
+            db.add(progress)
+        else:
+            progress.homework_passed = True
 
     db.commit()
     db.refresh(submission)
