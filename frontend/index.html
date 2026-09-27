@@ -237,18 +237,77 @@
 
         .mobile-menu {
             display: none;
-            border: none;
-            background: white;
-            color: #111;
-            font-size: 28px;
+            width: 46px;
+            height: 46px;
+            border: 1px solid rgba(17,24,39,.10);
+            background: rgba(255,255,255,.96);
+            color: #111827;
             cursor: pointer;
             line-height: 1;
-            padding: 8px 10px;
-            border-radius: 10px;
+            padding: 0;
+            border-radius: 13px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(15,23,42,.08);
+            transition: .2s ease;
         }
 
         .mobile-menu:hover {
-            background: #f1f1f1;
+            background: #f7faf8;
+            border-color: rgba(22,163,74,.28);
+            box-shadow: 0 10px 24px rgba(22,163,74,.12);
+            transform: translateY(-1px);
+        }
+
+        .mobile-menu:active {
+            transform: scale(.96);
+        }
+
+        .mobile-menu svg {
+            width: 22px;
+            height: 22px;
+            display: block;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .language-custom-btn {
+            min-width: 74px;
+            height: 46px;
+            gap: 7px;
+            padding: 0 11px;
+            border: 1px solid rgba(17,24,39,.10);
+            border-radius: 13px;
+            background: rgba(255,255,255,.96);
+            color: #111827;
+            box-shadow: 0 8px 20px rgba(15,23,42,.06);
+        }
+
+        .language-custom-btn:hover,
+        .language-custom.open .language-custom-btn {
+            border-color: rgba(22,163,74,.34);
+            box-shadow: 0 10px 24px rgba(22,163,74,.12);
+            background: #fff;
+        }
+
+        .language-globe {
+            width: 18px;
+            height: 18px;
+            flex: 0 0 18px;
+            display: block;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .language-custom-label {
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: .3px;
         }
 
         /* Mobile dropdown menu (opens under navbar, top-right, like najottalim.uz) */
@@ -3485,8 +3544,14 @@
                     <option value="ru">RU</option>
                     <option value="en">EN</option>
                 </select>
-                <button type="button" class="language-custom-btn" id="languageCustomBtn" aria-expanded="false">
-                    <span id="languageCustomLabel">UZ</span><span class="language-chevron">⌄</span>
+                <button type="button" class="language-custom-btn" id="languageCustomBtn" aria-expanded="false" aria-label="Tilni o‘zgartirish">
+                    <svg class="language-globe" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <path d="M3 12h18"></path>
+                        <path d="M12 3c2.4 2.5 3.6 5.5 3.6 9s-1.2 6.5-3.6 9c-2.4-2.5-3.6-5.5-3.6-9S9.6 5.5 12 3Z"></path>
+                    </svg>
+                    <span class="language-custom-label" id="languageCustomLabel">UZ</span>
+                    <span class="language-chevron">⌄</span>
                 </button>
                 <div class="language-custom-menu" id="languageCustomMenu">
                     <button type="button" data-language="uz">🇺🇿 O‘zbek</button>
@@ -3496,8 +3561,12 @@
             </div>
 
 
-            <button class="mobile-menu" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Menyu">
-                ☰
+            <button class="mobile-menu" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Bo‘limlar" title="Bo‘limlar">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7h16"></path>
+                    <path d="M4 12h16"></path>
+                    <path d="M4 17h16"></path>
+                </svg>
             </button>
 
             <nav class="mobile-nav-dropdown" id="mobileNavDropdown">
