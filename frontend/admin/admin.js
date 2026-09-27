@@ -285,18 +285,18 @@ function openSection(section) {
         sidebar.classList.remove("open");
     }
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-    // Har bir yangi bo‘lim ochilganda kontent yuqoridan ko‘rinsin.
+    // Bo‘lim ochilganda aynan shu sahifaning boshlanishiga olib boramiz.
+    // Sticky topbar ostida qolib ketmasligi uchun kichik offset beriladi.
     const activePage = document.getElementById("section-" + section);
     if (activePage) {
         requestAnimationFrame(() => {
-            activePage.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
+            const topbar = document.querySelector(".topbar");
+            const offset = (topbar ? topbar.offsetHeight : 86) + 10;
+            const pageTop = activePage.getBoundingClientRect().top + window.pageYOffset - offset;
+
+            window.scrollTo({
+                top: Math.max(0, pageTop),
+                behavior: "smooth"
             });
         });
     }
