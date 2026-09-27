@@ -4105,43 +4105,81 @@ async function loadStudentDashboardStats() {
     const token = localStorage.getItem("access_token");
     if (!token) return;
 
+    const activity = document.getElementById("studentActivityContent");
+
     try {
-        const rewardsResult = await fetchStudentApi(
-            "/students/rewards",
+        const activityResult = await fetchStudentApi(
+            "/students/activity",
             token,
             {method:"GET"}
         );
 
-        if (rewardsResult.response.status === 401) {
+        if (activityResult.response.status === 401) {
             localStorage.removeItem("access_token");
             localStorage.removeItem("user_role");
             window.location.href = "index.html";
             return;
         }
 
-        if (!rewardsResult.response.ok) {
-            throw new Error(rewardsResult.data?.detail || "Student statistikasi yuklanmadi");
+        if (!activityResult.response.ok) {
+            throw new Error(activityResult.data?.detail || "Faollik ma’lumotlari yuklanmadi");
         }
 
-        const student = rewardsResult.data?.student || {};
-        const xp = Number(student.xp || 0);
-        const streak = Number(student.streak_days || 0);
+        const data = activityResult.data || {};
+        const xp = Number(data.xp || 0);
+        const streak = Number(data.streak_days || 0);
+        const completed = Number(data.completed_lessons || 0);
+        const read = Number(data.read_lessons || 0);
+        const homework = Number(data.homework_passed || 0);
+        const failures = Number(data.quiz_failures || 0);
+        const courses = Number(data.active_courses || 0);
+        const weekly = Array.isArray(data.weekly_lessons) ? data.weekly_lessons.map(v => Math.max(0, Number(v) || 0)) : [];
+        const maxWeekly = Math.max(1, ...weekly);
+
         const xpCounter = document.getElementById("statTotalXp");
         const streakCounter = document.getElementById("statStreak");
-        const activity = document.getElementById("studentActivityContent");
-
         if (xpCounter) xpCounter.textContent = xp.toLocaleString("uz-UZ");
         if (streakCounter) streakCounter.textContent = streak + " kun";
 
         if (activity) {
+            const labels = ["6 kun", "5 kun", "4 kun", "3 kun", "2 kun", "Kecha", "Bugun"];
+            const bars = weekly.map((value, index) => {
+                const height = Math.max(8, Math.round((value / maxWeekly) * 58));
+                const isToday = index === 6;
+                return '<div style="flex:1;min-width:34px;text-align:center;">' +
+                    '<div style="height:64px;display:flex;align-items:flex-end;justify-content:center;">' +
+                        '<div title="' + value + ' ta tugallangan dars" style="width:100%;max-width:32px;height:' + height + 'px;border-radius:8px 8px 4px 4px;background:' + (isToday ? 'linear-gradient(180deg,#a78bfa,#7c3aed)' : 'linear-gradient(180deg,#34d399,#059669)') + ';box-shadow:0 5px 16px rgba(52,211,153,.10);"></div>' +
+                    '</div>' +
+                    '<div style="margin-top:7px;font-size:9px;color:' + (isToday ? '#c4b5fd' : '#64748b') + ';font-weight:700;">' + labels[index] + '</div>' +
+                '</div>';
+            }).join("");
+
             activity.innerHTML =
-                '<div style="display:flex;align-items:center;gap:14px;padding:18px;border-radius:16px;background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(52,211,153,.16);">' +
-                    '<div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(52,211,153,.10);font-size:23px;">🔥</div>' +
-                    '<div>' +
-                        '<div style="color:#fff;font-weight:800;font-size:14px;">Faollik zanjiri</div>' +
-                        '<div style="margin-top:5px;color:#94a3b8;font-size:12px;">' +
-                            (streak > 0 ? streak + " kun ketma-ket faol bo‘ldingiz." : "Bugun faoliyat boshlang va zanjirni yarating.") +
-                        '</div>' +
+                '<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">' +
+                    '<div style="padding:15px;border-radius:15px;background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(52,211,153,.15);">' +
+                        '<div style="font-size:11px;color:#64748b;font-weight:800;">TUGALLANGAN DARS</div><div style="margin-top:6px;font-size:22px;color:#fff;font-weight:900;">' + completed + '</div>' +
+                    '</div>' +
+                    '<div style="padding:15px;border-radius:15px;background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(139,92,246,.18);">' +
+                        '<div style="font-size:11px;color:#64748b;font-weight:800;">O‘QILGAN DARS</div><div style="margin-top:6px;font-size:22px;color:#fff;font-weight:900;">' + read + '</div>' +
+                    '</div>' +
+                    '<div style="padding:15px;border-radius:15px;background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(52,211,153,.15);">' +
+                        '<div style="font-size:11px;color:#64748b;font-weight:800;">UY VAZIFASI O‘TGAN</div><div style="margin-top:6px;font-size:22px;color:#fff;font-weight:900;">' + homework + '</div>' +
+                    '</div>' +
+                    '<div style="padding:15px;border-radius:15px;background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(248,113,113,.14);">' +
+                        '<div style="font-size:11px;color:#64748b;font-weight:800;">QUIZ XATOLARI</div><div style="margin-top:6px;font-size:22px;color:#fff;font-weight:900;">' + failures + '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="margin-top:12px;padding:16px;border-radius:16px;background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(52,211,153,.16);">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">' +
+                        '<div><div style="color:#fff;font-weight:800;font-size:14px;">📊 Oxirgi 7 kun faolligi</div><div style="margin-top:4px;color:#64748b;font-size:11px;">Har bir ustun — shu kuni tugallangan darslar.</div></div>' +
+                        '<div style="font-size:12px;color:#c4b5fd;font-weight:800;">' + courses + ' ta kurs</div>' +
+                    '</div>' +
+                    '<div style="display:flex;align-items:flex-end;gap:7px;margin-top:14px;min-height:86px;">' + bars + '</div>' +
+                '</div>' +
+                '<div style="margin-top:12px;padding:16px;border-radius:16px;background:linear-gradient(145deg,rgba(139,92,246,.10),rgba(52,211,153,.05));border:1px solid rgba(139,92,246,.18);">' +
+                    '<div style="color:#c4b5fd;font-weight:800;font-size:13px;">🔥 Faollik zanjiri</div>' +
+                    '<div style="margin-top:5px;color:#94a3b8;font-size:12px;">' +
+                        (streak > 0 ? streak + " kun ketma-ket faol bo‘ldingiz." : "Bugun dars o‘qing va faollik zanjirini boshlang.") +
                     '</div>' +
                 '</div>';
         }
@@ -4161,37 +4199,25 @@ async function loadStudentDashboardStats() {
 
         if (rankingResult.response.ok) {
             const ranking = Array.isArray(rankingResult.data) ? rankingResult.data : [];
-            const current = ranking.find(item => Number(item.student_id) === Number(student.student_id));
+            const current = ranking.find(item => Number(item.student_id) === Number(data.student_id));
             const rankCounter = document.getElementById("statRank");
-
             if (rankCounter) {
                 rankCounter.textContent = current?.rank ? "#" + current.rank : "—";
             }
         }
     } catch (error) {
         console.error("Student dashboard stats:", error);
-
         const rankCounter = document.getElementById("statRank");
         const xpCounter = document.getElementById("statTotalXp");
         const streakCounter = document.getElementById("statStreak");
-        const activity = document.getElementById("studentActivityContent");
-
-        if (rankCounter && rankCounter.textContent.includes("yuklan")) {
-            rankCounter.textContent = "—";
-        }
-        if (xpCounter && xpCounter.textContent.includes("yuklan")) {
-            xpCounter.textContent = "—";
-        }
-        if (streakCounter && streakCounter.textContent.includes("yuklan")) {
-            streakCounter.textContent = "—";
-        }
+        if (rankCounter && /yuklan/i.test(rankCounter.textContent || "")) rankCounter.textContent = "—";
+        if (xpCounter && /yuklan/i.test(xpCounter.textContent || "")) xpCounter.textContent = "—";
+        if (streakCounter && /yuklan/i.test(streakCounter.textContent || "")) streakCounter.textContent = "—";
         if (activity && /yuklanmoqda/i.test(activity.textContent || "")) {
-            activity.innerHTML =
-                '<div style="padding:22px;text-align:center;color:#fda4af;background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(248,113,113,.16);border-radius:16px;">Faollik ma’lumotini yuklab bo‘lmadi. <button type="button" onclick="loadStudentDashboardStats()" style="margin-top:10px;padding:8px 13px;border:1px solid rgba(52,211,153,.25);border-radius:10px;background:rgba(52,211,153,.08);color:#86efac;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
+            activity.innerHTML = '<div style="padding:22px;text-align:center;color:#fda4af;background:linear-gradient(145deg,#111827,#0b1220);border:1px solid rgba(248,113,113,.16);border-radius:16px;">Faollik ma’lumotini yuklab bo‘lmadi. <button type="button" onclick="loadStudentDashboardStats()" style="margin-top:10px;padding:8px 13px;border:1px solid rgba(52,211,153,.25);border-radius:10px;background:rgba(52,211,153,.08);color:#86efac;cursor:pointer;font-weight:700;">Qayta urinish</button></div>';
         }
     }
 }
-
 
 async function loadStudentAchievements() {
     const container = document.getElementById("studentAchievementsContent");
