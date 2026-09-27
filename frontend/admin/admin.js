@@ -285,18 +285,22 @@ function openSection(section) {
         sidebar.classList.remove("open");
     }
 
-    // Har bir bo‘lim bir xil .content-area ichida turadi.
-    // Shuning uchun bo‘lim almashtirilganda sahifani doimo
-    // haqiqiy boshlanish nuqtasiga qaytaramiz.
-    // Ayniqsa telefonlarda sticky topbar + getBoundingClientRect()
-    // kombinatsiyasi kontentni pastga surib qo‘yishi mumkin.
-    window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: "auto"
-    });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+    // Aktiv bo‘limni mobil brauzerning haqiqiy scroll konteyneriga olib boramiz.
+    // scrollIntoView() window/document va ichki scroll konteynerlarni o‘zi topadi.
+    const activePage = document.getElementById("section-" + section);
+    if (activePage) {
+        requestAnimationFrame(() => {
+            activePage.scrollIntoView({
+                behavior: "auto",
+                block: "start",
+                inline: "nearest"
+            });
+
+            const topbar = document.querySelector(".topbar");
+            const topbarHeight = topbar ? topbar.offsetHeight : 70;
+            window.scrollBy(0, -topbarHeight);
+        });
+    }
 
     /*
      * MUHIM:
