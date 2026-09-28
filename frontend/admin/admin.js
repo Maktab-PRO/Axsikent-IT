@@ -4252,7 +4252,8 @@ async function loadOnlineExamAdminList() {
     if (!box) return;
     box.innerHTML = moduleLoading("Online Testlar yuklanmoqda...");
     try {
-        const items = await apiRequest("/online-exams/admin/list");
+        const allItems = await apiRequest("/online-exams/admin/list");
+        const items = (Array.isArray(allItems) ? allItems : []).filter(x => x && x.is_active !== false);
         box.innerHTML = items.length ? moduleTable(
             ["ID","NOMI","VAQT","O‘TISH","URINISH","SAVOLLAR","HOLAT","AMAL"],
             items.map(x =>
