@@ -364,6 +364,76 @@ def create_teacher_quiz(
     return {"message": "Quiz saqlandi", "id": quiz.id}
 
 
+@router.get("/assigned-quizzes")
+def get_teacher_assigned_quizzes(
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+    db: Session = Depends(get_db)
+):
+    token_data = decode_token(credentials.credentials)
+    if not token_data or token_data.get("role") != "teacher":
+        raise HTTPException(status_code=403, detail="Faqat o‘qituvchi akkaunti uchun ruxsat berilgan")
+
+    teacher_id = token_data["user_id"]
+    teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id,
+        Teacher.is_active == True,
+        Teacher.approved_by_admin == True
+    ).first()
+    if not teacher:
+        raise HTTPException(status_code=401, detail="O‘qituvchi sessiyasi noto‘g‘ri yoki akkaunt faol emas")
+
+    rows = db.query(
+        Student.id,
+        Student.full_name,
+        StudentLesson.lesson_id,
+        Lesson.title,
+        Course.id.label("course_id"),
+        Course.name.label("course_name"),
+        db.func.count(LessonQuiz.id).label("question_count")
+    ).join(
+        StudentLesson, StudentLesson.student_id == Student.id
+    ).join(
+        Lesson, Lesson.id == StudentLesson.lesson_id
+    ).join(
+        CourseModule, CourseModule.id == Lesson.module_id
+    ).join(
+        Course, Course.id == CourseModule.course_id
+    ).join(
+        LessonQuiz, LessonQuiz.lesson_id == Lesson.id
+    ).join(
+        Group, Group.course_id == Course.id
+    ).join(
+        StudentGroup, StudentGroup.group_id == Group.id
+    ).filter(
+        Group.teacher_id == teacher.id,
+        Group.is_active == True,
+        StudentGroup.student_id == Student.id,
+        StudentGroup.is_active == True,
+        Student.is_active == True,
+        StudentLesson.lesson_id == Lesson.id,
+        Lesson.is_active == True,
+        CourseModule.is_active == True,
+        Course.is_active == True,
+        LessonQuiz.is_active == True
+    ).group_by(
+        Student.id, Student.full_name, StudentLesson.lesson_id, Lesson.title,
+        Course.id, Course.name
+    ).order_by(Student.full_name.asc(), StudentLesson.lesson_id.desc()).all()
+
+    return [
+        {
+            "student_id": student_id,
+            "student_name": full_name,
+            "lesson_id": lesson_id,
+            "lesson_title": lesson_title,
+            "course_id": course_id,
+            "course_name": course_name,
+            "question_count": int(question_count or 0)
+        }
+        for student_id, full_name, lesson_id, lesson_title, course_id, course_name, question_count in rows
+    ]
+
+
 @router.post("/quiz/unlock")
 def unlock_student_quiz(
     student_id: int = Body(...),
