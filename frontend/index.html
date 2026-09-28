@@ -3425,6 +3425,57 @@
         .test-mode-text{font-size:13px;font-weight:950;color:#9d174d;letter-spacing:.04em;padding-right:70px}
         @keyframes testModeMarquee{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
         @media (max-width:700px){html,body{max-width:100%;overflow-x:hidden}.test-mode-banner{width:100%;max-width:100%}.test-mode-text{font-size:12px}}
+
+        /* GRID MENU — aligned with UZ + premium glow */
+        .nav-actions { align-items: center; }
+        .mobile-menu {
+            transform: translateY(7px);
+        }
+        .language-custom {
+            transform: translateY(0);
+        }
+        .language-custom-btn {
+            position: relative;
+        }
+        .language-custom-btn::before {
+            content: "🌐";
+            display: inline-block;
+            font-size: 16px;
+            line-height: 1;
+            margin-right: 6px;
+            filter: drop-shadow(0 0 5px rgba(34,197,94,.28));
+        }
+
+        /* CERTIFICATE — keep all content comfortably inside the paper */
+        .certificate-mockup {
+            box-sizing: border-box;
+            min-height: 0;
+            height: auto;
+            padding: 26px 38px 24px;
+        }
+        .certificate-logo { width: 108px; height: 52px; margin-bottom: 2px; }
+        .certificate-title { font-size: clamp(28px, 3vw, 40px); margin-bottom: 10px; }
+        .certificate-fields { gap: 5px; margin-bottom: 8px; width: min(590px, 96%); }
+        .certificate-field { gap: 16px; padding: 5px 0; font-size: 12px; }
+        .certificate-field-sample { min-width: 150px; }
+        .certificate-complete { font-size: 12px; margin: 5px 0 7px; }
+        .certificate-verification-row { gap: 14px; }
+        .certificate-qr { width: 74px; height: 74px; }
+        .certificate-qr-note { font-size: 10px; max-width: 190px; }
+
+        @media (max-width: 650px) {
+            .mobile-menu { transform: translateY(6px); }
+            .certificate-mockup { padding: 20px 14px 18px; }
+            .certificate-logo { width: 92px; height: 44px; }
+            .certificate-title { font-size: 27px; margin-bottom: 8px; }
+            .certificate-fields { width: 98%; gap: 4px; }
+            .certificate-field { font-size: 10px; gap: 8px; padding: 4px 0; }
+            .certificate-field-sample { min-width: 90px; }
+            .certificate-complete { font-size: 11px; }
+            .certificate-qr { width: 64px; height: 64px; }
+            .certificate-qr-note { font-size: 9px; max-width: 155px; }
+        }
+
 </style>
 <script>
 function initLanguageSelector(){
