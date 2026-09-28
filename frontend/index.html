@@ -237,71 +237,89 @@
 
         .mobile-menu {
             display: none;
-            width: 46px;
-            height: 46px;
-            border: 1px solid rgba(17,24,39,.10);
-            background: rgba(255,255,255,.96);
-            color: #111827;
+            width: 48px;
+            height: 48px;
+            border: none;
+            background: #191919;
+            color: #fff;
             cursor: pointer;
             line-height: 1;
             padding: 0;
-            border-radius: 13px;
+            border-radius: 20px;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 20px rgba(15,23,42,.08);
-            transition: .2s ease;
+            box-shadow: 0 10px 24px rgba(15,23,42,.12);
+            transition: transform .25s ease, background .25s ease, box-shadow .25s ease;
+            grid-template-columns: repeat(2, 9px);
+            grid-template-rows: repeat(2, 9px);
+            gap: 5px;
         }
 
         .mobile-menu:hover {
-            background: #f7faf8;
-            border-color: rgba(22,163,74,.28);
-            box-shadow: 0 10px 24px rgba(22,163,74,.12);
-            transform: translateY(-1px);
+            background: #242424;
+            box-shadow: 0 12px 28px rgba(15,23,42,.16);
+            transform: scale(1.06);
         }
 
         .mobile-menu:active {
             transform: scale(.96);
         }
 
-        .mobile-menu svg {
-            width: 22px;
-            height: 22px;
+        .grid-menu-dot {
+            width: 9px;
+            height: 9px;
             display: block;
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 2;
-            stroke-linecap: round;
+            background: #fff;
+            border-radius: 3.5px;
         }
 
         .language-custom-btn {
-            min-width: 74px;
-            height: 46px;
-            gap: 7px;
-            padding: 0 11px;
-            border: 1px solid rgba(17,24,39,.10);
-            border-radius: 13px;
-            background: rgba(255,255,255,.96);
-            color: #111827;
-            box-shadow: 0 8px 20px rgba(15,23,42,.06);
+            min-width: 68px;
+            width: 68px;
+            height: 52px;
+            gap: 0;
+            padding: 0;
+            border: none;
+            border-radius: 20px;
+            background: #191919;
+            color: #fff;
+            box-shadow: 0 10px 24px rgba(15,23,42,.12);
+            transition: transform .25s ease, background .25s ease, box-shadow .25s ease;
+            justify-content: center;
         }
 
         .language-custom-btn:hover,
         .language-custom.open .language-custom-btn {
-            border-color: rgba(22,163,74,.34);
-            box-shadow: 0 10px 24px rgba(22,163,74,.12);
-            background: #fff;
+            border-color: transparent;
+            background: #242424;
+            box-shadow: 0 12px 28px rgba(15,23,42,.16);
+            transform: scale(1.04);
         }
 
-        .language-globe {
-            width: 18px;
-            height: 18px;
-            flex: 0 0 18px;
+        .language-switch-icon {
+            width: 34px;
+            height: 34px;
             display: block;
             fill: none;
             stroke: currentColor;
-            stroke-width: 1.7;
+            stroke-width: 3;
             stroke-linecap: round;
             stroke-linejoin: round;
+            transition: transform .35s ease;
+        }
+
+        .language-custom-btn:hover .language-switch-icon,
+        .language-custom.open .language-switch-icon {
+            transform: rotate(10deg);
+        }
+
+        .language-custom-label {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
         }
 
         .language-custom-label {
@@ -3545,13 +3563,15 @@
                     <option value="en">EN</option>
                 </select>
                 <button type="button" class="language-custom-btn" id="languageCustomBtn" aria-expanded="false" aria-label="Tilni o‘zgartirish">
-                    <svg class="language-globe" viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="12" cy="12" r="9"></circle>
-                        <path d="M3 12h18"></path>
-                        <path d="M12 3c2.4 2.5 3.6 5.5 3.6 9s-1.2 6.5-3.6 9c-2.4-2.5-3.6-5.5-3.6-9S9.6 5.5 12 3Z"></path>
+                    <svg class="language-switch-icon" viewBox="0 0 64 64" aria-hidden="true">
+                        <rect x="9" y="7" width="21" height="21" rx="6"></rect>
+                        <rect x="34" y="36" width="21" height="21" rx="6"></rect>
+                        <path d="M36 10c9 1 15 7 18 16"></path>
+                        <path d="M28 54c-9-1-15-7-18-16"></path>
+                        <path d="M49 25l5 1-2-5"></path>
+                        <path d="M15 39l-5-1 2 5"></path>
                     </svg>
                     <span class="language-custom-label" id="languageCustomLabel">UZ</span>
-                    <span class="language-chevron">⌄</span>
                 </button>
                 <div class="language-custom-menu" id="languageCustomMenu">
                     <button type="button" data-language="uz">🇺🇿 O‘zbek</button>
@@ -3562,11 +3582,10 @@
 
 
             <button class="mobile-menu" id="mobileMenuBtn" onclick="toggleMobileMenu()" aria-label="Bo‘limlar" title="Bo‘limlar">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M4 7h16"></path>
-                    <path d="M4 12h16"></path>
-                    <path d="M4 17h16"></path>
-                </svg>
+                <span class="grid-menu-dot"></span>
+                <span class="grid-menu-dot"></span>
+                <span class="grid-menu-dot"></span>
+                <span class="grid-menu-dot"></span>
             </button>
 
             <nav class="mobile-nav-dropdown" id="mobileNavDropdown">
