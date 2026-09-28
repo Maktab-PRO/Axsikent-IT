@@ -3375,8 +3375,7 @@
  const root=document.getElementById("languageCustom"),btn=document.getElementById("languageCustomBtn"),menu=document.getElementById("languageCustomMenu"),select=document.getElementById("languageSelect"),label=document.getElementById("languageCustomLabel");
  if(!root||!btn||!menu||!select||!label)return;
  const setLanguage=(lang)=>{ select.value=lang; label.textContent=lang.toUpperCase(); menu.querySelectorAll("[data-language]").forEach(x=>x.classList.toggle("active",x.dataset.language===lang)); select.dispatchEvent(new Event("change",{bubbles:true})); root.classList.remove("open"); btn.setAttribute("aria-expanded","false"); };
- const icon=btn.querySelector(".language-switch-icon");
- btn.addEventListener("click",(e)=>{e.stopPropagation();const open=!root.classList.contains("open");if(icon){icon.classList.remove("is-spinning");void icon.offsetWidth;icon.classList.add("is-spinning");}setTimeout(()=>{if(icon)icon.classList.remove("is-spinning");root.classList.toggle("open",open);btn.setAttribute("aria-expanded",String(open));},420);});
+ btn.addEventListener("click",(e)=>{e.stopPropagation();const open=!root.classList.contains("open");root.classList.toggle("open",open);btn.setAttribute("aria-expanded",String(open));});
  menu.querySelectorAll("[data-language]").forEach(x=>x.addEventListener("click",()=>setLanguage(x.dataset.language)));
  document.addEventListener("click",(e)=>{if(!root.contains(e.target)){root.classList.remove("open");btn.setAttribute("aria-expanded","false");}});
  setLanguage(select.value||"uz");
