@@ -435,6 +435,40 @@ def get_teacher_assigned_quizzes(
     ]
 
 
+@router.delete("/assigned-quizzes")
+def delete_teacher_assigned_quizzes(
+    lesson_ids: list[int] = Body(...),
+    credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer()),
+    db: Session = Depends(get_db)
+):
+    token_data = decode_token(credentials.credentials)
+    if not token_data or token_data.get("role") != "teacher":
+        raise HTTPException(status_code=403, detail="Faqat o‘qituvchi akkaunti uchun ruxsat berilgan")
+    teacher_id = token_data["user_id"]
+    teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id, Teacher.is_active == True, Teacher.approved_by_admin == True
+    ).first()
+    if not teacher:
+        raise HTTPException(status_code=401, detail="O‘qituvchi sessiyasi noto‘g‘ri yoki akkaunt faol emas")
+    ids = sorted(set(int(x) for x in lesson_ids if int(x) > 0))
+    if not ids:
+        raise HTTPException(status_code=400, detail="O‘chirish uchun test tanlanmagan")
+    allowed = db.query(Lesson.id).join(CourseModule, CourseModule.id == Lesson.module_id).join(
+        Course, Course.id == CourseModule.course_id
+    ).join(Group, Group.course_id == Course.id).filter(
+        Lesson.id.in_(ids), Group.teacher_id == teacher.id, Group.is_active == True,
+        CourseModule.is_active == True, Course.is_active == True, Lesson.is_active == True
+    ).distinct().all()
+    allowed_ids = {row[0] for row in allowed}
+    if not allowed_ids:
+        raise HTTPException(status_code=403, detail="Tanlangan testlar sizga biriktirilmagan")
+    deleted = db.query(LessonQuiz).filter(LessonQuiz.lesson_id.in_(allowed_ids)).update(
+        {LessonQuiz.is_active: False}, synchronize_session=False
+    )
+    db.commit()
+    return {"message": "Tanlangan testlar o‘chirildi", "deleted_questions": int(deleted or 0), "lesson_ids": sorted(allowed_ids)}
+
+
 @router.post("/quiz/unlock")
 def unlock_student_quiz(
     student_id: int = Body(...),
