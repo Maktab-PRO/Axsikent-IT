@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from passlib.context import CryptContext
 
 from app.db import get_db
@@ -389,7 +390,7 @@ def get_teacher_assigned_quizzes(
         Lesson.title,
         Course.id.label("course_id"),
         Course.name.label("course_name"),
-        db.func.count(LessonQuiz.id).label("question_count")
+        func.count(LessonQuiz.id).label("question_count")
     ).join(
         StudentLesson, StudentLesson.student_id == Student.id
     ).join(
