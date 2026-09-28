@@ -131,3 +131,13 @@
 .test-mode-text{font-size:13px;font-weight:950;color:#9d174d;letter-spacing:.04em;padding-right:70px}
 @keyframes testModeMarquee{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
 @media(max-width:760px){html,body{max-width:100%;overflow-x:hidden}.test-mode-banner{width:100%;max-width:100%}}
+
+/* ASSIGNED STUDENT TESTS */
+.assigned-tests-list{display:grid;gap:10px}
+.assigned-test-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;border:1px solid rgba(34,197,94,.14);border-radius:14px;background:rgba(255,255,255,.025)}
+.assigned-test-main{min-width:0;display:flex;flex-direction:column;gap:5px}
+.assigned-test-main strong{color:#f8fafc;font-size:14px}
+.assigned-test-main small,.assigned-test-meta small{color:#94a3b8;font-size:12px}
+.assigned-test-meta{display:flex;align-items:flex-end;flex-direction:column;gap:5px;white-space:nowrap}
+.assigned-test-meta span{color:#86efac;font-size:12px;font-weight:800}
+@media(max-width:650px){.assigned-test-row{align-items:flex-start;flex-direction:column}.assigned-test-meta{align-items:flex-start}}
