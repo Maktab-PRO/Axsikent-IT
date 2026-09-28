@@ -287,8 +287,12 @@
             background: transparent;
             color: #111827;
             box-shadow: none;
-            transition: transform .2s ease;
+            transition: transform .2s ease, color .2s ease;
             justify-content: center;
+            position: relative;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: .3px;
         }
 
         .language-custom-btn:active,
@@ -297,6 +301,8 @@
             border-color: transparent;
             background: transparent;
             box-shadow: none;
+            color: #16a34a;
+            transform: scale(1.05);
         }
 
         .language-switch-icon {
@@ -316,16 +322,14 @@
         }
 
         .language-custom-label {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
-            clip: rect(0 0 0 0);
+            position: static;
+            width: auto;
+            height: auto;
+            overflow: visible;
+            clip: auto;
             white-space: nowrap;
-        }
-
-        .language-custom-label {
-            font-size: 12px;
+            display: inline-block;
+            font-size: 13px;
             font-weight: 900;
             letter-spacing: .3px;
         }
@@ -3566,14 +3570,7 @@
                 </select>
                 <button type="button" class="language-custom-btn" id="languageCustomBtn" aria-expanded="false" aria-label="Tilni o‘zgartirish">
                     <svg class="language-switch-icon" viewBox="0 0 64 64" aria-hidden="true">
-                        <path d="M8 12h25"></path>
-                        <path d="M20.5 12c-2.2 12-7.2 22-13.5 28"></path>
-                        <path d="M13 27c4.5 0 9.2 1.1 13.6 3.4"></path>
-                        <path d="M39 14h16"></path>
-                        <path d="M47 14c0 14 4.5 24 11 31"></path>
-                        <path d="M39 28h17"></path>
-                        <path d="M37 47h22"></path>
-                        <text x="11" y="56" font-size="18" font-weight="900" font-family="Arial, sans-serif" fill="currentColor" stroke="none">文</text>
+
                     </svg>
                     <span class="language-custom-label" id="languageCustomLabel">UZ</span>
                 </button>
