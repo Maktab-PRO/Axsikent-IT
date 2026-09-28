@@ -92,15 +92,28 @@ $("unlockQuizBtn").addEventListener("click",async()=>{
 });
 $("unlockAiBtn")?.addEventListener("click",async()=>{const btn=$("unlockAiBtn"),msg=$("unlockAiMessage"),studentId=Number($("aiUnlockStudent")?.value);if(!studentId){if(msg)msg.textContent="Avval o‘quvchini tanlang.";return}if(btn)btn.disabled=true;if(msg)msg.textContent="";try{await api("/teachers/ai-homework/unlock",{method:"POST",body:JSON.stringify({student_id:studentId})});if(msg)msg.textContent="AKHSIKENT AI qayta ochildi. 3 ta xato hisoblagichi 0 ga tushirildi."; }catch(e){if(msg)msg.textContent=e.message}finally{if(btn)btn.disabled=false}});
 async function loadAssignedTests(){
-  const box=$("assignedTestsList");
-  if(!box)return;
+  const box=$("assignedTestsList"); if(!box)return;
   box.innerHTML='<div class="empty-state"><span>◇</span><strong>Testlar yuklanmoqda...</strong></div>';
   try{
     const rows=await api("/teachers/assigned-quizzes");
     if(!Array.isArray(rows)||!rows.length){box.innerHTML='<div class="empty-state"><span>◇</span><strong>Hozircha o‘quvchilarga biriktirilgan test yo‘q.</strong></div>';return;}
-    box.innerHTML=rows.map(r=>'<div class="assigned-test-row"><div class="assigned-test-main"><strong>'+esc(r.lesson_title||"Test")+'</strong><small>'+esc(r.student_name||"")+' · '+esc(r.course_name||"")+'</small></div><div class="assigned-test-meta"><span>'+Number(r.question_count||0)+' ta savol</span><small>O‘quvchi #'+Number(r.student_id||0)+'</small></div></div>').join("");
+    box.innerHTML=rows.map(r=>'<label class="assigned-test-row"><input class="assigned-test-check" type="checkbox" value="'+Number(r.lesson_id)+'" data-test-name="'+esc(r.lesson_title||"Test")+'"><div class="assigned-test-main"><strong>'+esc(r.lesson_title||"Test")+'</strong><small>'+esc(r.student_name||"")+' · '+esc(r.course_name||"")+'</small></div><div class="assigned-test-meta"><span>'+Number(r.question_count||0)+' ta savol</span><small>O‘quvchi #'+Number(r.student_id||0)+'</small></div></label>').join("");
+    box.querySelectorAll(".assigned-test-check").forEach(x=>x.addEventListener("change",()=>{const all=$("selectAllAssignedTests");if(all)all.checked=box.querySelectorAll(".assigned-test-check").length===box.querySelectorAll(".assigned-test-check:checked").length;}));
+    const all=$("selectAllAssignedTests"); if(all)all.checked=false;
   }catch(e){box.innerHTML='<div class="empty-state"><span>!</span><strong>'+esc(e.message||"Testlar yuklanmadi")+'</strong></div>';}
 }
+async function deleteSelectedAssignedTests(){
+  const checks=[...document.querySelectorAll(".assigned-test-check:checked")];
+  const lessonIds=[...new Set(checks.map(x=>Number(x.value)).filter(Boolean))];
+  if(!lessonIds.length){alert("Avval o‘chiriladigan testlarni belgilang.");return;}
+  if(!confirm("Tanlangan testlar o‘chirilsinmi? O‘chirilgan testlar o‘quvchi panelida ham ko‘rinmaydi."))return;
+  const btn=$("deleteAssignedTestsBtn"); if(btn)btn.disabled=true;
+  try{await api("/teachers/assigned-quizzes",{method:"DELETE",body:JSON.stringify(lessonIds)}); await loadAssignedTests();}
+  catch(e){alert(e.message)} finally{if(btn)btn.disabled=false}
+}
+$("refreshAssignedTestsBtn")?.addEventListener("click",loadAssignedTests);
+$("deleteAssignedTestsBtn")?.addEventListener("click",deleteSelectedAssignedTests);
+$("selectAllAssignedTests")?.addEventListener("change",e=>document.querySelectorAll(".assigned-test-check").forEach(x=>x.checked=e.target.checked));
 
 $("addQuizBtn").addEventListener("click",async()=>{const btn=$("addQuizBtn");if(btn)btn.disabled=true;try{const q=new URLSearchParams({lesson_id:$("quizLessonId").value,question:$("quizQuestion").value,option_a:$("quizA").value,option_b:$("quizB").value,option_c:$("quizC").value,option_d:$("quizD").value,correct_answer:$("quizCorrect").value});await api("/teachers/quiz?"+q.toString(),{method:"POST"});$("quizMessage").textContent="Quiz saqlandi."}catch(e){$("quizMessage").textContent=e.message}finally{if(btn)btn.disabled=false}});
 $("assignLessonBtn").addEventListener("click",async()=>{const btn=$("assignLessonBtn");const ids=[...document.querySelectorAll('input[name="lessonStudent"]:checked')].map(x=>Number(x.value));const courseId=Number($("lessonCourse").value);if(!ids.length){$("lessonMessage").textContent="Avval kamida bitta o‘quvchini tanlang.";return}if(!courseId){$("lessonMessage").textContent="Avval fan / kursni tanlang.";return}if(btn)btn.disabled=true;$("lessonMessage").textContent="";let ok=0,lastError="";try{for(const studentId of ids){try{await api("/teachers/assign-lesson",{method:"POST",body:JSON.stringify({student_id:studentId,course_id:courseId,title:$("lessonTitle").value,video_url:$("lessonLink").value||null})});ok++}catch(e){lastError=e.message}}$("lessonMessage").textContent=ok===ids.length?`${ok} ta o‘quvchiga dars biriktirildi.`:`${ok} ta o‘quvchiga dars biriktirildi.${lastError?" "+lastError:""}`}finally{if(btn)btn.disabled=false}});
