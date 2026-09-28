@@ -3623,6 +3623,128 @@ document.addEventListener("DOMContentLoaded", initLanguageSelector);
             .course-icon { width: 72px; height: 72px; min-width: 72px; border-radius: 20px; margin-bottom: 18px; }
             .course-icon svg { width: 42px; height: 42px; }
         }
+
+/* FINAL NAV + CERTIFICATE FIT */
+.mobile-menu {
+    transform: translateY(8px);
+}
+.mobile-menu:hover {
+    transform: translateY(8px) scale(1.06);
+}
+.mobile-menu:active {
+    transform: translateY(8px) scale(.96);
+}
+.language-custom-btn {
+    transform: none !important;
+}
+.language-custom-btn:hover,
+.language-custom.open .language-custom-btn,
+.language-custom-btn:active {
+    transform: none !important;
+}
+.language-custom-btn::before {
+    content: "🌐";
+    display: inline-block;
+    font-size: 16px;
+    line-height: 1;
+    margin-right: 5px;
+    filter: drop-shadow(0 0 5px rgba(34,197,94,.28));
+}
+.certificate-mockup {
+    box-sizing: border-box;
+    min-height: 0;
+    height: auto;
+    padding: 22px 32px 20px;
+}
+.certificate-logo {
+    width: 96px;
+    height: 46px;
+    margin-bottom: 1px;
+}
+.certificate-title {
+    font-size: clamp(25px, 2.8vw, 36px);
+    margin-bottom: 7px;
+}
+.certificate-fields {
+    gap: 3px;
+    margin-bottom: 5px;
+    width: min(570px, 96%);
+}
+.certificate-field {
+    gap: 12px;
+    padding: 4px 0;
+    font-size: 11px;
+}
+.certificate-field-sample {
+    min-width: 125px;
+    height: 12px;
+}
+.certificate-complete {
+    font-size: 11px;
+    margin: 4px 0 5px;
+}
+.certificate-verification-row {
+    gap: 10px;
+}
+.certificate-qr {
+    width: 58px;
+    height: 58px;
+    padding: 3px;
+}
+.certificate-qr-note {
+    font-size: 9px;
+    max-width: 155px;
+}
+@media (max-width: 650px) {
+    .mobile-menu {
+        transform: translateY(7px);
+    }
+    .mobile-menu:hover,
+    .mobile-menu:active {
+        transform: translateY(7px);
+    }
+    .certificate-mockup {
+        padding: 16px 12px 14px;
+    }
+    .certificate-logo {
+        width: 82px;
+        height: 40px;
+    }
+    .certificate-title {
+        font-size: 24px;
+        margin-bottom: 6px;
+        letter-spacing: 2px;
+    }
+    .certificate-fields {
+        width: 98%;
+        gap: 2px;
+    }
+    .certificate-field {
+        font-size: 9px;
+        gap: 7px;
+        padding: 3px 0;
+    }
+    .certificate-field-sample {
+        min-width: 82px;
+        height: 9px;
+    }
+    .certificate-complete {
+        font-size: 9px;
+        margin: 3px 0 4px;
+    }
+    .certificate-verification-row {
+        gap: 7px;
+    }
+    .certificate-qr {
+        width: 48px;
+        height: 48px;
+    }
+    .certificate-qr-note {
+        font-size: 8px;
+        max-width: 130px;
+    }
+}
+
 </style>
 </head>
 
