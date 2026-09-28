@@ -3375,7 +3375,8 @@
  const root=document.getElementById("languageCustom"),btn=document.getElementById("languageCustomBtn"),menu=document.getElementById("languageCustomMenu"),select=document.getElementById("languageSelect"),label=document.getElementById("languageCustomLabel");
  if(!root||!btn||!menu||!select||!label)return;
  const setLanguage=(lang)=>{ select.value=lang; label.textContent=lang.toUpperCase(); menu.querySelectorAll("[data-language]").forEach(x=>x.classList.toggle("active",x.dataset.language===lang)); select.dispatchEvent(new Event("change",{bubbles:true})); root.classList.remove("open"); btn.setAttribute("aria-expanded","false"); };
- btn.addEventListener("click",(e)=>{e.stopPropagation();e.stopImmediatePropagation();const open=!root.classList.contains("open");btn.classList.remove("is-spinning");void btn.offsetWidth;btn.classList.add("is-spinning");setTimeout(()=>{btn.classList.remove("is-spinning");root.classList.toggle("open",open);btn.setAttribute("aria-expanded",String(open));},420);});
+ const icon=btn.querySelector(".language-switch-icon");
+ btn.addEventListener("click",(e)=>{e.stopPropagation();const open=!root.classList.contains("open");if(icon){icon.classList.remove("is-spinning");void icon.offsetWidth;icon.classList.add("is-spinning");}setTimeout(()=>{if(icon)icon.classList.remove("is-spinning");root.classList.toggle("open",open);btn.setAttribute("aria-expanded",String(open));},420);});
  menu.querySelectorAll("[data-language]").forEach(x=>x.addEventListener("click",()=>setLanguage(x.dataset.language)));
  document.addEventListener("click",(e)=>{if(!root.contains(e.target)){root.classList.remove("open");btn.setAttribute("aria-expanded","false");}});
  setLanguage(select.value||"uz");
@@ -7152,43 +7153,10 @@ document
 
     const languageCustom = document.getElementById("languageCustom");
     const languageCustomBtn = document.getElementById("languageCustomBtn");
-    const languageCustomMenu = document.getElementById("languageCustomMenu");
     const languageCustomLabel = document.getElementById("languageCustomLabel");
 
     function syncLanguageCustom(language) {
         if (languageCustomLabel) languageCustomLabel.textContent = String(language || "uz").toUpperCase();
-    }
-
-    if (languageCustomBtn && languageCustomMenu) {
-        languageCustomBtn.addEventListener("click", function(event) {
-            if (event.__languageClickHandled) return;
-            event.stopPropagation();
-            const open = !languageCustom.classList.contains("open");
-            languageCustomBtn.classList.remove("is-spinning");
-            void languageCustomBtn.offsetWidth;
-            languageCustomBtn.classList.add("is-spinning");
-            setTimeout(() => {
-                languageCustomBtn.classList.remove("is-spinning");
-                languageCustom.classList.toggle("open", open);
-                languageCustomBtn.setAttribute("aria-expanded", String(open));
-            }, 420);
-        });
-
-        languageCustomMenu.querySelectorAll("[data-language]").forEach(button => {
-            button.addEventListener("click", function() {
-                const lang = this.dataset.language;
-                languageSelect.value = lang;
-                setLanguage(lang);
-                syncLanguageCustom(lang);
-                languageCustom.classList.remove("open");
-                languageCustomBtn.setAttribute("aria-expanded", "false");
-            });
-        });
-
-        document.addEventListener("click", function() {
-            languageCustom.classList.remove("active");
-            languageCustomBtn.setAttribute("aria-expanded", "false");
-        });
     }
 
 
