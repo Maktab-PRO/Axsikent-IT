@@ -2453,3 +2453,9 @@ body.support-modal-open{overflow:hidden}
 .test-mode-text{font-size:13px;font-weight:950;color:#9d174d;letter-spacing:.04em;padding-right:70px}
 @keyframes testModeMarquee{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
 @media(max-width:760px){html,body{max-width:100%;overflow-x:hidden}.test-mode-banner{width:100%;max-width:100%}}
+
+/* Student welcome tags — requested spacing only */
+.welcome-tags{display:flex;align-items:center;flex-wrap:wrap;gap:14px;margin-top:18px}
+.welcome-tag{display:inline-flex;align-items:center;gap:7px}
+.welcome-tag-icon{margin-right:0}
+@media(max-width:700px){.welcome-tags{gap:12px}}
