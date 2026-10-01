@@ -171,6 +171,7 @@ def deactivate_student(
         )
 
     student.is_active = False
+    student.auth_version = (student.auth_version or 1) + 1
 
     db.commit()
 
@@ -202,6 +203,7 @@ def activate_student(
         )
 
     student.is_active = True
+    student.auth_version = (student.auth_version or 1) + 1
 
     db.commit()
 
