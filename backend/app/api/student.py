@@ -246,6 +246,7 @@ def login_student(
     ).first()
 
     if not user:
+        record_login_failure(student.phone)
         raise HTTPException(
             status_code=401,
             detail="Telefon raqam yoki parol noto'g'ri"
@@ -255,17 +256,20 @@ def login_student(
         student.password,
         user.password_hash
     ):
+        record_login_failure(student.phone)
         raise HTTPException(
             status_code=401,
             detail="Telefon raqam yoki parol noto'g'ri"
         )
 
     if not user.is_active:
+        record_login_failure(student.phone)
         raise HTTPException(
             status_code=403,
             detail="O'quvchi akkaunti faol emas"
         )
 
+    clear_login_failures(student.phone)
     access_token = create_access_token(
     {
         "sub": str(user.id),
