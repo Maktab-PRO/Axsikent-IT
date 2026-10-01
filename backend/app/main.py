@@ -169,13 +169,17 @@ with engine.connect() as connection:
         ALTER TABLE admins
         ADD COLUMN IF NOT EXISTS is_superadmin BOOLEAN NOT NULL DEFAULT FALSE
     """)
-    ALTER TABLE students
+
+    connection.exec_driver_sql("""
+        ALTER TABLE students
         ADD COLUMN IF NOT EXISTS auth_version INTEGER NOT NULL DEFAULT 1
     """)
+
     connection.exec_driver_sql("""
         ALTER TABLE teachers
         ADD COLUMN IF NOT EXISTS auth_version INTEGER NOT NULL DEFAULT 1
     """)
+
     connection.exec_driver_sql("""
         ALTER TABLE admins
         ADD COLUMN IF NOT EXISTS auth_version INTEGER NOT NULL DEFAULT 1
