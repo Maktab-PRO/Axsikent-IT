@@ -2,9 +2,10 @@ from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from app.core.config import settings
-from app.core.security import decode_token, require_admin
+from app.core.security import decode_token, require_admin, check_telegram_ai_rate_limit
 from app.models.student import Student
 from app.models.ai_telegram_submission import AITelegramSubmission
+from app.models.ai_homework_state import AIHomeworkState
 from app.db import get_db
 from openai import OpenAI
 import httpx
@@ -227,6 +228,18 @@ async def telegram_webhook(
         await send_telegram_message(str(chat_id), "Avval faol Student akkauntingizni Telegram bilan ulang.")
         return {"ok": True}
 
+    ai_state = db.query(AIHomeworkState).filter(
+        AIHomeworkState.student_id == student.id
+    ).first()
+    if ai_state and ai_state.is_blocked:
+        await send_telegram_message(
+            str(chat_id),
+            "🔒 AKHSIKENT AI bloklangan. Qayta ochish uchun o‘qituvchingizga murojaat qiling."
+        )
+        return {"ok": True}
+
+    check_telegram_ai_rate_limit(str(chat_id))
+
     try:
         client = OpenAI(api_key=settings.OPENAI_API_KEY)
         prompt = f"""
@@ -266,6 +279,28 @@ score 0-100. 80 va yuqori passed=true.
         mistakes = [str(item) for item in raw_mistakes if str(item).strip()]
         explanation = str(result.get("explanation", "") or "")
         recommendation = str(result.get("recommendation", "") or "")
+
+        ai_state = db.query(AIHomeworkState).filter(
+            AIHomeworkState.student_id == student.id
+        ).with_for_update().first()
+        if not ai_state:
+            ai_state = AIHomeworkState(
+                student_id=student.id,
+                consecutive_failures=0,
+                is_blocked=False
+            )
+            db.add(ai_state)
+            db.flush()
+
+        if score >= 80:
+            ai_state.consecutive_failures = 0
+            ai_state.is_blocked = False
+            ai_state.blocked_at = None
+        else:
+            ai_state.consecutive_failures = (ai_state.consecutive_failures or 0) + 1
+            if ai_state.consecutive_failures >= 3:
+                ai_state.is_blocked = True
+                ai_state.blocked_at = __import__("datetime").datetime.utcnow()
 
         ai_submission = AITelegramSubmission(
             student_id=student.id,
