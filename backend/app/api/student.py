@@ -21,7 +21,7 @@ from app.models.reward_rule import RewardRule
 from app.models.reward_transaction import RewardTransaction
 from app.models.achievement import Achievement, StudentAchievement
 from app.schemas.student import StudentCreate, StudentLogin, StudentResponse
-from app.core.security import create_access_token, decode_token, check_login_rate_limit, record_login_failure, clear_login_failures
+from app.core.security import create_access_token, decode_token, check_login_rate_limit, check_login_rate_limit, record_login_failure, clear_login_failures
 
 
 router = APIRouter(prefix="/students", tags=["Students"])
@@ -240,6 +240,7 @@ def login_student(
     student: StudentLogin,
     db: Session = Depends(get_db)
 ):
+    check_login_rate_limit(student.phone)
     user = db.query(Student).filter(
         Student.phone == student.phone
     ).first()
