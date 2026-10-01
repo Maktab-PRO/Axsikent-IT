@@ -4,6 +4,7 @@ from app.models.course import Course
 from app.models.course_module import CourseModule
 from app.models.admin import Admin
 from passlib.context import CryptContext
+from app.core.config import settings
 
 
 def seed_data():
@@ -15,20 +16,22 @@ def seed_data():
             deprecated="auto"
         )
 
-        admin = db.query(Admin).filter(
-            Admin.phone == "998901234569"
-        ).first()
+        admin_phone = getattr(settings, "BOOTSTRAP_ADMIN_PHONE", "").strip()
+        admin_password = getattr(settings, "BOOTSTRAP_ADMIN_PASSWORD", "")
+        admin_name = getattr(settings, "BOOTSTRAP_ADMIN_NAME", "Axsikent Admin").strip() or "Axsikent Admin"
 
-        if not admin:
-            admin = Admin(
-                full_name="Axsikent Admin",
-                phone="998901234569",
-                password_hash=pwd_context.hash("Admin12345"),
-                role="admin",
-                is_active=True
-            )
-            db.add(admin)
-            db.commit()
+        if admin_phone and admin_password:
+            admin = db.query(Admin).filter(Admin.phone == admin_phone).first()
+            if not admin:
+                admin = Admin(
+                    full_name=admin_name,
+                    phone=admin_phone,
+                    password_hash=pwd_context.hash(admin_password),
+                    role="admin",
+                    is_active=True
+                )
+                db.add(admin)
+                db.commit()
 
         if db.query(Category).count() > 0:
             return
