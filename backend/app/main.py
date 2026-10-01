@@ -4,6 +4,12 @@ import httpx
 
 from app.core.config import settings
 
+if not settings.SECRET_KEY or len(settings.SECRET_KEY) < 32:
+    raise RuntimeError("SECRET_KEY must be configured with at least 32 characters")
+
+if settings.TELEGRAM_BOT_TOKEN and not settings.TELEGRAM_WEBHOOK_SECRET:
+    raise RuntimeError("TELEGRAM_WEBHOOK_SECRET is required when Telegram bot is configured")
+
 from app.db import Base, engine
 
 # Barcha modellarni yuklaymiz
