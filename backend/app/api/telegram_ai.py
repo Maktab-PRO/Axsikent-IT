@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from app.core.config import settings
-from app.core.security import decode_token
+from app.core.security import decode_token, require_admin
 from app.models.student import Student
 from app.models.ai_telegram_submission import AITelegramSubmission
 from app.db import get_db
@@ -108,7 +108,7 @@ async def create_telegram_connect_link(
 
 
 @router.get("/status")
-async def telegram_status():
+async def telegram_status(admin = Depends(require_admin)):
     if not settings.TELEGRAM_BOT_TOKEN:
         return {"configured": False, "message": "TELEGRAM_BOT_TOKEN topilmadi"}
     url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/getWebhookInfo"
@@ -129,10 +129,12 @@ async def telegram_webhook(
     request: Request,
     db: Session = Depends(get_db)
 ):
-    if settings.TELEGRAM_WEBHOOK_SECRET:
-        secret = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
-        if secret != settings.TELEGRAM_WEBHOOK_SECRET:
-            raise HTTPException(status_code=403, detail="Webhook secret noto'g'ri")
+    if not settings.TELEGRAM_WEBHOOK_SECRET:
+        raise HTTPException(status_code=503, detail="Telegram webhook secret serverda sozlanmagan")
+
+    secret = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
+    if not secret or not hmac.compare_digest(secret, settings.TELEGRAM_WEBHOOK_SECRET):
+        raise HTTPException(status_code=403, detail="Webhook secret noto'g'ri")
 
     update = await request.json()
     message = update.get("message") or {}
