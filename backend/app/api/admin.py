@@ -13,6 +13,9 @@ from app.core.security import (
     check_login_rate_limit,
     record_login_failure,
     clear_login_failures,
+    check_login_rate_limit,
+    record_login_failure,
+    clear_login_failures,
     require_superadmin
 )
 from app.models.admin import Admin
@@ -81,6 +84,7 @@ def login_admin(
     ).first()
 
     if not user:
+        record_login_failure(admin.phone)
         raise HTTPException(
             status_code=401,
             detail="Telefon raqam yoki parol noto'g'ri"
@@ -102,11 +106,13 @@ def login_admin(
         admin.password,
         user.password_hash
     ):
+        record_login_failure(admin.phone)
         raise HTTPException(
             status_code=401,
             detail="Telefon raqam yoki parol noto'g'ri"
         )
 
+    clear_login_failures(admin.phone)
     access_token = create_access_token(
         {
             "sub": str(user.id),
