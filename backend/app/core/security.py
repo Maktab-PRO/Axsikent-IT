@@ -5,7 +5,9 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
-from app.db import get_db
+from app.db import get_db, SessionLocal
+from app.models.student import Student
+from app.models.teacher import Teacher
 from app.core.config import settings
 from app.models.admin import Admin
 
@@ -35,6 +37,10 @@ def create_access_token(data: dict):
         "exp": expire
     })
 
+    # Session revocation marker. Tokens without auth version are rejected.
+    if "av" not in to_encode:
+        raise ValueError("auth_version is required for access tokens")
+
     return jwt.encode(
         to_encode,
         settings.SECRET_KEY,
@@ -56,13 +62,36 @@ def decode_token(token: str):
 
         user_id = payload.get("sub")
         role = payload.get("role")
+        auth_version = payload.get("av")
 
-        if user_id is None:
+        if user_id is None or role not in {"student", "teacher", "admin"} or auth_version is None:
             return None
 
+        user_id = int(user_id)
+        auth_version = int(auth_version)
+
+        db = SessionLocal()
+        try:
+            if role == "student":
+                user = db.query(Student).filter(Student.id == user_id, Student.is_active == True).first()
+            elif role == "teacher":
+                user = db.query(Teacher).filter(
+                    Teacher.id == user_id,
+                    Teacher.is_active == True,
+                    Teacher.approved_by_admin == True
+                ).first()
+            else:
+                user = db.query(Admin).filter(Admin.id == user_id, Admin.is_active == True).first()
+
+            if not user or int(user.auth_version or 1) != auth_version:
+                return None
+        finally:
+            db.close()
+
         return {
-            "user_id": int(user_id),
-            "role": role
+            "user_id": user_id,
+            "role": role,
+            "auth_version": auth_version
         }
 
     except (JWTError, ValueError, TypeError):
