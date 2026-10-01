@@ -107,7 +107,7 @@ def login_teacher(
         {
             "sub": str(user.id),
             "role": "teacher",
-        "av": int(user.auth_version or 1)
+            "av": int(user.auth_version or 1)
         }
     )
     return {
