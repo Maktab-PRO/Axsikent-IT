@@ -107,7 +107,8 @@ def login_admin(
     access_token = create_access_token(
         {
             "sub": str(user.id),
-            "role": user.role
+            "role": user.role,
+            "av": int(user.auth_version or 1)
         }
     )
 
