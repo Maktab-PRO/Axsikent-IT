@@ -109,7 +109,7 @@ def login_admin(
         admin.password,
         user.password_hash
     ):
-        record_login_failure(admin.phone)
+        record_login_failure(phone)
         raise HTTPException(
             status_code=401,
             detail="Telefon raqam yoki parol noto'g'ri"
