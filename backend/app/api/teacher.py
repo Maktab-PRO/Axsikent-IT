@@ -24,7 +24,7 @@ from app.schemas.teacher import (
     TeacherLogin,
     TeacherResponse
 )
-from app.core.security import create_access_token, decode_token
+from app.core.security import create_access_token, decode_token, check_login_rate_limit, record_login_failure, clear_login_failures
 
 
 router = APIRouter(
