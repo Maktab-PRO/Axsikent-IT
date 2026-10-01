@@ -268,7 +268,8 @@ def login_student(
     access_token = create_access_token(
     {
         "sub": str(user.id),
-        "role": "student"
+        "role": "student",
+        "av": int(user.auth_version or 1)
     }
 )
 
@@ -278,7 +279,8 @@ def login_student(
     "token_type": "bearer",
     "student_id": user.id,
     "full_name": user.full_name,
-    "role": "student"
+    "role": "student",
+        "av": int(user.auth_version or 1)
 }
 
 @router.get("/me")
