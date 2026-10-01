@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.core.config import settings
-from app.core.security import decode_token
+from app.core.security import decode_token, check_ai_rate_limit
 from app.db import get_db
 from app.models.student import Student
 from app.models.homework import Homework, HomeworkSubmission
@@ -23,8 +23,8 @@ security = HTTPBearer()
 
 class HomeworkCheckRequest(BaseModel):
     homework_id: int | None = None
-    task: str
-    answer: str
+    task: str = Field(min_length=1, max_length=10000)
+    answer: str = Field(min_length=1, max_length=10000)
 
 
 def get_student(
@@ -70,6 +70,8 @@ def check_homework(
 
     if not task or not answer:
         raise HTTPException(status_code=400, detail="Topshiriq va javob bo'sh bo'lmasligi kerak")
+
+    check_ai_rate_limit(student.id)
 
     homework = None
     existing_submission = None
