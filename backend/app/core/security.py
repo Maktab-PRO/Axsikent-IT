@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta, timezone
+import time
+from threading import Lock
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -16,6 +18,38 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 security = HTTPBearer(auto_error=True)
+
+_LOGIN_LIMIT = 5
+_LOGIN_WINDOW_SECONDS = 10 * 60
+_login_failures = {}
+_login_lock = Lock()
+
+
+def check_login_rate_limit(identifier: str):
+    key = str(identifier or "").strip()
+    now = time.monotonic()
+    with _login_lock:
+        timestamps = [t for t in _login_failures.get(key, []) if now - t < _LOGIN_WINDOW_SECONDS]
+        if len(timestamps) >= _LOGIN_LIMIT:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Juda ko‘p login urinishlari. 10 daqiqadan keyin qayta urinib ko‘ring."
+            )
+        _login_failures[key] = timestamps
+
+
+def record_login_failure(identifier: str):
+    key = str(identifier or "").strip()
+    now = time.monotonic()
+    with _login_lock:
+        timestamps = [t for t in _login_failures.get(key, []) if now - t < _LOGIN_WINDOW_SECONDS]
+        timestamps.append(now)
+        _login_failures[key] = timestamps
+
+
+def clear_login_failures(identifier: str):
+    with _login_lock:
+        _login_failures.pop(str(identifier or "").strip(), None)
 
 
 def create_access_token(data: dict):
