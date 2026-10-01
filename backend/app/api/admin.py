@@ -79,24 +79,27 @@ def login_admin(
     if phone.startswith("+"):
         phone = phone[1:]
 
+    check_login_rate_limit(phone)
     user = db.query(Admin).filter(
         Admin.phone == phone
     ).first()
 
     if not user:
-        record_login_failure(admin.phone)
+        record_login_failure(phone)
         raise HTTPException(
             status_code=401,
             detail="Telefon raqam yoki parol noto'g'ri"
         )
 
     if not user.is_active:
+        record_login_failure(phone)
         raise HTTPException(
             status_code=403,
             detail="Administrator akkaunti faol emas"
         )
 
     if user.role != "admin":
+        record_login_failure(phone)
         raise HTTPException(
             status_code=403,
             detail="Bu akkaunt administrator emas"
@@ -112,7 +115,7 @@ def login_admin(
             detail="Telefon raqam yoki parol noto'g'ri"
         )
 
-    clear_login_failures(admin.phone)
+    clear_login_failures(phone)
     access_token = create_access_token(
         {
             "sub": str(user.id),
