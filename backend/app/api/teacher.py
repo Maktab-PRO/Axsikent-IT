@@ -24,7 +24,7 @@ from app.schemas.teacher import (
     TeacherLogin,
     TeacherResponse
 )
-from app.core.security import create_access_token, decode_token, check_login_rate_limit, record_login_failure, clear_login_failures
+from app.core.security import create_access_token, decode_token, check_login_rate_limit, record_login_failure, clear_login_failures, check_login_rate_limit, record_login_failure, clear_login_failures
 
 
 router = APIRouter(
@@ -78,6 +78,7 @@ def login_teacher(
     teacher: TeacherLogin,
     db: Session = Depends(get_db)
 ):
+    check_login_rate_limit(teacher.phone)
     user = db.query(Teacher).filter(
         Teacher.phone == teacher.phone,
         Teacher.is_active == True,
@@ -85,6 +86,7 @@ def login_teacher(
     ).first()
 
     if not user:
+        record_login_failure(teacher.phone)
         raise HTTPException(
             status_code=401,
             detail="Telefon raqam yoki parol noto'g'ri"
@@ -94,11 +96,13 @@ def login_teacher(
         teacher.password,
         user.password_hash
     ):
+        record_login_failure(teacher.phone)
         raise HTTPException(
             status_code=401,
             detail="Telefon raqam yoki parol noto'g'ri"
         )
 
+    clear_login_failures(teacher.phone)
     access_token = create_access_token(
         {
             "sub": str(user.id),
