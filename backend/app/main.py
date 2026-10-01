@@ -169,6 +169,18 @@ with engine.connect() as connection:
         ALTER TABLE admins
         ADD COLUMN IF NOT EXISTS is_superadmin BOOLEAN NOT NULL DEFAULT FALSE
     """)
+    ALTER TABLE students
+        ADD COLUMN IF NOT EXISTS auth_version INTEGER NOT NULL DEFAULT 1
+    """)
+    connection.exec_driver_sql("""
+        ALTER TABLE teachers
+        ADD COLUMN IF NOT EXISTS auth_version INTEGER NOT NULL DEFAULT 1
+    """)
+    connection.exec_driver_sql("""
+        ALTER TABLE admins
+        ADD COLUMN IF NOT EXISTS auth_version INTEGER NOT NULL DEFAULT 1
+    """)
+
 
     connection.exec_driver_sql("""
         ALTER TABLE teachers
@@ -178,12 +190,6 @@ with engine.connect() as connection:
     connection.exec_driver_sql("""
         ALTER TABLE teachers
         ADD COLUMN IF NOT EXISTS approved_by_admin BOOLEAN NOT NULL DEFAULT TRUE
-    """)
-
-    connection.exec_driver_sql("""
-        UPDATE admins
-        SET is_superadmin = TRUE
-        WHERE phone = '998901234569'
     """)
 
     connection.commit()
