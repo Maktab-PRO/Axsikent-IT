@@ -43,3 +43,9 @@ class Teacher(Base):
         default=True,
         nullable=False
     )
+
+    auth_version = Column(
+        Integer,
+        default=1,
+        nullable=False
+    )
