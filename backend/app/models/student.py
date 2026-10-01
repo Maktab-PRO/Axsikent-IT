@@ -34,6 +34,12 @@ class Student(Base):
         default=True
     )
 
+    auth_version = Column(
+        Integer,
+        default=1,
+        nullable=False
+    )
+
     telegram_chat_id = Column(
         String(64),
         unique=True,
