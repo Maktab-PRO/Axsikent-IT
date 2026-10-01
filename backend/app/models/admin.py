@@ -39,3 +39,9 @@ class Admin(Base):
         default=False,
         nullable=False
     )
+
+    auth_version = Column(
+        Integer,
+        default=1,
+        nullable=False
+    )
