@@ -52,6 +52,35 @@ def clear_login_failures(identifier: str):
         _login_failures.pop(str(identifier or "").strip(), None)
 
 
+_REQUEST_LIMITS = {}
+_request_limit_lock = Lock()
+
+
+def check_request_rate_limit(namespace: str, identifier: str, limit: int, window_seconds: int):
+    key = f"{namespace}:{str(identifier or '').strip()}"
+    now = time.monotonic()
+    with _request_limit_lock:
+        timestamps = [
+            t for t in _REQUEST_LIMITS.get(key, [])
+            if now - t < window_seconds
+        ]
+        if len(timestamps) >= limit:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Juda ko‘p so‘rov yuborildi. Birozdan keyin qayta urinib ko‘ring."
+            )
+        timestamps.append(now)
+        _REQUEST_LIMITS[key] = timestamps
+
+
+def check_ai_rate_limit(identifier: str):
+    check_request_rate_limit("ai", identifier, limit=10, window_seconds=10 * 60)
+
+
+def check_telegram_ai_rate_limit(identifier: str):
+    check_request_rate_limit("telegram-ai", identifier, limit=5, window_seconds=60)
+
+
 def create_access_token(data: dict):
     """
     JWT token yaratish.
