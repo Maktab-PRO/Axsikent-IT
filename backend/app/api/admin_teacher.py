@@ -264,6 +264,7 @@ def deactivate_teacher(
         )
 
     teacher.is_active = False
+    teacher.auth_version = (teacher.auth_version or 1) + 1
 
     db.commit()
 
@@ -301,6 +302,7 @@ def activate_teacher(
         )
 
     teacher.is_active = True
+    teacher.auth_version = (teacher.auth_version or 1) + 1
 
     db.commit()
 
