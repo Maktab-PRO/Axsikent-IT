@@ -65,6 +65,11 @@
                         <span>O‘quvchilar</span>
                     </button>
 
+                    <button class="nav-item" data-section="parents">
+                        <span class="nav-icon">👨‍👩‍👦</span>
+                        <span>Ota-onalar</span>
+                    </button>
+
                     <button class="nav-item" data-section="teachers">
                         <span class="nav-icon">◉</span>
                         <span>O‘qituvchilar</span>
@@ -647,6 +652,53 @@
     </div>
 
 </section>
+
+                <section class="page-section" id="section-parents">
+                    <div class="section-header">
+                        <div>
+                            <div class="section-eyebrow">TA’LIM / OILA</div>
+                            <h2>Ota-onalar</h2>
+                            <p>Ota-ona akkauntlarini yarating va farzandlarini xavfsiz bog‘lang.</p>
+                        </div>
+                        <div class="module-actions">
+                            <button class="panel-link" type="button" onclick="openParentCreate()">＋ Ota-ona qo‘shish</button>
+                            <button class="panel-link" type="button" onclick="loadParents()">↻ Yangilash</button>
+                        </div>
+                    </div>
+
+                    <div class="admin-panel parent-management-panel">
+                        <div class="panel-header">
+                            <div>
+                                <span class="panel-eyebrow">PARENT ACCESS</span>
+                                <h3>Ota-ona boshqaruvi</h3>
+                                <p>Login ma’lumotlari va farzand biriktirish shu yerda boshqariladi.</p>
+                            </div>
+                        </div>
+
+                        <form id="parentCreateForm" class="parent-create-form" hidden>
+                            <div class="parent-form-grid">
+                                <label><span>To‘liq ism</span><input id="parentCreateName" minlength="2" maxlength="150" required placeholder="Masalan: Aliyev Akmal"></label>
+                                <label><span>Telefon raqam</span><input id="parentCreatePhone" inputmode="tel" required placeholder="+998 90 123 45 67"></label>
+                                <label><span>Parol</span><input id="parentCreatePassword" type="password" minlength="8" maxlength="128" required placeholder="Kamida 8 ta belgi"></label>
+                            </div>
+                            <div class="parent-child-picker">
+                                <div class="parent-picker-title">Farzand(lar)ni tanlang</div>
+                                <div id="parentStudentOptions" class="parent-student-options">
+                                    <div class="module-loading"><div class="module-spinner"></div><span>O‘quvchilar yuklanmoqda...</span></div>
+                                </div>
+                            </div>
+                            <div class="parent-form-actions">
+                                <button type="submit" class="administrator-submit" id="parentCreateSubmit">Ota-onani yaratish</button>
+                                <button type="button" class="panel-link" onclick="closeParentCreate()">Bekor qilish</button>
+                            </div>
+                            <div id="parentCreateMessage" class="teacher-create-message" aria-live="polite"></div>
+                        </form>
+
+                        <div id="parentsContent">
+                            <div class="module-loading"><div class="module-spinner"></div><span>Ota-onalar yuklanmoqda...</span></div>
+                        </div>
+                    </div>
+                </section>
 
                 <section class="page-section" id="section-teachers"><div class="section-header"><div><div class="section-eyebrow">TA’LIM / O‘QITUVCHILAR</div><h2>O‘qituvchilar</h2><p>O‘qituvchilarni boshqaring va holatini nazorat qiling.</p></div><div class="module-actions"><input id="teacherSearch" class="students-search" type="search" placeholder="O‘qituvchi qidirish..." oninput="filterTeachers()"><button class="panel-link" onclick="openTeacherCreate()">＋ O‘qituvchi qo‘shish</button><button class="panel-link" onclick="loadTeachers()">↻ Yangilash</button></div></div><div class="admin-panel teacher-register-panel"><div class="panel-header"><div><span class="panel-eyebrow">ADMIN / TEACHER ACCESS</span><h3>Yangi o‘qituvchi ro‘yxatdan o‘tkazish</h3><p>Akkauntni administrator yaratadi. O‘qituvchi mustaqil ro‘yxatdan o‘ta olmaydi.</p></div></div><form id="teacherCreateForm" class="teacher-create-form" hidden><label><span>To‘liq ism-familiya</span><input id="teacherCreateName" required minlength="2" maxlength="150" placeholder="Masalan: Ali Valiyev"></label><label><span>Telefon raqam</span><input id="teacherCreatePhone" required inputmode="tel" placeholder="+998 90 123 45 67"></label><label><span>Parol</span><div class="premium-password-field"><input id="teacherCreatePassword" required minlength="8" type="password" placeholder="Kamida 8: harf + raqam + maxsus belgi"><button type="button" class="password-eye" data-password-target="teacherCreatePassword" aria-label="Parolni ko‘rsatish">◉</button></div></label><label><span>Parolni takrorlang</span><div class="premium-password-field"><input id="teacherCreatePassword2" required minlength="8" type="password" placeholder="Parolni qayta kiriting"><button type="button" class="password-eye" data-password-target="teacherCreatePassword2" aria-label="Parolni ko‘rsatish">◉</button></div></label><label><span>Tug‘ilgan sana</span><input id="teacherCreateBirthDate" required type="date"></label><label><span>Yo‘nalish / fan</span><select id="teacherCreateSubject" required><option value="">Yo‘nalishni tanlang</option><option>Sun’iy intellekt</option><option>Mental arifmetika</option><option>Ingliz tili</option><option>Frontend</option><option>Backend</option><option>Python</option><option>Grafik dizayn</option><option>Kompyuter savodxonligi</option><option>Scratch</option><option>IELTS</option><option>Boshqa</option></select></label><div class="teacher-create-actions"><button type="submit" class="administrator-submit">O‘qituvchini ro‘yxatdan o‘tkazish</button><button type="button" class="panel-link" onclick="closeTeacherCreate()">Bekor qilish</button></div><div id="teacherCreateMessage" class="teacher-create-message"></div></form><div id="teachersContent"><div class="module-loading"><div class="module-spinner"></div><span>O‘qituvchilar yuklanmoqda...</span></div></div></div></section>
 
