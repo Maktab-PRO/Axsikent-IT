@@ -52,10 +52,8 @@ button:disabled{opacity:.6;cursor:wait}
 @media(max-width:480px){.parent-gamification{gap:8px}.balance-tile{padding:12px}.balance-tile strong{font-size:22px}.activity-panel{padding:12px}.activity-chart{gap:5px}}
 
 /* Parent footer sections — match the main site's visual separation */
-.parent-footer-social{background:#111;color:#fff;padding:50px 0}
-.parent-footer-social-inner{width:min(1180px,92%);margin:0 auto;text-align:center}
-.parent-footer-social .section-kicker{color:#4ade80;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.parent-footer-social .parent-socials{justify-content:center;margin-top:14px}
+.parent-footer-social-inner{width:min(1180px,92%);margin:0 auto}
+.section-label{color:#16a34a;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
 .parent-footer-brand{
   background:transparent;
   width:100%;
