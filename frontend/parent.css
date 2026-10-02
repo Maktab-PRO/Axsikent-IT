@@ -50,3 +50,18 @@ button:disabled{opacity:.6;cursor:wait}
 .activity-bar{display:block;width:100%;min-height:3px;border-radius:5px 5px 2px 2px;background:linear-gradient(180deg,#5bd68b,#18864c)}
 .activity-day b{font-size:11px;color:var(--text,#fff)}.activity-caption{margin:10px 0 0;font-size:11px;color:var(--muted,#9ca3af)}
 @media(max-width:480px){.parent-gamification{gap:8px}.balance-tile{padding:12px}.balance-tile strong{font-size:22px}.activity-panel{padding:12px}.activity-chart{gap:5px}}
+
+/* Parent footer sections — match the main site's visual separation */
+.parent-footer-social{background:#111;color:#fff;padding:50px 0}
+.parent-footer-social-inner{width:min(1180px,92%);margin:0 auto;text-align:center}
+.parent-footer-social .section-kicker{color:#4ade80}
+.parent-footer-social .parent-socials{justify-content:center;margin-top:14px}
+.parent-footer-brand{
+  background:#173a28;
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+  margin-right:calc(50% - 50vw);
+  padding:30px 20px 26px;
+  margin-bottom:0;
+}
+.parent-footer-brand p{color:#d2e4d9}
