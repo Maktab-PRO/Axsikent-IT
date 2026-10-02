@@ -144,6 +144,11 @@ def decode_token(token: str):
                     Teacher.is_active == True,
                     Teacher.approved_by_admin == True
                 ).first()
+            elif role == "parent":
+                user = db.query(Parent).filter(
+                    Parent.id == user_id,
+                    Parent.is_active == True
+                ).first()
             else:
                 user = db.query(Admin).filter(Admin.id == user_id, Admin.is_active == True).first()
 
