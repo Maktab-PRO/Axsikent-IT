@@ -13,7 +13,7 @@ a{color:inherit}
 label{display:block;margin-top:17px;font-weight:800;font-size:13px;color:#294238}
 input{width:100%;margin-top:8px;padding:15px 16px;border-radius:13px;border:1px solid #cfdcd4;background:#fbfdfb;color:#15261c;outline:none;font:inherit;transition:.2s}
 input:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(31,143,85,.1)}
-button{font:inherit;cursor:pointer}
+button{font:inherit;cursor:pointer}.password-field{position:relative;margin-top:8px}.password-field input{margin-top:0;padding-right:52px}.password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:40px;height:40px;padding:0;border:0;border-radius:10px;background:transparent;color:#6c7b73;display:flex;align-items:center;justify-content:center}.password-toggle:hover{background:#eef5ef;color:var(--green-dark)}.password-toggle .eye-closed{display:none}.password-toggle.is-visible .eye-open{display:none}.password-toggle.is-visible .eye-closed{display:block}
 .primary-action{width:100%;margin-top:24px;padding:15px 17px;border:0;border-radius:13px;background:var(--green-dark);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px}
 .primary-action:hover{background:#176b40}
 button:disabled{opacity:.6;cursor:wait}
