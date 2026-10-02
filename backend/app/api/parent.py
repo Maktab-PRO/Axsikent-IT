@@ -20,6 +20,7 @@ from app.models.grade import Grade
 from app.models.homework import Homework, HomeworkSubmission
 from app.models.schedule import Schedule
 from app.models.lesson_progress import LessonProgress
+from app.models.gamification import StudentGamification
 
 router = APIRouter(prefix="/parents", tags=["Parents"])
 security = HTTPBearer()
@@ -124,6 +125,27 @@ def parent_dashboard(credentials: HTTPAuthorizationCredentials = Depends(securit
         if not comment and latest_grade:
             comment = latest_grade.comment
         next_lesson = _next_lesson(db, student.id)
+        gamification = db.query(StudentGamification).filter(StudentGamification.student_id == student.id).first()
+        # Store completed lesson counts by Tashkent calendar date for the latest 7 days.
+        today_local = datetime.now(ZoneInfo("Asia/Tashkent")).date()
+        activity_start = today_local - __import__("datetime").timedelta(days=6)
+        completed_rows = db.query(LessonProgress.completed_at).filter(
+            LessonProgress.student_id == student.id,
+            LessonProgress.is_completed == True,
+            LessonProgress.completed_at.isnot(None),
+        ).all()
+        activity_counts = {activity_start + __import__("datetime").timedelta(days=i): 0 for i in range(7)}
+        for (completed_at,) in completed_rows:
+            stamp = completed_at
+            if stamp.tzinfo is None:
+                stamp = stamp.replace(tzinfo=timezone.utc)
+            local_day = stamp.astimezone(ZoneInfo("Asia/Tashkent")).date()
+            if local_day in activity_counts:
+                activity_counts[local_day] += 1
+        daily_activity = [
+            {"date": day.isoformat(), "weekday": ["Du", "Se", "Cho", "Pay", "Ju", "Sha", "Ya"][day.weekday()], "completed_lessons": activity_counts[day]}
+            for day in sorted(activity_counts)
+        ]
         courses = []
         for enrollment in active_courses:
             course = db.query(Course).filter(Course.id == enrollment.course_id, Course.is_active == True).first()
@@ -134,6 +156,10 @@ def parent_dashboard(credentials: HTTPAuthorizationCredentials = Depends(securit
             "full_name": student.full_name,
             "today_attendance": today_attendance.status if today_attendance else "unknown",
             "progress": progress,
+            "coins": int(gamification.coins or 0) if gamification else 0,
+            "xp": int(gamification.xp or 0) if gamification else 0,
+            "level": int(gamification.level or 1) if gamification else 1,
+            "daily_activity": daily_activity,
             "latest_grade": round((latest_grade.score / latest_grade.max_score) * 100, 1) if latest_grade and latest_grade.max_score else None,
             "latest_grade_title": latest_grade.title if latest_grade else None,
             "teacher_comment": comment,
