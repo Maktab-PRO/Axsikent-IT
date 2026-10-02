@@ -128,7 +128,7 @@ def decode_token(token: str):
         role = payload.get("role")
         auth_version = payload.get("av")
 
-        if user_id is None or role not in {"student", "teacher", "admin"} or auth_version is None:
+        if user_id is None or role not in {"student", "teacher", "admin", "parent"} or auth_version is None:
             return None
 
         user_id = int(user_id)
