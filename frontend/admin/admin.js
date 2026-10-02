@@ -213,6 +213,7 @@ function showToast(message, type = "success") {
 const sectionTitles = {
     dashboard: "Boshqaruv markazi",
     students: "O‘quvchilar",
+    parents: "Ota-onalar",
     teachers: "O‘qituvchilar",
     courses: "Kurslar",
     groups: "Guruhlar",
@@ -308,6 +309,7 @@ function openSection(section) {
      * backenddan real ma'lumot olinadi.
      */
     if (section === "students") loadStudents();
+    if (section === "parents") loadParents();
     if (section === "homework") loadHomeworkSubmissions();
     if (section === "leads") loadLeads();
     if (section === "reports") loadReports();
@@ -700,6 +702,257 @@ function initAdministratorManagement() {
 }
 
 
+
+/* ============================================================
+   PARENTS
+   ============================================================ */
+
+window.parentStudentsCache = [];
+
+async function loadParentStudents() {
+    try {
+        const data = await apiRequest("/admin/students/?active_only=true");
+        window.parentStudentsCache = Array.isArray(data)
+            ? data
+            : Array.isArray(data?.students)
+                ? data.students
+                : [];
+    } catch (error) {
+        window.parentStudentsCache = [];
+        throw error;
+    }
+}
+
+function openParentCreate() {
+    const form = document.getElementById("parentCreateForm");
+    if (!form) return;
+    form.hidden = false;
+    loadParentStudentPicker().catch(error => showToast(error.message || "O‘quvchilar yuklanmadi", "error"));
+    form.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function closeParentCreate() {
+    const form = document.getElementById("parentCreateForm");
+    if (form) {
+        form.hidden = true;
+        form.reset();
+    }
+    const message = document.getElementById("parentCreateMessage");
+    if (message) message.textContent = "";
+}
+
+async function loadParentStudentPicker() {
+    const box = document.getElementById("parentStudentOptions");
+    if (!box) return;
+
+    box.innerHTML = '<div class="module-loading"><div class="module-spinner"></div><span>O‘quvchilar yuklanmoqda...</span></div>';
+
+    await loadParentStudents();
+
+    if (!window.parentStudentsCache.length) {
+        box.innerHTML = '<div class="module-empty">Faol o‘quvchilar topilmadi.</div>';
+        return;
+    }
+
+    box.innerHTML = window.parentStudentsCache.map(student =>
+        '<label class="parent-student-option">' +
+            '<input type="checkbox" name="parentStudentIds" value="' + Number(student.id) + '">' +
+            '<span>' + escapeHtml(student.full_name) + '</span>' +
+            '<small>' + escapeHtml(student.phone || "") + '</small>' +
+        '</label>'
+    ).join("");
+}
+
+function renderParents(parents) {
+    const container = document.getElementById("parentsContent");
+    if (!container) return;
+
+    if (!parents.length) {
+        container.innerHTML = '<div class="module-empty">Hozircha ota-ona akkauntlari yo‘q.</div>';
+        return;
+    }
+
+    const students = window.parentStudentsCache || [];
+
+    container.innerHTML =
+        '<div class="parents-table-wrap">' +
+            '<table class="parents-table">' +
+                '<thead><tr><th>Ota-ona</th><th>Telefon</th><th>Farzandlar</th><th>Holat</th><th>Amallar</th></tr></thead>' +
+                '<tbody>' +
+                parents.map(parent =>
+                    '<tr>' +
+                        '<td><strong>' + escapeHtml(parent.full_name) + '</strong><small>#' + Number(parent.id) + '</small></td>' +
+                        '<td>' + escapeHtml(parent.phone) + '</td>' +
+                        '<td>' +
+                            '<div class="parent-children-list">' +
+                                ((parent.children || []).length
+                                    ? parent.children.map(child =>
+                                        '<span class="parent-child-chip">' +
+                                            escapeHtml(child.full_name) +
+                                            '<button type="button" title="Farzandni ajratish" onclick="unlinkParentStudent(' + Number(parent.id) + ',' + Number(child.id) + ')">×</button>' +
+                                        '</span>'
+                                      ).join("")
+                                    : '<span class="parent-no-child">Farzand biriktirilmagan</span>') +
+                            '</div>' +
+                            '<div class="parent-link-row">' +
+                                '<select id="parentLinkSelect-' + Number(parent.id) + '" aria-label="Farzand tanlash">' +
+                                    '<option value="">Farzand tanlang</option>' +
+                                    students
+                                        .filter(student => !(parent.children || []).some(child => Number(child.id) === Number(student.id)))
+                                        .map(student => '<option value="' + Number(student.id) + '">' + escapeHtml(student.full_name) + '</option>')
+                                        .join("") +
+                                '</select>' +
+                                '<button type="button" class="parent-mini-btn" onclick="linkParentStudent(' + Number(parent.id) + ')">Bog‘lash</button>' +
+                            '</div>' +
+                        '</td>' +
+                        '<td><span class="parent-status ' + (parent.is_active ? "active" : "inactive") + '">' +
+                            (parent.is_active ? "Faol" : "Nofaol") +
+                        '</span></td>' +
+                        '<td><button type="button" class="parent-action-btn ' + (parent.is_active ? "danger" : "success") + '" onclick="toggleParentStatus(' + Number(parent.id) + ',' + (parent.is_active ? "false" : "true") + ')">' +
+                            (parent.is_active ? "Deaktiv" : "Faollashtirish") +
+                        '</button></td>' +
+                    '</tr>'
+                ).join("") +
+                '</tbody>' +
+            '</table>' +
+        '</div>';
+}
+
+async function loadParents() {
+    const container = document.getElementById("parentsContent");
+    if (!container) return;
+
+    container.innerHTML = '<div class="module-loading"><div class="module-spinner"></div><span>Ota-onalar yuklanmoqda...</span></div>';
+
+    try {
+        await loadParentStudents();
+        const data = await apiRequest("/admin/parents/");
+        const parents = Array.isArray(data)
+            ? data
+            : Array.isArray(data?.parents)
+                ? data.parents
+                : [];
+        renderParents(parents);
+    } catch (error) {
+        console.error("Parents error:", error);
+        container.innerHTML =
+            '<div class="module-error">' +
+                '<div class="module-error-icon">!</div>' +
+                '<h3>Ota-onalarni yuklab bo‘lmadi</h3>' +
+                '<p>' + escapeHtml(error.message || "Server xatosi") + '</p>' +
+                '<button class="module-retry" onclick="loadParents()">Qayta urinish</button>' +
+            '</div>';
+    }
+}
+
+function initParentManagement() {
+    const form = document.getElementById("parentCreateForm");
+    if (!form || form.dataset.ready === "true") return;
+
+    form.dataset.ready = "true";
+    form.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        const name = document.getElementById("parentCreateName")?.value.trim() || "";
+        let phone = document.getElementById("parentCreatePhone")?.value.trim() || "";
+        const password = document.getElementById("parentCreatePassword")?.value || "";
+        const message = document.getElementById("parentCreateMessage");
+
+        if (name.length < 2) {
+            showToast("Ota-onaning to‘liq ismini kiriting.", "error");
+            return;
+        }
+
+        phone = phone.replace(/[\s()-]/g, "");
+        if (phone.startsWith("+")) phone = phone.slice(1);
+        if (!/^998\d{9}$/.test(phone)) {
+            showToast("Telefon raqam 998XXXXXXXXX ko‘rinishida bo‘lishi kerak.", "error");
+            return;
+        }
+
+        if (password.length < 8) {
+            showToast("Parol kamida 8 ta belgidan iborat bo‘lishi kerak.", "error");
+            return;
+        }
+
+        const studentIds = [...document.querySelectorAll('input[name="parentStudentIds"]:checked')]
+            .map(input => Number(input.value))
+            .filter(Number.isInteger);
+
+        const button = document.getElementById("parentCreateSubmit");
+        if (button) {
+            button.disabled = true;
+            button.textContent = "Yaratilmoqda...";
+        }
+
+        try {
+            const data = await apiRequest("/admin/parents/", {
+                method: "POST",
+                body: JSON.stringify({
+                    full_name: name,
+                    phone,
+                    password,
+                    student_ids: studentIds
+                })
+            });
+
+            if (message) message.textContent = data?.message || "Ota-ona yaratildi.";
+            showToast(data?.message || "Ota-ona muvaffaqiyatli yaratildi.", "success");
+            form.reset();
+            await loadParents();
+        } catch (error) {
+            if (message) message.textContent = error.message || "Ota-ona yaratishda xatolik.";
+            showToast(error.message || "Ota-ona yaratishda xatolik.", "error");
+        } finally {
+            if (button) {
+                button.disabled = false;
+                button.textContent = "Ota-onani yaratish";
+            }
+        }
+    });
+}
+
+async function linkParentStudent(parentId) {
+    const select = document.getElementById("parentLinkSelect-" + Number(parentId));
+    const studentId = Number(select?.value);
+    if (!Number.isInteger(studentId) || studentId <= 0) {
+        showToast("Avval farzandni tanlang.", "error");
+        return;
+    }
+
+    try {
+        await apiRequest("/admin/parents/" + Number(parentId) + "/students/" + studentId, { method: "POST" });
+        showToast("Farzand ota-onaga bog‘landi.", "success");
+        await loadParents();
+    } catch (error) {
+        showToast(error.message || "Farzandni bog‘lab bo‘lmadi.", "error");
+    }
+}
+
+async function unlinkParentStudent(parentId, studentId) {
+    if (!window.confirm("Bu farzandni ushbu ota-onadan ajratasizmi?")) return;
+
+    try {
+        await apiRequest("/admin/parents/" + Number(parentId) + "/students/" + Number(studentId), { method: "DELETE" });
+        showToast("Farzand ota-onadan ajratildi.", "success");
+        await loadParents();
+    } catch (error) {
+        showToast(error.message || "Farzandni ajratib bo‘lmadi.", "error");
+    }
+}
+
+async function toggleParentStatus(parentId, activate) {
+    const action = activate ? "activate" : "deactivate";
+
+    try {
+        await apiRequest("/admin/parents/" + Number(parentId) + "/" + action, { method: "PUT" });
+        showToast(activate ? "Ota-ona akkaunti faollashtirildi." : "Ota-ona akkaunti deaktiv qilindi.", "success");
+        await loadParents();
+    } catch (error) {
+        showToast(error.message || "Amalni bajarib bo‘lmadi.", "error");
+    }
+}
+
 /* ============================================================
    REFRESH DASHBOARD
    ============================================================ */
@@ -721,6 +974,7 @@ async function refreshDashboard() {
         const current = window.__axsikentCurrentSection || "dashboard";
         const loaders = {
             students: loadStudents,
+            parents: loadParents,
             teachers: loadTeachers,
             courses: loadCourses,
             groups: loadGroups,
@@ -4397,6 +4651,7 @@ initTeacherCreate();
 initTeacherPasswordEyes();
     initOnlineExamAdmin();
     initStudentActions();
+    initParentManagement();
     initAdminAutoRefresh();
 
     const savedSection = window.location.hash.replace("#", "").trim();
