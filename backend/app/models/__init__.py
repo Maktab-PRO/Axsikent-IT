@@ -35,3 +35,4 @@ from app.models.ai_telegram_submission import AITelegramSubmission
 from app.models.online_exam import OnlineExam, OnlineExamQuestion, OnlineExamAttempt
 
 from app.models.ai_homework_state import AIHomeworkState
+from app.models.parent import Parent, ParentStudent
