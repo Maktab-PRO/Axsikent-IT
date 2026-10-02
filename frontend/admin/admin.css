@@ -4184,3 +4184,9 @@ button:active,
 .parent-action-btn.success{color:#94e9b0}
 @media(max-width:900px){.parent-form-grid{grid-template-columns:1fr 1fr}.parent-student-options{grid-template-columns:1fr}}
 @media(max-width:620px){.parent-form-grid{grid-template-columns:1fr}.parent-create-form{padding:16px}}
+
+/* Parent Admin — professional SVG icon alignment */
+#section-parents .action-icon{width:17px;height:17px;display:inline-block;vertical-align:-4px;flex:0 0 auto}
+#section-parents .nav-icon .action-icon{width:19px;height:19px;vertical-align:-5px}
+#section-parents .parent-child-chip .parent-chip-remove{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;line-height:1;padding:0}
+#section-parents .parent-child-chip .parent-chip-remove .action-icon{width:14px;height:14px;vertical-align:0}
