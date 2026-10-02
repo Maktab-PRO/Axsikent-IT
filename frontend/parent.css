@@ -58,10 +58,9 @@ button:disabled{opacity:.6;cursor:wait}
 .parent-footer-social .parent-socials{justify-content:center;margin-top:14px}
 .parent-footer-brand{
   background:#173a28;
-  width:100vw;
-  margin-left:calc(50% - 50vw);
-  margin-right:calc(50% - 50vw);
+  width:100%;
   padding:30px 20px 26px;
-  margin-bottom:0;
+  margin:0 0 30px;
+  border-radius:0;
 }
 .parent-footer-brand p{color:#d2e4d9}
