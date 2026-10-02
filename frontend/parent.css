@@ -54,13 +54,12 @@ button:disabled{opacity:.6;cursor:wait}
 /* Parent footer sections — match the main site's visual separation */
 .parent-footer-social{background:#111;color:#fff;padding:50px 0}
 .parent-footer-social-inner{width:min(1180px,92%);margin:0 auto;text-align:center}
-.parent-footer-social .section-kicker{color:#4ade80}
+.parent-footer-social .section-kicker{color:#4ade80;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
 .parent-footer-social .parent-socials{justify-content:center;margin-top:14px}
 .parent-footer-brand{
-  background:#173a28;
+  background:transparent;
   width:100%;
-  padding:30px 20px 26px;
+  padding:0;
   margin:0 0 30px;
-  border-radius:0;
 }
-.parent-footer-brand p{color:#d2e4d9}
+.parent-footer-brand p{color:#b9ccc0}
