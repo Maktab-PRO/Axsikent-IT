@@ -46,6 +46,8 @@ from app.api.telegram_ai import router as telegram_ai_router
 from app.api.teacher_ai_homework import router as teacher_ai_homework_router
 from app.api.online_exam import router as online_exam_router
 from app.api.certificates import router as certificates_router
+from app.api.parent import router as parent_router
+from app.api.admin_parent import router as admin_parent_router
 
 
 from app.seed import seed_data
@@ -242,6 +244,8 @@ app.include_router(telegram_ai_router)
 app.include_router(teacher_ai_homework_router)
 app.include_router(online_exam_router)
 app.include_router(certificates_router)
+app.include_router(parent_router)
+app.include_router(admin_parent_router)
 
 # =========================
 
