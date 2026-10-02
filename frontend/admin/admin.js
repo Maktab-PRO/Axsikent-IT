@@ -789,7 +789,7 @@ function renderParents(parents) {
                                     ? parent.children.map(child =>
                                         '<span class="parent-child-chip">' +
                                             escapeHtml(child.full_name) +
-                                            '<button type="button" title="Farzandni ajratish" onclick="unlinkParentStudent(' + Number(parent.id) + ',' + Number(child.id) + ')">×</button>' +
+                                            '<button type="button" class="parent-chip-remove" title="Farzandni ajratish" aria-label="Farzandni ajratish" onclick="unlinkParentStudent(' + Number(parent.id) + ',' + Number(child.id) + ')"><svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>' +
                                         '</span>'
                                       ).join("")
                                     : '<span class="parent-no-child">Farzand biriktirilmagan</span>') +
