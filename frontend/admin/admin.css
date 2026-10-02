@@ -4141,3 +4141,46 @@ button:active,
 .test-mode-text{font-size:13px;font-weight:950;color:#9d174d;letter-spacing:.04em;padding-right:70px}
 @keyframes testModeMarquee{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
 @media(max-width:760px){html,body{max-width:100%;overflow-x:hidden}.test-mode-banner{width:100%;max-width:100%}}
+
+/* ============================================================
+   PARENT MANAGEMENT
+   ============================================================ */
+.parent-management-panel{overflow:hidden}
+.parent-create-form{margin:0 0 24px;padding:22px;border:1px solid rgba(77,214,129,.16);border-radius:18px;background:rgba(17,38,25,.45)}
+.parent-form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.parent-create-form label{display:flex;flex-direction:column;gap:7px;color:#dceee3;font-size:13px;font-weight:700}
+.parent-create-form input{width:100%;padding:13px 14px;border:1px solid rgba(96,220,143,.16);border-radius:12px;background:#09160f;color:#f1fff5;outline:none}
+.parent-create-form input:focus{border-color:rgba(87,226,135,.45);box-shadow:0 0 0 3px rgba(61,205,112,.08)}
+.parent-child-picker{margin-top:18px}
+.parent-picker-title{margin-bottom:10px;font-size:13px;font-weight:800;color:#dff5e7}
+.parent-student-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:220px;overflow:auto;padding-right:4px}
+.parent-student-option{display:grid!important;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;padding:11px 12px;border:1px solid rgba(85,211,132,.1);border-radius:12px;background:rgba(8,22,14,.7);cursor:pointer}
+.parent-student-option input{width:17px!important;height:17px;grid-row:1 / span 2;accent-color:#35ca79}
+.parent-student-option span{font-size:13px}
+.parent-student-option small{color:#7e9c89;font-weight:500}
+.parent-form-actions{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
+.parent-form-actions .administrator-submit{width:auto;margin:0}
+.parent-form-actions .panel-link{width:auto;margin:0}
+.parents-table-wrap{width:100%;overflow:auto}
+.parents-table{width:100%;min-width:900px;border-collapse:collapse}
+.parents-table th,.parents-table td{padding:14px 12px;text-align:left;border-bottom:1px solid rgba(113,174,132,.1);vertical-align:top}
+.parents-table th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#7f9c89}
+.parents-table td strong{display:block;color:#edf8f0;font-size:14px}
+.parents-table td small{display:block;margin-top:4px;color:#759182}
+.parent-children-list{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.parent-child-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 9px;border-radius:999px;background:rgba(48,195,113,.09);border:1px solid rgba(76,210,132,.14);color:#cfeedd;font-size:12px}
+.parent-child-chip button{width:18px;height:18px;margin:0;padding:0;border:0;border-radius:50%;background:transparent;color:#91b39c;cursor:pointer;line-height:18px}
+.parent-child-chip button:hover{background:rgba(255,92,92,.12);color:#ff9c9c}
+.parent-no-child{color:#7f9a89;font-size:12px}
+.parent-link-row{display:flex;gap:7px;align-items:center}
+.parent-link-row select{min-width:170px;max-width:230px;padding:8px 10px;border-radius:9px;border:1px solid rgba(88,213,135,.14);background:#09160f;color:#dff3e6}
+.parent-mini-btn,.parent-action-btn{padding:8px 11px;border-radius:9px;border:1px solid rgba(79,205,126,.16);background:#102519;color:#cdebd6;font-weight:800;font-size:12px;cursor:pointer}
+.parent-mini-btn:hover,.parent-action-btn.success:hover{background:#153622}
+.parent-action-btn.danger{border-color:rgba(255,121,121,.18);color:#ffb1b1;background:rgba(83,27,27,.34)}
+.parent-action-btn.danger:hover{background:rgba(104,34,34,.5)}
+.parent-status{display:inline-flex;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:900}
+.parent-status.active{background:rgba(42,193,106,.1);border:1px solid rgba(73,212,132,.15);color:#8ce8ad}
+.parent-status.inactive{background:rgba(255,156,87,.08);border:1px solid rgba(255,156,87,.15);color:#ffc08f}
+.parent-action-btn.success{color:#94e9b0}
+@media(max-width:900px){.parent-form-grid{grid-template-columns:1fr 1fr}.parent-student-options{grid-template-columns:1fr}}
+@media(max-width:620px){.parent-form-grid{grid-template-columns:1fr}.parent-create-form{padding:16px}}
