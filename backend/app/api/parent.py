@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -128,13 +128,13 @@ def parent_dashboard(credentials: HTTPAuthorizationCredentials = Depends(securit
         gamification = db.query(StudentGamification).filter(StudentGamification.student_id == student.id).first()
         # Store completed lesson counts by Tashkent calendar date for the latest 7 days.
         today_local = datetime.now(ZoneInfo("Asia/Tashkent")).date()
-        activity_start = today_local - __import__("datetime").timedelta(days=6)
+        activity_start = today_local - timedelta(days=6)
         completed_rows = db.query(LessonProgress.completed_at).filter(
             LessonProgress.student_id == student.id,
             LessonProgress.is_completed == True,
             LessonProgress.completed_at.isnot(None),
         ).all()
-        activity_counts = {activity_start + __import__("datetime").timedelta(days=i): 0 for i in range(7)}
+        activity_counts = {activity_start + timedelta(days=i): 0 for i in range(7)}
         for (completed_at,) in completed_rows:
             stamp = completed_at
             if stamp.tzinfo is None:
