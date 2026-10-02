@@ -53,7 +53,7 @@ button:disabled{opacity:.6;cursor:wait}
 
 /* Parent footer sections — match the main site's visual separation */
 .parent-footer-social-inner{width:min(1180px,92%);margin:0 auto}
-.section-label{color:#16a34a;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.section-label{display:inline-flex;align-items:center;gap:10px;color:#4ade80;background:#e9f8ef;border:1px solid #cdebd7;padding:6px 14px;border-radius:30px;font-size:12.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;margin-bottom:10px}.section-label::before{content:"";width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.22)}
 .parent-footer-brand{
   background:transparent;
   width:100%;
