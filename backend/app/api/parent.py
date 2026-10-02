@@ -108,7 +108,6 @@ def parent_dashboard(credentials: HTTPAuthorizationCredentials = Depends(securit
         active_courses = db.query(StudentCourse).filter(StudentCourse.student_id == student.id, StudentCourse.is_active == True).all()
         progress_values = []
         for enrollment in active_courses:
-            total = db.query(LessonProgress).join_from(LessonProgress, __import__('app.models.lesson', fromlist=['Lesson']).Lesson).filter(False).count() if False else None
             # Use the enrollment's stored progress as a stable parent-facing summary.
             progress_values.append(float(enrollment.progress or 0))
         progress = round(sum(progress_values) / len(progress_values)) if progress_values else 0
