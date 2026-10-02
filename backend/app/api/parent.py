@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from passlib.context import CryptContext
@@ -45,7 +46,7 @@ def _next_lesson(db, student_id):
     membership = db.query(StudentGroup).filter(
         StudentGroup.student_id == student_id, StudentGroup.is_active == True
     ).all()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(ZoneInfo("Asia/Tashkent"))
     # Python weekday: Monday=0. Platform weekday is stored as 0..6.
     candidates = []
     for item in membership:
@@ -55,7 +56,7 @@ def _next_lesson(db, student_id):
         rows = db.query(Schedule).filter(Schedule.group_id == group.id, Schedule.is_active == True).all()
         for s in rows:
             delta = (s.weekday - now.weekday()) % 7
-            if delta == 0 and s.start_time <= now.astimezone().time():
+            if delta == 0 and s.start_time <= now.time():
                 delta = 7
             candidates.append((delta, s.start_time, group, s))
     if not candidates:
@@ -112,7 +113,7 @@ def parent_dashboard(credentials: HTTPAuthorizationCredentials = Depends(securit
             progress_values.append(float(enrollment.progress or 0))
         progress = round(sum(progress_values) / len(progress_values)) if progress_values else 0
 
-        today = datetime.now(timezone.utc).date()
+        today = datetime.now(ZoneInfo("Asia/Tashkent")).date()
         today_attendance = db.query(Attendance).filter(Attendance.student_id == student.id, Attendance.date == today).order_by(Attendance.id.desc()).first()
         grades = db.query(Grade).filter(Grade.student_id == student.id).order_by(Grade.created_at.desc()).all()
         latest_grade = grades[0] if grades else None
