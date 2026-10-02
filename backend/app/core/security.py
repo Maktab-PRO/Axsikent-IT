@@ -12,6 +12,7 @@ from app.models.student import Student
 from app.models.teacher import Teacher
 from app.core.config import settings
 from app.models.admin import Admin
+from app.models.parent import Parent
 
 
 ALGORITHM = "HS256"
