@@ -23,7 +23,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class ParentApplicationCreate(BaseModel):
     full_name: str = Field(min_length=2, max_length=150)
     phone: str = Field(min_length=9, max_length=30)
-    student_id: int
+    student_phone: str = Field(min_length=9, max_length=30)
     comment: str | None = Field(default=None, max_length=2000)
 
 
@@ -39,7 +39,15 @@ def create_parent_application(data: ParentApplicationCreate, db: Session = Depen
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
-    student = db.query(Student).filter(Student.id == data.student_id, Student.is_active == True).first()
+    try:
+        student_phone = normalize_phone(data.student_phone)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+    student = db.query(Student).filter(
+        Student.phone == student_phone,
+        Student.is_active == True,
+    ).first()
     if not student:
         raise HTTPException(status_code=404, detail="Faol o‘quvchi topilmadi.")
 
