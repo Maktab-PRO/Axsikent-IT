@@ -49,6 +49,7 @@ from app.api.certificates import router as certificates_router
 from app.api.parent import router as parent_router
 from app.api.admin_parent import router as admin_parent_router
 from app.api.sms import router as sms_router
+from app.api.parent_application import router as parent_application_router
 
 
 from app.seed import seed_data
