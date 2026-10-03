@@ -14,6 +14,7 @@ from passlib.context import CryptContext
 
 from app.db import get_db
 from app.models.lead import Lead
+from app.services.sms import normalize_phone, verify_otp
 
 
 router = APIRouter(
@@ -42,6 +43,7 @@ def create_lead(
     math_operator: str | None = None,
     math_answer: int | None = None,
     privacy_consent: bool = False,
+    sms_code: str | None = None,
     db: Session = Depends(get_db)
 ):
 
@@ -80,6 +82,14 @@ def create_lead(
             status_code=400,
             detail="Matematik misol noto‘g‘ri yechildi."
         )
+
+    try:
+        normalized_phone = normalize_phone(phone)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+    if not sms_code or not verify_otp(db, normalized_phone, "registration", sms_code):
+        raise HTTPException(status_code=400, detail="Telefon raqam SMS kodi bilan tasdiqlanishi kerak.")
 
     lead = Lead(
         full_name=full_name,
