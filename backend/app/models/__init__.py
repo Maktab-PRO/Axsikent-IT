@@ -36,3 +36,4 @@ from app.models.online_exam import OnlineExam, OnlineExamQuestion, OnlineExamAtt
 
 from app.models.ai_homework_state import AIHomeworkState
 from app.models.parent import Parent, ParentStudent
+from app.models.sms_verification import SmsVerification
