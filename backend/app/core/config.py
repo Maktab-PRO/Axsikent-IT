@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     SMS_API_URL: str = "https://send.smsxabar.uz"
     SMS_API_USERNAME: str = ""
     SMS_API_PASSWORD: str = ""
-    SMS_SENDER_ID: str = "Akhsikent IT"
+    SMS_SENDER_ID: str = "AkhsikentIT"
 
     class Config:
         env_file = ".env"
