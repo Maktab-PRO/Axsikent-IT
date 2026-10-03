@@ -17,6 +17,10 @@ class Settings(BaseSettings):
     BOOTSTRAP_ADMIN_PHONE: str = ""
     BOOTSTRAP_ADMIN_PASSWORD: str = ""
     BOOTSTRAP_ADMIN_NAME: str = "Axsikent Admin"
+    SMS_API_URL: str = "https://send.smsxabar.uz"
+    SMS_API_USERNAME: str = ""
+    SMS_API_PASSWORD: str = ""
+    SMS_SENDER_ID: str = "Akhsikent IT"
 
     class Config:
         env_file = ".env"
