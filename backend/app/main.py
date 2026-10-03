@@ -252,6 +252,7 @@ app.include_router(certificates_router)
 app.include_router(parent_router)
 app.include_router(admin_parent_router)
 app.include_router(sms_router)
+app.include_router(parent_application_router)
 
 # =========================
 
