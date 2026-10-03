@@ -7,7 +7,7 @@ import httpx
 from app.core.config import settings
 
 
-SENDER_ID = "Akhsikent IT"
+SENDER_ID = "AkhsikentIT"
 OTP_TTL_MINUTES = 5
 RESEND_COOLDOWN_SECONDS = 60
 MAX_VERIFY_ATTEMPTS = 5
