@@ -9,7 +9,6 @@ from app.core.security import require_admin
 from app.models.admin import Admin
 from app.models.parent import Parent, ParentStudent
 from app.models.student import Student
-from app.services.sms import send_sms
 
 router=APIRouter(prefix="/admin/parents",tags=["Admin Parents"])
 pwd_context=CryptContext(schemes=["bcrypt"],deprecated="auto")
@@ -43,8 +42,7 @@ def create_parent(data:ParentCreate,admin:Admin=Depends(require_admin),db:Sessio
     try: db.commit()
     except IntegrityError: db.rollback();raise HTTPException(status_code=409,detail="Ota-ona ma’lumotlari takrorlangan")
     db.refresh(p)
-    sms_sent = send_sms(p.phone, f"Akhsikent IT: arizangiz tasdiqlandi. Parent sahifa: /parent-login.html. Login: {p.phone}. Parol: {data.password}")
-    return {"success":True,"sms_sent":sms_sent,"parent":{"id":p.id,"full_name":p.full_name,"phone":p.phone,"children":[{"id":s.id,"full_name":s.full_name} for s in students]}}
+    return {"success":True,"parent":{"id":p.id,"full_name":p.full_name,"phone":p.phone,"children":[{"id":s.id,"full_name":s.full_name} for s in students]}}
 
 @router.post("/{parent_id}/students/{student_id}")
 def link_student(parent_id:int,student_id:int,admin:Admin=Depends(require_admin),db:Session=Depends(get_db)):
