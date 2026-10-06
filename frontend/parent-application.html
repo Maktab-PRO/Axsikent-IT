@@ -15,7 +15,7 @@
 <main class="card">
 <div class="logo">Akhsikent IT</div>
 <h1>Ota-ona arizasi</h1>
-<p class="muted">Arizani yuboring. Administrator tekshiradi. Tasdiqlangandan keyin login va vaqtinchalik parol SMS orqali telefoningizga yuboriladi.</p>
+<p class="muted">Arizani yuboring. Administrator tekshiradi. Tasdiqlangandan keyin akkaunt ma’lumotlari administrator orqali beriladi.</p>
 <form id="parentApplicationForm">
 <div class="field"><label for="fullName">Ota-ona F.I.Sh.</label><input id="fullName" required minlength="2" maxlength="150" autocomplete="name"></div>
 <div class="field"><label for="phone">Ota-ona telefoni</label><input id="phone" type="tel" placeholder="+998901234567" required autocomplete="tel"></div>
@@ -38,7 +38,7 @@ document.getElementById("parentApplicationForm").addEventListener("submit",async
    comment:document.getElementById("comment").value.trim()||null
   })});
   const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.detail||"Ariza yuborilmadi.");
-  msg.textContent="Ariza qabul qilindi. Ariza raqami: "+d.application_id+". Tasdiqlangach SMS yuboriladi.";
+  msg.textContent="Ariza qabul qilindi. Ariza raqami: "+d.application_id+". Administrator tasdiqlagach akkaunt ma’lumotlarini beradi.";
   e.target.reset();
  }catch(err){msg.textContent=err.message||"Xatolik yuz berdi."}
 });
