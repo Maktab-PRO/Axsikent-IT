@@ -5987,15 +5987,6 @@ footer{background:linear-gradient(180deg,#0a130d,#050805);border-top:1px solid r
 
                 </div>
 
-                <div class="form-group full" id="registrationSmsCodeWrap" style="display:none;">
-                    <label for="registrationSmsCode">SMS tasdiqlash kodi *</label>
-                    <div style="display:flex;gap:10px;align-items:stretch;">
-                        <input type="text" id="registrationSmsCode" placeholder="6 xonali kod" inputmode="numeric" maxlength="6" autocomplete="one-time-code" style="flex:1;">
-                        <button type="button" id="registrationSmsResend" class="btn" style="white-space:nowrap;">Kodni qayta yuborish</button>
-                    </div>
-                    <small id="registrationSmsHint" style="display:block;margin-top:7px;color:#64748b;">Telefoningizga Akhsikent IT tasdiqlash kodi yuboriladi.</small>
-                </div>
-
 
                 <div class="form-group">
 
@@ -7452,44 +7443,7 @@ function goToRegistration() {
    APPLICATION FORM
 ========================= */
 
-let registrationSmsRequested = false;
 
-    async function requestRegistrationSmsCode() {
-        const phone = document.getElementById("phone").value.trim();
-        const message = document.getElementById("formMessage");
-        const wrap = document.getElementById("registrationSmsCodeWrap");
-        const hint = document.getElementById("registrationSmsHint");
-
-        if (!phone) {
-            message.textContent = "Avval telefon raqamingizni kiriting.";
-            message.style.color = "#be185d";
-            return false;
-        }
-
-        try {
-            const response = await fetch(API_URL + "/sms/registration/request", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({phone})
-            });
-            const data = await response.json().catch(() => ({}));
-            if (!response.ok) throw new Error(data.detail || "SMS kod yuborilmadi.");
-
-            registrationSmsRequested = true;
-            wrap.style.display = "";
-            hint.textContent = "Kod yuborildi. SMSdagi 6 xonali kodni kiriting.";
-            message.textContent = "Tasdiqlash kodi yuborildi. Kodni kiriting va arizani yana yuboring.";
-            message.style.color = "#2563eb";
-            document.getElementById("registrationSmsCode").focus();
-            return true;
-        } catch (error) {
-            message.textContent = error.message || "SMS kod yuborilmadi.";
-            message.style.color = "#dc2626";
-            return false;
-        }
-    }
-
-    document.getElementById("registrationSmsResend")?.addEventListener("click", requestRegistrationSmsCode);
 
 document
     .getElementById("applicationForm")
@@ -7526,18 +7480,6 @@ document
             return;
         }
 
-        const smsCode = document.getElementById("registrationSmsCode").value.trim();
-        if (!registrationSmsRequested) {
-            await requestRegistrationSmsCode();
-            return;
-        }
-        if (!/^\d{6}$/.test(smsCode)) {
-            message.textContent = "SMSdagi 6 xonali kodni kiriting.";
-            message.style.color = "#be185d";
-            document.getElementById("registrationSmsCode").focus();
-            return;
-        }
-
         const params =
             new URLSearchParams({
 
@@ -7546,9 +7488,6 @@ document
 
                 phone:
                     document.getElementById("phone").value,
-
-                sms_code:
-                    smsCode,
 
                 password:
                     document.getElementById("registration_password").value,
@@ -7624,8 +7563,6 @@ document
                 .getElementById("applicationForm")
                 .reset();
 
-            registrationSmsRequested = false;
-            document.getElementById("registrationSmsCodeWrap").style.display = "none";
 
 
 
