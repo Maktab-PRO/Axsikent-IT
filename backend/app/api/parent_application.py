@@ -13,11 +13,19 @@ from app.models.admin import Admin
 from app.models.parent import Parent, ParentStudent
 from app.models.parent_application import ParentApplication
 from app.models.student import Student
-from app.services.sms import normalize_phone, send_sms
 
 
 router = APIRouter(prefix="/parent-applications", tags=["Parent Applications"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def _normalize_phone(phone: str) -> str:
+    value = (phone or "").strip().replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
+    if value.startswith("+"):
+        value = value[1:]
+    if not value.isdigit() or len(value) != 12 or not value.startswith("998"):
+        raise ValueError("Telefon raqam 998XXXXXXXXX ko‘rinishida bo‘lishi kerak")
+    return value
 
 
 class ParentApplicationCreate(BaseModel):
@@ -35,7 +43,7 @@ def _temporary_password(length: int = 12) -> str:
 @router.post("/")
 def create_parent_application(data: ParentApplicationCreate, db: Session = Depends(get_db)):
     try:
-        phone = normalize_phone(data.phone)
+        phone = _normalize_phone(data.phone)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
@@ -74,7 +82,7 @@ def create_parent_application(data: ParentApplicationCreate, db: Session = Depen
 
     return {
         "success": True,
-        "message": "Ota-ona arizasi qabul qilindi. Administrator tasdiqlashidan so‘ng SMS yuboriladi.",
+        "message": "Ota-ona arizasi qabul qilindi. Administrator arizani tekshiradi.",
         "application_id": application.id,
         "status": application.status,
     }
@@ -83,7 +91,7 @@ def create_parent_application(data: ParentApplicationCreate, db: Session = Depen
 @router.get("/status/{application_id}")
 def parent_application_status(application_id: int, phone: str, db: Session = Depends(get_db)):
     try:
-        normalized = normalize_phone(phone)
+        normalized = _normalize_phone(phone)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
@@ -149,7 +157,7 @@ def approve_parent_application(
         application.parent_id = existing.id
         application.processed_at = datetime.now(timezone.utc)
         db.commit()
-        return {"success": True, "message": "Bu telefon raqam bilan ota-ona akkaunti avval yaratilgan.", "parent_id": existing.id, "sms_sent": False}
+        return {"success": True, "message": "Bu telefon raqam bilan ota-ona akkaunti avval yaratilgan.", "parent_id": existing.id}
 
     password = _temporary_password()
     parent = Parent(
@@ -167,15 +175,11 @@ def approve_parent_application(
     application.processed_at = datetime.now(timezone.utc)
     db.commit()
 
-    sms_sent = send_sms(
-        parent.phone,
-        f"Akhsikent IT: arizangiz tasdiqlandi. Parent sahifa: /parent-login.html. Login: {parent.phone}. Vaqtinchalik parol: {password}.",
-    )
     return {
         "success": True,
-        "message": "Ota-ona arizasi tasdiqlandi.",
+        "message": "Ota-ona arizasi tasdiqlandi. Parent akkaunti yaratildi.",
         "parent_id": parent.id,
-        "sms_sent": sms_sent,
+        "temporary_password": password,
     }
 
 
