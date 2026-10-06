@@ -48,7 +48,6 @@ from app.api.online_exam import router as online_exam_router
 from app.api.certificates import router as certificates_router
 from app.api.parent import router as parent_router
 from app.api.admin_parent import router as admin_parent_router
-from app.api.sms import router as sms_router
 from app.api.parent_application import router as parent_application_router
 
 
@@ -251,7 +250,6 @@ app.include_router(online_exam_router)
 app.include_router(certificates_router)
 app.include_router(parent_router)
 app.include_router(admin_parent_router)
-app.include_router(sms_router)
 app.include_router(parent_application_router)
 
 # =========================
