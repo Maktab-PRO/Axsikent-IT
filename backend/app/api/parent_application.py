@@ -48,7 +48,7 @@ def create_parent_application(data: ParentApplicationCreate, db: Session = Depen
         raise HTTPException(status_code=400, detail=str(exc))
 
     try:
-        student_phone = normalize_phone(data.student_phone)
+        student_phone = _normalize_phone(data.student_phone)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
