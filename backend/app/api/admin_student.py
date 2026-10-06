@@ -16,7 +16,6 @@ from app.models.teacher import Teacher
 from app.models.homework import Homework
 from app.models.homework import HomeworkSubmission
 from app.models.gamification import StudentGamification
-from app.services.sms import send_sms
 
 
 router = APIRouter(
@@ -207,12 +206,10 @@ def activate_student(
     student.auth_version = (student.auth_version or 1) + 1
 
     db.commit()
-    sms_sent = send_sms(student.phone, f"Akhsikent IT: {student.full_name}, akkauntingiz faollashtirildi. Kirish: {student.phone}")
 
     return {
         "success": True,
         "message": "O'quvchi qayta faollashtirildi",
-        "sms_sent": sms_sent,
         "student_id": student.id
     }
 
