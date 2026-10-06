@@ -11,7 +11,6 @@ from app.models.group import Group
 from app.models.course import Course
 from app.models.student import Student
 from app.models.student_group import StudentGroup
-from app.services.sms import send_sms
 
 
 router = APIRouter(
@@ -123,11 +122,9 @@ def create_teacher(
         db.rollback()
         raise HTTPException(status_code=409, detail="Bu telefon raqam allaqachon ro'yxatdan o'tgan.")
     db.refresh(teacher)
-    sms_sent = send_sms(teacher.phone, f"Akhsikent IT: {teacher.full_name}, o‘qituvchi akkauntingiz yaratildi. Login: {teacher.phone}. Parol: {password}")
     return {
         "success": True,
         "message": "O‘qituvchi ro‘yxatdan muvaffaqiyatli o‘tkazildi",
-        "sms_sent": sms_sent,
         "teacher": {
             "id": teacher.id,
             "full_name": teacher.full_name,
