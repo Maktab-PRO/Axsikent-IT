@@ -70,6 +70,8 @@ app.add_middleware(
     allow_origins=[
         "https://akhsikent-it-school.onrender.com",
         "https://akhsikent-it-school-vyd7.onrender.com",
+        "https://akhsikentedu.uz",
+        "https://www.akhsikentedu.uz",
     ],
     allow_credentials=True,
     allow_methods=["*"],
