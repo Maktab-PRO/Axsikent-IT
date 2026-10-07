@@ -64,6 +64,18 @@ button:disabled{opacity:.6;cursor:wait}
 
 .parent-header-actions{display:flex;align-items:center;gap:8px}.parent-refresh,.parent-notify{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:0 12px;border:1px solid rgba(91,214,139,.28);border-radius:12px;background:rgba(20,55,37,.72);color:#e8f5ec;font:inherit;font-weight:700;cursor:pointer}.parent-notify{width:40px;padding:0}.parent-header-actions button:disabled{opacity:.65;cursor:wait}.parent-refresh.is-loading svg{animation:parent-spin .8s linear infinite}@keyframes parent-spin{to{transform:rotate(360deg)}}.notification-dot{position:absolute;right:7px;top:7px;width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 2px #173a28}.parent-notification{margin:0 0 16px;padding:11px 14px;border:1px solid rgba(74,222,128,.25);border-radius:12px;background:rgba(20,55,37,.72);color:#dff8e7;font-size:13px}.parent-notification.is-error{border-color:rgba(248,113,113,.4);background:rgba(127,29,29,.22);color:#fecaca}@media(max-width:520px){.parent-header-actions{gap:5px}.parent-refresh{padding:0 9px}.parent-refresh span{font-size:12px}.parent-notify{width:38px;min-height:38px}}
 
-/* Parent header actions — compact three-row layout */
-.parent-header-actions{flex-direction:column;align-items:stretch;gap:6px;width:136px}.parent-header-actions .parent-refresh,.parent-header-actions .parent-notify,.parent-header-actions .logout{width:136px;min-height:38px;padding:0 10px;justify-content:center}.parent-header-actions .parent-notify{width:136px}.parent-header-actions .logout{margin:0}.parent-header-actions .ui-icon{width:16px;height:16px}.parent-header-actions .notification-dot{right:9px;top:6px}
-@media(max-width:520px){.parent-header-actions{width:124px;gap:5px}.parent-header-actions .parent-refresh,.parent-header-actions .parent-notify,.parent-header-actions .logout{width:124px;min-height:36px;padding:0 8px;font-size:12px}.parent-header-actions .ui-icon{width:15px;height:15px}}
+/* Parent header actions — compact three-row icon layout */
+.parent-header-actions{flex-direction:column;align-items:stretch;gap:4px;width:84px;min-width:84px}
+.parent-header-actions .parent-refresh,
+.parent-header-actions .parent-notify,
+.parent-header-actions .logout{width:84px;min-width:84px;height:32px;min-height:32px;padding:0;justify-content:center;gap:0}
+.parent-header-actions .ui-icon{width:15px;height:15px}
+.parent-header-actions .notification-dot{right:7px;top:5px;width:6px;height:6px}
+@media(max-width:520px){
+  .parent-header{gap:10px}
+  .parent-header-actions{width:72px;min-width:72px;gap:4px}
+  .parent-header-actions .parent-refresh,
+  .parent-header-actions .parent-notify,
+  .parent-header-actions .logout{width:72px;min-width:72px;height:30px;min-height:30px;padding:0}
+  .parent-header-actions .ui-icon{width:14px;height:14px}
+}
