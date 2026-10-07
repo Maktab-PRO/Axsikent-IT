@@ -9,7 +9,6 @@ from app.models.admin import Admin
 from app.models.lead import Lead
 from app.models.student import Student
 from app.models.gamification import StudentGamification
-from app.services.sms import send_sms
 from passlib.context import CryptContext
 
 
@@ -284,11 +283,6 @@ def update_lead_status(
     db.commit()
 
     sms_sent = False
-    if new_status == "enrolled":
-        sms_sent = send_sms(
-            lead.phone,
-            f"Akhsikent IT: {lead.full_name}, arizangiz tasdiqlandi. Student sahifa: /student.html. Login: {lead.phone}. Parol: ariza topshirishda yaratgan parolingiz."
-        )
     db.refresh(lead)
 
     return {
