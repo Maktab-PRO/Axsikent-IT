@@ -3494,6 +3494,14 @@
         @keyframes testModeMarquee{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
         @media (max-width:700px){html,body{max-width:100%;overflow-x:hidden}.test-mode-banner{width:100%;max-width:100%}.test-mode-text{font-size:12px}}
 
+        /* Desktop grid shows only access actions; keep section navigation on mobile. */
+        @media (min-width: 1001px) {
+            .mobile-nav-dropdown .grid-section-link,
+            .mobile-nav-dropdown .grid-section-divider {
+                display: none !important;
+            }
+        }
+
         /* GRID MENU — aligned with UZ + premium glow */
         .nav-actions { align-items: center; }
         .mobile-menu {
@@ -4692,14 +4700,14 @@ footer{background:linear-gradient(180deg,#0a130d,#050805);border-top:1px solid r
             </button>
 
             <nav class="mobile-nav-dropdown" id="mobileNavDropdown">
-                <a href="#courses" onclick="closeMobileMenu()">Kurslar</a>
-                <a href="#about" onclick="closeMobileMenu()">Biz haqimizda</a>
-                <a href="#teachers" onclick="closeMobileMenu()">Ustozlar</a>
-                <a href="#opportunities" onclick="closeMobileMenu()">Imkoniyatlar</a>
-                <a href="#results" onclick="closeMobileMenu()">Natijalar</a>
-                <button type="button" class="mobile-nav-certificate" onclick="closeMobileMenu(); openCertificateVerifyModal()">Sertifikatlar</button>
-                <a href="#contact" onclick="closeMobileMenu()">Aloqa</a>
-                <div class="mobile-nav-divider"></div>
+                <a href="#courses" class="grid-section-link" onclick="closeMobileMenu()">Kurslar</a>
+                <a href="#about" class="grid-section-link" onclick="closeMobileMenu()">Biz haqimizda</a>
+                <a href="#teachers" class="grid-section-link" onclick="closeMobileMenu()">Ustozlar</a>
+                <a href="#opportunities" class="grid-section-link" onclick="closeMobileMenu()">Imkoniyatlar</a>
+                <a href="#results" class="grid-section-link" onclick="closeMobileMenu()">Natijalar</a>
+                <button type="button" class="mobile-nav-certificate grid-section-link" onclick="closeMobileMenu(); openCertificateVerifyModal()">Sertifikatlar</button>
+                <a href="#contact" class="grid-section-link" onclick="closeMobileMenu()">Aloqa</a>
+                <div class="mobile-nav-divider grid-section-divider"></div>
                 <a href="admin/login.html" class="mobile-nav-role admin">🛡️ Administrator</a>
                 <a href="teacher-login.html" class="mobile-nav-role">O‘qituvchilar</a>
                 <a href="parent-login.html" class="mobile-nav-role parent">
