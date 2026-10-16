@@ -223,6 +223,7 @@
         }
 
         .nav-actions {
+            position: relative;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -303,7 +304,7 @@
         }
 
         .mobile-menu {
-            display: none;
+            display: grid;
             width: 48px;
             height: 48px;
             border: none;
@@ -4655,31 +4656,10 @@ footer{background:linear-gradient(180deg,#0a130d,#050805);border-top:1px solid r
         <nav class="nav-links">
             <a href="#courses" data-i18n="nav_courses">Kurslar</a>
             <a href="#teachers" data-i18n="nav_teachers">Ustozlar</a>
+            <a href="#opportunities" data-i18n="nav_opportunities">Imkoniyatlar</a>
             <a href="#results" data-i18n="nav_results">Natijalar</a>
             <button type="button" class="nav-certificate-link" onclick="openCertificateVerifyModal()">Sertifikatlar</button>
             <a href="#contact" data-i18n="nav_contact">Aloqa</a>
-            <button type="button" class="nav-login-link" onclick="openLoginModal()">Kirish</button>
-            <a href="admin/login.html" class="nav-role-link admin" aria-label="Administrator paneliga kirish">
-                <span class="nav-role-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M12 3.5 19 6v5.2c0 4.5-2.8 7.7-7 9.3-4.2-1.6-7-4.8-7-9.3V6l7-2.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                        <path d="m9.2 12 1.8 1.8 3.8-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </span>
-                Administrator
-            </a>
-<a href="teacher-login.html" class="nav-role-link" aria-label="O‘qituvchilar paneliga kirish">
-                <span class="nav-role-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M4 6.5 12 3l8 3.5L12 10 4 6.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                        <path d="M7 9v5.2c0 1.8 2.2 3.3 5 3.3s5-1.5 5-3.3V9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                        <path d="M20 7v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                    </svg>
-                </span>
-                O‘qituvchilar
-            </a>
-<a href="parent-login.html" class="nav-role-link parent" aria-label="Ota-ona paneliga kirish"><span class="nav-role-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3.5 19c.5-3.2 2.2-5 5.5-5s5 1.8 5.5 5"/><path d="M14.5 15.3c2.7-.1 4.5 1.2 5 3.7"/></svg></span><span>Ota-onalar</span></a>
-            <a href="#application" class="nav-apply-link">Ariza qoldirish</a>
         </nav>
 
         <div class="nav-actions">
@@ -4733,8 +4713,8 @@ footer{background:linear-gradient(180deg,#0a130d,#050805);border-top:1px solid r
                     </span>
                     Ota-onalar
                 </a>
-                <a href="#application" class="mobile-nav-apply" onclick="closeMobileMenu()">Ariza qoldirish</a>
                 <button type="button" class="mobile-nav-login" onclick="closeMobileMenu(); openLoginModal()">Kirish</button>
+                <a href="#application" class="mobile-nav-apply" onclick="closeMobileMenu()">Ariza qoldirish</a>
 
             </nav>
 
